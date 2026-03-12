@@ -1,0 +1,342 @@
+# Chương 3: Thiết kế Dịch vụ & API
+
+> *"A well-designed API is a conversation between the provider and the consumer — clear, consistent, and forgiving."*
+> — Adapted from REST API design best practices [1]
+
+---
+
+## Bạn sẽ học được gì
+
+- Nắm vững nguyên tắc thiết kế REST API cho microservices
+- Hiểu các chiến lược API versioning và schema evolution
+- Sử dụng OpenAPI/Swagger để tạo documentation tự động
+- Áp dụng DTO pattern để tách biệt internal model và external contract
+- Phân tích bài học thực tế từ API design trong hệ thống LMS
+
+---
+
+## 3.1 REST API Design — Nguyên tắc cho Microservices
+
+### Tại sao API design quan trọng hơn trong microservices?
+
+Trong monolith, giao tiếp giữa các module là gọi hàm nội bộ (in-process call) — nếu interface thay đổi, compiler sẽ báo lỗi ngay. Trong microservices, giao tiếp qua network (HTTP, gRPC, messaging) — và **không có compiler nào bắt lỗi khi API thay đổi**. Một breaking change trong API có thể crash service khác mà không ai biết cho đến khi production gặp sự cố.
+
+Do đó, API trong microservices cần được thiết kế **cẩn thận hơn**, **ổn định hơn**, và **có chiến lược evolution rõ ràng** — đây không phải optional, mà là điều kiện tiên quyết.
+
+### Richardson Maturity Model
+
+Leonard Richardson đề xuất mô hình 4 cấp độ trưởng thành cho REST API [2a, Ch.3]:
+
+```mermaid
+graph TB
+    L0["Level 0: The Swamp of POX<br/><i>Một URL duy nhất, POST everything</i>"] 
+    L1["Level 1: Resources<br/><i>Nhiều URLs, mỗi URL = 1 resource</i>"]
+    L2["Level 2: HTTP Verbs<br/><i>GET/POST/PUT/DELETE đúng ngữ nghĩa</i>"]
+    L3["Level 3: HATEOAS<br/><i>Response chứa links điều hướng</i>"]
+    
+    L0 --> L1 --> L2 --> L3
+    
+    style L0 fill:#EF5350,color:white
+    style L1 fill:#FFA726,color:white
+    style L2 fill:#66BB6A,color:white
+    style L3 fill:#42A5F5,color:white
+```
+
+Hầu hết microservices thực tế (bao gồm LMS) hoạt động ở **Level 2** — sử dụng đúng resources và HTTP verbs. Level 3 (HATEOAS) hiếm khi được áp dụng đầy đủ trong thực tế vì tăng complexity mà lợi ích không rõ ràng cho internal APIs [4a, Ch.4].
+
+### Nguyên tắc thiết kế REST API
+
+**1. Resource-oriented URLs** — URL đại diện cho resource (danh từ), không phải hành động (động từ):
+
+```
+✅ GET  /questions/{id}          → Lấy câu hỏi
+✅ POST /questions               → Tạo câu hỏi mới
+✅ GET  /contests/{id}/questions  → Câu hỏi trong cuộc thi
+
+❌ GET  /getQuestion?id=123      → Dùng verb, query string
+❌ POST /createQuestion           → URL chứa action
+```
+
+**2. HTTP methods đúng ngữ nghĩa:**
+
+| Method | Ý nghĩa | Idempotent? | Ví dụ |
+|--------|---------|------------|-------|
+| `GET` | Đọc resource | ✅ Có | `GET /questions/123` |
+| `POST` | Tạo resource mới | ❌ Không | `POST /submissions` |
+| `PUT` | Cập nhật toàn bộ | ✅ Có | `PUT /questions/123` |
+| `PATCH` | Cập nhật một phần | ❌ Không | `PATCH /users/123` |
+| `DELETE` | Xóa resource | ✅ Có | `DELETE /questions/123` |
+
+**3. Response codes có ý nghĩa:**
+
+| Code | Khi nào dùng | Ví dụ |
+|------|-------------|-------|
+| `200 OK` | Request thành công | `GET /questions/123` trả về question |
+| `201 Created` | Tạo resource mới thành công | `POST /questions` trả về question vừa tạo |
+| `204 No Content` | Thành công nhưng không có body | `DELETE /questions/123` |
+| `400 Bad Request` | Input không hợp lệ | Thiếu field bắt buộc |
+| `401 Unauthorized` | Chưa xác thực | Token hết hạn |
+| `403 Forbidden` | Không có quyền | Student truy cập admin API |
+| `404 Not Found` | Resource không tồn tại | `GET /questions/99999` |
+| `409 Conflict` | Conflict trạng thái | Submission đã được chấm |
+| `500 Internal Server Error` | Lỗi server | Database connection failed |
+
+**4. Plural nouns, consistent naming** — Luôn dùng số nhiều cho collection: `/questions`, không phải `/question`. Chọn một convention (kebab-case, camelCase, snake_case) và giữ nhất quán xuyên suốt.
+
+**5. Pagination, filtering, sorting** — Mọi endpoint trả về collection phải hỗ trợ phân trang:
+
+```
+GET /questions?page=0&size=20&sort=createdAt,desc&difficulty=HARD
+```
+
+> **📐 Nguyên tắc — Contract-First vs Code-First**
+>
+> Có hai cách tiếp cận thiết kế API: **Contract-first** (viết OpenAPI spec trước, generate code sau) và **Code-first** (viết code trước, generate spec sau). Contract-first tốt hơn cho API public hoặc cross-team. Code-first nhanh hơn cho API internal trong team nhỏ. LMS sử dụng code-first (Spring Boot annotations → auto-generated docs) — hợp lý cho team 2–3 devs [1, Ch.7].
+
+---
+
+## 3.2 API Versioning & Schema Evolution
+
+### Tại sao cần versioning?
+
+Trong monolith, thay đổi internal API chỉ cần refactor code + chạy lại tests. Trong microservices, service A thay đổi response format → service B (consumer) *có thể* crash nếu không xử lý. Đây là bài toán **schema evolution** — và API versioning là giải pháp [7, Ch.4].
+
+### Ba chiến lược versioning
+
+| Chiến lược | Cách dùng | Ưu điểm | Nhược điểm |
+|-----------|----------|---------|-----------|
+| **URL path** | `/api/v1/questions`, `/api/v2/questions` | Đơn giản, rõ ràng | Nhiều URL, routing phức tạp |
+| **Query parameter** | `/questions?version=2` | Ít thay đổi URL | Dễ bỏ sót |
+| **Header** | `Accept: application/vnd.lms.v2+json` | Clean URL | Khó debug, ít trực quan |
+
+Theo Sam Newman, **URL path versioning** phổ biến nhất vì đơn giản và developer-friendly [4a, Ch.4]. Đây cũng là cách mà hầu hết API public lớn (GitHub, Stripe, Twitter) sử dụng.
+
+### Schema Evolution — Thay đổi mà không breaking
+
+Martin Kleppmann phân tích hai chiều compatibility [7, Ch.4]:
+
+- **Backward compatible**: code mới đọc được data cũ (thêm field optional → OK)
+- **Forward compatible**: code cũ đọc được data mới (bỏ qua field không biết → OK)
+
+Quy tắc vàng khi thay đổi API:
+
+```mermaid
+flowchart TD
+    Q1{"Loại thay đổi?"} 
+    Q1 -->|"Thêm field mới"| A1["✅ Backward compatible<br/>Consumer cũ bỏ qua field mới"]
+    Q1 -->|"Bỏ required field"| A2["❌ Breaking change!<br/>Consumer cũ sẽ lỗi"]
+    Q1 -->|"Đổi tên field"| A3["❌ Breaking change!<br/>= xóa cũ + thêm mới"]
+    Q1 -->|"Đổi type field"| A4["❌ Breaking change!<br/>Consumer parse sẽ lỗi"]
+    Q1 -->|"Thêm optional<br/>query param"| A5["✅ Backward compatible"]
+    
+    style A1 fill:#C8E6C9
+    style A2 fill:#FFCDD2
+    style A3 fill:#FFCDD2
+    style A4 fill:#FFCDD2
+    style A5 fill:#C8E6C9
+```
+
+> **🔍 Phân tích gap — LMS thiếu API versioning**
+>
+> Hệ thống LMS không sử dụng API versioning — tất cả endpoints nằm tại `/api/*` không có version prefix. Đây là **thiếu sót cần khắc phục**: khi hệ thống thêm mobile app hoặc third-party integration, mỗi thay đổi API sẽ là breaking change cho consumer không kịp cập nhật. Stripe API — một trong những API được thiết kế tốt nhất — sử dụng date-based versioning (`2024-12-18`), cho phép consumer pin vào một version cụ thể. **Migration path**: thêm `/api/v1/` prefix cho tất cả route hiện tại, cấu hình gateway routing, và document versioning policy.
+
+---
+
+## 3.3 OpenAPI & API Documentation
+
+### Tại sao documentation quan trọng?
+
+Chris Richardson nhấn mạnh rằng trong microservices, API documentation không phải "nice-to-have" mà là **hợp đồng** (*contract*) giữa provider và consumer [2a, Ch.3]. Nếu documentation sai hoặc thiếu, developer phải đọc source code để hiểu API — điều này phá vỡ nguyên lý *Service Abstraction* [1].
+
+### OpenAPI Specification (Swagger)
+
+**OpenAPI** (trước đây gọi là Swagger) là chuẩn mô tả REST API dưới dạng YAML/JSON. Từ spec này, có thể tự động generate:
+- Documentation UI (Swagger UI, ReDoc)
+- Client SDK (Java, TypeScript, Python)
+- Server stubs
+- Tests
+
+Trong Spring Boot (như LMS), sử dụng **SpringDoc OpenAPI** để tự động tạo spec từ code:
+
+```java
+// Annotations trên controller → auto-generate OpenAPI spec
+@RestController
+@RequestMapping("/api/questions")
+@Tag(name = "Questions", description = "Quản lý câu hỏi SQL")
+public class QuestionController {
+    
+    @GetMapping("/{id}")
+    @Operation(summary = "Lấy chi tiết câu hỏi theo ID")
+    @ApiResponse(responseCode = "200", description = "Thành công")
+    @ApiResponse(responseCode = "404", description = "Không tìm thấy")
+    public QuestionResponse getById(@PathVariable UUID id) {
+        // ...
+    }
+}
+```
+
+Kết quả: truy cập `/swagger-ui.html` → có UI tương tác để test API trực tiếp.
+
+```mermaid
+graph LR
+    CODE["Java Annotations<br/><i>@Operation, @Tag,<br/>@ApiResponse</i>"] --> SPEC["OpenAPI Spec<br/><i>(YAML/JSON)</i>"]
+    SPEC --> UI["Swagger UI<br/><i>Interactive docs</i>"]
+    SPEC --> CLIENT["Client SDK<br/><i>Auto-generated</i>"]
+    SPEC --> TEST["Contract Tests<br/><i>Validation</i>"]
+    
+    style CODE fill:#E3F2FD
+    style SPEC fill:#FFF9C4
+    style UI fill:#E8F5E9
+    style CLIENT fill:#F3E5F5
+    style TEST fill:#FCE4EC
+```
+
+> **💡 Tip — Documentation-as-Code**
+>
+> Coi API documentation như code: version control, review, automate. Nếu documentation nằm ngoài code (wiki, Confluence), nó sẽ nhanh chóng lỗi thời. SpringDoc/OpenAPI giải quyết vấn đề này bằng cách generate docs trực tiếp từ code.
+
+---
+
+## 3.4 DTO Pattern — Tách Internal Model và External Contract
+
+### Vấn đề: Entity ≠ API Response
+
+Sai lầm phổ biến trong microservices (và monolith) là trả entity trực tiếp qua API:
+
+```java
+// ❌ Trả entity trực tiếp — expose internal structure
+@GetMapping("/questions/{id}")
+public Question getById(@PathVariable UUID id) {
+    return questionRepository.findById(id).orElseThrow();
+}
+```
+
+Vấn đề:
+- **Coupling**: thay đổi database schema = thay đổi API response
+- **Security**: có thể expose field nhạy cảm (password hash, internal IDs)
+- **Performance**: entity có thể chứa quan hệ lazy-loaded → N+1 queries hoặc serialization errors
+
+### DTO (Data Transfer Object)
+
+**DTO pattern** tạo lớp đệm giữa internal model và external contract [2a]:
+
+```mermaid
+graph LR
+    CLIENT["Client"] -->|"HTTP Request"| CTRL["Controller"]
+    CTRL -->|"RequestDTO"| SVC["Service Layer"]
+    SVC -->|"Entity"| REPO["Repository"]
+    REPO -->|"Entity"| SVC
+    SVC -->|"ResponseDTO"| CTRL
+    CTRL -->|"HTTP Response"| CLIENT
+    
+    style CLIENT fill:#E3F2FD
+    style CTRL fill:#FFF9C4
+    style SVC fill:#E8F5E9
+    style REPO fill:#F3E5F5
+```
+
+```java
+// ✅ Request DTO — chỉ chứa field client cần gửi
+public record CreateQuestionRequest(
+    String title,
+    String description,
+    String solution,
+    String difficulty
+) {}
+
+// ✅ Response DTO — chỉ chứa field client cần nhận
+public record QuestionResponse(
+    UUID id,
+    String title,
+    String difficulty,
+    int submitCount,
+    double acceptRate,
+    LocalDateTime createdAt
+) {}
+
+// Mapper chuyển đổi Entity ↔ DTO
+@Mapper(componentModel = "spring")
+public interface QuestionMapper {
+    QuestionResponse toResponse(Question entity);
+    Question toEntity(CreateQuestionRequest request);
+}
+```
+
+### Lợi ích thực tế
+
+| Lợi ích | Giải thích |
+|---------|-----------|
+| **Decoupling** | Thay đổi entity (thêm cột) không tự động thay đổi API |
+| **Security** | Không vô tình expose password, internal fields |
+| **Performance** | Chỉ trả field cần thiết, không lazy-load cả graph |
+| **Versioning** | Có thể tạo `QuestionResponseV2` mà không sửa entity |
+| **Validation** | `@Valid` trên DTO, không trên entity |
+
+Trong hệ thống LMS, pattern này được áp dụng qua `dto/request/` và `dto/response/` packages, với MapStruct (`BaseMapper`) để tự động chuyển đổi. Các base classes `BaseRequest` và `BaseResponse` trong shared library cung cấp format phản hồi chuẩn (`status`, `message`, `data` wrapper).
+
+---
+
+## 3.5 Case Study: API Design trong hệ thống LMS — Bài học từ thực tế
+
+### Hiện trạng
+
+Phân tích source code LMS cho thấy một số quyết định API design thực tế — một số tốt, một số là *anti-pattern* do phát triển hữu cơ (organic growth):
+
+**Điểm mạnh:**
+- DTO pattern được áp dụng nhất quán (request/response separation)
+- Swagger/OpenAPI tích hợp sẵn
+- JSON response format chuẩn (`BaseResponse<T>` wrapper)
+
+**Điểm cần cải thiện** (từ `source-registry.md` §3.1):
+
+| # | Vấn đề | Hiện trạng | Cách cải thiện |
+|---|--------|-----------|---------------|
+| 1 | **Inconsistent naming** | Mix `/question` (singular) với `/users` (plural), `/submit-history` (kebab) | Chuẩn hóa: tất cả plural + kebab-case |
+| 2 | **Không có API versioning** | Tất cả endpoint tại `/api/*` | Thêm `/api/v1/*` prefix |
+| 3 | **Error response không nhất quán** | `ServerResponse.description` vs `JwtUtil.message` | Chuẩn hóa error format qua `GlobalExceptionHandler` |
+| 4 | **Hard delete only** | Xóa vĩnh viễn, không soft-delete | Thêm soft-delete cho audit trail |
+| 5 | **Duplicate service** | `SqlExecutorService` trùng code giữa Core và Judge | Extract interface hoặc shared service |
+
+### Bài học rút ra
+
+Những inconsistencies này không phải "lỗi" — chúng là kết quả tự nhiên khi hệ thống phát triển nhanh với team nhỏ, qua nhiều iteration. Bài học quan trọng:
+
+1. **Naming convention nên được thống nhất sớm** — chi phí sửa sau này tăng theo số lượng consumer. Khi API chỉ có 1 consumer (frontend), đổi tên dễ. Khi có 3+ consumers (mobile, third-party, internal services), đổi tên = breaking change.
+
+2. **Error format chuẩn hóa từ đầu** — `GlobalExceptionHandler` với `@ControllerAdvice` giải quyết 90% vấn đề. Trong LMS, handler tồn tại nhưng Gateway xử lý JWT errors riêng (vì được phát triển độc lập) → hai format khác nhau.
+
+3. **API versioning chỉ cần khi có multiple consumers** — với team sở hữu cả provider và consumer, implicit versioning (deploy cùng nhau) là đủ. Đừng over-engineer.
+
+> **📐 Nguyên tắc — Tolerant Reader**
+>
+> Martin Fowler đề xuất pattern "Tolerant Reader": consumer nên bỏ qua fields không biết và chỉ đọc fields cần thiết. Điều này cho phép provider thêm fields mới mà không breaking consumers — **backward compatibility tự nhiên** [W2].
+
+---
+
+## Tổng kết
+
+Chương này đã trình bày nền tảng thiết kế API cho microservices — từ nguyên tắc REST (resources, HTTP verbs, status codes) đến các vấn đề thực tế mà developer thường gặp.
+
+API versioning và schema evolution là bài toán không thể tránh khỏi khi hệ thống phát triển. Ba chiến lược versioning (URL path, query param, header) mỗi cách có trade-off riêng — URL path phổ biến nhất vì developer-friendly. Quy tắc backward compatibility giúp thay đổi API mà không crash consumer.
+
+OpenAPI/Swagger biến documentation thành code — tự động, luôn cập nhật, và có thể test trực tiếp. DTO pattern tách biệt internal model và external contract — điều kiện cần để API evolution không gắn chặt vào database schema.
+
+Phân tích LMS cho thấy: API design "đủ tốt" hoàn toàn khả thi cho team nhỏ, nhưng cần ý thức chuẩn hóa sớm (naming, error format) để tránh technical debt tích lũy.
+
+Ở Chương 4, chúng ta sẽ đi vào **giao tiếp đồng bộ** giữa các service: OpenFeign, error handling, resilience patterns — khi API đã được thiết kế, câu hỏi là *service gọi service khác như thế nào, và xử lý lỗi ra sao?*
+
+---
+
+## Đọc thêm
+
+**Sách tham khảo chính:**
+1. [1] Thomas Erl, *SOA: Analysis and Design for Services and Microservices*, 2nd Ed. — Ch.7: Service API Design, Service Contract
+2. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.3: Interprocess Communication, REST API Design
+3. [2b] Chris Richardson, *Microservices Patterns*, 2nd Ed. — Ch.3: API Design
+4. [4a] Sam Newman, *Building Microservices* — Ch.4: Integration, REST best practices
+5. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.4: Encoding and Evolution, Schema Evolution
+
+**Nguồn trực tuyến:**
+- [W2] Martin Fowler, "TolerantReader" — martinfowler.com/bliki/TolerantReader.html
+- Leonard Richardson, "Richardson Maturity Model" — martinfowler.com/articles/richardsonMaturityModel.html
+- OpenAPI Specification 3.1 — spec.openapis.org

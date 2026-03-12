@@ -1,0 +1,46 @@
+# Build outputs
+_build/
+_output/
+output/
+*.pdf
+*.epub
+*.mobi
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-*
+
+# Node (if using build tools)
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Java/Maven/Gradle (for code examples)
+*.class
+target/
+build/
+.gradle/
+*.jar
+*.war
+
+# Docker
+docker-compose.override.yml
+
+# Temporary
+*.tmp
+*.bak
+*.log

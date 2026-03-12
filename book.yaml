@@ -1,0 +1,36 @@
+# Book Metadata
+title: "Kiến trúc Hướng Dịch vụ & Microservices — Từ Lý thuyết đến Thực tiễn"
+subtitle: "Service-Oriented Architecture & Microservices: From Theory to Practice"
+edition: 1
+language: vi
+
+authors:
+  - name: ""          # TBD
+    affiliation: ""   # TBD
+
+publisher: ""          # TBD
+year: 2026
+isbn: ""               # TBD
+
+keywords:
+  - microservices
+  - service-oriented architecture
+  - domain-driven design
+  - distributed systems
+  - spring boot
+  - api gateway
+  - event-driven architecture
+
+case_study:
+  name: "LMS (Learning Management System)"
+  components:
+    - dblab-auth
+    - dblab-assignment
+    - dblab-app
+    - dblab-judge
+    - dblab-notification
+    - dblab-gateway
+
+chapters: 12
+parts: 3
+format: markdown

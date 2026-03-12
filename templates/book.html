@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$title$</title>
+    
+    <!-- Google Fonts: professional tech book typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Mermaid.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Pandoc wraps code in: <div class="sourceCode"><pre class="mermaid"><code>...</code></pre></div>
+        // or: <pre class="mermaid"><code class="language-mermaid">...</code></pre>
+        // We need to handle all variants
+        var selectors = [
+            "code.language-mermaid",
+            "code.mermaid",
+            "pre.mermaid > code"
+        ];
+        selectors.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) {
+                var pre = el.parentElement;
+                var container = pre.parentElement;
+                var div = document.createElement("div");
+                div.className = "mermaid";
+                div.textContent = el.textContent;
+                // If wrapped in sourceCode div, replace that; otherwise replace pre
+                if (container && container.classList && container.classList.contains("sourceCode")) {
+                    container.parentElement.replaceChild(div, container);
+                } else {
+                    pre.parentElement.replaceChild(div, pre);
+                }
+            });
+        });
+        mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+    });
+    </script>
+    
+    <style>
+    /* ============================================
+       Professional Tech Book Template
+       Inspired by Manning, O'Reilly, Packt styles
+       ============================================ */
+
+    :root {
+        --color-primary: #1B2A4A;
+        --color-secondary: #2C5282;
+        --color-accent: #3182CE;
+        --color-text: #2D3748;
+        --color-text-light: #4A5568;
+        --color-bg: #FFFFFF;
+        --color-bg-alt: #F7FAFC;
+        --color-border: #E2E8F0;
+        --color-callout-bg: #EBF8FF;
+        --color-callout-border: #3182CE;
+        --color-warning-bg: #FFFAF0;
+        --color-warning-border: #DD6B20;
+        --color-tip-bg: #F0FFF4;
+        --color-tip-border: #38A169;
+        --font-serif: 'Merriweather', 'Georgia', serif;
+        --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
+        --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: var(--font-sans);
+        font-size: 16px;
+        line-height: 1.75;
+        color: var(--color-text);
+        background: var(--color-bg);
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 2.5em 3em;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADINGS (Manning-style: serif for chapter titles) ── */
+    h1 {
+        font-family: var(--font-serif);
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin-top: 3em;
+        margin-bottom: 0.8em;
+        padding-bottom: 0.4em;
+        border-bottom: 3px solid var(--color-primary);
+        page-break-before: always;
+    }
+
+    h1:first-of-type { margin-top: 0; }
+
+    h2 {
+        font-family: var(--font-serif);
+        font-size: 1.5em;
+        font-weight: 700;
+        color: var(--color-secondary);
+        margin-top: 2.2em;
+        margin-bottom: 0.6em;
+        padding-bottom: 0.3em;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    h3 {
+        font-family: var(--font-sans);
+        font-size: 1.15em;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin-top: 1.8em;
+        margin-bottom: 0.5em;
+    }
+
+    h4 {
+        font-family: var(--font-sans);
+        font-size: 1em;
+        font-weight: 600;
+        color: var(--color-text-light);
+        margin-top: 1.5em;
+    }
+
+    /* ── PARAGRAPHS ── */
+    p {
+        margin: 0.8em 0;
+        text-align: justify;
+        hyphens: auto;
+    }
+
+    /* ── LISTS ── */
+    ul, ol {
+        margin: 0.8em 0;
+        padding-left: 1.8em;
+    }
+
+    li { margin: 0.3em 0; }
+    li > p { margin: 0.4em 0; }
+
+    /* ── TABLES (O'Reilly style: clean, minimal borders) ── */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5em 0;
+        font-size: 0.92em;
+        line-height: 1.5;
+    }
+
+    thead th {
+        background: var(--color-primary);
+        color: white;
+        font-weight: 600;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--color-border);
+        vertical-align: top;
+    }
+
+    tbody tr:nth-child(even) { background: var(--color-bg-alt); }
+    tbody tr:hover { background: #EDF2F7; }
+
+    /* ── BLOCKQUOTES (styled as callout boxes like Manning) ── */
+    blockquote {
+        margin: 1.5em 0;
+        padding: 1em 1.5em;
+        border-left: 4px solid var(--color-callout-border);
+        background: var(--color-callout-bg);
+        border-radius: 0 6px 6px 0;
+        font-size: 0.95em;
+    }
+
+    blockquote > p:first-child { margin-top: 0; }
+    blockquote > p:last-child { margin-bottom: 0; }
+
+    blockquote strong {
+        color: var(--color-primary);
+        font-size: 0.95em;
+    }
+
+    /* Warning callouts */
+    blockquote:has(strong:first-child) {
+        /* Default blue callout */
+    }
+
+    /* ── CODE (Packt/Manning style: dark background, soft corners) ── */
+    code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        background: #EDF2F7;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #C53030;
+    }
+
+    pre {
+        background: #1A202C;
+        color: #E2E8F0;
+        padding: 1.2em 1.5em;
+        border-radius: 8px;
+        overflow-x: auto;
+        line-height: 1.5;
+        font-size: 0.88em;
+        margin: 1.5em 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-size: inherit;
+    }
+
+    /* ── HORIZONTAL RULES (section dividers) ── */
+    hr {
+        border: none;
+        border-top: 2px solid var(--color-border);
+        margin: 3em 0;
+    }
+
+    /* ── LINKS ── */
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── MERMAID DIAGRAMS ── */
+    .mermaid {
+        text-align: center;
+        margin: 2em 0;
+        padding: 1em;
+        background: var(--color-bg-alt);
+        border-radius: 8px;
+        border: 1px solid var(--color-border);
+    }
+
+    /* ── TABLE OF CONTENTS (book-style) ── */
+    #TOC {
+        background: var(--color-bg-alt);
+        padding: 1.5em 2.5em;
+        border-radius: 8px;
+        margin-bottom: 3em;
+        border: 1px solid var(--color-border);
+    }
+
+    #TOC > ul { padding-left: 0; }
+    #TOC ul { list-style: none; padding-left: 1.2em; }
+    #TOC > ul > li { margin: 0.6em 0; }
+    #TOC > ul > li > a {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 1.05em;
+        color: var(--color-primary);
+    }
+    #TOC ul ul li { margin: 0.2em 0; }
+    #TOC ul ul a {
+        color: var(--color-text-light);
+        font-size: 0.92em;
+    }
+    #TOC a:hover { color: var(--color-accent); }
+
+    /* ── EMPHASIS & STRONG ── */
+    em { font-style: italic; }
+    strong { font-weight: 700; color: var(--color-primary); }
+
+    /* ── ORDERED LISTS (numbered with style) ── */
+    ol { counter-reset: item; list-style: none; padding-left: 1.2em; }
+    ol > li { counter-increment: item; position: relative; padding-left: 0.8em; }
+    ol > li::before {
+        content: counter(item) ".";
+        font-weight: 700;
+        color: var(--color-accent);
+        position: absolute;
+        left: -1.2em;
+    }
+
+    /* ── TITLE PAGE ── */
+    .title {
+        font-family: var(--font-serif);
+        font-size: 2.5em;
+        font-weight: 700;
+        color: var(--color-primary);
+        text-align: center;
+        margin: 2em 0 0.3em;
+        border: none;
+    }
+
+    .subtitle {
+        font-family: var(--font-sans);
+        font-size: 1.2em;
+        color: var(--color-text-light);
+        text-align: center;
+        margin-bottom: 0.5em;
+        font-weight: 300;
+    }
+
+    .author {
+        font-family: var(--font-sans);
+        font-size: 1.1em;
+        color: var(--color-text-light);
+        text-align: center;
+        margin-bottom: 3em;
+    }
+
+    .date { display: none; }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+        body {
+            max-width: none;
+            font-size: 10pt;
+            padding: 0;
+            color: black;
+        }
+        h1 { page-break-before: always; font-size: 20pt; }
+        h2 { font-size: 16pt; }
+        h3 { font-size: 13pt; }
+        pre { white-space: pre-wrap; box-shadow: none; border: 1px solid #ccc; }
+        table { font-size: 9pt; }
+        .mermaid { page-break-inside: avoid; }
+        #TOC { page-break-after: always; }
+        a { color: black; text-decoration: none; }
+        blockquote { background: #f5f5f5 !important; border-left-color: #999 !important; }
+    }
+    </style>
+</head>
+<body>
+$if(title)$
+<header>
+    <h1 class="title">$title$</h1>
+    $if(subtitle)$<p class="subtitle">$subtitle$</p>$endif$
+    $if(author)$<p class="author">$author$</p>$endif$
+    $if(date)$<p class="date">$date$</p>$endif$
+</header>
+$endif$
+$if(toc)$
+<nav id="TOC" role="doc-toc">
+    <h2 style="margin-top:0; border:none; font-size:1.2em;">MUC LUC</h2>
+    $toc$
+</nav>
+$endif$
+$body$
+</body>
+</html>
