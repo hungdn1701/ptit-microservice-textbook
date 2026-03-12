@@ -1,0 +1,16 @@
+---
+title: "SOA & Microservices Architecture"
+subtitle: "Từ lý thuyết đến thực hành với case study LMS"
+author: ""
+date: 2026
+lang: vi
+documentclass: report
+fontsize: 11pt
+geometry: "margin=2.5cm"
+linestretch: 1.3
+toc: true
+toc-depth: 3
+colorlinks: true
+linkcolor: "blue"
+urlcolor: "blue"
+---
