@@ -66,6 +66,10 @@ Best practice reference from FTGO/Farfetch/Netflix
 >
 > [Describe LMS shortcoming] → [Best practice reference] → **Migration path**: [specific steps]
 
+> **⚠️ Sai lầm thường gặp**
+>
+> [Mô tả sai lầm phổ biến khi thiết kế/triển khai] → [Hậu quả] → [Cách phòng tránh]
+
 ---
 
 ## Tổng kết
@@ -116,6 +120,7 @@ When LMS deviates from best practice, use this format:
 - [ ] **Reference extracts read** before writing (Step 1 completed)
 - [ ] Chapter objectives listed
 - [ ] Theory from references covered completely (no missing topics)
+- [ ] **Problem-first framing**: mỗi pattern section bắt đầu bằng motivating problem (vấn đề → hạn chế cách tiếp cận cũ → giải pháp)
 - [ ] **ALL examples use LMS case study** (no standalone FTGO/Farfetch examples)
 - [ ] LMS case study as **migration target** (not best practice)
 - [ ] FTGO/Farfetch referenced only as **comparison/analysis** with LMS
@@ -124,5 +129,7 @@ When LMS deviates from best practice, use this format:
 - [ ] Mermaid diagrams for architecture/flow
 - [ ] Narrative summary (not bullets)
 - [ ] "Đọc thêm" with canonical reference codes
-- [ ] No "DBLAB" references — use "LMS"
+- [ ] Có ít nhất 1 mục **"⚠️ Sai lầm thường gặp"** hoặc tích hợp common mistakes vào tổng kết
+- [ ] No \"DBLAB\" references — use \"LMS\"
+- [ ] **Tiêu đề không dịch thuật ngữ**: chapter/section titles giữ nguyên tiếng Anh cho technical terms (xem §2 style-guide.md)
 - [ ] DBLAB grep check: `Select-String -Pattern "DBLAB" -Path "manuscript\chapter-XX.md"`

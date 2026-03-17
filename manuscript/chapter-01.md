@@ -454,6 +454,14 @@ Mỗi chương sách sẽ quay lại hệ thống LMS ở góc nhìn khác nhau.
 
 ---
 
+> **⚠️ Sai lầm thường gặp**
+>
+> 1. **Áp dụng microservices vì "trending"** — Nhiều team chọn microservices vì thấy Netflix, Amazon dùng, mà không tự hỏi: "Vấn đề cụ thể nào của chúng ta mà microservices giải quyết?" Hậu quả: thêm complexity mà không có lợi ích. *Phòng tránh*: luôn bắt đầu từ vấn đề (Decision Framework §1.6), không từ giải pháp.
+> 2. **Nhảy thẳng từ monolith sang microservices** — Tách patchwork monolith trực tiếp, bỏ qua bước modular hóa. Hậu quả: distributed monolith — tệ hơn cả hai thế giới. *Phòng tránh*: refactor ranh giới module rõ ràng *trước*, rồi mới tách service (§1.5).
+> 3. **Tách service trước khi tổ chức team** — Chia 10 microservices nhưng vẫn 1 team duy nhất, deploy cùng nhau, review code chéo nhau. Hậu quả: overhead vận hành mà không có autonomy thực sự (Conway's Law). *Phòng tránh*: tổ chức team phù hợp *cùng lúc* hoặc *trước* khi tách service (chi tiết ở Ch.2).
+
+---
+
 ## Tổng kết
 
 Chương này đã phác họa bức tranh toàn cảnh về sự tiến hóa kiến trúc phần mềm — từ monolith nguyên khối, qua SOA với tham vọng tái sử dụng ở cấp doanh nghiệp, đến microservices với triết lý đặt tính độc lập lên hàng đầu.

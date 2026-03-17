@@ -1,7 +1,7 @@
 # Style Guide — SOA & Microservices Architecture
 
 > Living document — cập nhật khi có thống nhất mới.
-> Last updated: 2026-03-10
+> Last updated: 2026-03-12
 
 ---
 
@@ -51,13 +51,28 @@
 - Lần sau: dùng **thuật ngữ tiếng Anh** trực tiếp
 - Luôn in nghiêng thuật ngữ lần đầu: *API Gateway*
 
+### ⛔ KHÔNG dịch thuật ngữ kỹ thuật trong tiêu đề
+
+Tiêu đề chương (`#`) và section (`##`) **KHÔNG ĐƯỢC dịch thuật ngữ kỹ thuật** sang tiếng Việt. Tiếng Việt chỉ dùng để **mô tả nội dung**, không phải để dịch nghĩa thuật ngữ.
+
+| ❌ SAI | ✅ ĐÚNG | Lý do |
+|--------|---------|-------|
+| `API Gateway — Cổng vào duy nhất` | `API Gateway` | "Cổng vào duy nhất" là dịch nghĩa, không phải mô tả |
+| `Circuit Breaker — Cầu dao tự động` | `Circuit Breaker` hoặc `Resilience Patterns` | "Cầu dao" là dịch nghĩa |
+| `Service Discovery — Khám phá dịch vụ` | `Service Discovery & Load Balancing` | Mô tả scope, không dịch thuật ngữ |
+
+Phần subtitle (sau `—`) có thể dùng tiếng Việt để **mô tả scope/mục đích**, ví dụ:
+- ✅ `Saga Pattern — Chuỗi Local Transactions + Compensation` (mô tả)
+- ✅ `Giao tiếp Đồng bộ — REST, gRPC & Resilience` (mô tả scope)
+- ❌ `API Gateway — Cổng vào duy nhất` (dịch nghĩa thuật ngữ)
+
 ### Bảng thuật ngữ chuẩn
 
 | English | Cách dùng trong sách | KHÔNG dùng |
 |---|---|---|
 | Microservice | microservice / dịch vụ vi mô (lần đầu) | micro-service, micro service |
 | Service | service | dịch vụ (trừ khi giải thích) |
-| API Gateway | API Gateway | cổng API |
+| API Gateway | API Gateway | cổng API, cổng vào |
 | Bounded Context | Bounded Context | ngữ cảnh giới hạn |
 | Event-driven | hướng sự kiện (event-driven) | |
 | Message broker | message broker | trung gian thông điệp |
@@ -69,6 +84,13 @@
 | Container | container | thùng chứa |
 | Orchestration | orchestration | điều phối |
 | Choreography | choreography | biên đạo |
+| Circuit Breaker | Circuit Breaker | cầu dao |
+| Bulkhead | Bulkhead | vách ngăn |
+| Event Sourcing | Event Sourcing | |
+| Dead Letter Topic/Queue | Dead Letter Topic (DLT) | hàng đợi thư chết |
+| Strangler Fig | Strangler Fig pattern | |
+| Rate Limiting | rate limiting | giới hạn tốc độ |
+| Idempotency | idempotency / idempotent | tính lũy đẳng |
 
 > **Lưu ý:** Bảng này được bổ sung khi viết từng chương. Khi gặp thuật ngữ mới, thêm vào đây trước khi dùng.
 

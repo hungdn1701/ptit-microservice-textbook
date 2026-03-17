@@ -127,9 +127,10 @@ message JudgeResult {
 
 ## 4.2 OpenFeign — Declarative REST Client
 
-### Vấn đề: boilerplate HTTP calls
+### Vấn đề: gọi service khác không đơn giản như gọi hàm
 
-Khi service A cần gọi service B qua REST, developer thường phải viết code dạng:
+Trong monolith, gọi module khác là một dòng code: `judgeService.execute(request)`. Trong microservices, cùng logic đó trở thành: xây dựng HTTP request, serialize payload, gắn headers (JWT token), gửi qua network, xử lý response codes, deserialize result, handle timeout/error. Mỗi inter-service call đều mang chi phí này — và khi có 10+ API calls, boilerplate trở nên khó bảo trì:
+
 
 ```java
 // ❌ Manual REST call — verbose, fragile
@@ -460,6 +461,14 @@ public JudgeResult judgeFallback(JudgeRequest request, Throwable t) {
 > **📐 Nguyên tắc — Sync → Async là hành trình phổ biến**
 >
 > Nhiều hệ thống bắt đầu với sync (đơn giản, dễ debug) rồi chuyển sang async khi cần scale. Richardson trong [2a] minh họa hành trình này: bắt đầu với REST calls giữa services, sau đó chuyển sang Saga khi cần distributed transaction. LMS đang ở giữa hành trình: một số flow đã async (Kafka cho submission), một số vẫn sync (Feign cho query). Chương 5 sẽ tiếp tục phần async.
+
+---
+
+> **⚠️ Sai lầm thường gặp**
+>
+> 1. **Không đặt timeout cho inter-service calls** — Mặc định nhiều HTTP client chờ vô hạn (hoặc 30-60 giây). Hậu quả: khi service downstream chậm, threads caller bị block → cascading failure lan khắp hệ thống. *Phòng tránh*: luôn cấu hình timeout rõ ràng (Netflix chuẩn: 1-3 giây cho internal calls).
+> 2. **Tin tưởng rằng network luôn reliable** — Viết code như thể mọi HTTP call đều thành công. Hậu quả: lỗi đầu tiên ở production mới phát hiện không có retry, không fallback. *Phòng tránh*: áp dụng resilience patterns từ đầu (Circuit Breaker + Retry + Timeout) — ngay cả khi chưa cần scale (§4.4).
+> 3. **Retry mà không kiểm tra idempotency** — Retry POST requests tạo duplicate data (hai submissions cho cùng một lần nộp). Hậu quả: dữ liệu sai, user bị tính điểm trùng. *Phòng tránh*: chỉ retry idempotent operations (GET, PUT, DELETE), hoặc dùng idempotency key cho POST.
 
 ---
 

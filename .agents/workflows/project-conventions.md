@@ -83,3 +83,7 @@ After completing each chapter draft:
 - Trong sách: gọi case study là **"hệ thống LMS"** hoặc **"LMS"** (viết tắt)
 - KHÔNG dùng tên nội bộ "DBLAB" trong nội dung chương
 - Tên dự án nội bộ chỉ dùng trong cấu hình, scripts, và tài liệu kỹ thuật nội bộ
+
+## Intermediate Documents & Analysis
+- **Lưu trữ tài liệu phân tích:** Các tài liệu phân tích, bảng so sánh, hoặc kết quả trích xuất cần được lưu trực tiếp vào thư mục dự án (ví dụ: `references/` hoặc `docs/`) thay vì chỉ để ở bộ nhớ tạm của AI (Artifacts).
+- Điều này giúp tác giả dễ dàng tham chiếu, theo dõi và phục vụ cho viết lách về sau.

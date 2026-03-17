@@ -7,236 +7,217 @@
 
 ## Bạn sẽ học được gì
 
-- Hiểu nguyên tắc Database-per-Service và data ownership
-- Nắm vững các chiến lược tách database từ monolith
-- Phân tích trade-off giữa data duplication và coupling
-- Hiểu CQRS (Command Query Responsibility Segregation) và khi nào nên áp dụng
-- Nắm overview Event Sourcing — ưu/nhược và khi nào cần
-- Phân tích vấn đề shared database trong LMS và đề xuất migration
+- Hiểu nguyên tắc **database-per-service** và tại sao data ownership là nền tảng của microservices
+- Nắm được các chiến lược tách database từ monolith — từ shared database đến database-per-service
+- Phân biệt khi nào data duplication là chấp nhận được và khi nào nó là vấn đề
+- Hiểu CQRS (Command Query Responsibility Segregation) và khi nào nó cần thiết
+- Nắm tổng quan Event Sourcing — ưu/nhược điểm và khi nào nên áp dụng
+- Phân tích bài toán cross-service queries trong hệ thống LMS
 
 ---
 
 ## 7.1 Database-per-Service — Nguyên tắc Data Ownership
 
-### Từ Shared Database đến Data Ownership
+### Vấn đề: shared database phá vỡ service independence
 
-Trong monolith, tất cả modules truy cập chung một database. Khi chuyển sang microservices, một trong những quyết định quan trọng nhất là: **mỗi service sở hữu database riêng** [4a, Ch.5].
+Trong monolith, toàn bộ ứng dụng truy cập một database duy nhất — đơn giản, nhất quán, và transactions ACID hoạt động tự nhiên. Khi chuyển sang microservices, nhiều team giữ nguyên shared database vì "tiện" — mọi service vẫn đọc/ghi cùng bảng. Thoạt nhìn, đây có vẻ là giải pháp tốt: không cần thay đổi data layer, không cần xử lý eventual consistency.
+
+Tuy nhiên, bài toán data trong distributed systems bị ràng buộc bởi một giới hạn lý thuyết quan trọng — **CAP Theorem** (Consistency, Availability, Partition tolerance): trong hệ thống phân tán, khi network partition xảy ra, bạn chỉ có thể chọn *hoặc* consistency *hoặc* availability, không thể có cả hai [7, Ch.9]. Newman trong [4a, Ch.11] giải thích: đây là lý do tại sao microservices buộc phải chấp nhận eventual consistency — và tại sao thiết kế data management cần cân nhắc kỹ trade-offs giữa consistency và availability cho *từng use case cụ thể*.
+
+Shared database **phá vỡ nguyên lý cốt lõi nhất** của microservices: independent deployability. Newman trong [4b, Ch.4] phân tích ba hậu quả nghiêm trọng:
 
 ```mermaid
 graph TB
-    subgraph Shared["❌ Shared Database (Anti-pattern)"]
-        S1["Service A"] --> DB1["Shared DB"]
-        S2["Service B"] --> DB1
-        S3["Service C"] --> DB1
+    subgraph Problem["Shared Database — Hậu quả"]
+        P1["🔗 Schema coupling\n\nThay đổi bảng X\nảnh hưởng SERVICE A,\nSERVICE B, SERVICE C"] 
+        P2["🚫 Deploy coupling\n\nMigrate schema =\ndeploy tất cả services\ncùng lúc"]
+        P3["📊 Scale coupling\n\nKhông thể scale\nDB cho riêng một service"]
     end
     
-    subgraph Owned["✅ Database-per-Service"]
-        S4["Service A"] --> DB2["DB A"]
-        S5["Service B"] --> DB3["DB B"]
-        S6["Service C"] --> DB4["DB C"]
+    style P1 fill:#FFCDD2
+    style P2 fill:#FFCDD2
+    style P3 fill:#FFCDD2
+```
+
+**1. Schema coupling** — Khi hai service đọc cùng bảng `users`, thay đổi schema (đổi tên cột, thêm constraint) ảnh hưởng cả hai. Mỗi database migration trở thành cross-team coordination exercise — chính xác vấn đề mà microservices muốn loại bỏ.
+
+**2. Deploy coupling** — Database migration phải deploy cùng với tất cả services sử dụng bảng đó. Nếu Service A cần thêm cột vào `users`, Service B phải update code để handle cột mới *trước khi* migration chạy — dù Service B không cần cột đó.
+
+**3. Scale coupling** — Không thể chọn database technology phù hợp nhất cho từng service. Service yêu cầu full-text search (Elasticsearch) và service yêu cầu ACID transactions (PostgreSQL) bị buộc dùng chung — hoặc phải dùng giải pháp hybrid phức tạp.
+
+### Database-per-service pattern
+
+Nguyên tắc **database-per-service** yêu cầu: mỗi service sở hữu dữ liệu riêng, và **dữ liệu đó chỉ có thể truy cập qua API** của service sở hữu — không bao giờ truy cập trực tiếp vào database của service khác [2a, Ch.2].
+
+```mermaid
+graph TB
+    subgraph Wrong["❌ Shared Database"]
+        SA1["Service A"] --> DB1["Shared DB"]
+        SB1["Service B"] --> DB1
+        SC1["Service C"] --> DB1
+    end
+    
+    subgraph Right["✅ Database-per-Service"]
+        SA2["Service A"] --> DBA["DB A"]
+        SB2["Service B"] --> DBB["DB B"]
+        SC2["Service C"] --> DBC["DB C"]
+        SB2 -.->|"API call"| SA2
     end
     
     style DB1 fill:#FFCDD2
-    style DB2 fill:#C8E6C9
-    style DB3 fill:#C8E6C9
-    style DB4 fill:#C8E6C9
+    style DBA fill:#C8E6C9
+    style DBB fill:#C8E6C9
+    style DBC fill:#C8E6C9
 ```
 
-### Tại sao cần tách?
+"Database riêng" không nhất thiết là database server riêng. Có ba cấp độ tách:
 
-Newman trong [4a, Ch.5] phân tích 5 lý do chính:
+| Cấp độ | Mô tả | Isolation | Chi phí |
+|--------|-------|-----------|---------|
+| **Separate schema** | Cùng DB server, khác schema/namespace | Thấp (vẫn có thể cross-schema query) | Thấp |
+| **Separate database** | Cùng DB server, khác database | Trung bình | Thấp |
+| **Separate server** | Khác DB server hoàn toàn | Cao (polyglot possible) | Cao |
 
-| Lý do | Mô tả | Ảnh hưởng nếu không tách |
-|-------|-------|--------------------------|
-| **Loose coupling** | Services không phụ thuộc vào schema nội bộ của nhau | Thay đổi schema một service → break service khác |
-| **Independent deployment** | Deploy service A không cần quan tâm service B | Schema migration chung → coordinate deploy tất cả services |
-| **Technology freedom** | Mỗi service chọn DB phù hợp (SQL, NoSQL, graph) | Tất cả bị ép dùng cùng technology |
-| **Scalability** | Scale database theo nhu cầu riêng | Scale shared DB cho toàn bộ — tốn kém |
-| **Fault isolation** | DB Service A down ≠ Service B down | Shared DB down → toàn bộ system down |
+Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hiện tại, **separate schema** là bước đầu tiên hợp lý — chi phí thấp nhưng ngăn được schema coupling ngầm.
 
-### Quy tắc data ownership
-
-> **📐 Nguyên tắc — Data Ownership Rule**
+> **📐 Nguyên tắc — Data Should Be Owned, Not Shared**
 >
-> Mỗi piece of data phải có **đúng một service** sở hữu nó. Service khác muốn đọc → gọi API hoặc subscribe event. Service khác muốn thay đổi → gửi command đến service sở hữu. **KHÔNG** truy cập trực tiếp database của service khác [4a, Ch.5].
-
-Trong LMS context:
-
-| Data | Service sở hữu | Ai cần đọc? |
-|------|----------------|-------------|
-| Question, TestCase | Core Service | Judge Service (để chấm), Frontend |
-| Submission, Score | Core Service | Judge Service (kết quả), Notification, Frontend |
-| Course, Assignment | Assignment Service | Core Service (link bài tập), Frontend |
-| User, Authentication | Auth Service | Tất cả services (JWT validation) |
-| Judge Result, Execution Log | Judge Service | Core Service (cập nhật score) |
-
-> **🔍 Phân tích gap — LMS dùng Shared Database**
+> "If a service wants to access data held by another service, it should go and ask that service for the data it needs. And the service exposing the data should decide what to expose and what to hide."
 >
-> LMS hiện tại vi phạm nguyên tắc data ownership: tất cả backend services (Core, Assignment, Auth, Judge) đều kết nối vào **cùng một PostgreSQL instance**. Hệ quả: (1) Core Service có thể đọc trực tiếp bảng `users` của Auth mà không qua API, (2) Assignment Service dùng chung schema với Core — thay đổi bảng `questions` có thể break Assignment, (3) không thể scale database riêng cho Judge (high-load khi contest). **Migration path**: xem §7.2.
+> *— Sam Newman, Monolith to Microservices [4b]*
+
+> **🔍 Phân tích gap — LMS shared database**
+>
+> Hệ thống LMS sử dụng **shared database** (`app_db`) giữa Core Service và Assignment Service — cả hai service đọc/ghi cùng PostgreSQL instance, có khả năng truy cập chéo bảng. Đây là hậu quả trực tiếp của việc Assignment được tách ra từ Core (cả hai ban đầu là một monolith `app`). Hậu quả: thay đổi schema cho Assignment có thể ảnh hưởng Core, và ngược lại — phá vỡ independent deployability.
+>
+> **Migration path**: (1) xác định bảng nào thuộc về Core, bảng nào thuộc Assignment (dựa vào bounded context analysis từ Ch.2), (2) tạo separate schema trong cùng PostgreSQL, (3) thay thế cross-table queries bằng API calls qua Feign, (4) dài hạn: tách database server khi cần polyglot hoặc independent scaling.
 
 ---
 
 ## 7.2 Chiến lược tách Database từ Monolith
 
-### Khi nào nên tách?
+### Vấn đề: tách service dễ, tách data khó
 
-Newman trong [4a, Ch.5] khuyến nghị: **tách schema trước, tách service sau**. Quy trình:
+Nhiều team tách microservices ở tầng application (deploy riêng, repo riêng) nhưng vẫn **trỏ vào cùng database**. Newman trong [4b] gọi đây là "half-baked migration" — nửa vời. Service đã "tách" nhưng data vẫn coupled — lợi ích independent deployability gần như bằng 0.
 
-```mermaid
-graph LR
-    A["Monolith + Shared DB"] -->|"Bước 1"| B["Tách schema<br/>(logical separation)"]
-    B -->|"Bước 2"| C["Tách service code<br/>(separate deployable)"]
-    C -->|"Bước 3"| D["Tách database server<br/>(physical separation)"]
-    
-    style A fill:#FFCDD2
-    style B fill:#FFF9C4
-    style C fill:#E3F2FD
-    style D fill:#C8E6C9
-```
+Tách database là **bước khó nhất** trong hành trình từ monolith sang microservices. Kleppmann trong [7, Ch.5–6] phân tích: khi data nằm ở nhiều nơi, mọi vấn đề của distributed systems xuất hiện — replication lag, partition tolerance, consistency trade-offs. Đây là chi phí không thể tránh.
 
-**Bước 1: Logical separation** — Mỗi service chỉ truy cập tables thuộc về mình. Tạo separate schemas trong cùng DB. Tìm và loại bỏ cross-schema joins.
+### Năm chiến lược tách database
 
-**Bước 2: Code separation** — Tách repository layer: Service A chỉ có repository cho tables của A. Cross-service data access phải qua API.
-
-**Bước 3: Physical separation** — Mỗi service có database server riêng. Đây là bước tốn kém nhất nhưng mang lại fault isolation thực sự.
-
-### Xử lý shared tables
-
-Khi tách database, ba tình huống thường gặp:
-
-**1. Table thuộc rõ ràng một service** — Dễ: chuyển table về schema của service đó.
-
-**2. Table được nhiều services tham chiếu (foreign key)** — Thay FK bằng service-level ID:
-```java
-// ❌ Trước: Foreign key trực tiếp
-@Entity
-public class Submission {
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;  // FK → users table (thuộc Auth Service)
-}
-
-// ✅ Sau: Store ID, query qua API khi cần
-@Entity
-public class Submission {
-    @Column(name = "user_id")
-    private UUID userId;  // Chỉ lưu ID, không FK
-    
-    // Khi cần user info → gọi Auth Service API
-}
-```
-
-**3. Table được nhiều services ghi** — Phức tạp nhất. Cần xác định service nào *sở hữu* data, services khác gửi command.
-
-### Áp dụng cho LMS
-
-| Bước | Hành động | Effort | Priority |
-|------|----------|--------|----------|
-| 1 | Tạo separate PostgreSQL schemas: `core`, `assignment`, `auth`, `judge` | Trung bình | Cao |
-| 2 | Loại bỏ cross-schema JOINs — thay bằng Feign calls (đã có sẵn một phần) | Cao | Cao |
-| 3 | Tách thành separate PostgreSQL instances (hoặc separate databases) | Cao | Thấp (khi cần scale) |
-
-> **💡 Tip — Bắt đầu từ schema rõ ràng nhất**
->
-> Newman khuyến nghị [4a, Ch.5]: bắt đầu tách từ service có *ranh giới rõ ràng nhất*. Trong LMS, **Auth Service** là ứng viên lý tưởng — tables `users`, `roles`, `tokens` không overlap với business logic. Tiếp theo là Judge Service — execution logs và sandbox data hoàn toàn isolate.
-
----
-
-## 7.3 Data Duplication vs Coupling
-
-### Khi nào chấp nhận duplicate data?
-
-Khi mỗi service có database riêng, câu hỏi xuất hiện ngay: "Assignment Service cần tên sinh viên để hiện trong danh sách enrollment — lấy từ đâu?"
-
-Hai cách tiếp cận:
-
-**Cách 1: Call API** — Assignment gọi Auth Service API mỗi khi cần userName.
-```
-GET /api/users/{userId} → { "name": "Nguyễn Văn A", ... }
-```
-- ✅ Không duplicate data
-- ❌ Runtime dependency: Auth down → Assignment không hiện được tên
-- ❌ Latency: N+1 queries nếu danh sách có 100 sinh viên
-
-**Cách 2: Duplicate data** — Assignment lưu copy của userName trong bảng `enrollment`.
-```sql
--- Assignment Service database
-CREATE TABLE enrollment (
-    id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
-    user_name VARCHAR(255),  -- duplicated from Auth
-    course_id UUID NOT NULL,
-    enrolled_at TIMESTAMP
-);
-```
-- ✅ Không phụ thuộc Auth Service tại runtime
-- ✅ Nhanh — query local
-- ❌ Data có thể stale (user đổi tên nhưng enrollment chưa cập nhật)
-
-### Giải pháp: Event-driven data synchronization
-
-Kết hợp cả hai bằng **domain events** [5, Ch.3]:
-
-```mermaid
-sequenceDiagram
-    participant AS as Auth Service
-    participant K as Kafka
-    participant ES as Assignment Service
-    
-    Note over AS: User đổi tên
-    AS->>AS: UPDATE users SET name = 'Nguyễn Văn B'
-    AS->>K: UserUpdated event
-    
-    K->>ES: Consume event
-    ES->>ES: UPDATE enrollment SET user_name = 'Nguyễn Văn B' WHERE user_id = ...
-```
-
-| Strategy | Khi nào dùng | Trade-off |
-|----------|-------------|-----------|
-| **Call API** | Data thay đổi liên tục + luôn cần latest | Runtime coupling, latency |
-| **Duplicate + Events** | Data ít thay đổi + OK với eventual consistency | Storage, sync logic |
-| **Cache + TTL** | Data ít thay đổi + short staleness OK | Cache invalidation complexity |
-
-> **📐 Nguyên tắc — Duplication > Coupling**
->
-> Newman trong [4b] nhấn mạnh: "Duplication is far better than coupling." Duplicate data là trade-off có chủ đích — chấp nhận eventual consistency để đổi lấy loose coupling và availability. Trong LMS, userName và courseTitle là ứng viên lý tưởng cho duplication — thay đổi hiếm, staleness 10 giây không ảnh hưởng business.
-
----
-
-## 7.4 Cross-service Queries — API Composition
-
-### Bài toán
-
-Trước đây trong monolith, một query đơn giản:
-```sql
--- Hiện danh sách "submission + user info + question title"
-SELECT s.*, u.name, q.title
-FROM submissions s
-JOIN users u ON s.user_id = u.id
-JOIN questions q ON s.question_id = q.id
-WHERE s.contest_id = ?
-```
-
-Khi tách database-per-service: `submissions` (Core), `users` (Auth), `questions` (Core) — query JOIN cross-service không thể chạy.
-
-### Pattern: API Composition
-
-Richardson trong [2a, Ch.7] đề xuất **API Composition** — một service (hoặc API Gateway) gọi nhiều services rồi kết hợp kết quả:
+Newman đề xuất năm chiến lược, sắp xếp từ ít rủi ro đến nhiều rủi ro [4b, Ch.4]:
 
 ```mermaid
 graph TB
-    Client["Client"] --> Composer["API Composer<br/>(Core Service/Gateway)"]
-    Composer --> CS["Core Service<br/>GET /submissions?contest=X"]
-    Composer --> AS["Auth Service<br/>GET /users?ids=1,2,3"]
-    Composer --> QS["Core Service<br/>GET /questions?ids=4,5,6"]
+    V["Database View\n(read-only projection)"] --> W["Database Wrapping\nService\n(API trước DB)"]
+    W --> S["Separate Schema\n(namespace isolation)"]
+    S --> T["Data Transfer\n(sync/async copy)"]
+    T --> D["Full Database\nSplit\n(independent DBs)"]
     
-    Composer -->|"Combine results"| Client
+    V -.- L1["Rủi ro: Thấp\nEffort: Thấp"]
+    D -.- L5["Rủi ro: Cao\nEffort: Cao"]
     
-    style Composer fill:#FFF9C4
+    style V fill:#C8E6C9
+    style W fill:#E8F5E9
+    style S fill:#FFF9C4
+    style T fill:#FFE0B2
+    style D fill:#FFCDD2
 ```
 
+**1. Database View** — Tạo view read-only cho service mới, ẩn schema gốc. Ưu điểm: không thay đổi data, service cũ không bị ảnh hưởng. Nhược điểm: chỉ read-only, vẫn coupled vào schema.
+
+**2. Database Wrapping Service** — Đặt một API đơn giản phía trước database, mọi access đi qua API này. Ưu điểm: bắt đầu tách coupling mà không di chuyển data. Nhược điểm: thêm một service cần maintain.
+
+**3. Separate Schema** — Tách bảng vào schema/namespace riêng trong cùng database. Ưu điểm: isolation rõ ràng, không cần infra mới. Nhược điểm: cùng DB server → vẫn shared resources.
+
+**4. Data Transfer** — Copy data sang database mới, giữ sync bằng events hoặc CDC (Change Data Capture). Ưu điểm: service mới có data riêng. Nhược điểm: cần cơ chế sync, eventual consistency.
+
+**5. Full Database Split** — Mỗi service có database server hoàn toàn riêng. Ưu điểm: isolation tối đa, polyglot possible. Nhược điểm: effort lớn, phải xử lý mọi cross-service data access.
+
+### Áp dụng cho LMS
+
+Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợp nhất là **incremental**:
+
+| Phase | Chiến lược | Mô tả | Effort |
+|-------|-----------|-------|--------|
+| 1 | **Separate Schema** | Tách `app_db` thành schema `core` và schema `assignment` | Thấp |
+| 2 | **API Wrapping** | Thay cross-schema queries bằng Feign calls | Trung bình |
+| 3 | **Full Split** (nếu cần) | Tách PostgreSQL server khi cần independent scaling | Cao |
+
+> **💡 Tip — Khi nào đủ?**
+>
+> Không phải hệ thống nào cũng cần đến Phase 3. Với LMS, Phase 1 (separate schema) đã ngăn được schema coupling ngầm. Phase 2 (API wrapping) cần khi team mở rộng và cần deploy độc lập thực sự. Phase 3 chỉ cần khi có yêu cầu scale khác nhau hoặc polyglot persistence.
+
+---
+
+## 7.3 Data Duplication vs Coupling — Khi nào chấp nhận duplicate?
+
+### Vấn đề: cần data từ service khác
+
+Sau khi tách database, vấn đề tiếp theo lập tức xuất hiện: **service A cần data mà service B sở hữu**. Ví dụ trong LMS: Assignment Service cần hiển thị tên sinh viên — nhưng `users` thuộc về Auth Service. Gọi Auth API mỗi lần cần tên? Lưu copy tên sinh viên tại Assignment?
+
+Mitra trong [3, Ch.5] phân tích ba giải pháp, mỗi cách có trade-off riêng:
+
+### Ba chiến lược truy cập data xuyên service
+
+**1. API Call (Runtime dependency)**
+
+```mermaid
+sequenceDiagram
+    participant AS as Assignment Service
+    participant AUTH as Auth Service
+    
+    AS->>AUTH: GET /users/{id}
+    AUTH-->>AS: {name: "Nguyen Van A", ...}
+    AS->>AS: Hiển thị assignment + tên student
+```
+
+| Ưu điểm | Nhược điểm |
+|---------|------------|
+| Data luôn mới nhất | Temporal coupling: Auth down → Assignment không hiển thị được tên |
+| Không duplicate | Latency tăng: mỗi request = thêm 1 network call |
+| Đơn giản | N+1 problem: hiển thị 50 students = 50 API calls |
+
+**2. Data Duplication (Local copy)**
+
+```mermaid
+sequenceDiagram
+    participant AUTH as Auth Service
+    participant K as Kafka
+    participant AS as Assignment Service
+    
+    Note over AUTH: User updated
+    AUTH->>K: UserUpdated event
+    K->>AS: Consume event
+    AS->>AS: Lưu copy: user_id, name, email
+    
+    Note over AS: Khi cần hiển thị
+    AS->>AS: Query local copy (nhanh!)
+```
+
+| Ưu điểm | Nhược điểm |
+|---------|------------|
+| Không runtime dependency | Data có thể stale (eventual consistency) |
+| Query nhanh (local) | Cần event pipeline để sync |
+| Dùng được khi Auth down | Storage tăng (duplicate data) |
+
+**3. API Composition / Data Aggregation**
+
+Dùng khi cần join data từ nhiều services. Một service (hoặc API Gateway) gọi nhiều services rồi tổng hợp. Richardson trong [2a, Ch.7] gọi đây là **API Composition pattern**:
+
+```mermaid
+graph LR
+    CLIENT["Client"] --> COMP["API Composer\n(Gateway hoặc\nBFF)"]
+    COMP --> SA["Service A\n(student data)"]
+    COMP --> SB["Service B\n(assignment data)"]
+    COMP --> SC["Service C\n(grade data)"]
+    COMP --> CLIENT
+    
+    style COMP fill:#FFF9C4
+```
+
+Ví dụ minh họa API Composition bằng code Java:
+
 ```java
-// API Composition trong Core Service
 @Service
 public class ContestLeaderboardService {
     private final SubmissionRepository submissionRepo;
@@ -245,11 +226,12 @@ public class ContestLeaderboardService {
     public List<LeaderboardEntry> getLeaderboard(UUID contestId) {
         List<Submission> submissions = submissionRepo.findByContestId(contestId);
         
-        // Batch fetch user info (avoid N+1)
+        // Batch fetch user info để tránh N+1 problem
         Set<UUID> userIds = submissions.stream()
             .map(Submission::getUserId).collect(Collectors.toSet());
         Map<UUID, UserInfo> users = authClient.getUsersByIds(userIds);
         
+        // Kết hợp dữ liệu (In-memory join)
         return submissions.stream()
             .map(s -> LeaderboardEntry.builder()
                 .userName(users.get(s.getUserId()).getName())
@@ -262,305 +244,373 @@ public class ContestLeaderboardService {
 }
 ```
 
-### LMS hiện tại: interfaceProjection + Feign
 
-LMS đang dùng `interfaceProjection/` — Spring JPA projections kết hợp Feign calls:
+### Khi nào chấp nhận duplication?
 
-```java
-// Projection interface — chỉ lấy fields cần thiết
-public interface SubmissionProjection {
-    UUID getId();
-    UUID getUserId();
-    String getSqlContent();
-    Integer getScore();
-    LocalDateTime getCreatedAt();
-}
-```
+Newman trong [4b] đưa ra nguyên tắc rõ ràng: **"Duplication is far better than coupling."** Tuy nhiên, đây không phải giấy phép duplicate mọi thứ. Quy tắc:
 
-Đây là approach hợp lý cho reads đơn giản, nhưng gặp vấn đề khi query phức tạp (filtering, sorting cross-service fields, pagination).
+| Data | Nên duplicate? | Lý do |
+|------|---------------|-------|
+| **Reference data** (tên user, tên khóa học) | ✅ Có | Ít thay đổi, cần hiển thị ở nhiều nơi |
+| **Transactional data** (điểm số, trạng thái submission) | ❌ Không | Thay đổi liên tục, cần single source of truth |
+| **Configuration** (loại database, danh mục) | ✅ Có | Gần như static, cache tốt |
+| **Audit data** (lịch sử thay đổi) | ⚠️ Tùy | Duplicate cho reporting OK, nhưng master ở source |
 
-| Vấn đề | Hiện trạng | Cải thiện |
-|--------|-----------|----------|
-| **N+1 queries** | Core gọi Auth cho từng userId | Batch fetch: `GET /users?ids=1,2,3` |
-| **Cross-service sort** | Không sort được theo userName (Auth) | Duplicate userName trong Core hoặc sort client-side |
-| **Cross-service filter** | Không filter "submissions by course" (Assignment) | Duplicate courseId hoặc API composition |
-| **Pagination** | Pagination trên kết quả merged | Phức tạp — cân nhắc CQRS (§7.5) |
+> **📐 Nguyên tắc — Single Source of Truth**
+>
+> Duplication is acceptable *only when* there is a clear **single source of truth**. Service A owns the data, Service B holds a copy. When data changes, the change flows from A → B (via events), never B → A. Nếu không rõ "ai sở hữu data này?", đó là tín hiệu bounded context chưa rõ ràng — quay lại Ch.2.
+
+> **🔍 Phân tích gap — Cross-service queries trong LMS**
+>
+> Hệ thống LMS hiện dùng **Feign calls** để query dữ liệu xuyên service — ví dụ: Assignment Service gọi Core Service để lấy danh sách câu hỏi. Đây là API call pattern (chiến lược 1). Với quy mô hiện tại (vài trăm students, request thấp), cách này chấp nhận được. Tuy nhiên, trong contest mode (100+ students, liên tục query), mỗi page load có thể trigger 5-10 Feign calls → latency tăng đáng kể.
+>
+> **Migration path**: (1) identify data nào Assignment cần *hiển thị* từ Core (chủ yếu reference data: tên câu hỏi, tên cuộc thi), (2) duplicate reference data qua Kafka events (UserUpdated, QuestionUpdated), (3) giữ Feign calls cho transactional queries (kiểm tra điểm real-time).
 
 ---
 
-## 7.5 CQRS — Command Query Responsibility Segregation
+## 7.4 CQRS — Command Query Responsibility Segregation
 
-### Vấn đề mà CQRS giải quyết
+### Từ CQS đến CQRS
 
-API Composition (§7.4) hoạt động cho queries đơn giản. Nhưng khi LMS cần:
-- Leaderboard real-time với ranking, total score, submission count — aggregation cross-service
-- Search submissions theo userName, questionTitle, courseName — filter cross-service
-- Dashboard với statistics from nhiều services
+Trước khi nói về CQRS, cần hiểu nguồn gốc. Bertrand Meyer đề xuất **CQS** (Command Query Separation) như một nguyên tắc thiết kế *ở cấp độ method*: mỗi method hoặc trả về dữ liệu (query, không thay đổi state) hoặc thay đổi state (command, không trả về dữ liệu) — nhưng không làm cả hai. Rocha trong [5, §4.5.1] phân biệt rõ: **CQS là nguyên tắc ở cấp single-service/single-class**, còn **CQRS mở rộng nguyên tắc này lên cấp kiến trúc hệ thống** — tách hẳn *model* (thậm chí *database*) cho read và write. CQRS không bắt buộc phải có CQS, nhưng tinh thần tương tự: tách biệt trách nhiệm đọc và ghi.
 
-Mỗi query phải gọi 3-4 services, combine results, rồi sort/filter/paginate — **chậm và phức tạp**.
+### Vấn đề: cùng model cho read và write không đủ
 
-### CQRS Pattern
+Trong monolith, cùng một entity `Submission` phục vụ cả hai mục đích:
+- **Write**: nộp bài (INSERT), cập nhật kết quả (UPDATE)
+- **Read**: hiển thị lịch sử (SELECT nhiều cột, JOIN nhiều bảng, pagination, filtering)
 
-Richardson trong [2a, Ch.7] đề xuất **CQRS**: tách hệ thống thành hai phía:
+Yêu cầu read và write khác nhau cơ bản. Write cần **consistency**, validation, business rules. Read cần **performance**, denormalized data, flexible queries. Khi hệ thống phức tạp, một model duy nhất phải thỏa hiệp cả hai — và thường không tối ưu cho bên nào [2a, Ch.7].
+
+Richardson trong [2a, Ch.7] mô tả vấn đề này đặc biệt nghiêm trọng khi cần **cross-service queries**: hiển thị bảng xếp hạng contest (data từ Core + Judge + Auth) bằng một query duy nhất — *không thể* khi data nằm ở nhiều databases.
+
+### CQRS pattern
+
+**CQRS** (Command Query Responsibility Segregation) tách model thành hai phần riêng biệt [2a, Ch.7]:
 
 ```mermaid
 graph TB
-    subgraph Command["Command Side (Write)"]
-        CS1["Core Service"] -->|"write"| DB1["Core DB"]
-        CS2["Auth Service"] -->|"write"| DB2["Auth DB"]
-        CS3["Judge Service"] -->|"write"| DB3["Judge DB"]
-    end
+    CLIENT["Client"] 
     
-    DB1 -->|"events"| K["Kafka"]
-    DB2 -->|"events"| K
-    DB3 -->|"events"| K
+    CLIENT -->|"POST /submissions\n(write)"| CMD["Command Model\n(write-optimized)"]
+    CLIENT -->|"GET /leaderboard\n(read)"| QRY["Query Model\n(read-optimized)"]
     
-    subgraph Query["Query Side (Read)"]
-        K -->|"consume"| QS["Query Service"]
-        QS -->|"update"| QDB["Query DB<br/>(denormalized,<br/>optimized for reads)"]
-    end
+    CMD -->|"Normalize: đúng entity,\nstrong validation"| WDB["Write DB\n(PostgreSQL)"]
     
-    Client1["Admin Dashboard"] -->|"write"| CS1
-    Client2["Leaderboard UI"] -->|"read"| QS
+    WDB -->|"Event: SubmissionJudged"| SYNC["Event Pipeline\n(Kafka)"]
+    SYNC -->|"Denormalize: join sẵn,\npre-computed"| RDB["Read DB\n(có thể khác tech)"]
     
-    style Command fill:#FFEBEE
-    style Query fill:#E8F5E9
+    QRY --> RDB
+    
+    style CMD fill:#E3F2FD
+    style QRY fill:#E8F5E9
+    style WDB fill:#BBDEFB
+    style RDB fill:#C8E6C9
+    style SYNC fill:#FFF9C4
 ```
 
-**Command side**: mỗi service ghi vào DB riêng — normalized, optimized for writes.
+**Command side** (write):
+- Normalized data model (đúng 3NF)
+- Strong validation, business rules
+- Database: PostgreSQL (ACID transactions)
 
-**Query side**: một read model riêng — denormalized, chứa data đã được "join" sẵn, optimized for reads.
+**Query side** (read):
+- Denormalized, pre-joined views
+- Tối ưu cho specific query patterns
+- Database: có thể khác technology (Elasticsearch cho search, Redis cho leaderboard, PostgreSQL materialized view cho reports)
 
 ### Khi nào cần CQRS?
 
-| Scenario | CQRS cần thiết? | Giải pháp đơn giản hơn |
-|----------|-----------------|----------------------|
-| Query đơn giản, ít cross-service | ❌ Chưa cần | API Composition |
-| Query phức tạp, nhiều cross-service | ✅ Cần | CQRS read model |
-| Write-heavy, read-light | ❌ Chưa cần | Standard CRUD |
-| Read-heavy, write-light | ✅ Có lợi | CQRS read model |
-| Cần aggregation real-time | ✅ Rất cần | CQRS + stream processing |
+CQRS thêm complexity đáng kể — **đừng dùng khi không cần** [5, §4.5]:
 
-### Áp dụng cho LMS: Leaderboard Read Model
+| Scenario | Cần CQRS? | Lý do |
+|----------|-----------|-------|
+| Read/write ratio cân bằng, cùng model | ❌ Không | CRUD đơn giản là đủ |
+| Read phức tạp (cross-service join) | ✅ Có | Query model denormalized giải quyết join |
+| Read volume >> Write volume | ✅ Có | Scale read model độc lập |
+| UI cần real-time views (leaderboard) | ✅ Có | Pre-computed views nhanh hơn |
+| Team nhỏ, MVP phase | ❌ Không | Complexity tax quá cao cho lợi ích |
 
-Ví dụ cụ thể: Contest Leaderboard — cần data từ Core (submissions, scores), Auth (userNames), và Assignment (courseInfo):
+### Ví dụ: Leaderboard trong Contest Mode
 
-```java
-// Query DB: Denormalized leaderboard table
-@Entity
-@Table(name = "leaderboard_view")
-public class LeaderboardView {
-    @Id
-    private UUID contestId;
-    private UUID userId;
-    private String userName;        // from Auth (duplicated)
-    private int totalScore;         // aggregated from submissions
-    private int submissionCount;
-    private LocalDateTime lastSubmittedAt;
-    
-    // Pre-computed, query-ready — no JOINs needed
-}
+Trong LMS, bảng xếp hạng contest cần join data từ nhiều nguồn:
+
+```sql
+-- ❌ Cross-service query (không thể trong database-per-service)
+SELECT u.name, s.score, s.submitted_at, q.title
+FROM users u                           -- Auth Service DB
+JOIN submissions s ON u.id = s.user_id -- Core Service DB
+JOIN questions q ON s.question_id = q.id -- Core Service DB
+WHERE s.contest_id = ?
+ORDER BY s.score DESC, s.submitted_at ASC;
 ```
 
+Với CQRS, leaderboard có **read model riêng**:
+
 ```java
-// Consumer: cập nhật leaderboard khi có submission mới
+// ✅ CQRS — Write side: publish event khi submission judged
+@KafkaListener(topics = "judge-results")
+public void onSubmissionJudged(SubmissionJudgedEvent event) {
+    submission.setScore(event.getScore());
+    submission.setStatus(SubmissionStatus.JUDGED);
+    submissionRepository.save(submission);
+    
+    // Publish event cho read model
+    eventPublisher.publish(new ScoreUpdatedEvent(
+        event.getContestId(),
+        event.getUserId(),
+        event.getScore()
+    ));
+}
+
+// ✅ CQRS — Read side: pre-computed leaderboard
 @KafkaListener(topics = "score-updates")
-public void updateLeaderboard(ScoreUpdateEvent event) {
-    LeaderboardView entry = leaderboardRepo
+public void updateLeaderboard(ScoreUpdatedEvent event) {
+    LeaderboardEntry entry = leaderboardRepository
         .findByContestIdAndUserId(event.getContestId(), event.getUserId())
-        .orElse(new LeaderboardView(event.getContestId(), event.getUserId()));
+        .orElse(new LeaderboardEntry());
     
-    entry.setTotalScore(entry.getTotalScore() + event.getScoreDelta());
-    entry.setSubmissionCount(entry.getSubmissionCount() + 1);
-    entry.setLastSubmittedAt(event.getTimestamp());
-    entry.setUserName(event.getUserName());  // from event payload
+    entry.setContestId(event.getContestId());
+    entry.setUserId(event.getUserId());
+    entry.setUserName(event.getUserName());  // denormalized!
+    entry.setTotalScore(entry.getTotalScore() + event.getScore());
+    entry.setLastSubmitAt(Instant.now());
     
-    leaderboardRepo.save(entry);
+    leaderboardRepository.save(entry);
 }
 ```
 
-> **🔍 Phân tích gap — LMS chưa cần CQRS toàn diện**
+```java
+// Query: đơn giản, nhanh, không cần JOIN
+@GetMapping("/contests/{id}/leaderboard")
+public List<LeaderboardEntry> getLeaderboard(@PathVariable UUID id) {
+    return leaderboardRepository.findByContestIdOrderByTotalScoreDesc(id);
+}
+```
+
+> **📐 Nguyên tắc — CQRS ≠ Event Sourcing**
 >
-> LMS hiện tại chưa có query phức tạp đủ để justify CQRS pattern đầy đủ. Tuy nhiên, **Contest Leaderboard** là use case lý tưởng để bắt đầu: (1) read-heavy (100+ người xem liên tục), (2) data từ nhiều sources, (3) cần real-time. **Migration path**: implement denormalized `leaderboard_view` table, update qua Kafka events — đây là CQRS cục bộ, không cần infrastructure mới.
+> CQRS và Event Sourcing thường được nhắc đến cùng nhau, nhưng chúng là **hai pattern độc lập**. CQRS tách read/write model — có thể dùng mà không cần Event Sourcing. Event Sourcing lưu events thay vì state — có thể dùng mà không cần CQRS. Kết hợp cả hai rất mạnh nhưng cũng *rất phức tạp*. Richardson trong [2a, Ch.6] khuyến nghị: bắt đầu với CQRS đơn giản trước, thêm Event Sourcing *khi có nhu cầu cụ thể* (audit trail, temporal queries).
 
 ---
 
-## 7.6 Event Sourcing — Overview
+## 7.5 Event Sourcing — Lưu Events thay vì State
 
-### Event Sourcing là gì?
+### Vấn đề: mất lịch sử khi chỉ lưu state
 
-Thay vì lưu **trạng thái hiện tại** (current state) của entity, Event Sourcing lưu **tất cả events** đã xảy ra và replay chúng để reconstruct state [2a, Ch.6]:
+Với database truyền thống, chúng ta lưu **trạng thái hiện tại** (*current state*): `submission.status = JUDGED, score = 85`. Mọi thay đổi trước đó bị ghi đè — không biết submission đã qua những trạng thái nào, ai thay đổi, khi nào.
+
+Trong nhiều domain (tài chính, audit, legal), lịch sử thay đổi có giá trị ngang bằng hoặc hơn trạng thái hiện tại. Ngay cả trong LMS: "sinh viên nộp bài 3 lần, lần đầu sai, lần 2 đúng một phần, lần 3 đúng hoàn toàn" — thông tin này giá trị cho phân tích học tập, nhưng nếu chỉ lưu `status = CORRECT`, lịch sử bị mất.
+
+### Event Sourcing pattern
+
+**Event Sourcing** thay đổi cách lưu trữ: thay vì lưu state, lưu **chuỗi events** (sự kiện) đã xảy ra. State hiện tại được **derive** bằng cách replay tất cả events [2a, Ch.6]:
 
 ```mermaid
 graph LR
-    subgraph Traditional["Traditional: Store State"]
-        T1["Submission<br/>id=1<br/>status=JUDGED<br/>score=10"]
+    subgraph Traditional["Truyền thống: Lưu State"]
+        S1["Submission\nstatus=JUDGED\nscore=85"]
     end
     
-    subgraph ES["Event Sourcing: Store Events"]
-        E1["SubmissionCreated<br/>id=1, sql='SELECT...'"]
-        E2["SubmissionJudging<br/>id=1, judgeId=J1"]
-        E3["SubmissionJudged<br/>id=1, result=CORRECT"]
-        E4["ScoreAssigned<br/>id=1, score=10"]
-        E1 --> E2 --> E3 --> E4
+    subgraph ES["Event Sourcing: Lưu Events"]
+        E1["SubmissionCreated\nuser=A, sql='...'"]
+        E2["SQLExecuted\nresult=timeout"]
+        E3["SubmissionRetried\nuser=A"] 
+        E4["SQLExecuted\nresult=correct, score=85"]
+        E5["SubmissionJudged\nstatus=CORRECT"]
     end
     
-    style T1 fill:#E3F2FD
-    style E1 fill:#FFF9C4
-    style E2 fill:#FFF9C4
-    style E3 fill:#FFF9C4
-    style E4 fill:#FFF9C4
+    E1 --> E2 --> E3 --> E4 --> E5
+    E5 -.->|"Replay\n→ current state"| S2["Submission\nstatus=JUDGED\nscore=85"]
+    
+    style Traditional fill:#FFECB3
+    style ES fill:#E8F5E9
 ```
 
-Current state được reconstruct bằng cách replay events:
-```
-SubmissionCreated → status=PENDING
-SubmissionJudging → status=JUDGING
-SubmissionJudged  → status=JUDGED, result=CORRECT
-ScoreAssigned     → score=10
-```
+Kleppmann trong [7, Ch.11] giải thích: Event Sourcing coi event log là **nguồn sự thật** (*source of truth*), còn state views (database tables, materialized views) là **derived data** — có thể rebuild bất kỳ lúc nào bằng cách replay events.
 
-### Ưu và nhược
+### Ưu và nhược điểm
 
-| | Ưu điểm | Nhược điểm |
-|---|---------|-----------|
-| 1 | **Audit trail hoàn chỉnh**: mọi thay đổi đều có record | **Learning curve**: cách nghĩ hoàn toàn khác |
-| 2 | **Replay & debug**: reconstruct state tại bất kỳ thời điểm nào | **Event store complexity**: cần event store riêng |
-| 3 | **Temporal queries**: "submission ở trạng thái gì lúc 14:30?" | **Eventually consistent**: CQRS thường đi kèm |
-| 4 | **Reliable event publishing**: events *là* data, không cần gửi riêng | **Schema evolution khó**: events là immutable |
-| 5 | **Collaboration**: nhiều events có thể trigger từ cùng action | **Storage**: event log lớn dần theo thời gian |
+| Ưu điểm | Nhược điểm |
+|---------|------------|
+| **Full audit trail** — mọi thay đổi đều được ghi | **Complexity** — rebuild state cần replay, performance concern |
+| **Temporal queries** — "state tại thời điểm T?" | **Event schema evolution** — events cũ format khác events mới |
+| **Debug dễ hơn** — replay events để reproduce bugs | **Eventual consistency** — state views luôn "chậm hơn" events |
+| **Replay** — rebuild state, tạo views mới | **Storage** — event store tăng vô hạn, cần snapshots |
+| **Kết hợp CQRS** — events tự nhiên feed vào read models | **Learning curve** — tư duy khác hoàn toàn so với CRUD |
 
-### Khi nào nên dùng?
+### Khi nào dùng Event Sourcing?
 
-Richardson trong [2a, Ch.6] nhấn mạnh: Event Sourcing không phải "mặc định" — nó phù hợp khi:
+| Scenario | Phù hợp? | Lý do |
+|----------|----------|-------|
+| **Audit requirements** (tài chính, compliance) | ✅ Rất phù hợp | Cần lịch sử đầy đủ, không thể xóa |
+| **Temporal analysis** (phân tích xu hướng) | ✅ Phù hợp | Query "trạng thái tại thời điểm X" tự nhiên |
+| **CRUD đơn giản** (quản lý users, settings) | ❌ Không | Overhead quá lớn cho lợi ích nhỏ |
+| **Domain phức tạp** (đơn hàng, booking) | ✅ Phù hợp | Business events map trực tiếp vào domain events |
+| **LMS submission tracking** | ⚠️ Tùy | Có giá trị cho learning analytics, nhưng hiện tại team nhỏ → không ưu tiên |
 
-| Cần | Ví dụ | Event Sourcing? |
-|-----|-------|----------------|
-| **Audit trail** bắt buộc | Financial transactions, compliance | ✅ Rất phù hợp |
-| **Temporal queries** | "Giá sản phẩm lúc user đặt hàng là bao nhiêu?" | ✅ Phù hợp |
-| **Debug production issues** | "Tại sao submission này bị sai score?" | ✅ Helpful |
-| **Simple CRUD** | User profile, settings | ❌ Over-engineering |
-| **High-performance reads** | Dashboard, search | ❌ CQRS đủ |
-
-### LMS và Event Sourcing
-
-> **📐 Nguyên tắc — LMS chưa cần Event Sourcing toàn diện**
+> **💡 Tip — Kafka ≈ Event Store?**
 >
-> Xem xét submission flow trong LMS: việc lưu trữ events (SubmissionCreated → Judging → Judged → ScoreAssigned) mang lại audit trail giá trị — đặc biệt trong context thi cử, khi cần truy vết "tại sao submission X bị điểm 0?" hay "ai đã submit lúc mấy giờ?". Tuy nhiên, implement event sourcing infrastructure (event store, snapshots, projection) cho toàn bộ system là quá sớm. **Khuyến nghị**: bắt đầu với **event logging** (ghi events vào bảng riêng) mà không rebuild state từ events — được lợi ích audit trail mà không phải chịu complexity.
+> Kafka với retention vĩnh viễn (infinite retention) có thể hoạt động như event store. LMS đã dùng Kafka cho submission pipeline (Ch.5). Về lý thuyết, messages trên topic `submissions` và `judge-results` *chính là* chuỗi events. Tuy nhiên, Kafka được thiết kế là message broker, không phải event store chuyên dụng — querying events theo entity ID khó hơn so với EventStoreDB hoặc Axon. Kleppmann trong [7, Ch.11] phân tích: Kafka phù hợp cho **event streaming** (*process events real-time*), còn Event Sourcing cần **event store** (*query events by aggregate*). Hai use cases liên quan nhưng khác nhau.
 
 ---
 
-## 7.7 Case Study: Shared Database trong LMS — Phân tích và Migration
+## 7.6 Case Study: Quản lý dữ liệu trong hệ thống LMS
 
 ### Hiện trạng
 
+Phân tích source code LMS cho thấy kiến trúc dữ liệu hiện tại:
+
 ```mermaid
 graph TB
-    subgraph Services["LMS Services"]
-        CS["Core Service<br/>:8080"]
-        AS["Assignment Service<br/>:8088"]
-        AUTH["Auth Service<br/>:9005"]
-        JS["Judge Service<br/>:8082"]
+    subgraph Services["Application Layer"]
+        CORE["Core Service\n(questions, submissions,\ncontests, stats)"]
+        ASN["Assignment Service\n(courses, assignments,\ngrades, thesis)"]
+        AUTH["Auth Service\n(users, roles, tokens)"]
+        JUDGE["Judge Service\n(execution, grading)"]
     end
     
-    CS --> DB["PostgreSQL<br/>(shared instance)"]
-    AS --> DB
-    AUTH --> DB
-    JS --> DB
+    subgraph Data["Data Layer"]
+        APP_DB["🐘 PostgreSQL\napp_db\n(SHARED!)"]
+        AUTH_DB["🐘 PostgreSQL\nauth_db"]
+        KAFKA["📨 Kafka\n(event pipeline)"]
+    end
     
-    style DB fill:#FFCDD2
+    CORE --> APP_DB
+    ASN -->|"shared!"| APP_DB
+    AUTH --> AUTH_DB
+    JUDGE -.->|"Feign calls"| CORE
+    CORE --> KAFKA
+    JUDGE --> KAFKA
+    
+    style APP_DB fill:#FFCDD2
+    style AUTH_DB fill:#C8E6C9
 ```
 
-| Service | Tables chính | Vấn đề ownership |
-|---------|-------------|-------------------|
-| Core | `questions`, `submissions`, `contests`, `user_stats` | `user_stats` nên thuộc Auth? |
-| Assignment | `courses`, `assignments`, `enrollment`, `grades` | `enrollment` cần userId từ Auth |
-| Auth | `users`, `roles`, `tokens` | `users` bị Core đọc trực tiếp |
-| Judge | `execution_logs` (nếu có) | Hiện dùng Kafka, ít lưu DB |
+**Quan sát chính:**
 
-### Vấn đề cụ thể phát hiện
+1. **Auth Service** — đã tách database riêng (`auth_db`) → ✅ đúng database-per-service
+2. **Core + Assignment** — chia sẻ `app_db` → ❌ vi phạm database-per-service
+3. **Judge Service** — không có database riêng, dữ liệu transient → ✅ stateless (OK)
+4. **Cross-service data** — dùng Feign calls → ⚠️ runtime dependency
 
-| # | Vấn đề | Hệ quả | Severity |
-|---|--------|--------|----------|
-| 1 | **Shared PostgreSQL instance** | Tất cả services down nếu DB down | 🔴 Cao |
-| 2 | **Cross-service JOINs** | Core JOIN bảng `users` để hiện tên trong submissions | 🟡 Trung bình |
-| 3 | **Shared schema** | ALTER TABLE ảnh hưởng tất cả services | 🔴 Cao |
-| 4 | **Coupling qua FK** | `submissions.user_id` FK đến `users` — xóa user impossible | 🟡 Trung bình |
-| 5 | **Không thể scale riêng** | Contest mode cần scale Judge DB nhưng không thể tách | 🟡 Trung bình |
+### Phân tích cross-service query patterns
 
-### Migration roadmap
+LMS sử dụng **interface projections** (Spring Data JPA) và **Feign calls** để truy vấn dữ liệu xuyên service:
 
-**Phase 1 — Logical Separation** (effort thấp, impact cao):
-```sql
--- Tạo separate schemas trong cùng PostgreSQL instance
-CREATE SCHEMA core_service;
-CREATE SCHEMA assignment_service;
-CREATE SCHEMA auth_service;
-CREATE SCHEMA judge_service;
-
--- Move tables về schema tương ứng
-ALTER TABLE questions SET SCHEMA core_service;
-ALTER TABLE submissions SET SCHEMA core_service;
-ALTER TABLE users SET SCHEMA auth_service;
-ALTER TABLE courses SET SCHEMA assignment_service;
-```
-
-**Phase 2 — Remove Cross-schema Dependencies** (effort trung bình):
 ```java
-// Trước: JOIN trực tiếp
-@Query("SELECT s.*, u.name FROM submissions s JOIN users u ON ...")
-List<SubmissionWithUser> findWithUserInfo(); // ❌ cross-schema
+// Pattern 1: Interface Projection — query chỉ lấy fields cần thiết
+public interface SubmissionProjection {
+    UUID getId();
+    String getSqlContent();
+    String getStatus();
+    // Không lấy toàn bộ Submission entity
+}
 
-// Sau: API call
-public List<SubmissionDTO> findWithUserInfo() {
-    List<Submission> submissions = submissionRepo.findAll();
-    Set<UUID> userIds = submissions.stream()
-        .map(Submission::getUserId).collect(toSet());
-    Map<UUID, String> userNames = authClient.getUserNames(userIds); // ✅ API
-    
-    return submissions.stream()
-        .map(s -> new SubmissionDTO(s, userNames.get(s.getUserId())))
-        .toList();
+// Repository sử dụng projection
+@Query("SELECT s FROM Submission s WHERE s.contestId = :contestId")
+List<SubmissionProjection> findByContestId(@Param("contestId") UUID contestId);
+```
+
+```java
+// Pattern 2: Feign Client — gọi service khác lấy data
+@FeignClient(name = "core-service")
+public interface SubmitServiceClient {
+    @GetMapping("/api/submissions/by-contest/{contestId}")
+    List<SubmissionResponse> getSubmissionsByContest(
+        @PathVariable UUID contestId
+    );
 }
 ```
 
-**Phase 3 — Physical Separation** (effort cao, khi cần scale):
-- Tách PostgreSQL instances riêng cho Auth, Core, Assignment
-- Judge Service có thể dùng DB riêng hoặc chỉ dùng Kafka (stateless)
-- Connection strings thay đổi, cần update config cho từng service
+### Từ hiện trạng đến best practice
 
-**Phase 4 — Selective CQRS** (khi cần complex queries):
-- Implement `leaderboard_view` denormalized table cho Contest Leaderboard
-- Cập nhật qua Kafka events (submission judged → update view)
-- Không cần CQRS infrastructure toàn diện — chỉ cần 1-2 read models
+| # | Vấn đề | Hiện trạng LMS | Best Practice | Chiến lược migration |
+|---|--------|---------------|---------------|---------------------|
+| 1 | **Shared database** | Core + Assignment cùng `app_db` | Database-per-service | Separate schema → Full split |
+| 2 | **Cross-service joins** | Có thể cross-table query trực tiếp | API calls hoặc data duplication | Thay bằng Feign hoặc event-based copy |
+| 3 | **Leaderboard query** | SQL JOIN trực tiếp | CQRS — pre-computed read model | Kafka events → Leaderboard table |
+| 4 | **Submission history** | CRUD (chỉ lưu state hiện tại) | Event Sourcing (cho analytics) | Ghi thêm events song song với state |
+| 5 | **User reference data** | Feign call mỗi khi cần | Local copy via events | UserUpdated event → local cache |
+
+### Đề xuất migration path
+
+**Phase 1 — Schema Separation** (ưu tiên cao, effort thấp):
+- Tách `app_db` thành schema `core_schema` và `assignment_schema`
+- Mỗi service chỉ có quyền truy cập schema riêng
+- Identify và loại bỏ cross-schema queries
+
+**Phase 2 — API-based Data Access** (effort trung bình):
+```java
+// Trước: Assignment truy cập trực tiếp bảng questions (cross-schema)
+// ❌
+@Query("SELECT q FROM core_schema.questions q WHERE q.id IN :ids")
+List<Question> findQuestionsByIds(List<UUID> ids);
+
+// Sau: Assignment gọi Core API
+// ✅ 
+@FeignClient(name = "lms-core")
+public interface CoreServiceClient {
+    @GetMapping("/api/questions/batch")
+    List<QuestionSummary> getQuestionsByIds(@RequestParam List<UUID> ids);
+}
+```
+
+**Phase 3 — Event-based Data Duplication** (effort trung bình):
+- Core publish `QuestionUpdated` events khi câu hỏi thay đổi
+- Assignment consume và lưu local copy (chỉ reference data: title, difficulty)
+- Giảm runtime dependency cho read operations
+
+**Phase 4 — CQRS cho Leaderboard** (effort cao, giá trị lớn cho contest mode):
+- Tách leaderboard thành read model riêng
+- Kafka events (`ScoreUpdated`) feed vào denormalized leaderboard table
+- Query leaderboard trả kết quả trong \<10ms thay vì complex JOIN
+
+---
+
+> **⚠️ Sai lầm thường gặp**
+>
+> 1. **Chia database quá sớm** — Tách database trước khi hiểu rõ data access patterns. Hậu quả: phát hiện hai service cần JOIN data liên tục, phải build event pipeline phức tạp cho thứ trước đây chỉ cần SQL JOIN. *Phòng tránh*: bắt đầu với separate schema (cùng DB server), theo dõi cross-schema queries 2-4 tuần, rồi mới quyết định tách hoàn toàn.
+> 2. **Dùng CQRS cho mọi thứ** — Áp dụng CQRS/Event Sourcing cho CRUD đơn giản (quản lý users, settings). Hậu quả: complexity tăng 3-5x, team mất thời gian maintain event pipeline cho data thay đổi 1 lần/tuần. *Phòng tránh*: CQRS chỉ khi read pattern phức tạp (cross-service join, high read volume, real-time views). CRUD là đủ cho 80% use cases.
+> 3. **Duplicate data nhưng không xác định source of truth** — Copy data giữa services mà không rõ "ai sở hữu data này?" Hậu quả: hai services cùng sửa data → conflict, không biết bản nào đúng. *Phòng tránh*: mỗi data entity chỉ có **duy nhất một service sở hữu** — các bản copy khác là read-only replicas, chỉ update qua events từ owner.
+> 4. **Quên xử lý replication lag** — Sau khi write vào service A, ngay lập tức read từ read model (service B) và thấy data cũ. Hậu quả: user nộp bài thành công nhưng leaderboard chưa cập nhật → confusion. *Phòng tránh*: UI pattern "optimistic update" — hiển thị kết quả dự kiến ngay, cập nhật khi event đến (đã thảo luận trong Ch.6 §6.5).
 
 ---
 
 ## Tổng kết
 
-Database-per-Service là nguyên tắc cốt lõi khi chuyển sang microservices. Mỗi service sở hữu data riêng, truy cập data service khác qua API hoặc events — không bao giờ trực tiếp qua database.
+Quản lý dữ liệu là bài toán phức tạp nhất khi chuyển từ monolith sang microservices — phức tạp hơn cả việc tách application code. Database-per-service không chỉ là nguyên tắc kỹ thuật mà là **điều kiện tiên quyết** cho independent deployability — mục tiêu cốt lõi của microservices. CAP Theorem nhắc nhở: trong hệ thống phân tán, consistency và availability luôn phải đánh đổi khi có network partition — mọi quyết định data management đều mang theo trade-off này.
 
-Tách database từ monolith là quá trình 3 bước: logical separation (schemas) → code separation (repositories) → physical separation (instances). Bắt đầu từ service có ranh giới rõ ràng nhất, không cần "big bang".
+Năm chiến lược tách database (view → wrapping service → separate schema → data transfer → full split) cho phép migration **incremental** — không cần "big bang". Với team nhỏ như LMS, bắt đầu từ separate schema là bước đi thực tế nhất.
 
-Data duplication là trade-off có chủ đích — chấp nhận eventual consistency để giảm runtime coupling. Event-driven synchronization (qua Kafka) giữ cho duplicated data eventually consistent.
+Data duplication không phải anti-pattern — đây là **trade-off có chủ đích** để giảm runtime coupling. Nguyên tắc: mỗi data chỉ có một source of truth, các bản copy là read-only replicas fed bằng events. Newman đã nói rõ: "Duplication is far better than coupling."
 
-API Composition giải quyết cross-service queries đơn giản. CQRS — tách read model và write model — cần thiết khi queries phức tạp, read-heavy, hoặc cần aggregation real-time. Event Sourcing lưu trữ events thay vì state — mang lại audit trail và temporal queries nhưng đi kèm complexity đáng kể.
+CQRS (mở rộng từ nguyên tắc CQS của Meyer) tách read model và write model — giải quyết bài toán cross-service queries và high-volume reads. Event Sourcing bổ sung bằng cách lưu lịch sử đầy đủ thay vì chỉ state hiện tại. Cả hai đều mạnh mẽ nhưng phức tạp — chỉ áp dụng khi có nhu cầu cụ thể, không phải mặc định.
 
-Phân tích LMS cho thấy hệ thống đang dùng shared database — một trong những anti-patterns phổ biến nhất của microservices. Migration roadmap 4 phases (logical → cross-schema removal → physical → selective CQRS) cho phép cải thiện dần mà không cần "big bang" rewrite.
+Một bài toán liên quan chặt chẽ là **distributed transactions** — khi một business operation cần thay đổi data ở nhiều services. Saga pattern (đã thảo luận chi tiết ở Ch.6) là giải pháp: chuỗi local transactions + compensating actions thay vì distributed ACID transaction. Saga và data management bổ trợ nhau: database-per-service tạo ra nhu cầu Saga, còn CQRS/Event Sourcing cung cấp event pipeline mà Saga sử dụng.
 
-Ở Chương 8, chúng ta sẽ chuyển sang tầng hạ tầng: **API Gateway** — single entry point cho tất cả clients, xử lý routing, authentication, rate limiting.
+Phân tích LMS cho thấy gap nghiêm trọng nhất là shared database giữa Core và Assignment — vi phạm database-per-service và gây deploy coupling. Migration path rõ ràng: separate schema → API wrapping → event-based duplication → CQRS cho leaderboard. Mỗi phase độc lập, có thể dừng ở bất kỳ phase nào khi "đủ tốt" cho ngữ cảnh.
+
+Ở Chương 8, chúng ta sẽ chuyển sang **API Gateway** — single entry point cho hệ thống microservices: routing, authentication, rate limiting, và cách LMS sử dụng Spring Cloud Gateway.
 
 ---
 
 ## Đọc thêm
 
 **Sách tham khảo chính:**
-1. [4a] Sam Newman, *Building Microservices*, 1st Ed. — Ch.5: Splitting the Monolith
-2. [4b] Sam Newman, *Monolith to Microservices* — Database decomposition patterns
-3. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.6: Event Sourcing; Ch.7: CQRS, API Composition
-4. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.5-6: Replication, Partitioning; Ch.11: Stream Processing
+1. [4b] Sam Newman, *Monolith to Microservices* — Ch.4: Decomposing the Database, Database-per-service patterns
+2. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.6: Event Sourcing; Ch.7: Implementing Queries (API Composition, CQRS)
+3. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.5: Replication; Ch.6: Partitioning; Ch.7,9: Transactions & CAP; Ch.11: Stream Processing, Event Sourcing
+
+**Sách bổ trợ:**
+4. [3] Ronnie Mitra, *Microservices: Up and Running* — Ch.5: Data Delegate Pattern, Event Sourcing in practice
+5. [5] Hugo Rocha, *Practical Event-Driven MS Architecture* — §4.5: CQS vs CQRS, Command Sourcing; Ch.5: CAP in real world, eventual consistency
+6. [6] Eric Evans, *Domain-Driven Design* — Aggregate design → data ownership per bounded context
+
+**Chương liên quan:**
+- **Ch.6: Saga Pattern** — Distributed transactions, orchestration vs choreography, compensating actions. Saga giải quyết bài toán "thay đổi data ở nhiều services trong một business transaction" — complement trực tiếp cho database-per-service.
 
 **Nguồn trực tuyến:**
 - Martin Fowler, "CQRS" — martinfowler.com/bliki/CQRS.html
-- Microsoft, "CQRS Pattern" — learn.microsoft.com/en-us/azure/architecture/patterns/cqrs
-- Greg Young, "CQRS, Task Based UIs, Event Sourcing aaah!" — cqrs.files.wordpress.com
+- Greg Young, "CQRS Documents" — cqrs.files.wordpress.com
+- Confluent, "Event Sourcing with Kafka" — developer.confluent.io
