@@ -425,6 +425,14 @@ graph LR
 
 ---
 
+> **⚠️ Sai lầm thường gặp**
+>
+> 1. **Thiết kế entity từ bảng database** — Nhìn ERD rồi tạo 1 entity = 1 bảng, 1 service = 1 nhóm bảng. Hậu quả: ranh giới service không phản ánh domain mà phản ánh schema — khi nghiệp vụ thay đổi, phải refactor cả service lẫn database. *Phòng tránh*: bắt đầu từ domain process (Event Storming §2.4), không từ schema.
+> 2. **Chia quá nhỏ (nano-services)** — Tách mỗi entity thành 1 service riêng (UserService, RoleService, TokenService) khi chúng luôn thay đổi cùng nhau. Hậu quả: mỗi request cần gọi 3-4 services, latency tăng, debugging trở thành cơn ác mộng. *Phòng tránh*: tách theo bounded context, không theo entity. Nếu hai entity luôn thay đổi cùng nhau, chúng thuộc cùng service.
+> 3. **Dùng Shared Kernel vì tiện, không vì thiết kế** — Cho tất cả code "chung" vào shared library mà không phân biệt cross-cutting concern và domain logic. Hậu quả: mỗi thay đổi shared lib ảnh hưởng tất cả services, deploy coupling ngầm. *Phòng tránh*: mỗi file trong shared kernel phải trả lời "tất cả service *phải* thay đổi cùng khi file này thay đổi?" (§2.6).
+
+---
+
 ## Tổng kết
 
 Chương này đã trang bị cho chúng ta bộ công cụ tư duy để phân tích và phân tách hệ thống — từ quy luật vĩ mô (Conway's Law) đến kỹ thuật vi mô (Entity, Aggregate, Repository).

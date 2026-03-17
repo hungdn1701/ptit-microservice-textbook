@@ -327,4 +327,8 @@
 | 2026-03-10 | Initial outline created from source analysis | AI+Author |
 | 2026-03-10 | Revised: +Modular Monolith, +Team Topologies, +Event Storming/Schema, +Resilience patterns, +Data Management (rename Ch.7), +Schema evolution, +📐 Nguyên tắc per chapter. Based on cross-referencing 10 reference books. | AI+Author |
 | 2026-03-10 | Ch.1 drafted & revised: +tech company examples (Netflix/Amazon/Uber), reduced attribution, reframed case study as LMS technical overview. Updated style-guide with attribution rules & case study framing. | AI+Author |
+| 2026-03-12 | Ch.1–6 revised: +⚠️ Sai lầm thường gặp callout per chapter (3-4 items each), +problem-first framing strengthened in Ch.4 §4.2. Based on IDEAS.md review. Updated write-chapter.md workflow with new checklist items. | AI+Author |
+| 2026-03-12 | Ch.7 drafted: database-per-service, DB decomposition strategies (5 methods), data duplication vs coupling, CQRS with leaderboard example, Event Sourcing overview, LMS shared DB analysis + migration path. | AI+Author |
+| 2026-03-12 | Ch.8 drafted: API Gateway pattern + BFF, Spring Cloud Gateway (WebFlux), route config with Eureka lb://, cross-cutting concerns (JWT, CORS, rate limiting, correlation ID), LMS gateway analysis. | AI+Author |
+| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |
 

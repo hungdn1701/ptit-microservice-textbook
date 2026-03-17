@@ -525,6 +525,15 @@ graph LR
 
 ---
 
+> **⚠️ Sai lầm thường gặp**
+>
+> 1. **Auto-commit offset trước khi xử lý xong** — Consumer acknowledge message trước khi processing hoàn thành. Hậu quả: nếu consumer crash giữa chừng, message bị mất vĩnh viễn (đã commit nhưng chưa xử lý). *Phòng tránh*: dùng manual offset commit — chỉ commit *sau khi* processing thành công.
+> 2. **Không có Dead Letter Topic** — Message lỗi bị retry vô hạn hoặc block toàn bộ pipeline. Hậu quả: một message poison pill chặn mọi message phía sau. *Phòng tránh*: cấu hình DLT (`@RetryableTopic` trong Spring Kafka) — messages lỗi sau N retries được chuyển sang DLT để xử lý riêng.
+> 3. **Không thiết kế idempotent consumer** — Giả định mỗi message chỉ đến đúng một lần. Hậu quả: khi Kafka rebalance hoặc retry, message trùng → dữ liệu sai (chấm bài trùng, tính điểm sai). *Phòng tránh*: kiểm tra trạng thái trước khi xử lý — nếu đã xử lý rồi thì skip (§5.5).
+> 4. **Chọn broker vì quen thuộc, không vì use case** — Dùng RabbitMQ cho event streaming chỉ vì team đã biết RabbitMQ. Hậu quả: khi load tăng, broker không phù hợp → phải migrate đau đớn. *Phòng tránh*: đánh giá use case trước (§5.2) — durable log (Kafka) cho event streaming, smart routing (RabbitMQ) cho task queues.
+
+---
+
 ## Tổng kết
 
 Giao tiếp bất đồng bộ giải quyết ba giới hạn cốt lõi của sync: temporal coupling, cascading failures, và latency. Hai trường phái message broker — durable (Kafka) và ephemeral (RabbitMQ) — phục vụ use case khác nhau, và nhiều hệ thống dùng cả hai.
