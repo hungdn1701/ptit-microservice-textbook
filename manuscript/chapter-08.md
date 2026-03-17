@@ -320,8 +320,8 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://dblab.ptit.edu.vn"
-              - "https://admin.dblab.ptit.edu.vn"
+              - "https://lms.university.edu.vn"
+              - "https://admin.lms.university.edu.vn"
             allowedMethods:
               - GET
               - POST
