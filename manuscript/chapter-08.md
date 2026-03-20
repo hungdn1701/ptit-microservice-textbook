@@ -141,21 +141,7 @@ Ba khái niệm cốt lõi:
 
 ### Dependency
 
-```xml
-<!-- Gateway — WebFlux-based, không thêm spring-boot-starter-web -->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-gateway</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-</dependency>
-```
-
-> **💡 Tip — WebFlux vs Web**
->
-> Spring Cloud Gateway dựa trên **WebFlux** (reactive, non-blocking) — *không thể* dùng chung với `spring-boot-starter-web` (servlet, blocking). Đây là lỗi phổ biến: thêm `spring-boot-starter-web` vào Gateway project → conflict, gateway không khởi động. LMS Gateway đúng khi chỉ dùng `spring-cloud-starter-gateway` mà không có `spring-boot-starter-web`.
+Gateway sử dụng `spring-cloud-starter-gateway` (WebFlux) + `spring-cloud-starter-netflix-eureka-client`. **Lưu ý**: Gateway dựa trên WebFlux (reactive, non-blocking) — *không thể* dùng chung với `spring-boot-starter-web` (servlet, blocking). Thêm `spring-boot-starter-web` vào Gateway project → conflict, gateway không khởi động.
 
 ---
 
@@ -311,29 +297,7 @@ Services phía sau nhận user info qua **custom headers** (`X-User-Id`, `X-User
 
 ### 2. CORS — Cross-Origin Resource Sharing
 
-```yaml
-# CORS configuration tại Gateway
-spring:
-  cloud:
-    gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "https://lms.university.edu.vn"
-              - "https://admin.lms.university.edu.vn"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: true
-            maxAge: 3600
-```
-
-CORS tại gateway = **một nơi duy nhất** quản lý origins, methods, headers. Services phía sau không cần CORS config — gateway đã handle.
+CORS tại gateway = **một nơi duy nhất** quản lý origins, methods, headers. Cấu hình `globalcors` trong Spring Cloud Gateway cho phép khai báo `allowedOrigins` (domains hợp lệ), `allowedMethods`, `allowCredentials` — services phía sau không cần CORS config vì gateway đã xử lý.
 
 > **🔍 Phân tích gap — LMS CORS `allowAll`**
 >
@@ -341,38 +305,7 @@ CORS tại gateway = **một nơi duy nhất** quản lý origins, methods, head
 
 ### 3. Rate Limiting
 
-Rate limiting ngăn một client gửi quá nhiều requests — bảo vệ services khỏi abuse hoặc DDoS:
-
-```yaml
-# Rate limiting filter cho Spring Cloud Gateway
-spring:
-  cloud:
-    gateway:
-      routes:
-        - id: core-service
-          uri: lb://core-service
-          predicates:
-            - Path=/api/core/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10  # 10 requests/giây
-                redis-rate-limiter.burstCapacity: 20   # burst tối đa 20
-                key-resolver: "#{@userKeyResolver}"    # rate limit per user
-```
-
-```java
-// Key resolver: rate limit theo userId (từ JWT)
-@Bean
-public KeyResolver userKeyResolver() {
-    return exchange -> Mono.just(
-        exchange.getRequest().getHeaders()
-            .getFirst("X-User-Id") != null
-            ? exchange.getRequest().getHeaders().getFirst("X-User-Id")
-            : exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
-    );
-}
-```
+Rate limiting ngăn một client gửi quá nhiều requests — bảo vệ services khỏi abuse hoặc DDoS. Spring Cloud Gateway hỗ trợ sẵn `RequestRateLimiter` filter kết hợp Redis: cấu hình `replenishRate` (requests/giây), `burstCapacity` (burst tối đa), và `KeyResolver` (rate limit theo user, IP, hoặc route).
 
 | Chiến lược rate limit | Mô tả | Use case |
 |----------------------|-------|----------|
@@ -383,32 +316,7 @@ public KeyResolver userKeyResolver() {
 
 ### 4. Logging & Tracing
 
-Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID theo dõi request xuyên suốt hệ thống:
-
-```java
-// Gắn correlation ID tại gateway
-@Bean
-public GlobalFilter correlationFilter() {
-    return (exchange, chain) -> {
-        String correlationId = exchange.getRequest().getHeaders()
-            .getFirst("X-Correlation-Id");
-        if (correlationId == null) {
-            correlationId = UUID.randomUUID().toString();
-        }
-        
-        ServerHttpRequest request = exchange.getRequest().mutate()
-            .header("X-Correlation-Id", correlationId)
-            .build();
-        
-        log.info("[{}] {} {}", correlationId,
-            request.getMethod(), request.getURI().getPath());
-        
-        return chain.filter(exchange.mutate().request(request).build());
-    };
-}
-```
-
-Mỗi request nhận `X-Correlation-Id` tại gateway → truyền qua mọi service → khi debug, grep logs bằng correlation ID để thấy *toàn bộ* journey của request.
+Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID theo dõi request xuyên suốt hệ thống. Pattern: `GlobalFilter` tại gateway kiểm tra header `X-Correlation-Id`, nếu chưa có thì generate UUID mới, gắn vào request → truyền qua mọi downstream service. Khi debug, grep logs bằng correlation ID để thấy *toàn bộ* journey của request (xem thêm Ch.11 Observability).
 
 ---
 
@@ -465,22 +373,7 @@ graph TB
 
 ### Vấn đề JWT Version Inconsistency
 
-Một vấn đề đáng chú ý trong LMS: gateway sử dụng **JJWT 0.11.5** trong khi các services khác sử dụng **JJWT 0.9.1** (qua parent POM). Hai versions này có API khác nhau đáng kể:
-
-```java
-// JJWT 0.9.1 (services) — API cũ
-Jwts.parser()
-    .setSigningKey(secretKey)
-    .parseClaimsJws(token);
-
-// JJWT 0.11.5+ (gateway) — API mới
-Jwts.parserBuilder()
-    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
-    .build()
-    .parseClaimsJws(token);
-```
-
-Vấn đề: nếu gateway và service parse token khác nhau, edge cases (token format, signing algorithm) có thể gây inconsistent validation — gateway accept nhưng service reject, hoặc ngược lại.
+Một vấn đề đáng chú ý trong LMS: gateway sử dụng **JJWT 0.11.5** (API mới: `parserBuilder()`) trong khi các services khác sử dụng **JJWT 0.9.1** (API cũ: `parser()`). Với HS256 đơn giản, hai versions tương thích ở happy path. Tuy nhiên, khi upgrade hoặc thêm RS256, version mismatch có thể gây inconsistent validation — gateway accept nhưng service reject, hoặc ngược lại.
 
 > **🔍 Phân tích gap — JWT library version inconsistency**
 >
