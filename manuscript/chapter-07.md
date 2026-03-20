@@ -215,34 +215,7 @@ graph LR
     style COMP fill:#FFF9C4
 ```
 
-Ví dụ minh họa API Composition bằng code Java:
-
-```java
-@Service
-public class ContestLeaderboardService {
-    private final SubmissionRepository submissionRepo;
-    private final AuthServiceClient authClient;
-    
-    public List<LeaderboardEntry> getLeaderboard(UUID contestId) {
-        List<Submission> submissions = submissionRepo.findByContestId(contestId);
-        
-        // Batch fetch user info để tránh N+1 problem
-        Set<UUID> userIds = submissions.stream()
-            .map(Submission::getUserId).collect(Collectors.toSet());
-        Map<UUID, UserInfo> users = authClient.getUsersByIds(userIds);
-        
-        // Kết hợp dữ liệu (In-memory join)
-        return submissions.stream()
-            .map(s -> LeaderboardEntry.builder()
-                .userName(users.get(s.getUserId()).getName())
-                .score(s.getScore())
-                .submittedAt(s.getCreatedAt())
-                .build())
-            .sorted(Comparator.comparing(LeaderboardEntry::getScore).reversed())
-            .toList();
-    }
-}
-```
+Ví dụ: hiển thị bảng xếp hạng contest cần data từ Core (submissions) và Auth (user names). API Composer gọi cả hai services, sau đó **in-memory join** — batch fetch user IDs để tránh N+1 problem, rồi `stream().map()` kết hợp thành `LeaderboardEntry`.
 
 
 ### Khi nào chấp nhận duplication?
@@ -335,57 +308,21 @@ CQRS thêm complexity đáng kể — **đừng dùng khi không cần** [5, §4
 
 Trong LMS, bảng xếp hạng contest cần join data từ nhiều nguồn:
 
-```sql
--- ❌ Cross-service query (không thể trong database-per-service)
-SELECT u.name, s.score, s.submitted_at, q.title
-FROM users u                           -- Auth Service DB
-JOIN submissions s ON u.id = s.user_id -- Core Service DB
-JOIN questions q ON s.question_id = q.id -- Core Service DB
-WHERE s.contest_id = ?
-ORDER BY s.score DESC, s.submitted_at ASC;
-```
+Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách.
 
-Với CQRS, leaderboard có **read model riêng**:
+Với CQRS, leaderboard có **read model riêng**: write side publish `ScoreUpdatedEvent` mỗi khi submission được chấm, read side consume event và cập nhật `LeaderboardEntry` denormalized (đã chứa sẵn `userName`, `totalScore`). Query leaderboard chỉ cần `findByContestIdOrderByTotalScoreDesc()` — đơn giản, nhanh, không cần JOIN.
 
-```java
-// ✅ CQRS — Write side: publish event khi submission judged
-@KafkaListener(topics = "judge-results")
-public void onSubmissionJudged(SubmissionJudgedEvent event) {
-    submission.setScore(event.getScore());
-    submission.setStatus(SubmissionStatus.JUDGED);
-    submissionRepository.save(submission);
+```mermaid
+sequenceDiagram
+    participant W as Write Side (Core)
+    participant K as Kafka
+    participant R as Read Side (Leaderboard)
+    participant C as Client
     
-    // Publish event cho read model
-    eventPublisher.publish(new ScoreUpdatedEvent(
-        event.getContestId(),
-        event.getUserId(),
-        event.getScore()
-    ));
-}
-
-// ✅ CQRS — Read side: pre-computed leaderboard
-@KafkaListener(topics = "score-updates")
-public void updateLeaderboard(ScoreUpdatedEvent event) {
-    LeaderboardEntry entry = leaderboardRepository
-        .findByContestIdAndUserId(event.getContestId(), event.getUserId())
-        .orElse(new LeaderboardEntry());
-    
-    entry.setContestId(event.getContestId());
-    entry.setUserId(event.getUserId());
-    entry.setUserName(event.getUserName());  // denormalized!
-    entry.setTotalScore(entry.getTotalScore() + event.getScore());
-    entry.setLastSubmitAt(Instant.now());
-    
-    leaderboardRepository.save(entry);
-}
-```
-
-```java
-// Query: đơn giản, nhanh, không cần JOIN
-@GetMapping("/contests/{id}/leaderboard")
-public List<LeaderboardEntry> getLeaderboard(@PathVariable UUID id) {
-    return leaderboardRepository.findByContestIdOrderByTotalScoreDesc(id);
-}
+    W->>K: ScoreUpdatedEvent(contestId, userId, score, userName)
+    K->>R: Consume → update LeaderboardEntry (denormalized)
+    C->>R: GET /contests/{id}/leaderboard
+    R-->>C: Pre-computed, no JOIN needed
 ```
 
 > **📐 Nguyên tắc — CQRS ≠ Event Sourcing**
@@ -496,75 +433,31 @@ graph TB
 
 ### Phân tích cross-service query patterns
 
-LMS sử dụng **interface projections** (Spring Data JPA) và **Feign calls** để truy vấn dữ liệu xuyên service:
-
-```java
-// Pattern 1: Interface Projection — query chỉ lấy fields cần thiết
-public interface SubmissionProjection {
-    UUID getId();
-    String getSqlContent();
-    String getStatus();
-    // Không lấy toàn bộ Submission entity
-}
-
-// Repository sử dụng projection
-@Query("SELECT s FROM Submission s WHERE s.contestId = :contestId")
-List<SubmissionProjection> findByContestId(@Param("contestId") UUID contestId);
-```
-
-```java
-// Pattern 2: Feign Client — gọi service khác lấy data
-@FeignClient(name = "core-service")
-public interface SubmitServiceClient {
-    @GetMapping("/api/submissions/by-contest/{contestId}")
-    List<SubmissionResponse> getSubmissionsByContest(
-        @PathVariable UUID contestId
-    );
-}
-```
+LMS sử dụng hai pattern để truy vấn dữ liệu xuyên service: (1) **Interface Projections** (Spring Data JPA) — query trả về lightweight projection thay vì full entity, giảm data transfer, (2) **Feign calls** — gọi API service khác khi cần data ngoài boundary.
 
 ### Từ hiện trạng đến best practice
 
-| # | Vấn đề | Hiện trạng LMS | Best Practice | Chiến lược migration |
-|---|--------|---------------|---------------|---------------------|
-| 1 | **Shared database** | Core + Assignment cùng `app_db` | Database-per-service | Separate schema → Full split |
-| 2 | **Cross-service joins** | Có thể cross-table query trực tiếp | API calls hoặc data duplication | Thay bằng Feign hoặc event-based copy |
-| 3 | **Leaderboard query** | SQL JOIN trực tiếp | CQRS — pre-computed read model | Kafka events → Leaderboard table |
-| 4 | **Submission history** | CRUD (chỉ lưu state hiện tại) | Event Sourcing (cho analytics) | Ghi thêm events song song với state |
-| 5 | **User reference data** | Feign call mỗi khi cần | Local copy via events | UserUpdated event → local cache |
+| # | Vấn đề | Hiện trạng LMS | Chiến lược migration |
+|---|--------|---------------|---------------------|
+| 1 | **Shared database** | Core + Assignment cùng `app_db` | Separate schema → Full split |
+| 2 | **Cross-service joins** | Cross-table query trực tiếp | Thay bằng Feign hoặc event-based copy |
+| 3 | **Leaderboard query** | SQL JOIN trực tiếp | CQRS — pre-computed read model |
+| 4 | **Submission history** | CRUD (chỉ lưu current state) | Event Sourcing (cho analytics) |
+| 5 | **User reference data** | Feign call mỗi khi cần | Local copy via events |
 
 ### Đề xuất migration path
 
 **Phase 1 — Schema Separation** (ưu tiên cao, effort thấp):
-- Tách `app_db` thành schema `core_schema` và `assignment_schema`
-- Mỗi service chỉ có quyền truy cập schema riêng
-- Identify và loại bỏ cross-schema queries
+Tách `app_db` thành schema `core_schema` và `assignment_schema`. Mỗi service chỉ có quyền truy cập schema riêng.
 
 **Phase 2 — API-based Data Access** (effort trung bình):
-```java
-// Trước: Assignment truy cập trực tiếp bảng questions (cross-schema)
-// ❌
-@Query("SELECT q FROM core_schema.questions q WHERE q.id IN :ids")
-List<Question> findQuestionsByIds(List<UUID> ids);
-
-// Sau: Assignment gọi Core API
-// ✅ 
-@FeignClient(name = "lms-core")
-public interface CoreServiceClient {
-    @GetMapping("/api/questions/batch")
-    List<QuestionSummary> getQuestionsByIds(@RequestParam List<UUID> ids);
-}
-```
+Thay cross-schema queries bằng Feign calls — Assignment gọi Core API `GET /api/questions/batch` thay vì query trực tiếp `core_schema.questions`.
 
 **Phase 3 — Event-based Data Duplication** (effort trung bình):
-- Core publish `QuestionUpdated` events khi câu hỏi thay đổi
-- Assignment consume và lưu local copy (chỉ reference data: title, difficulty)
-- Giảm runtime dependency cho read operations
+Core publish `QuestionUpdated` events khi câu hỏi thay đổi. Assignment consume và lưu local copy (chỉ reference data: title, difficulty). Giảm runtime dependency cho read operations.
 
 **Phase 4 — CQRS cho Leaderboard** (effort cao, giá trị lớn cho contest mode):
-- Tách leaderboard thành read model riêng
-- Kafka events (`ScoreUpdated`) feed vào denormalized leaderboard table
-- Query leaderboard trả kết quả trong \<10ms thay vì complex JOIN
+Tách leaderboard thành read model riêng. Kafka events (`ScoreUpdated`) feed vào denormalized leaderboard table. Query trả kết quả trong <10ms thay vì complex JOIN.
 
 ---
 

@@ -1,20 +1,20 @@
 # Book Outline — SOA & Microservices Architecture
 
 > **Living document** — cập nhật khi có thống nhất hoặc phát hiện mới.
-> Last updated: 2026-03-10
-> Status: Draft — chưa viết chương nào
+> Last updated: 2026-03-20
+> Status: Draft — 12/12 chương đã drafted + Preface + Introduction + Appendices A/B/C
 
 ---
 
-## Preface
+## Preface ✅ DRAFTED
 
 - Tại sao viết sách này
 - Đối tượng đọc giả: sinh viên CNTT, developer junior/mid muốn hiểu microservices
 - Cách sử dụng sách (đọc tuần tự vs tra cứu)
-- Case study DBLAB: giới thiệu ngắn
+- Case study LMS: giới thiệu ngắn
 - Conventions & ký hiệu trong sách
 
-## Introduction
+## Introduction ✅ DRAFTED
 
 - Bức tranh tổng thể: từ Monolith → SOA → Microservices
 - Vị trí của sách trong bối cảnh hiện tại
@@ -48,7 +48,7 @@
 
 ---
 
-### Chương 2: Phân tích hướng Domain-Driven Design
+### Chương 2: Phân tích hướng Domain-Driven Design ✅ DRAFTED
 
 **Mục tiêu:** Xác định Bounded Contexts, Context Map, cấu trúc domain, và tổ chức team.
 
@@ -79,7 +79,7 @@
 
 ---
 
-### Chương 3: Thiết kế Dịch vụ & API
+### Chương 3: Thiết kế Dịch vụ & API ✅ DRAFTED
 
 **Mục tiêu:** Nguyên tắc thiết kế API RESTful, versioning, documentation, schema evolution.
 
@@ -105,7 +105,7 @@
 
 ## PHẦN II: GIAO TIẾP & DỮ LIỆU (Communication & Data)
 
-### Chương 4: Giao tiếp Đồng bộ (Synchronous Communication)
+### Chương 4: Giao tiếp Đồng bộ (Synchronous Communication) ✅ DRAFTED
 
 **Mục tiêu:** HTTP/REST inter-service calls, OpenFeign, error handling, resilience patterns.
 
@@ -129,7 +129,7 @@
 
 ---
 
-### Chương 5: Giao tiếp Bất đồng bộ (Asynchronous Communication)
+### Chương 5: Giao tiếp Bất đồng bộ (Asynchronous Communication) ✅ DRAFTED
 
 **Mục tiêu:** Message brokers, Kafka, event-driven architecture, Event Storming, event schema.
 
@@ -155,7 +155,7 @@
 
 ---
 
-### Chương 6: Giao dịch Phân tán (Saga Pattern)
+### Chương 6: Giao dịch Phân tán (Saga Pattern) ✅ DRAFTED
 
 **Mục tiêu:** Distributed transactions, Saga types, compensation, consistency trade-offs.
 
@@ -177,7 +177,7 @@
 
 ---
 
-### Chương 7: Quản lý Dữ liệu trong Microservices
+### Chương 7: Quản lý Dữ liệu trong Microservices ✅ DRAFTED
 
 **Mục tiêu:** Database-per-service, data ownership, CQRS, cross-service querying, data duplication.
 
@@ -202,7 +202,7 @@
 
 ## PHẦN III: HẠ TẦNG & VẬN HÀNH (Infrastructure & Operations)
 
-### Chương 8: API Gateway
+### Chương 8: API Gateway ✅ DRAFTED
 
 **Mục tiêu:** Gateway patterns, routing, rate limiting, authentication at edge.
 
@@ -222,7 +222,7 @@
 
 ---
 
-### Chương 9: Bảo mật Microservices
+### Chương 9: Bảo mật Microservices ✅ DRAFTED
 
 **Mục tiêu:** Authentication, authorization, JWT, OAuth2.
 
@@ -244,7 +244,7 @@
 
 ---
 
-### Chương 10: Kiểm thử Microservices
+### Chương 10: Kiểm thử Microservices ✅ DRAFTED
 
 **Mục tiêu:** Test pyramid, integration testing, contract testing, testing in EDA.
 
@@ -265,7 +265,7 @@
 
 ---
 
-### Chương 11: Observability
+### Chương 11: Observability ✅ DRAFTED
 
 **Mục tiêu:** Logging, monitoring, tracing, error handling.
 
@@ -285,7 +285,7 @@
 
 ---
 
-### Chương 12: Triển khai & DevOps
+### Chương 12: Triển khai & DevOps ✅ DRAFTED
 
 **Mục tiêu:** Containerization, Docker Compose, CI/CD, deployment strategies.
 
@@ -308,15 +308,19 @@
 
 ## Appendices
 
-### Appendix A: Bảng thuật ngữ
+### Appendix A: Bảng thuật ngữ ✅ DRAFTED
 → Sync với `style-guide.md` Section 2
 
-### Appendix B: Công cụ & Tài nguyên
+### Appendix B: Công cụ & Tài nguyên ✅ DRAFTED
 - Spring Boot, Spring Cloud
 - Apache Kafka
 - Docker, Docker Compose
 - IntelliJ IDEA
 - Postman/Swagger
+
+### Appendix C: Pattern Catalog ✅ DRAFTED
+- 40+ patterns, sắp xếp theo 9 categories
+- Cross-reference với chương và sách tham khảo
 
 ---
 
@@ -330,5 +334,5 @@
 | 2026-03-12 | Ch.1–6 revised: +⚠️ Sai lầm thường gặp callout per chapter (3-4 items each), +problem-first framing strengthened in Ch.4 §4.2. Based on IDEAS.md review. Updated write-chapter.md workflow with new checklist items. | AI+Author |
 | 2026-03-12 | Ch.7 drafted: database-per-service, DB decomposition strategies (5 methods), data duplication vs coupling, CQRS with leaderboard example, Event Sourcing overview, LMS shared DB analysis + migration path. | AI+Author |
 | 2026-03-12 | Ch.8 drafted: API Gateway pattern + BFF, Spring Cloud Gateway (WebFlux), route config with Eureka lb://, cross-cutting concerns (JWT, CORS, rate limiting, correlation ID), LMS gateway analysis. | AI+Author |
-| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed DBLAB naming in CORS config (Ch.8). Ch.10 drafted: test pyramid, unit testing (mocks), integration testing (Testcontainers), contract testing (Pact/Spring Cloud Contract), testing in production (canary/feature flags/shadowing), LMS zero-test-coverage gap analysis + 3-phase migration path. | AI+Author |
+| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed DBLAB naming in CORS config (Ch.8). Ch.10 drafted: test pyramid, unit testing (mocks), integration testing (Testcontainers), contract testing (Pact/Spring Cloud Contract), testing in production (canary/feature flags/shadowing), LMS zero-test-coverage gap analysis + 3-phase migration path. | AI+Author |\r\n| 2026-03-19 | Ch.10–11 rebalanced: reduced code blocks (Ch.10: 16→9, Ch.11: 21→11), added theory depth (Ch.10: +Testing EDA, Mock vs Stub, Test ROI; Ch.11: +Observability Maturity Model, SLI/SLO/SLA, Sampling Strategies, Alerting Strategy). Case studies shifted from source-code to business context analysis. | AI+Author |\r\n| 2026-03-19 | Ch.12 drafted: deployment challenges, containerization (Docker vs VM, 5 patterns), Docker Compose orchestration, CI/CD pipelines (mono/poly-repo), deployment strategies (Rolling/Blue-Green/Canary), IaC (3 levels), LMS deployment architecture analysis + 4-phase migration path. | AI+Author |
 

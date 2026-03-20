@@ -211,48 +211,11 @@ graph TB
 | **Claims-only** | Gateway | Mọi request | Verify JWT signature + expiry (stateless) |
 | **Header-trust** | Core, Judge, Assignment | Mọi request (sau gateway) | Tin tưởng `X-User-Id` và `X-User-Roles` từ gateway |
 
-```java
-// Auth Service — Full validation (DB lookup)
-public UserDetailCustom validateToken(String token) {
-    // 1. Verify signature + expiry
-    Claims claims = jwtUtil.extractAllClaims(token);
-    
-    // 2. Query DB — user still exists and active?
-    User user = userRepository.findById(claims.getUserId())
-        .orElseThrow(() -> new UnauthorizedException("User not found"));
-    
-    if (!user.isActive()) {
-        throw new UnauthorizedException("User deactivated");
-    }
-    
-    // 3. Check token not revoked (optional: token blacklist)
-    if (tokenBlacklistService.isRevoked(token)) {
-        throw new UnauthorizedException("Token revoked");
-    }
-    
-    return new UserDetailCustom(user);
-}
-```
+**Auth Service (full validation)**: verify JWT signature + expiry, query DB (“user still exists and active?”), check token blacklist. Nặng nhưng đảm bảo chính xác — dùng cho login, token refresh, sensitive operations.
 
-```java
-// Core Service — Claims-only (trust gateway)
-@RestController
-public class QuestionController {
-    
-    @GetMapping("/questions")
-    public List<QuestionResponse> getQuestions(
-        @RequestHeader("X-User-Id") String userId,
-        @RequestHeader("X-User-Roles") String roles
-    ) {
-        // Không validate JWT — tin tưởng gateway đã verify
-        // Chỉ check authorization: role có quyền xem questions?
-        if (!roles.contains("STUDENT") && !roles.contains("ADMIN")) {
-            throw new ForbiddenException("Insufficient permissions");
-        }
-        return questionService.findAll();
-    }
-}
-```
+**Core/Judge Service (claims-only)**: nhận `X-User-Id` và `X-User-Roles` từ headers (gateway đã inject). Không validate JWT lại — chỉ check authorization: `if (!roles.contains("STUDENT")) throw ForbiddenException`. Nhanh, stateless, tin tưởng gateway (vì traffic internal).
+
+Pattern này gọi là **claims-based identity propagation**: gateway validate token, services phía sau tin tưởng gateway và chỉ focus vào authorization.
 
 > **📐 Nguyên tắc — Validate at the Edge, Authorize at the Service**
 >
@@ -268,27 +231,7 @@ Tự quản lý username/password đòi hỏi: hash passwords (bcrypt), xử lý
 
 ### OAuth2 Authorization Code Flow
 
-LMS tích hợp **Google OAuth2** cho đăng nhập — sinh viên dùng tài khoản Google của trường:
-
-```mermaid
-sequenceDiagram
-    participant U as User (Browser)
-    participant LMS as LMS Auth Service
-    participant G as Google OAuth2
-    
-    U->>LMS: GET /oauth2/google
-    LMS-->>U: Redirect to Google consent
-    U->>G: Login with Google account
-    G-->>U: Redirect to LMS callback\n+ authorization code
-    U->>LMS: GET /oauth2/callback?code=xyz
-    LMS->>G: Exchange code for tokens\n(server-to-server)
-    G-->>LMS: {access_token, id_token}
-    LMS->>G: GET /userinfo (with access_token)
-    G-->>LMS: {email, name, picture}
-    
-    LMS->>LMS: Find or create user\nGenerate LMS JWT
-    LMS-->>U: {lmsAccessToken, lmsRefreshToken}
-```
+LMS tích hợp **Google OAuth2** cho đăng nhập — sinh viên dùng tài khoản Google của trường. Flow: User → redirect Google consent → login → callback với authorization code → Auth Service exchange code for tokens (server-to-server) → fetch userinfo → find/create user → generate LMS JWT.
 
 **Điểm quan trọng**: LMS *không dùng* Google token trực tiếp. Sau khi xác thực với Google, Auth Service tạo **JWT riêng của LMS** — services phía sau không biết user login bằng Google hay username/password. Đây là pattern **token exchange**: external token → internal token.
 
@@ -297,28 +240,13 @@ sequenceDiagram
 LMS hỗ trợ ba phương thức đăng nhập:
 
 | Method | Flow | Khi nào |
-|--------|------|--------|
+|--------|------|---------|
 | **Username/Password** | Truyền thống, hash bcrypt | Default cho mọi user |
 | **Google OAuth2** | Authorization Code Flow | Sinh viên dùng Google của trường |
 | **PTIT QLDT** | Custom integration | Login bằng tài khoản quản lý đào tạo |
 
-Tất cả đều converge vào cùng output: **LMS JWT token** — downstream services không phân biệt.
+Tất cả đều converge vào cùng output: **LMS JWT token** (chứa userId, roles, expiry). Auth Service expose `generateTokens(user)` — nhận User entity từ bất kỳ login method nào, trả về `{accessToken, refreshToken}`. Downstream services không phân biệt.
 
-```java
-// Auth Service — Token generation (chung cho mọi login method)
-public AuthResponse generateTokens(User user) {
-    String accessToken = jwtUtil.generateToken(
-        user.getId(),
-        user.getRoles(),       // "STUDENT" hoặc "ADMIN|LECTURER"
-        Duration.ofHours(24)
-    );
-    String refreshToken = jwtUtil.generateRefreshToken(
-        user.getId(),
-        Duration.ofDays(30)
-    );
-    return new AuthResponse(accessToken, refreshToken);
-}
-```
 
 ---
 
@@ -339,33 +267,17 @@ Authentication trả lời "bạn là ai?". Authorization trả lời "bạn đ�
 LMS dùng Spring Security `@PreAuthorize` annotation với roles lưu trong JWT:
 
 ```java
-// Roles stored as pipe-delimited string in JWT
-// "STUDENT" or "ADMIN|LECTURER" or "ADMIN|LECTURER|STUDENT"
+// Spring Security @PreAuthorize — declarative RBAC
+@GetMapping("/questions")
+public List<QuestionResponse> getQuestions() { ... }  // Mọi user authenticated
 
-@RestController
-@RequestMapping("/questions")
-public class QuestionController {
-    
-    // Mọi user authenticated đều xem được
-    @GetMapping
-    public List<QuestionResponse> getQuestions() {
-        return questionService.findAll();
-    }
-    
-    // Chỉ LECTURER hoặc ADMIN mới tạo được
-    @PreAuthorize("hasAnyRole('LECTURER', 'ADMIN')")
-    @PostMapping
-    public QuestionResponse createQuestion(@RequestBody CreateQuestionRequest request) {
-        return questionService.create(request);
-    }
-    
-    // Chỉ ADMIN mới xóa được
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void deleteQuestion(@PathVariable UUID id) {
-        questionService.delete(id);
-    }
-}
+@PreAuthorize("hasAnyRole('LECTURER', 'ADMIN')")
+@PostMapping("/questions")
+public QuestionResponse create(@RequestBody CreateQuestionRequest r) { ... }
+
+@PreAuthorize("hasRole('ADMIN')")
+@DeleteMapping("/questions/{id}")
+public void delete(@PathVariable UUID id) { ... }
 ```
 
 ### Role Hierarchy
@@ -388,20 +300,7 @@ LMS lưu roles dạng **pipe-delimited** trong JWT: `"ADMIN|LECTURER|STUDENT"`. 
 
 ### API-driven Route Protection (Frontend)
 
-LMS frontend sử dụng pattern khác biệt: **route permissions được fetch từ API** thay vì hardcoded:
-
-```javascript
-// Frontend — fetch permissions từ API
-const permissions = await api.get('/api/auth/me/permissions');
-// Response: { routes: ["/questions", "/contests"], actions: ["VIEW", "CREATE"] }
-
-// Dynamic route rendering
-const routes = allRoutes.filter(route => 
-    permissions.routes.includes(route.path)
-);
-```
-
-Ưu điểm: thay đổi permissions ở backend → frontend tự cập nhật, không cần deploy lại. Nhược điểm: thêm API call khi khởi tạo app.
+LMS frontend sử dụng pattern khác biệt: **route permissions được fetch từ API** (`GET /api/auth/me/permissions`) thay vì hardcoded — response chứa danh sách routes và actions mà user được phép. Frontend dynamic render routes dựa trên permissions này. Ưu điểm: thay đổi permissions ở backend → frontend tự cập nhật, không cần deploy lại.
 
 > **🔍 Phân tích gap — RBAC trong LMS**
 >
