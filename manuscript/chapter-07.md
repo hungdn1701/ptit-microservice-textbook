@@ -92,6 +92,20 @@ Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hi
 >
 > **Migration path**: (1) xác định bảng nào thuộc về Core, bảng nào thuộc Assignment (dựa vào bounded context analysis từ Ch.2), (2) tạo separate schema trong cùng PostgreSQL, (3) thay thế cross-table queries bằng API calls qua Feign, (4) dài hạn: tách database server khi cần polyglot hoặc independent scaling.
 
+### Industry Case Study: Uber — Domain-Oriented Microservice Architecture (DOMA)
+
+Uber (2020) công bố bài học từ việc quản lý **4,000+ microservices** — trong đó data ownership là thách thức lớn nhất. Adam Gluck mô tả cách Uber chuyển từ "microservices spaghetti" sang **DOMA** (Domain-Oriented Microservice Architecture):
+
+| Giai đoạn | Vấn đề | Giải pháp |
+|-----------|--------|-----------|
+| **2012-2016** — Monolith → microservices | Services tăng nhanh, không ai hiểu dependency graph | Mỗi team tạo service riêng, thiếu chuẩn |
+| **2016-2018** — Microservices spaghetti | 4,000+ services, mỗi service truy cập data của service khác trực tiếp | Data coupling giữa services phá vỡ autonomy |
+| **2018-2020** — DOMA | Nhóm services thành **domains** (tương tự bounded context), mỗi domain có *gateway service* duy nhất expose data cho bên ngoài | Giảm coupling: services bên ngoài domain chỉ giao tiếp qua domain gateway |
+
+**Bài học cho từ Uber**: (1) Database-per-service là cần thiết nhưng *chưa đủ* — cần thêm *domain-level data encapsulation*. (2) Khi hệ thống lớn, nhóm services thành domains giúp giảm exponential dependency growth. (3) Data duplication giữa domains là chấp nhận được — domain gateway kiểm soát data nào expose.
+
+*Nguồn: Adam Gluck, "Introducing Domain-Oriented Microservice Architecture," Uber Engineering Blog, July 2020 (eng.uber.com/microservice-architecture/). Xem thêm: Uber Technology Day 2019 talks.*
+
 ---
 
 ### CAP Theorem — Hiểu đúng giới hạn

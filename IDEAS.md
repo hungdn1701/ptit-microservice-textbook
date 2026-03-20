@@ -35,8 +35,8 @@
 - [x] **Ch.10** — Component Testing: scope diagram, comparison table (unit/component/integration), LMS application.
 - [x] **Ch.11** — Chaos Engineering: 5 principles, failure injection categories, 3 LMS experiments.
 - [x] **Ch.12** — Serverless (comparison table, when/when not, LMS Notification candidate) + Sidecar/Service Mesh (architecture diagram, comparison table).
-- [ ] **Chung** — Thêm Industry Case Studies chi tiết hơn bên cạnh Netflix/Amazon/Uber (đã có ở Ch.1): Spotify squad model (Ch.2), Uber domain model migration (Ch.7), Netflix chaos engineering (Ch.11). Lưu ý nguồn, tính xác thực của số liệu (cần dẫn chứng nguồn ở cuối chương, nếu cần credit thì ghi rõ)
-- [ ] **Chung** — Anti-pattern catalog appendix: tổng hợp tất cả ⚠️ Sai lầm thường gặp từ 12 chương vào 1 bảng tra cứu.
+- [x] **Chung** — Industry Case Studies: Spotify squad model (Ch.2), Uber DOMA (Ch.7), Netflix Simian Army (Ch.11). Có dẫn nguồn.
+- [x] **Chung** — Anti-pattern catalog appendix: `appendix-d-anti-patterns.md` — 42 anti-patterns, 6 categories, cross-referenced.
 
 ## Ý tưởng đã xử lý
 

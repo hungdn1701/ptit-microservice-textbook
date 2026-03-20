@@ -486,6 +486,25 @@ Nguyên tắc (theo *Principles of Chaos Engineering* — principlesofchaos.org)
 >
 > Không cần Chaos Monkey hoặc tools phức tạp. Bắt đầu đơn giản: `docker stop judge-service` trên staging → quan sát logs → xem system recover không. Đây đã là chaos engineering. Khi team quen, nâng lên: automated chaos experiments chạy trong CI/CD pipeline.
 
+### Industry Case Study: Netflix Simian Army
+
+Netflix là pioneer của Chaos Engineering. Năm 2010, sau khi migrate từ datacenter sang AWS, Netflix tạo **Chaos Monkey** — tool tự động kill random EC2 instances trong production. Mục đích: nếu system survive random failures hàng ngày, nó sẽ survive failures thật.
+
+Chaos Monkey phát triển thành **Simian Army** — tập hợp tools chuyên biệt:
+
+| Tool | Chức năng | Bài học |
+|------|----------|---------|
+| **Chaos Monkey** | Kill random instances | Services phải stateless, auto-restart |
+| **Chaos Kong** | Simulate entire region failure | Multi-region failover phải hoạt động |
+| **Latency Monkey** | Inject network delay | Timeout + circuit breaker phải configured đúng |
+| **Conformity Monkey** | Kiểm tra instance tuân thủ best practices | Automation replaces manual auditing |
+
+**Kết quả**: Netflix đạt **99.99% availability** (52 phút downtime/năm) — phục vụ 200+ triệu subscribers. Casey Rosenthal (Netflix Director of Engineering) sau đó founder Verica và co-author *Chaos Engineering: System Resiliency in Practice* (O'Reilly, 2020).
+
+**Bài học cho hệ thống nhỏ**: LMS không cần Simian Army. Nhưng nguyên tắc cốt lõi áp dụng: *nếu bạn sợ kill một service, đó là dấu hiệu hệ thống thiếu resilience*. Bắt đầu manual (`docker stop`), tiến tới automated (CI/CD chaos stage).
+
+*Nguồn: Netflix Technology Blog, "The Netflix Simian Army," 2011 (netflixtechblog.com). Casey Rosenthal et al., Chaos Engineering: System Resiliency in Practice, O'Reilly, 2020.*
+
 ---
 
 ## 11.7 Case Study: Observability trong hệ thống LMS
