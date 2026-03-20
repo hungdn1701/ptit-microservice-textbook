@@ -455,6 +455,39 @@ sequenceDiagram
 
 ---
 
+### Chaos Engineering — Kiểm tra Resilience chủ động
+
+Observability cho phép **phát hiện** sự cố. Nhưng làm sao biết hệ thống sẽ phản ứng thế nào *trước khi* sự cố thật xảy ra? **Chaos Engineering** — phương pháp được Netflix phổ biến qua Chaos Monkey (2011) — trả lời câu hỏi này bằng cách **chủ động inject failures** vào production/staging và quan sát phản ứng.
+
+Nguyên tắc (theo *Principles of Chaos Engineering* — principlesofchaos.org):
+
+1. **Xác định "steady state"** — hệ thống hoạt động bình thường trông như thế nào? (metrics: latency < 200ms, error rate < 0.1%, throughput > 100 req/s)
+2. **Đặt giả thuyết** — "Nếu Judge Service chết, submissions vẫn được queue và xử lý khi Judge restart"
+3. **Inject failure** — Kill Judge Service container
+4. **Observe** — Steady state có bị phá vỡ không? System recover trong bao lâu?
+5. **Fix weaknesses** — Nếu steady state bị phá vỡ → fix system, không phải fix test
+
+| Loại failure injection | Ví dụ | Tool |
+|-----------------------|-------|------|
+| **Process failure** | Kill container/service | Chaos Monkey, `docker stop` |
+| **Network failure** | Delay, packet loss, partition | Toxiproxy, Gremlin |
+| **Resource exhaustion** | CPU 100%, disk full, memory leak | stress-ng, Gremlin |
+| **Dependency failure** | Database down, Kafka unavailable | Litmus, manual |
+
+Áp dụng cho LMS — ba chaos experiments hữu ích:
+
+| Experiment | Giả thuyết | Kết quả mong đợi |
+|-----------|-----------|-----------------|
+| Kill Judge Service | Submissions queue trong Kafka, xử lý khi restart | Kafka retention giữ messages, Judge catch up |
+| Network delay 500ms giữa Gateway↔Core | Users experience slower response nhưng không lỗi | Circuit breaker/timeout ngăn cascade |
+| PostgreSQL restart | Core Service reconnect tự động | Connection pool (HikariCP) handle reconnection |
+
+> **💡 Tip — Bắt đầu Chaos Engineering từ staging**
+>
+> Không cần Chaos Monkey hoặc tools phức tạp. Bắt đầu đơn giản: `docker stop judge-service` trên staging → quan sát logs → xem system recover không. Đây đã là chaos engineering. Khi team quen, nâng lên: automated chaos experiments chạy trong CI/CD pipeline.
+
+---
+
 ## 11.7 Case Study: Observability trong hệ thống LMS
 
 ### Hiện trạng — Đánh giá theo Maturity Model

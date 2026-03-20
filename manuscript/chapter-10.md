@@ -154,6 +154,46 @@ class SubmitServiceTest {
 
 ### Vấn đề: mock không bắt được lỗi infrastructure
 
+Integration tests verify rằng service hoạt động đúng với **real dependencies** — database thật, message broker thật. Mock che giấu lỗi: SQL queries sai, schema mismatch, serialization failures.
+
+### Component Testing — Test Service in Isolation
+
+Richardson trong [2a, Ch.9] dành section riêng cho **Component Testing** — level nằm giữa unit test và integration test. Component test chạy **một service hoàn chỉnh** nhưng với dependencies được mock hoặc stub:
+
+```mermaid
+graph TB
+    subgraph ComponentTest["Component Test Scope"]
+        CT["Test Client"] --> SVC["Core Service<br/>(real)"]
+        SVC --> DB["PostgreSQL<br/>(Testcontainers)"]
+        SVC --> MOCK_KF["Kafka<br/>(embedded/mock)"]
+        SVC --> MOCK_FE["Judge Service<br/>(WireMock stub)"]
+    end
+    
+    style SVC fill:#E8F5E9
+    style DB fill:#E3F2FD
+    style MOCK_KF fill:#FFF9C4
+    style MOCK_FE fill:#FFF9C4
+```
+
+| Aspect | Unit Test | Component Test | Integration Test |
+|--------|-----------|---------------|-----------------|
+| **Scope** | Single class/method | Một service hoàn chỉnh | Nhiều services cùng chạy |
+| **Dependencies** | Mock tất cả | Real DB + mock external services | Real tất cả |
+| **Speed** | Milliseconds | Seconds (container startup) | Minutes |
+| **Catches** | Logic errors | SQL/schema errors, API routing, config | Cross-service failures |
+
+Trong LMS, component test cho Core Service: khởi động Spring Boot context → Testcontainers PostgreSQL → WireMock stub cho Judge Service. Test full happy path: tạo question → submit → verify submission saved đúng → verify Kafka message published. Đây là nơi bắt được 80% bugs mà unit test không thể.
+
+> **📐 Nguyên tắc — Component Test = Best ROI**
+>
+> "Component tests give the best return on investment: they test realistic scenarios (real DB, real Spring context) while keeping test speed acceptable and dependencies manageable."
+>
+> *— Nguyên tắc testing (Richardson [2a, Ch.10], Rocha [5, Ch.10])*
+
+---
+
+## 10.4 Contract Testing — Ngăn Integration Breakage
+
 Unit tests với mock kiểm tra logic business — nhưng **không bắt được lỗi tương tác** với database, message broker, hoặc external APIs:
 - Query SQL sai cú pháp → mock trả về kết quả đúng, production fail
 - Kafka message serialization lỗi → mock không phát hiện

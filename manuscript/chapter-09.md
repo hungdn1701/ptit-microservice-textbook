@@ -84,6 +84,32 @@ Trong thực tế, mức độ áp dụng tùy thuộc vào **trust boundary**. 
 >
 > "Zero Trust" (mọi request đều verify, mọi service đều nghi ngờ) là lý tưởng. Trong thực tế, team nhỏ thường áp dụng **pragmatic trust**: gateway verify identity, services tin tưởng gateway. Newman trong [4a, Ch.9] ghi nhận: mức trust phù hợp phụ thuộc vào risk profile — hệ thống tài chính cần zero trust, hệ thống nội bộ có thể pragmatic trust. LMS là hệ thống academic nội bộ → pragmatic trust là hợp lý.
 
+### Advanced: mTLS, Secrets Management, OAuth2 Scopes
+
+Khi hệ thống scale hoặc risk profile tăng (thêm payment, personal data), cần nâng cấp bảo mật:
+
+**mTLS (Mutual TLS)** — Trong TLS thông thường, chỉ client verify server (browser verify HTTPS certificate). Trong mTLS, **cả hai bên verify nhau**: Service A gọi Service B → B verify certificate của A, A verify certificate của B. Ngăn service lạ gọi vào internal API.
+
+| Aspect | Không mTLS | Có mTLS |
+|--------|----------|---------|
+| Internal calls | HTTP không mã hóa | TLS mã hóa + mutual authentication |
+| Attacker vào network | Có thể gọi bất kỳ service | Bị từ chối vì thiếu certificate |
+| Implementation | Đơn giản | Cần certificate management (cert-manager, Istio) |
+
+Trong LMS, mTLS hiện chưa cần (hệ thống nội bộ, single host). Nhưng nếu LMS deploy trên cloud với nhiều nodes → mTLS ngăn lateral movement nếu một node bị compromise.
+
+**Secrets Management** — Credentials (DB passwords, API keys, JWT secrets) không nên nằm trong code hoặc Docker images:
+
+| Level | Cách lưu secrets | Rủi ro |
+|-------|-----------------|--------|
+| ❌ Hardcode | `password: "abc123"` trong code | Lộ qua git history |
+| ⚠️ Environment variables | `.env` file, Docker env | Lộ qua `docker inspect`, process listing |
+| ✅ Secrets manager | HashiCorp Vault, AWS Secrets Manager | Encrypted, audit log, rotation |
+
+LMS hiện dùng environment variables (đủ cho scope academic) — nhưng JWT secret nên rotate định kỳ và không commit vào git.
+
+**OAuth2 Scopes** — Hiện tại LMS RBAC dùng roles (STUDENT, LECTURER, ADMIN). OAuth2 scopes mở rộng: thay vì "user có role ADMIN", scope cho phép "client application X có quyền `read:submissions` nhưng không có `write:grades`". Phù hợp khi LMS expose API cho third-party (mobile app độc lập, integration với hệ thống khác).
+
 ---
 
 ## 9.2 JWT — Cấu trúc và Cơ chế

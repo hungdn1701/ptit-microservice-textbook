@@ -94,6 +94,85 @@ Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hi
 
 ---
 
+### CAP Theorem — Hiểu đúng giới hạn
+
+CAP Theorem được đề cập ngắn gọn ở trên, nhưng hiểu *đúng* CAP rất quan trọng khi thiết kế data management. Kleppmann trong [7, Ch.9] phân tích kỹ: CAP không phải "chọn 2 trong 3" như thường hiểu sai — mà là: **khi network partition xảy ra** (và nó *sẽ* xảy ra trong distributed systems), bạn phải chọn giữa consistency và availability.
+
+```mermaid
+graph TB
+    subgraph Partition["Khi Network Partition xảy ra"]
+        CP["CP System<br/><i>Chọn Consistency</i><br/>Trả lỗi thay vì<br/>data cũ/sai"]
+        AP["AP System<br/><i>Chọn Availability</i><br/>Trả data có thể cũ<br/>nhưng luôn trả về"]
+    end
+    
+    style CP fill:#E3F2FD
+    style AP fill:#E8F5E9
+```
+
+**CP Systems** (Consistency when Partitioned): khi partition xảy ra, system từ chối request thay vì trả data không nhất quán. Ví dụ: PostgreSQL cluster đặt consistency lên trên — node không đồng bộ sẽ trả lỗi.
+
+**AP Systems** (Availability when Partitioned): khi partition xảy ra, system vẫn trả response nhưng data có thể stale. Ví dụ: Cassandra, DynamoDB cho phép đọc/ghi ở bất kỳ node nào — data *eventually* consistent.
+
+Áp dụng cho LMS:
+
+| Service | Data | Nên CP hay AP? | Lý do |
+|---------|------|---------------|-------|
+| **Submission** (tạo, chấm) | Transactional | **CP** | Score phải chính xác, sai = tranh cãi. Chấp nhận lỗi "service unavailable" hơn là sai score |
+| **Leaderboard** | Derived/read | **AP** | Eventual consistency OK — user chấp nhận ranking "chậm vài giây" hơn là "service unavailable" |
+| **User profile** | Reference | **AP** | Tên sinh viên thay đổi rất hiếm, stale data vài phút không vấn đề |
+| **Contest timer** | Real-time | **CP** | Thời gian thi phải chính xác — sai = ảnh hưởng công bằng |
+
+> **📐 Nguyên tắc — Per-Service CAP Decision**
+>
+> Không phải toàn bộ hệ thống "là CP" hay "là AP". Mỗi service, thậm chí mỗi *use case*, chọn trade-off riêng. Kleppmann trong [7, Ch.9] gọi đây là "real-world application of CAP": phân tích *từng data flow* — data nào cần strong consistency (ACID), data nào chấp nhận eventual consistency (BASE).
+
+### Caching Strategies — Giảm load và latency
+
+Khi database đã tách, cross-service queries chậm hơn (network call). **Caching** là phương pháp hiệu quả nhất để giảm latency — nhưng cần chiến lược đúng để tránh stale data.
+
+Ba patterns chính (Newman [4a, Ch.11]):
+
+```mermaid
+graph TB
+    subgraph CacheAside["1. Cache-Aside (Lazy Loading)"]
+        A1["App đọc cache"] -->|"miss"| A2["Đọc DB"]
+        A2 --> A3["Ghi vào cache"]
+        A1 -->|"hit"| A4["Trả về"]
+    end
+    
+    subgraph ReadThrough["2. Read-Through"]
+        B1["App đọc cache"] -->|"miss"| B2["Cache tự đọc DB"]
+        B2 --> B3["Cache lưu + trả về"]
+    end
+    
+    subgraph WriteThrough["3. Write-Behind (Async)"]
+        C1["App ghi cache"] --> C2["Cache ghi DB async"]
+        C2 --> C3["Batch/delayed write"]
+    end
+    
+    style CacheAside fill:#E3F2FD
+    style ReadThrough fill:#E8F5E9
+    style WriteThrough fill:#FFF9C4
+```
+
+| Pattern | Ưu điểm | Nhược điểm | Áp dụng LMS |
+|---------|---------|------------|-------------|
+| **Cache-Aside** | Đơn giản, app kiểm soát | Cache miss = 2 calls (cache + DB) | Question list, user profiles |
+| **Read-Through** | Transparent cho app | Cache layer phức tạp hơn | — |
+| **Write-Behind** | Write nhanh (async) | Risk mất data nếu cache crash | Leaderboard score updates |
+
+**Cache Invalidation** — "There are only two hard things in Computer Science: cache invalidation and naming things." (Phil Karlton). Chiến lược:
+
+| Chiến lược | Mô tả | Khi nào dùng |
+|-----------|-------|-------------|
+| **TTL (Time-to-Live)** | Cache hết hạn sau N giây | Reference data ít thay đổi (question list: TTL 5 phút) |
+| **Event-driven invalidation** | Service publish event → cache bị xóa | Data thay đổi thường xuyên (score update → invalidate leaderboard cache) |
+| **Versioned keys** | Cache key chứa version: `questions:v3` | Khi cần invalidate toàn bộ sau schema change |
+
+Trong LMS, Redis phù hợp nhất cho caching: đã có trong stack (dùng cho rate limiting ở Gateway — Ch.8), hỗ trợ TTL tự động, pub/sub cho invalidation events.
+
+---
+
 ## 7.2 Chiến lược tách Database từ Monolith
 
 ### Vấn đề: tách service dễ, tách data khó
