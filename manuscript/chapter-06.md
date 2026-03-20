@@ -226,19 +226,45 @@ Compensation không phải "undo" — nó là **hành động nghiệp vụ ngư
 
 ### Vấn đề isolation — Anomalies
 
-Saga không có isolation (chữ I trong ACID). Khi nhiều sagas chạy đồng thời trên cùng data, xảy ra **anomalies** [2a, Ch.4]:
+Saga không có isolation (chữ I trong ACID). Trong database truyền thống, transactions chạy đồng thời nhưng cách ly bởi isolation levels (READ COMMITTED, SERIALIZABLE). Saga không có cơ chế tương đương — kết quả trung gian của saga *có thể nhìn thấy* bởi sagas khác. Richardson trong [2a, Ch.4] gọi đây là **lack of isolation** — vấn đề nghiêm trọng nhất của Saga pattern.
 
-| Anomaly | Mô tả | Ví dụ LMS |
-|---------|-------|-----------|
-| **Lost updates** | Saga 1 ghi đè kết quả Saga 2 | Hai submissions cùng user: submission A judged → update score, nhưng submission B đang xử lý → ghi đè score |
-| **Dirty reads** | Saga 1 đọc data chưa commit của Saga 2 | Leaderboard đọc score khi submission đang JUDGING — score tạm thời sai |
-| **Fuzzy reads** | Data thay đổi giữa hai lần read | Contest ranking thay đổi giữa lúc user mở bảng xếp hạng và lúc submit |
+Ba anomalies chính:
+
+**1. Lost Updates** — Saga A ghi đè kết quả mà Saga B đã viết, mà không biết Saga B đã thay đổi data.
+
+```mermaid
+sequenceDiagram
+    participant SA as Saga A (Submit #1)
+    participant DB as Score DB
+    participant SB as Saga B (Submit #2)
+    
+    SA->>DB: Read score = 100
+    SB->>DB: Read score = 100
+    SA->>DB: Write score = 110 (+10)
+    SB->>DB: Write score = 105 (+5)
+    Note over DB: Final: 105 ❌ (should be 115)
+```
+
+Ví dụ LMS: hai submissions của cùng user — submission A (score +10) và B (score +5) xử lý đồng thời. Cả hai đọc score=100, A set 110, B set 105. Score đúng phải là 115 nhưng chỉ là 105 — update của A bị mất.
+
+**2. Dirty Reads** — Saga A đọc data mà Saga B đã ghi nhưng chưa hoàn thành (có thể sẽ rollback).
+
+Ví dụ LMS: Saga B bắt đầu judging submission → update score tạm. Leaderboard (Saga A) đọc score mới. Saga B gặp lỗi → compensate, revert score. Nhưng leaderboard đã hiển thị score sai → user confused.
+
+**3. Non-repeatable/Fuzzy Reads** — Data thay đổi giữa hai lần read trong cùng saga.
+
+Ví dụ LMS: Contest ranking thay đổi giữa lúc user mở bảng xếp hạng và lúc submit — user thấy mình đứng hạng 3, nhưng khi kết quả trả về, rankings đã thay đổi vì saga khác hoàn thành.
+
+> **📐 Nguyên tắc — ACD thay vì ACID**
+>
+> Richardson trong [2a, Ch.4] chỉ ra: Sagas chỉ đảm bảo **ACD** (Atomicity, Consistency, Durability) — *không có Isolation*. Atomicity đạt được nhờ compensating transactions (rollback logic). Consistency bảo toàn bởi business rules trong mỗi local transaction. Durability do mỗi database đảm bảo. Nhưng Isolation phải được xử lý riêng — bằng **countermeasures**.
 
 ### Countermeasures
 
 Richardson đề xuất các countermeasures [2a, Ch.4], áp dụng cho LMS:
 
-**1. Semantic Lock** — Đặt cờ "đang xử lý" trên record:
+**1. Semantic Lock** — Đặt cờ "đang xử lý" trên record, ngăn saga khác đọc/ghi data chưa final:
+
 ```java
 // Khi saga bắt đầu — không cho phép re-submit cùng câu hỏi
 submission.setStatus(SubmissionStatus.JUDGING); // semantic lock
@@ -254,7 +280,8 @@ submission.setStatus(SubmissionStatus.JUDGED);  // release
 submissionRepository.save(submission);
 ```
 
-**2. Commutative Updates** — Thiết kế updates không phụ thuộc thứ tự:
+**2. Commutative Updates** — Thiết kế updates không phụ thuộc thứ tự — giải quyết **lost updates**:
+
 ```java
 // ❌ Không commutative: set absolute value — thứ tự quan trọng
 user.setTotalScore(150);
@@ -267,7 +294,8 @@ user.incrementScore(+5);   // submission B correct
 
 **3. Pessimistic View** — Sắp xếp saga steps để giảm dirty reads: đặt retriable steps (update score, send notification) *sau* pivot transaction (execute SQL). LMS đã tự nhiên tuân thủ — score chỉ update sau khi Judge xong.
 
-**4. Re-read Value** — Đọc lại data trước khi quyết định (tương tự optimistic locking):
+**4. Re-read Value** — Đọc lại data trước khi quyết định (tương tự optimistic locking) — giải quyết **non-repeatable reads**:
+
 ```java
 // Trước khi update score, kiểm tra submission chưa bị cancel
 Submission fresh = submissionRepository.findById(submissionId);
@@ -275,6 +303,16 @@ if (fresh.getStatus() == SubmissionStatus.CANCELLED) {
     return; // User đã cancel — không update score
 }
 ```
+
+**5. Version File** — Ghi lại thứ tự operations, reorder nếu cần. Ví dụ: nếu Saga A và B đều update score, Version File ghi `[A:+10, B:+5]` — xử lý tuần tự thay vì đồng thời. Trong LMS, Kafka topic `score-updates` tự nhiên là Version File: messages xử lý theo thứ tự partition.
+
+### Tổng hợp: Anomaly → Countermeasure
+
+| Anomaly | Countermeasure phù hợp | Áp dụng LMS |
+|---------|----------------------|-------------|
+| **Lost updates** | Commutative updates, Version File | `incrementScore(+delta)` thay vì `setScore(value)` |
+| **Dirty reads** | Semantic lock, Pessimistic view | `JUDGING` status flag ngăn đọc score chưa final |
+| **Non-repeatable reads** | Re-read value | Check `status != CANCELLED` trước khi commit |
 
 ---
 

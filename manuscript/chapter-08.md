@@ -95,7 +95,19 @@ graph TB
 | **API Gateway** | Một gateway cho tất cả clients | Team nhỏ, clients cần API tương tự |
 | **BFF** | Gateway riêng cho mỗi loại client | Mobile cần API khác web (ít data, batched calls) |
 
-LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web frontends (student + admin) với API requirements tương tự. BFF cần thiết nếu thêm mobile app với yêu cầu API khác biệt (batched calls, reduced payloads).
+LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web frontends (student + admin) với API requirements tương tự.
+
+**Khi nào cần BFF?** BFF trở nên cần thiết khi different clients có **fundamentally different API needs** — không chỉ "filter bớt fields":
+
+| Scenario | Single Gateway | BFF |
+|----------|---------------|-----|
+| Web + Web admin (API tương tự) | ✅ Đủ | Over-engineering |
+| Web + Mobile (API khác nhau) | ❌ Mobile phải nhiều calls | ✅ Mobile BFF aggregate |
+| Web + IoT + Partner API | ❌ Gateway quá phức tạp | ✅ BFF per client type |
+
+Ví dụ: nếu LMS thêm **mobile app** cho sinh viên, mobile cần: (1) **batched API** — màn hình "Dashboard" cần gọi 1 API trả về cả profile, recent submissions, leaderboard rank (thay vì 3 calls — mobile network chậm hơn), (2) **reduced payload** — mobile không cần HTML-ready data, chỉ cần raw data nhẹ, (3) **push notification integration** — gateway riêng cho mobile xử lý device tokens.
+
+Newman trong [4a, Ch.4] khuyến nghị: BFF nên **owned by frontend team** — team mobile viết Mobile BFF, team web viết Web BFF. Mỗi BFF là thin layer: nhận request từ client → gọi downstream services → aggregate + transform → trả về format phù hợp cho client đó.
 
 ---
 

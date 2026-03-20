@@ -42,7 +42,9 @@ graph TB
     style L3 fill:#42A5F5,color:white
 ```
 
-Hầu hết microservices thực tế (bao gồm LMS) hoạt động ở **Level 2** — sử dụng đúng resources và HTTP verbs. Level 3 (HATEOAS) hiếm khi được áp dụng đầy đủ trong thực tế vì tăng complexity mà lợi ích không rõ ràng cho internal APIs [4a, Ch.4].
+Hầu hết microservices thực tế (bao gồm LMS) hoạt động ở **Level 2** — sử dụng đúng resources và HTTP verbs.
+
+**Level 3 (HATEOAS) — Khi nào cần?** HATEOAS (*Hypermedia as the Engine of Application State*) yêu cầu response chứa links điều hướng — client không cần biết trước URL structure, chỉ follow links từ response. Ví dụ: `GET /questions/123` trả về `{..., "_links": {"submissions": "/questions/123/submissions", "edit": "/questions/123"}}`. Ưu điểm: API self-documenting, client không depend vào URL structure. Nhược điểm: tăng payload size, phức tạp response format, hầu hết frontend frameworks (React, Angular) không leverage HATEOAS. Trong thực tế, HATEOAS hiếm khi được áp dụng cho internal APIs [4a, Ch.4] — phù hợp hơn cho public APIs khi provider không kiểm soát consumer (GitHub API là ví dụ tiêu biểu).
 
 ### Nguyên tắc thiết kế REST API
 
@@ -83,11 +85,72 @@ Hầu hết microservices thực tế (bao gồm LMS) hoạt động ở **Level
 
 **4. Plural nouns, consistent naming** — Luôn dùng số nhiều cho collection: `/questions`, không phải `/question`. Chọn một convention (kebab-case, camelCase, snake_case) và giữ nhất quán xuyên suốt.
 
-**5. Pagination, filtering, sorting** — Mọi endpoint trả về collection phải hỗ trợ phân trang:
+**5. Pagination, filtering, sorting** — Mọi endpoint trả về collection phải hỗ trợ phân trang. Có hai chiến lược chính:
+
+| Chiến lược | Request | Ưu điểm | Nhược điểm |
+|-----------|---------|---------|------------|
+| **Offset-based** | `?page=2&size=20` | Đơn giản, jump to page | Performance giảm ở page lớn (DB phải skip N rows), kết quả không ổn định nếu data thêm/xóa giữa chừng |
+| **Cursor-based** | `?after=abc123&limit=20` | Performance ổn định (O(1) với index), kết quả nhất quán | Không jump to page, phức tạp hơn |
+
+LMS sử dụng **offset-based** (Spring Data `Pageable`) — hợp lý cho danh sách câu hỏi (~1000 records). Với datasets lớn (submissions history, audit logs), cursor-based pagination hiệu quả hơn khi `page > 100`.
+
+Response pagination nên bao gồm metadata để client biết có thêm data không:
 
 ```
 GET /questions?page=0&size=20&sort=createdAt,desc&difficulty=HARD
+
+// Response envelope
+{
+  "data": [...],
+  "pagination": {
+    "page": 0,
+    "size": 20,
+    "totalElements": 157,
+    "totalPages": 8,
+    "hasNext": true
+  }
+}
 ```
+
+**6. Standardized Error Response** — Error responses cần format nhất quán để client xử lý programmatically. Lấy cảm hứng từ RFC 7807 (Problem Details for HTTP APIs), một error response nên bao gồm:
+
+| Field | Mô tả | Bắt buộc? |
+|-------|-------|----------|
+| `status` | HTTP status code | ✅ |
+| `error` | Mã lỗi machine-readable | ✅ |
+| `message` | Mô tả human-readable | ✅ |
+| `timestamp` | Thời điểm lỗi xảy ra | ⚠️ Nên có |
+| `path` | Request path gây lỗi | ⚠️ Nên có |
+| `details` | Chi tiết bổ sung (validation errors) | Optional |
+
+```
+// ✅ Standardized error response (RFC 7807-inspired)
+{
+  "status": 400,
+  "error": "VALIDATION_FAILED",
+  "message": "Input validation failed",
+  "timestamp": "2026-03-20T10:30:00Z",
+  "path": "/api/questions",
+  "details": [
+    {"field": "title", "message": "must not be blank"},
+    {"field": "difficulty", "message": "must be EASY, MEDIUM, or HARD"}
+  ]
+}
+```
+
+Mọi service trong hệ thống nên trả error cùng format — client chỉ cần viết **một** error handler. Trong Spring Boot, `@ControllerAdvice` + `GlobalExceptionHandler` giải quyết: mọi exception được catch tại một điểm duy nhất và biến thành response format chuẩn (xem thêm §3.5).
+
+**7. Idempotency** — Một số operations cần đảm bảo **idempotent**: gọi nhiều lần cho cùng kết quả. GET, PUT, DELETE tự nhiên idempotent. POST thì không — nếu client gọi `POST /submissions` hai lần (do network retry), có thể tạo hai submissions.
+
+Giải pháp: **Idempotency Key** — client gửi kèm header `Idempotency-Key: <UUID>`. Server kiểm tra key đã xử lý chưa: nếu rồi, trả kết quả cũ; nếu chưa, xử lý và lưu key. Stripe, PayPal đều dùng pattern này cho payment API — critical khi liên quan đến tài chính hoặc business operations quan trọng.
+
+| Method | Idempotent? | Giải pháp nếu không |
+|--------|------------|---------------------|
+| `GET` | ✅ Tự nhiên | — |
+| `PUT` | ✅ Tự nhiên | — |
+| `DELETE` | ✅ Tự nhiên | — |
+| `POST` | ❌ Không | `Idempotency-Key` header |
+| `PATCH` | ⚠️ Tùy | Depends on implementation |
 
 > **📐 Nguyên tắc — Contract-First vs Code-First**
 >

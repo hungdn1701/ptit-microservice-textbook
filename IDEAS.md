@@ -20,23 +20,22 @@
 - [ ] **Chung** — Cần thêm hình minh họa cho mỗi pattern, không chỉ diagram
 - [ ] Đọc được bài blog hay về Saga pattern: [link]
 -->
-- [ ] Tôi đang nghĩ về việc có một phân đoạn nào đó, có thể là ngay ở chapter 01 khi so sánh nguyên khối và microservice, có một đoạn thể hiện kinh nghiệm thực tế khi nhìn nhận một sản phẩm phần mềm, nhằm dự đoán nó là nguyên khối hay microservice dựa trên UX. Các khía cạnh nhìn vào nên là các khía cạnh kỹ thuật, có thể sẽ được trình bày ở các phần sau, một số hiện tượng có thể nhận biết được khi sự cố xảy ra, khi nhìn cách xử lý một tình huống, một transaction.
 
 ### 📐 Depth Improvement — Lượt revise tiếp theo (Audit 2026-03-20)
 
 > Audit so sánh với 5 reference books (Richardson, Newman, Mitra, Kleppmann, Rocha) cho thấy sách có pedagogy tốt nhất nhưng depth thấp hơn ở một số topics. Dưới đây là các điểm cần tăng cường depth trong lượt revise sau.
 
-- [ ] **Ch.3** — Mở rộng: thiếu pagination patterns, HATEOAS, error response format (RFC 7807), rate limit headers. Richardson dành 35 trang cho IPC — ta chỉ 350 dòng. Chương ngắn nhất trong sách.
-- [ ] **Ch.4** — Bổ sung gRPC depth: ví dụ streaming bi-directional, so sánh benchmark REST vs gRPC. Thêm resilience metrics: MTTR, MTTF, availability nines.
-- [ ] **Ch.6** — Saga thiếu isolation anomalies: dirty reads, lost updates, non-repeatable reads trong saga context. Richardson dành 50+ trang cho Saga — ta chỉ 437 dòng. Thêm countermeasures (semantic lock, commutative updates).
-- [ ] **Ch.7** — Bổ sung CAP theorem depth: Kleppmann dành nguyên Ch.9 cho topic này. Ta nhắc CAP ngắn gọn ở §7.1 — cần section riêng giải thích CP vs AP systems, linearizability vs eventual consistency, với ví dụ LMS cụ thể (leaderboard eventual vs submission ACID).
-- [ ] **Ch.7** — Thêm caching strategies: Redis patterns (cache-aside, read-through, write-behind), cache invalidation, TTL strategies. Newman dành section riêng cho caching ở Ch.11.
-- [ ] **Ch.8** — Thêm BFF (Backend for Frontend) pattern depth: khi nào nhiều gateways cho different clients (web, mobile, admin).
-- [ ] **Ch.9** — Bổ sung: Zero Trust Architecture overview, mTLS giữa services, Secrets Management (Vault), OAuth2 scopes cho fine-grained permissions.
-- [ ] **Ch.10** — Thêm Component Testing depth (Richardson dành section riêng): test single service in isolation with mock dependencies.
-- [ ] **Ch.11** — Thêm Chaos Engineering overview: resilience testing proactive (Chaos Monkey, Gremlin), failure injection.
-- [ ] **Ch.12** — Serverless deployment pattern cần section riêng (hiện chỉ 1 dòng trong bảng). Sidecar/Ambassador patterns cho service mesh.
-- [ ] **Chung** — Thêm Industry Case Studies chi tiết hơn bên cạnh Netflix/Amazon/Uber (đã có ở Ch.1): Spotify squad model (Ch.2), Uber domain model migration (Ch.7), Netflix chaos engineering (Ch.11).
+- [x] **Ch.3** — Mở rộng: pagination patterns (offset vs cursor), standardized error format (RFC 7807), idempotency keys, HATEOAS depth. 351→413 dòng.
+- [x] **Ch.4** — gRPC architecture depth (HTTP/2 multiplexing, Protobuf, 4 patterns) + resilience metrics (MTTR/MTTF/MTBF, availability nines, error budgets).
+- [x] **Ch.6** — Saga isolation anomalies (lost updates diagram, dirty reads, fuzzy reads) + ACD principle + 5 countermeasures + summary table.
+- [x] **Ch.7** — CAP theorem deep-dive (CP vs AP, per-service decision, LMS mapping) + caching strategies (cache-aside, read-through, write-behind, invalidation).
+- [x] **Ch.7** — Thêm caching strategies: Redis patterns (cache-aside, read-through, write-behind), cache invalidation, TTL strategies. (merged into above)
+- [x] **Ch.8** — BFF depth: when BFF needed (3 scenarios table), concrete LMS mobile example, ownership model.
+- [x] **Ch.9** — mTLS, Secrets Management (3 levels), OAuth2 scopes for fine-grained permissions.
+- [x] **Ch.10** — Component Testing: scope diagram, comparison table (unit/component/integration), LMS application.
+- [x] **Ch.11** — Chaos Engineering: 5 principles, failure injection categories, 3 LMS experiments.
+- [x] **Ch.12** — Serverless (comparison table, when/when not, LMS Notification candidate) + Sidecar/Service Mesh (architecture diagram, comparison table).
+- [ ] **Chung** — Thêm Industry Case Studies chi tiết hơn bên cạnh Netflix/Amazon/Uber (đã có ở Ch.1): Spotify squad model (Ch.2), Uber domain model migration (Ch.7), Netflix chaos engineering (Ch.11). Lưu ý nguồn, tính xác thực của số liệu (cần dẫn chứng nguồn ở cuối chương, nếu cần credit thì ghi rõ)
 - [ ] **Chung** — Anti-pattern catalog appendix: tổng hợp tất cả ⚠️ Sai lầm thường gặp từ 12 chương vào 1 bảng tra cứu.
 
 ## Ý tưởng đã xử lý

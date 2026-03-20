@@ -90,6 +90,14 @@ REST (HTTP/JSON) là lựa chọn phổ biến nhất, nhưng không phải duy 
 | **Streaming** | Không native (phải dùng SSE/WebSocket) | Bi-directional streaming native |
 | **Debugging** | Dễ (curl, Postman, browser) | Khó (cần gRPC tools) |
 
+**gRPC Architecture — Tại sao nhanh hơn?** gRPC nhanh hơn REST không chỉ nhờ binary encoding. Ba yếu tố kiến trúc quan trọng:
+
+1. **HTTP/2 multiplexing** — Nhiều requests cùng dùng một TCP connection (không cần mở connection mới mỗi request). Quan trọng khi service A gọi service B hàng trăm lần/giây.
+
+2. **Protocol Buffers** — Schema-first, binary encoding. Payload nhỏ hơn JSON 3-5x. Schema evolution built-in (backward/forward compatible) — `.proto` file *là* contract.
+
+3. **Four communication patterns**: Unary (request-response, như REST), Server streaming (server gửi stream), Client streaming (client gửi stream), **Bi-directional streaming** (cả hai gửi stream đồng thời). Bi-directional streaming rất phù hợp cho real-time use cases — ví dụ: Judge Service stream kết quả từng test case cho Frontend trong khi sinh viên vẫn đang xem.
+
 **Khi nào dùng gRPC thay REST?**
 - **Internal service-to-service**: performance quan trọng, không cần browser → gRPC
 - **Public API / Frontend**: cần browser support, human debugging → REST
@@ -99,6 +107,30 @@ REST (HTTP/JSON) là lựa chọn phổ biến nhất, nhưng không phải duy 
 > **🔍 Phân tích gap — LMS chỉ dùng REST**
 >
 > Hệ thống LMS chỉ sử dụng REST/JSON cho mọi giao tiếp. Với flow chấm bài SQL — nơi Judge Service nhận request và trả kết quả nhanh — gRPC có thể giảm latency đáng kể nhờ binary encoding và HTTP/2 multiplexing. Tuy nhiên, migration sang gRPC đòi hỏi thay đổi cả client và server, nên đây là **cải thiện performance**, không phải **migration bắt buộc**. Ưu tiên thấp hơn so với thêm resilience patterns.
+
+### Resilience Metrics — Đo lường độ tin cậy
+
+Trước khi áp dụng resilience patterns (§4.4), cần hiểu cách **đo lường** resilience. Bốn metrics cốt lõi:
+
+| Metric | Định nghĩa | Ví dụ LMS |
+|--------|-----------|-----------|
+| **MTBF** (Mean Time Between Failures) | Thời gian trung bình giữa hai lần sự cố | Judge Service crash trung bình 1 lần/tuần → MTBF = 168h |
+| **MTTR** (Mean Time To Recovery) | Thời gian trung bình để khôi phục | Trung bình 15 phút để phát hiện + restart → MTTR = 15min |
+| **MTTF** (Mean Time To Failure) | Thời gian trung bình từ recovery đến failure tiếp theo | MTTF = MTBF - MTTR |
+| **Availability** | % thời gian system hoạt động | = MTTF / (MTTF + MTTR) |
+
+**Availability "nines":**
+
+| Target | Downtime/năm | Downtime/tháng | Phù hợp cho |
+|--------|-------------|---------------|------------|
+| **99%** (two nines) | 3.65 ngày | 7.3 giờ | Internal tools, dev environments |
+| **99.9%** (three nines) | 8.76 giờ | 43.8 phút | **LMS production** (phù hợp) |
+| **99.99%** (four nines) | 52.6 phút | 4.38 phút | E-commerce, banking |
+| **99.999%** (five nines) | 5.26 phút | 26.3 giây | Critical infrastructure |
+
+> **📐 Nguyên tắc — Error Budgets**
+>
+> Google SRE (Site Reliability Engineering) đề xuất: nếu target availability = 99.9%, bạn có **error budget = 0.1%** downtime/tháng (43.8 phút). Dùng error budget cho: deployments, experimentation, controlled maintenance. Khi hết budget → freeze deployments, focus stability. Đây là cách biến "availability target" từ khái niệm mơ hồ thành **nguyên tắc vận hành cụ thể** (xem thêm SLI/SLO/SLA ở Ch.11).
 
 ---
 

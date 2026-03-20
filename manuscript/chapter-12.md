@@ -416,6 +416,66 @@ Với LMS — hệ thống giáo dục quy mô trung bình — **Level 1 (Docker
 
 ---
 
+### Serverless Deployment — Khi nào phù hợp?
+
+Richardson trong [2a, Ch.12] liệt kê **Serverless** (AWS Lambda, Google Cloud Functions, Azure Functions) là một deployment pattern cho microservices. Thay vì quản lý containers, bạn deploy *functions* — cloud provider quản lý infrastructure, auto-scale, và billing per invocation.
+
+| Aspect | Container (Docker/K8s) | Serverless |
+|--------|----------------------|-----------|
+| **Quản lý server** | Tự quản lý (hoặc managed K8s) | Cloud provider quản lý hoàn toàn |
+| **Scaling** | Configure auto-scaling rules | Auto-scale tự động (0 → N) |
+| **Cost model** | Pay per server/hour (running or not) | Pay per invocation (không dùng = không trả) |
+| **Cold start** | Không (container luôn chạy) | Có (100ms-3s khởi động lần đầu) |
+| **Stateful** | Có thể (volumes, sessions) | Stateless only |
+| **Runtime limit** | Không giới hạn | Thường 15 phút max per invocation |
+| **Vendor lock-in** | Thấp (Docker portable) | Cao (API riêng mỗi cloud) |
+
+**Khi nào serverless phù hợp cho microservices?**
+- **Event-driven, bursty workloads**: xử lý file upload, image resize, notification — không cần server chạy 24/7
+- **Glue functions**: kết nối services, transform data, trigger workflows
+- **Prototype/MVP**: deploy nhanh, không cần setup infrastructure
+
+**Khi nào KHÔNG phù hợp?**
+- **Low-latency critical paths**: cold start 100ms-3s không chấp nhận được cho synchronous API (LMS submit flow)
+- **Long-running processes**: Judge Service chạy SQL queries có thể mất >15 phút → serverless timeout
+- **Stateful services**: cần database connections, caching → serverless phải reconnect mỗi invocation
+
+Trong LMS, **Notification Service** là candidate tốt nhất cho serverless: event-driven (nhận event từ Kafka → gửi email/push), bursty (contest → nhiều notifications, bình thường → ít), stateless. Các services khác (Core, Judge, Gateway) phù hợp với containers hơn.
+
+### Sidecar Pattern và Service Mesh
+
+Khi hệ thống microservices lớn (20+ services), mỗi service cần implement cùng cross-cutting concerns: mTLS, logging, tracing, circuit breaker, rate limiting. **Sidecar pattern** giải quyết bằng cách đặt một **proxy process bên cạnh mỗi service instance** — proxy xử lý infrastructure concerns, service chỉ focus business logic.
+
+```mermaid
+graph LR
+    subgraph Pod["Service Instance"]
+        SVC["Core Service<br/>(Java)"] <-->|"localhost"| SIDE["Sidecar Proxy<br/>(Envoy)"]
+    end
+    
+    SIDE <-->|"mTLS"| SIDE2["Sidecar Proxy<br/>(Envoy)"]
+    
+    subgraph Pod2["Service Instance"]
+        SIDE2 <-->|"localhost"| SVC2["Judge Service<br/>(Java)"]
+    end
+    
+    style SIDE fill:#FFF9C4
+    style SIDE2 fill:#FFF9C4
+```
+
+**Service Mesh** (Istio, Linkerd) = sidecar proxies trên mọi service + control plane quản lý tập trung. Tự động cung cấp: mTLS giữa services, distributed tracing, traffic management (canary routing), circuit breaking — **mà không cần thay đổi code**.
+
+| Aspect | Không Service Mesh | Có Service Mesh |
+|--------|-------------------|----------------|
+| mTLS | Tự implement trong code | Sidecar tự động |
+| Tracing | Add library (OpenTelemetry) | Sidecar tự inject headers |
+| Circuit breaker | Resilience4j trong code | Sidecar config (Envoy) |
+| Canary routing | Manual load balancer config | Declarative traffic rules |
+| Overhead | Không | ~10-20ms latency per hop |
+
+Với LMS (7 services, single host), service mesh hiện **over-engineering**. Service mesh phù hợp khi: ≥20 services, multi-host deployment, polyglot stack (services viết bằng nhiều ngôn ngữ — sidecar language-agnostic), hoặc yêu cầu security cao (mTLS mandatory).
+
+---
+
 ## 12.7 Case Study: Deployment Architecture của hệ thống LMS
 
 ### Hiện trạng
