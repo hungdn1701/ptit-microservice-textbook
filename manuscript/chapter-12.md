@@ -416,6 +416,95 @@ Với LMS — hệ thống giáo dục quy mô trung bình — **Level 1 (Docker
 
 ---
 
+### Kubernetes — Container Orchestration cho Production
+
+Docker Compose phù hợp cho development và hệ thống nhỏ (single host). Khi cần **multi-host deployment, auto-scaling, self-healing**, Kubernetes (K8s) trở thành nền tảng tiêu chuẩn. Newman trong [4a, Ch.8] nhận xét: "Kubernetes has become the de facto platform for running microservices at scale."
+
+#### Kiến trúc Kubernetes
+
+```mermaid
+graph TB
+    subgraph CP["Control Plane"]
+        API["API Server\n(kubectl, dashboard)"]
+        ETCD["etcd\n(cluster state store)"]
+        SCHED["Scheduler\n(pod → node assignment)"]
+        CM["Controller Manager\n(desired state reconciliation)"]
+    end
+    
+    subgraph N1["Worker Node 1"]
+        KL1["Kubelet"] --> P1["Pod: Core Service"]
+        KL1 --> P2["Pod: Auth Service"]
+        KP1["Kube-proxy\n(networking)"]
+    end
+    
+    subgraph N2["Worker Node 2"]
+        KL2["Kubelet"] --> P3["Pod: Judge Service"]
+        KL2 --> P4["Pod: Gateway"]
+        KP2["Kube-proxy"]
+    end
+    
+    API --> KL1
+    API --> KL2
+    
+    style CP fill:#E3F2FD
+    style N1 fill:#E8F5E9
+    style N2 fill:#FFF9C4
+```
+
+**Control Plane** quản lý cluster: API Server nhận requests (từ `kubectl` hoặc dashboard), etcd lưu toàn bộ cluster state, Scheduler quyết định pod chạy trên node nào, Controller Manager đảm bảo actual state = desired state.
+
+**Worker Nodes** chạy workloads: Kubelet trên mỗi node nhận lệnh từ Control Plane → khởi động/dừng pods.
+
+#### 6 Concepts cốt lõi
+
+| Concept | Mô tả | Tương đương Docker Compose |
+|---------|--------|---------------------------|
+| **Pod** | Đơn vị nhỏ nhất — 1+ containers cùng network/storage | Một `service` entry |
+| **Deployment** | Quản lý N replicas của pod, rolling updates | Không có (manual) |
+| **Service** | Stable network endpoint cho pods (load balancing) | Port mapping + links |
+| **Ingress** | HTTP routing từ external → services (domain-based) | Nginx reverse proxy (manual) |
+| **ConfigMap / Secret** | Externalized configuration | `.env` file |
+| **HPA** (Horizontal Pod Autoscaler) | Tự động scale pods dựa trên CPU/memory/custom metrics | Không có |
+
+#### Docker Compose vs Kubernetes — So sánh chi tiết
+
+| Capability | Docker Compose | Kubernetes |
+|-----------|---------------|-----------|
+| **Multi-host** | ❌ Single host only | ✅ Cluster nhiều nodes |
+| **Auto-scaling** | ❌ Manual `--scale` | ✅ HPA dựa trên metrics |
+| **Self-healing** | ⚠️ `restart: always` (basic) | ✅ Liveness/readiness probes, auto-replace |
+| **Rolling updates** | ❌ Downtime khi restart | ✅ Zero-downtime rolling update |
+| **Service discovery** | ✅ DNS by service name | ✅ DNS + load balancing |
+| **Secret management** | ⚠️ `.env` files (plaintext) | ✅ Secrets (base64, có thể encrypt) |
+| **Resource limits** | ⚠️ Basic (deploy.resources) | ✅ Requests + limits per container |
+| **Setup complexity** | Thấp (1 YAML file) | Cao (nhiều YAML, cluster setup) |
+| **Learning curve** | 1-2 ngày | 2-4 tuần |
+| **Team size cần thiết** | 1-3 người | 3-5+ người (hoặc managed K8s) |
+
+#### LMS Migration Scenario: Compose → Kubernetes
+
+Nếu LMS cần scale (nhiều trường, nhiều sinh viên đồng thời):
+
+```
+Phase 1 (Hiện tại): Docker Compose single host
+├── Đủ cho 1 trường, <500 sinh viên đồng thời
+├── Deploy: docker-compose up -d
+└── Cost: 1 VPS ~$20/month
+
+Phase 2 (Scale): Managed Kubernetes (GKE/EKS/AKS)  
+├── 3+ trường, 2000+ sinh viên đồng thời
+├── Judge Service: HPA scale 1→10 pods khi contest
+├── Core Service: 2-3 replicas cho high availability
+├── PostgreSQL: managed service (Cloud SQL/RDS)
+└── Cost: ~$200-500/month (managed K8s)
+```
+
+> **📐 Nguyên tắc — Kubernetes khi nào?**
+>
+> Không chuyển lên K8s vì "Netflix dùng". Chuyển khi có **ít nhất 2 tiêu chí**: (1) cần multi-host deployment (single host không đủ resource), (2) cần auto-scaling (load biến động: contest → bình thường), (3) cần zero-downtime deployment (SLA yêu cầu), (4) team ≥3 người có thể invest thời gian học K8s. Managed Kubernetes (GKE, EKS, AKS) giảm đáng kể complexity — không cần tự setup/maintain control plane.
+
+---
+
 ### Serverless Deployment — Khi nào phù hợp?
 
 Richardson trong [2a, Ch.12] liệt kê **Serverless** (AWS Lambda, Google Cloud Functions, Azure Functions) là một deployment pattern cho microservices. Thay vì quản lý containers, bạn deploy *functions* — cloud provider quản lý infrastructure, auto-scale, và billing per invocation.
