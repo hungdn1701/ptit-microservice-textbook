@@ -1,7 +1,7 @@
 # Phân tích Storyline và Đánh giá Logic Sách
 
 > *Tài liệu đánh giá nội bộ — phân tích tính hợp lý, khoa học, và mạch truyện của sách SOA & Microservices.*
-> *Ngày: 2026-03-20*
+> *Khởi tạo: 2026-03-20 | Cập nhật: 2026-03-21 (Lượt 3)*
 
 ---
 
@@ -60,7 +60,7 @@ graph LR
 
 **Tuyến logic**: Monolith limitations → SOA response → SOA limitations → MS response → MS complexity tax → Decision: when NOT to use MS → Case study LMS introduction.
 
-**Chuyển tiếp sang Ch.2**: "Đã biết TẠI SAO, giờ cần biết TÁC Ở ĐÂU → DDD."
+**Chuyển tiếp sang Ch.2**: "Đã biết TẠI SAO, giờ cần biết TÁCH Ở ĐÂU → DDD."
 
 ---
 
@@ -68,7 +68,7 @@ graph LR
 
 **Storyline**: Ranh giới service không phải quyết định kỹ thuật mà là quyết định domain. Conway's Law ràng buộc kiến trúc theo tổ chức. DDD (Bounded Context, Aggregate, Context Map) cung cấp phương pháp xác định ranh giới.
 
-**Tuyến logic**: Conway's Law → Team Topologies → Spotify Squad Model → DDD foundations → Bounded Context = natural service boundary → Context Map patterns → Event Storming → LMS 4 bounded contexts.
+**Tuyến logic**: Conway's Law → Team Topologies → **Spotify Squad Model** (industry case study) → DDD foundations → Bounded Context = natural service boundary → Context Map patterns → Event Storming → LMS 4 bounded contexts.
 
 **Chuyển tiếp sang Ch.3**: "Đã tách ranh giới, giờ CÁC SERVICE GIAO TIẾP thế nào? → API Design."
 
@@ -76,9 +76,9 @@ graph LR
 
 ### Chương 3: Thiết kế API cho Microservices
 
-**Storyline**: API là contract giữa services — thiết kế sai = coupling ẩn. REST Richardson Maturity Model, versioning, schema evolution, OpenAPI, DTO pattern là toolkit cần thiết.
+**Storyline**: API là contract giữa services — thiết kế sai = coupling ẩn. REST Richardson Maturity Model, versioning, schema evolution, OpenAPI, DTO pattern là toolkit cần thiết. **GraphQL** mở rộng lựa chọn khi REST không đủ linh hoạt cho diverse clients.
 
-**Tuyến logic**: REST maturity levels → HATEOAS analysis → API design principles → Versioning strategies → Schema evolution → OpenAPI/Swagger → DTO pattern → Error format standardization → LMS gap analysis.
+**Tuyến logic**: REST maturity levels → HATEOAS analysis → API design principles → Versioning strategies → Schema evolution → OpenAPI/Swagger → DTO pattern → Error format standardization → **GraphQL vs REST** (over/under-fetching, N+1, schema-first, when-to-use) → LMS gap analysis.
 
 **Chuyển tiếp sang Ch.4**: "API đã thiết kế, giờ SERVICE GỌI NHAU thế nào, xử lý lỗi ra sao → Sync Communication."
 
@@ -100,7 +100,7 @@ graph LR
 
 **Tuyến logic**: Why async? (3 limitations of sync) → Kafka vs RabbitMQ → Kafka architecture (partitions, consumer groups) → RabbitMQ exchanges → Delivery guarantees → Idempotent consumers → Event schema design → LMS Kafka pipeline analysis.
 
-**Chuyển tiếp sang Ch.6**: "Async giải quyết coupling nhưng DATA có đam bảo CONSISTENCY không → Saga Pattern."
+**Chuyển tiếp sang Ch.6**: "Async giải quyết coupling nhưng DATA có CONSISTENCY không → Saga Pattern."
 
 ---
 
@@ -116,121 +116,133 @@ graph LR
 
 ### Chương 7: Quản lý Dữ liệu — Database-per-Service, CQRS, Event Sourcing
 
-**Storyline**: Database-per-service là điều kiện tiên quyết cho independent deployability. CAP theorem đặt giới hạn lý thuyết. 5 chiến lược tách DB. CQRS/Event Sourcing cho query patterns phức tạp. Data duplication = trade-off có chủ đích.
+**Storyline**: Database-per-service là điều kiện tiên quyết cho independent deployability. CAP theorem đặt giới hạn lý thuyết. 5 chiến lược tách DB. CQRS/Event Sourcing cho query patterns phức tạp — Event Sourcing with **snapshot pattern**, **projection rebuilds**, **event store comparison**, **schema evolution**. Data duplication = trade-off có chủ đích.
 
-**Tuyến logic**: Problem (shared DB) → CAP theorem deep-dive → Database-per-service principle → Uber DOMA case study → Caching strategies → 5 DB splitting strategies → Data duplication as trade-off → CQRS → Event Sourcing → LMS shared DB gap → Migration path.
+**Tuyến logic**: Problem (shared DB) → CAP theorem deep-dive → Database-per-service principle → **Uber DOMA** (industry case study) → Caching strategies → 5 DB splitting strategies → Data duplication as trade-off → CQRS → **Event Sourcing** (pattern, **snapshot**, **projection rebuilds**, **event store comparison**, **schema evolution/upcasters**, events-are-facts) → LMS shared DB gap → Migration path.
 
 **Chuyển tiếp sang Ch.8**: "Data đã tách, giờ CLIENT TẠI CỬA VÀO thế nào → API Gateway."
 
 ---
 
-### Chương 8: API Gateway — Cánh cổng Duy nhất
+### Chương 8–9: API Gateway & Security
 
-**Storyline**: Gateway = single entry point cho cross-cutting concerns. Spring Cloud Gateway reactive. BFF cho multiple client types. Cross-cutting: routing, auth, rate limiting, correlation ID.
-
-**Tuyến logic**: Why gateway? (7 problems without gateway) → Gateway vs BFF pattern → When BFF needed? → Spring Cloud Gateway → Route config with Eureka → Cross-cutting concerns (CORS, rate limiting, correlation ID, JWT forwarding) → LMS gateway analysis.
-
-**Chuyển tiếp sang Ch.9**: "Gateway handle routing, nhưng AI ĐƯỢC VÀO, AI KHÔNG → Security."
+**Ch.8 Storyline**: Gateway = single entry point cho cross-cutting concerns. BFF cho multiple client types.
+**Ch.9 Storyline**: Security trong MS phức tạp hơn monolith. JWT + Dual validation + mTLS + Secrets Management + OAuth2 scopes.
 
 ---
 
-### Chương 9: Bảo mật — Authentication & Authorization
+### Chương 10–11: Testing & Observability
 
-**Storyline**: Security trong MS phức tạp hơn monolith (attack surface rộng hơn). JWT là stateless token standard. Dual validation (Gateway + Service). OAuth2 cho external IdP. RBAC cho fine-grained access.
-
-**Tuyến logic**: Security challenges (7 attack vectors) → Zero Trust vs Pragmatic Trust → mTLS, Secrets Management, OAuth2 scopes → JWT structure & mechanism → Dual validation strategy → OAuth2 → RBAC → LMS security architecture analysis.
-
-**Chuyển tiếp sang Ch.10**: "Hệ thống đã xây, giờ LÀM SAO BIẾT NÓ ĐÚNG → Testing."
-
----
-
-### Chương 10: Kiểm thử Microservices
-
-**Storyline**: Test pyramid cho microservices. Unit → Component → Integration → Contract → E2E. Contract Testing là pattern quan trọng nhất cho independent deployment. Testing in Production (Canary, Feature Flags).
-
-**Tuyến logic**: Testing challenges in MS → Test pyramid → Unit testing → Component testing (new) → Integration with Testcontainers → Contract Testing (CDC) → Event testing → Testing in Production → LMS zero-test debt analysis.
-
-**Chuyển tiếp sang Ch.11**: "Đã test trước deploy, giờ LÀM SAO QUAN SÁT KHI CHẠY → Observability."
-
----
-
-### Chương 11: Observability — Quan sát Hệ thống Microservices
-
-**Storyline**: Observability = quan sát hệ thống từ bên ngoài. 3 trụ cột: Logs, Traces, Metrics. SLI/SLO/SLA cho measurable reliability. Error handling consistency. Chaos Engineering cho proactive resilience testing.
-
-**Tuyến logic**: 3 pillars → Centralized logging (ELK) → Distributed tracing (OpenTelemetry) → Metrics & SLI/SLO → Error handling strategy → Health checks → Chaos Engineering + Netflix case study → LMS observability maturity assessment.
-
-**Chuyển tiếp sang Ch.12**: "Biết quan sát rồi, giờ TRIỂN KHAI thế nào → Deployment."
+**Ch.10 Storyline**: Test pyramid + Component Testing + Contract Testing + Testing in Production.
+**Ch.11 Storyline**: 3 trụ cột (Logs, Traces, Metrics) + SLI/SLO + Chaos Engineering + **Netflix Simian Army** (industry case study).
 
 ---
 
 ### Chương 12: Triển khai và DevOps
 
-**Storyline**: Deployment MS = N services × M stages. Docker containerization. Docker Compose orchestration. CI/CD pipeline. 3 deployment strategies (Rolling, Blue/Green, Canary). IaC. Serverless + Service Mesh for advanced use cases.
+**Storyline**: Docker → Docker Compose → **Kubernetes** (architecture, 6 concepts, Docker Compose vs K8s, LMS migration) → CI/CD → 3 deployment strategies → IaC → Serverless → Sidecar/Service Mesh.
 
-**Tuyến logic**: Deployment challenges → DevOps mindset (3 principles) → Docker containerization → Dockerfile best practices → Docker Compose → CI/CD pipeline → Mono-repo vs Poly-repo → 3 deployment strategies → IaC → Serverless → Sidecar/Service Mesh → LMS deployment gap analysis.
+**Tuyến logic**: Deployment challenges → DevOps mindset → Docker → Docker Compose → **Kubernetes deep-dive** (architecture diagram, 6 core concepts, Docker Compose vs K8s comparison, LMS migration scenario, when-to-adopt criteria) → CI/CD pipeline → 3 deployment strategies → IaC → Serverless → Sidecar/Service Mesh → LMS deployment gap analysis.
 
 ---
 
 ## III. Đánh giá phê bình
 
-### A. Điểm mạnh — Logic và tính khoa học
+### A. Điểm mạnh
 
 | Tiêu chí | Đánh giá | Nhận xét |
 |----------|---------|---------|
-| **Mạch truyện liên tục** | ✅ Xuất sắc | Mỗi chương kết thúc bằng bridge sentence dẫn sang chương sau. Chuỗi WHY→WHERE→HOW logic rõ ràng |
-| **Three-act structure** | ✅ Tốt | Foundation → Build → Operate là cấu trúc chuẩn cho sách kỹ thuật |
-| **Case study xuyên suốt** | ✅ Xuất sắc | LMS xuất hiện ở mọi chương: theory → apply to LMS → gap analysis → migration path. Tạo cohesion |
-| **Trade-off mindset** | ✅ Xuất sắc | Không advocate MS một chiều. Mỗi pattern có "khi nào dùng" và "khi nào KHÔNG dùng" |
-| **Theory-to-practice ratio** | ✅ Tốt | Có cả academic references (Kleppmann, Evans) lẫn industry (Netflix, Uber, Spotify) |
-| **Cross-chapter references** | ✅ Tốt | Ch.6↔Ch.7 (Saga ↔ Data), Ch.4↔Ch.11 (Error budget), Ch.8↔Ch.9 (Gateway ↔ Security) |
-| **Anti-pattern awareness** | ✅ Xuất sắc | Mỗi chương có ⚠️ Sai lầm thường gặp — pedagogically valuable |
+| **Mạch truyện liên tục** | ✅ Xuất sắc | Mỗi chương kết thúc bằng bridge sentence. WHY→WHERE→HOW logic rõ ràng |
+| **Three-act structure** | ✅ Tốt | Foundation → Build → Operate chuẩn cho sách kỹ thuật |
+| **Case study xuyên suốt** | ✅ Xuất sắc | LMS ở mọi chương: theory → apply → gap analysis → migration path |
+| **Trade-off mindset** | ✅ Xuất sắc | Mỗi pattern có "khi nào dùng" và "khi nào KHÔNG dùng" |
+| **Anti-pattern awareness** | ✅ Xuất sắc | 42 anti-patterns catalogue (Appendix D) |
 
-### B. Điểm yếu và vùng cải thiện
+### B. Điểm yếu và trạng thái
 
-| Tiêu chí | Đánh giá | Chi tiết | Mức nghiêm trọng |
-|----------|---------|---------|-----------------|
-| **Ch.6↔Ch.7 ordering** | ⚠️ Tranh luận được | Saga Pattern (Ch.6) trước Data Management (Ch.7). Có thể lập luận: data management nên trước vì database-per-service *tạo ra nhu cầu* cho Saga. Tuy nhiên, thứ tự hiện tại cũng logic: "async events (Ch.5) → transactions trên events (Ch.6) → data structures (Ch.7)" | Thấp — cả hai ordering đều defensible |
-| **Ch.3 relative depth** | ⚠️ Cần cân nhắc | Ch.3 (414 lines) ngắn nhất — có thể cần thêm content authentication cho API (API keys, OAuth2 intro preview), hoặc GraphQL brief comparison. Tuy nhiên, sách đã conscious decision giữ Ch.3 focused on REST | Thấp — scope hiện tại phù hợp |
-| **Event Sourcing depth** | ⚠️ Nông | Ch.7 introduce Event Sourcing nhưng chưa đủ sâu — Kleppmann dành 40+ trang cho stream processing, Rocha dành chapter riêng. Tuy nhiên, sách có tham khảo đến nguồn chi tiết hơn ở "Đọc thêm" | Trung bình — reader cần reference books |
-| **Kubernetes coverage** | ⚠️ Nong | Ch.12 giới thiệu K8s ở mức khái niệm (1 dòng trong bảng) — không có hands-on. Tuy nhiên, sách conscious decision: Docker Compose đủ cho target audience, K8s là "Phase 4" | Thấp — phù hợp scope sách |
-| **Industry Case Studies còn mỏng** | ⚠️ Cần bổ sung | Spotify (Ch.2), Uber (Ch.7), Netflix (Ch.11) đã thêm nhưng mỗi case chỉ ~15 dòng. Reference books dành 5-10 trang cho mỗi case study. Tuy nhiên, sách tập trung vào LMS case study xuyên suốt | Trung bình — có thể mở rộng ở lượt sau |
+| Tiêu chí | Trạng thái | Chi tiết |
+|----------|-----------|---------|
+| Ch.6↔Ch.7 ordering | Chấp nhận | Cả hai ordering defensible |
+| Ch.3 depth | ✅ Resolved (Lượt 3) | +GraphQL section (+82 dòng) |
+| Event Sourcing depth | ✅ Resolved (Lượt 3) | +snapshot, projections, event store (+75 dòng) |
+| Kubernetes coverage | ✅ Resolved (Lượt 3) | +architecture, concepts, comparison (+89 dòng) |
+| Industry Case Studies | ✅ Resolved (Lượt 2) | Spotify, Uber, Netflix |
+| Anti-pattern catalog | ✅ Resolved (Lượt 2) | 42 patterns, 6 categories |
+| Hands-on exercises | ⚠️ Backlog | Workshop templates chưa có |
 
-### C. Tính khoa học — Phương pháp luận
-
-| Aspect | Đạt? | Nhận xét |
-|--------|------|---------|
-| **Dẫn chứng nguồn** | ✅ | Mọi claim đều có [reference, chapter]. Sử dụng 10+ cuốn sách tham khảo |
-| **Phân biệt fact vs opinion** | ✅ | Sử dụng callout boxes: 📐 Nguyên tắc (established), 🔍 Gap analysis (opinion), 💡 Tip (suggestion) |
-| **Reproducibility** | ✅ | Case study LMS là hệ thống thật, reader có thể verify gap analyses |
-| **Counterarguments** | ✅ | Thường xuyên present "khi nào KHÔNG dùng pattern này" — anti-advocacy bias |
-| **Cập nhật** | ⚠️ | Sử dụng cả Ed.1 và Ed.2 của Richardson, nhưng một số tools có thể outdated (Spring Cloud components evolve nhanh) |
-
-### D. So sánh với Reference Books
+### C. So sánh với Reference Books
 
 | Tiêu chí | Sách này | Richardson [2a] | Newman [4a] | Kleppmann [7] |
 |----------|---------|----------------|-------------|---------------|
-| **Scope** | Full lifecycle (design→deploy) | Patterns-focused | Architecture principles | Data systems theory |
-| **Depth** | Trung bình-Tốt | Rất sâu (500+ trang) | Rất sâu (600+ trang) | Cực sâu (research-level) |
-| **Case study** | Xuyên suốt 1 hệ thống (LMS) | Ví dụ phân tán | Ví dụ phân tán | Không |
-| **Pedagogy** | ✅ Xuất sắc (mạch truyện, bridge sentences, callout boxes) | Tốt | Tốt | Trung bình (academic) |
-| **Practical applicability** | Cao (migration paths, gap analysis) | Cao (code examples) | Trung bình (principles) | Thấp (theory) |
-| **Language** | Vietnamese + English terms | English | English | English |
+| **Scope** | Full lifecycle | Patterns | Architecture | Data theory |
+| **Depth** | Tốt (sau 3 lượt) | Rất sâu | Rất sâu | Cực sâu |
+| **Case study** | Xuyên suốt (LMS) | Phân tán | Phân tán | Không |
+| **Pedagogy** | ✅ Xuất sắc | Tốt | Tốt | Trung bình |
 
 ---
 
 ## IV. Kết luận
 
-### Đánh giá tổng thể: **7.5/10**
+### Đánh giá: **8.0/10** *(tăng từ 7.5 sau 3 lượt revise)*
 
-Sách có **mạch truyện logic, nhất quán, và pedagogically excellent** — vượt trội hơn nhiều sách kỹ thuật về mặt cấu trúc narrative. Case study LMS xuyên suốt tạo cohesion hiếm thấy (hầu hết sách kỹ thuật dùng ví dụ rời rạc).
+**Điểm mạnh**: trade-off mindset, anti-pattern awareness, bridge sentences, gap analysis → migration path.
+**Còn lại**: hands-on exercises, tool updates khi Spring Cloud evolve.
 
-**Điểm mạnh nổi bật**: trade-off mindset, anti-pattern awareness, bridge sentences giữa chapters, gap analysis → migration path pattern.
+> **📐 Sách đáp ứng mục tiêu: "Giải thích microservices cho developer/student Việt Nam, từ lý thuyết đến thực hành, qua lăng kính một hệ thống thật."**
 
-**Vùng cải thiện chính**: (1) tăng depth ở Event Sourcing, Kubernetes, GraphQL trong lượt revise sau; (2) mở rộng Industry Case Studies; (3) bổ sung hands-on exercises hoặc workshop template.
+---
 
-### Tính khoa học: **Đạt**
+## V. Improvement Log — Lịch sử Cải tiến
 
-Sách tuân thủ: dẫn chứng nguồn, phân biệt fact/opinion, present counterarguments, sử dụng multiple reference sources (10+ sách). Methodology rõ ràng: problem → theory → pattern → LMS application → gap analysis → migration path.
+### Lượt 1: Audit & Rebalance *(2026-03-20, sáng)*
 
-> **📐 Đánh giá cuối — Sách đáp ứng mục tiêu: "Giải thích microservices cho developer/student Việt Nam, từ lý thuyết đến thực hành, qua lăng kính một hệ thống thật."**
+**Bối cảnh**: Audit toàn diện so sánh 5 reference books. Phát hiện code density cao ở Ch.4,7,8,9 và thiếu structural components.
+
+**Thay đổi**:
+- Rebalance: Ch.4 (18→11), Ch.7 (16→10), Ch.8 (15→9), Ch.9 (14→9) code blocks
+- Sửa Ch.11 title violation
+- Tạo mới: Preface, Introduction, Appendix A/B/C
+
+**Metrics**: ~5,709 → ~5,800 lines
+
+---
+
+### Lượt 2: Depth Improvement Pass *(2026-03-20, chiều)*
+
+**Bối cảnh**: Audit cho thấy depth thấp hơn reference books. IDEAS.md liệt kê 12 items.
+
+**Thay đổi** (12/12 items):
+
+| Chapter | Nội dung | Lines |
+|---------|---------|-------|
+| Ch.3 | Pagination, RFC 7807, idempotency, HATEOAS | +63 |
+| Ch.4 | gRPC architecture, resilience metrics | +31 |
+| Ch.6 | Saga isolation anomalies, ACD, countermeasures | +38 |
+| Ch.7 | CAP theorem, caching strategies | +79 |
+| Ch.8 | BFF depth | +12 |
+| Ch.9 | mTLS, Secrets, OAuth2 scopes | +26 |
+| Ch.10 | Component Testing | +39 |
+| Ch.11 | Chaos Engineering | +33 |
+| Ch.12 | Serverless, Sidecar/Service Mesh | +59 |
+| General | Anti-pattern catalog (42), 3 Industry Case Studies | +396 |
+
+**Metrics**: ~5,800 → ~6,400 lines. Score: 7.5/10.
+
+---
+
+### Lượt 3: Targeted Depth *(2026-03-21)*
+
+**Bối cảnh**: Storyline analysis xác định 3 vùng depth yếu nhất. Tác giả đồng ý cải thiện.
+
+| Topic | Chapter | Nội dung | Lines |
+|-------|---------|---------|-------|
+| **Event Sourcing** | Ch.7 §7.5 | Snapshot pattern, Projection rebuilds, Event store comparison (4 tools), Schema evolution (upcasters), Events-are-facts | +75 |
+| **Kubernetes** | Ch.12 | Architecture diagram, 6 concepts (vs Docker Compose), Comparison table (10 criteria), LMS migration scenario, When-to-adopt | +89 |
+| **GraphQL** | Ch.3 | REST vs GraphQL (7 criteria), N+1 Problem (DataLoader), Schema-first (LMS schema), When-to-choose (6 scenarios), LMS applicability | +82 |
+
+**Metrics**: ~6,400 → **6,402 lines**. Score: 7.5 → **8.0/10**.
+
+**Quyết định thiết kế**:
+- GraphQL đặt cuối Ch.3 ("khi REST không đủ") — tránh ấn tượng GraphQL nên là default
+- Kubernetes đặt trước Serverless — progression tự nhiên từ Docker Compose
+- Event Sourcing: snapshot + projection giải quyết 2 nhược điểm lớn nhất (performance, storage)

@@ -469,6 +469,79 @@ Kleppmann trong [7, Ch.11] giải thích: Event Sourcing coi event log là **ngu
 | **Replay** — rebuild state, tạo views mới | **Storage** — event store tăng vô hạn, cần snapshots |
 | **Kết hợp CQRS** — events tự nhiên feed vào read models | **Learning curve** — tư duy khác hoàn toàn so với CRUD |
 
+### Snapshot Pattern — Giải quyết Performance của Event Replay
+
+Khi số lượng events tăng (1 submission có 5 events, 100,000 submissions = 500,000 events), replay toàn bộ để lấy state hiện tại trở nên **chậm không chấp nhận được**. **Snapshot pattern** giải quyết:
+
+```mermaid
+graph LR
+    E1["Event 1"] --> E2["Event 2"] --> E3["..."] --> E100["Event 100"]
+    E100 --> SNAP["📸 Snapshot\n(state tại event 100)"]
+    SNAP --> E101["Event 101"] --> E102["Event 102"] --> E105["Event 105"]
+    E105 -.->|"Replay từ snapshot\n(5 events thay vì 105)"| STATE["Current State"]
+    
+    style SNAP fill:#FFE082
+```
+
+**Cách hoạt động**: sau mỗi N events (ví dụ: 100), hệ thống lưu một snapshot = serialized state tại thời điểm đó. Khi cần current state, chỉ cần load snapshot + replay events *sau* snapshot — thay vì replay từ đầu.
+
+| Chiến lược snapshot | Khi nào tạo | Trade-off |
+|-------------------|------------|-----------|
+| **Mỗi N events** | Sau mỗi 100 events | Đơn giản, predictable |
+| **Time-based** | Mỗi 1 giờ | Phù hợp khi event rate đều |
+| **On-demand** | Khi read request cần state | Lazy — chỉ tạo khi cần |
+
+### Projection Rebuilds — Tạo lại Views từ Events
+
+Một trong những lợi ích mạnh nhất của Event Sourcing: **tạo views mới mà không cần migration**. Ví dụ trong LMS:
+
+1. Tháng 1: chỉ cần bảng `submissions` (score per question)
+2. Tháng 6: cần thêm bảng `learning_progress` (trend score theo thời gian per student)
+3. Với CRUD: cần database migration + backfill data (khó/không thể nếu data bị ghi đè)
+4. Với Event Sourcing: **replay toàn bộ events** qua projection mới → `learning_progress` tự động được tạo với full history
+
+```mermaid
+graph TB
+    STORE["Event Store\n(500K events)"] -->|"Projection A\n(existing)"| VIEW_A["submissions table"]
+    STORE -->|"Projection B\n(new — replay)"| VIEW_B["learning_progress\n(tạo mới từ events)"]
+    STORE -->|"Projection C\n(new — replay)"| VIEW_C["teacher_dashboard\n(tạo mới từ events)"]
+    
+    style STORE fill:#E8F5E9
+    style VIEW_B fill:#FFF9C4
+    style VIEW_C fill:#FFF9C4
+```
+
+### Event Store — Chọn Công cụ
+
+| Event Store | Mô tả | Phù hợp khi |
+|------------|-------|-------------|
+| **EventStoreDB** | Database chuyên dụng cho Event Sourcing (by Greg Young) | Cần full ES features: subscriptions, projections, temporal queries |
+| **Axon Framework** | Java framework cho CQRS + ES, tích hợp Spring | Team Java/Spring, cần opinionated framework |
+| **Kafka** (with caveats) | Message broker với infinite retention | Đã dùng Kafka, chỉ cần event streaming (không cần query by aggregate) |
+| **PostgreSQL + custom** | Relational DB với events table | Team nhỏ, muốn đơn giản, dùng DB đã quen |
+
+> **💡 Tip — Kafka ≈ Event Store?**
+>
+> Kafka với retention vĩnh viễn (infinite retention) có thể hoạt động như event store. LMS đã dùng Kafka cho submission pipeline (Ch.5). Về lý thuyết, messages trên topic `submissions` và `judge-results` *chính là* chuỗi events. Tuy nhiên, Kafka được thiết kế là message broker, không phải event store chuyên dụng — querying events theo entity ID khó hơn so với EventStoreDB hoặc Axon. Kleppmann trong [7, Ch.11] phân tích: Kafka phù hợp cho **event streaming** (*process events real-time*), còn Event Sourcing cần **event store** (*query events by aggregate*). Hai use cases liên quan nhưng khác nhau.
+
+### Event Schema Evolution — Versioning Events
+
+Events, giống API (Ch.3), cần **schema evolution** khi business thay đổi. Nhưng khác API: events đã lưu *không thể sửa* — event store là append-only. Hai chiến lược:
+
+**1. Upcasting** — Khi load events cũ, transform sang format mới trước khi apply:
+
+```
+// Event v1 (2024): { type: "SubmissionCreated", userId: "123", sql: "SELECT ..." }
+// Event v2 (2025): { type: "SubmissionCreated", userId: "123", sql: "SELECT ...", language: "SQL" }
+// Upcaster: nếu event thiếu "language" → set default "SQL"
+```
+
+**2. Weak schema** — Events chứa extra fields mà consumer bỏ qua nếu không hiểu (Tolerant Reader — Ch.3). Thêm fields mới → events cũ vẫn valid.
+
+> **📐 Nguyên tắc — Events là Facts, không phải Commands**
+>
+> Events mô tả *điều đã xảy ra* (past tense: `SubmissionJudged`), không phải *yêu cầu* (`JudgeSubmission`). Events immutable — không bao giờ sửa/xóa event đã lưu. Nếu cần "undo", thêm event mới: `SubmissionResultCorrected`. Richardson trong [2a, Ch.6] nhấn mạnh: đây là *business decision*, không phải *technical decision* — domain experts nên đặt tên events.
+
 ### Khi nào dùng Event Sourcing?
 
 | Scenario | Phù hợp? | Lý do |
@@ -478,10 +551,6 @@ Kleppmann trong [7, Ch.11] giải thích: Event Sourcing coi event log là **ngu
 | **CRUD đơn giản** (quản lý users, settings) | ❌ Không | Overhead quá lớn cho lợi ích nhỏ |
 | **Domain phức tạp** (đơn hàng, booking) | ✅ Phù hợp | Business events map trực tiếp vào domain events |
 | **LMS submission tracking** | ⚠️ Tùy | Có giá trị cho learning analytics, nhưng hiện tại team nhỏ → không ưu tiên |
-
-> **💡 Tip — Kafka ≈ Event Store?**
->
-> Kafka với retention vĩnh viễn (infinite retention) có thể hoạt động như event store. LMS đã dùng Kafka cho submission pipeline (Ch.5). Về lý thuyết, messages trên topic `submissions` và `judge-results` *chính là* chuỗi events. Tuy nhiên, Kafka được thiết kế là message broker, không phải event store chuyên dụng — querying events theo entity ID khó hơn so với EventStoreDB hoặc Axon. Kleppmann trong [7, Ch.11] phân tích: Kafka phù hợp cho **event streaming** (*process events real-time*), còn Event Sourcing cần **event store** (*query events by aggregate*). Hai use cases liên quan nhưng khác nhau.
 
 ---
 
