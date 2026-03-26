@@ -59,15 +59,15 @@
 | 29 | **Lưu JWT trong localStorage** — Frontend lưu token ở localStorage | XSS attack → đọc token dễ dàng | Lưu trong httpOnly cookie (không truy cập qua JS) | 9 |
 | 30 | **Hard-code roles trong code** — `if role == "ADMIN"` khắp service | Thêm role mới → sửa code nhiều nơi, dễ sót | RBAC centralized — permissions mapping, không check role trực tiếp | 9 |
 
-## Testing & Observability
+## Migration & Observability
 
 | # | Anti-pattern | Hậu quả | Phòng tránh | Ch. |
 |---|-------------|---------|-------------|-----|
-| 31 | **Chỉ viết e2e tests** — Bỏ qua unit/integration | Test suite chậm, flaky, khó debug | Tuân theo test pyramid — nhiều unit, ít e2e | 10 |
-| 32 | **Mock mọi thứ trong integration** — H2 thay PostgreSQL, mock Kafka | Pass với mock, fail với real infrastructure | Testcontainers — test với infrastructure giống production | 10 |
-| 33 | **Không có contract tests** — Teams deploy độc lập, không ai biết API đổi | Breaking changes phát hiện trên production | Consumer-driven contracts trước deploy | 10 |
-| 34 | **Coverage metrics > test quality** — Chạy theo 80% coverage | Tests chạy mọi dòng nhưng không assert gì có nghĩa | Focus test behavior (given-when-then), không test lines | 10 |
-| 35 | **Bỏ qua testing hoàn toàn** — "Chạy được là đủ" | Regression liên tục, refactoring không ai dám | Bắt đầu nhỏ: unit tests cho critical paths trước | 10 |
+| 31 | **Distributed Monolith** — Tách services nhưng giữ shared DB, shared lib, deploy đồng bộ | Tất cả complexity của MS mà không có benefits | Database-per-service + thin shared libraries | 10 |
+| 32 | **Big Bang Rewrite** — Viết lại toàn bộ hệ thống từ zero thay vì migrate dần | Cả hai hệ thống cần maintain, "switch day" không bao giờ đến | Strangler Fig — tách từng phần, mỗi phần mang giá trị ngay | 10 |
+| 33 | **Migrate quá nhanh** — Tách 20 services trong 2 tháng vì "architecture decision" | Boundaries sai → refactor lại, effort gấp đôi | Migrate 1 service tại 1 thời điểm, bắt đầu từ service có giá trị cao nhất | 10 |
+| 34 | **Lift-and-shift không redesign** — Copy code monolith nguyên xi vào containers | Network latency + failure modes, vẫn coupled | Anti-Corruption Layer, redesign domain model cho mỗi service | 10 |
+| 35 | **Over-engineering infra** — K8s + Istio + full monitoring cho 3 services, 100 req/min | 70% thời gian maintain infra thay vì phát triển features | Docker Compose đủ cho ≤10 services, scale infra khi cần | 10 |
 | 36 | **Chỉ log khi lỗi** — Không log request flow bình thường | Khi lỗi xảy ra, không đủ context để debug | Structured logging cho mọi request + correlation ID | 11 |
 | 37 | **Metric quá nhiều hoặc quá ít** — 500 metrics hoặc chỉ CPU/RAM | Quá nhiều: noise, alert fatigue. Quá ít: blind spots | Focus SLI/SLO: latency, error rate, throughput | 11 |
 | 38 | **Alert mọi thứ** — Mỗi exception → SNS → email/Slack | Alert fatigue: team ignore alerts, miss real incidents | Alert trên *symptoms* (SLO breach), không trên *causes* | 11 |

@@ -87,3 +87,24 @@ After completing each chapter draft:
 ## Intermediate Documents & Analysis
 - **Lưu trữ tài liệu phân tích:** Các tài liệu phân tích, bảng so sánh, hoặc kết quả trích xuất cần được lưu trực tiếp vào thư mục dự án (ví dụ: `references/` hoặc `docs/`) thay vì chỉ để ở bộ nhớ tạm của AI (Artifacts).
 - Điều này giúp tác giả dễ dàng tham chiếu, theo dõi và phục vụ cho viết lách về sau.
+
+## Per-Chapter Editorial Checklist (Production)
+Before marking any chapter as production-ready, verify:
+
+### Visual Elements
+- [ ] Mọi bảng có caption: **Bảng N.M:** (trước bảng)
+- [ ] Mọi hình/diagram có caption: *Hình N.M: mô tả* (sau hình)
+- [ ] Mọi code block có caption: **Listing N.M:** (trước code)
+- [ ] Đánh số đúng thứ tự, không trùng, không nhảy số
+
+### Language Register
+- [ ] Không dùng "bạn" trong thân bài (chỉ "chúng ta", "developer", "team")
+- [ ] "Best practice" luôn kèm source hoặc nằm trong bảng gap analysis
+- [ ] Không có từ ngữ chủ quan/informal (xem §9 style guide)
+- [ ] Mọi nhận định kỹ thuật có nguồn hoặc reasoning
+
+### Consistency
+- [ ] Cross-reference format thống nhất: "Chương N", "**Hình N.M**", "**Bảng N.M**"
+- [ ] Phần "Đọc thêm" format thống nhất (numbered list)
+- [ ] Callout boxes đúng format (📐 🔧 📌 ⚠️ 💡 🏗️)
+

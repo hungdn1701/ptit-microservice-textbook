@@ -10,6 +10,7 @@ description: How to write a new chapter for the SOA/Microservices textbook
 - Read `case-study/source-registry.md` for source file mapping
 - Read `IDEAS.md` for any user notes relevant to this chapter
 - After finishing, update `manuscript/book-outline.md` Change Log with any new decisions
+- After finishing, update `CHANGELOG.md` with a summary of changes under `[Unreleased]`
 
 ## Steps
 
@@ -133,3 +134,4 @@ When LMS deviates from best practice, use this format:
 - [ ] No \"DBLAB\" references — use \"LMS\"
 - [ ] **Tiêu đề không dịch thuật ngữ**: chapter/section titles giữ nguyên tiếng Anh cho technical terms (xem §2 style-guide.md)
 - [ ] DBLAB grep check: `Select-String -Pattern "DBLAB" -Path "manuscript\chapter-XX.md"`
+- [ ] **CHANGELOG.md updated** — add entry under `[Unreleased]` summarizing what changed

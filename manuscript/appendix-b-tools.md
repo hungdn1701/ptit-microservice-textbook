@@ -39,10 +39,9 @@
 
 | Tool | Mô tả | Chương | URL |
 |------|-------|--------|-----|
-| **JUnit 5** | Java unit testing | Ch.10 | junit.org/junit5 |
-| **Testcontainers** | Docker containers cho integration tests | Ch.10 | testcontainers.org |
-| **Pact** | Consumer-driven contract testing | Ch.10 | pact.io |
-| **Spring Cloud Contract** | Producer-side contract testing | Ch.10 | cloud.spring.io |
+| **Debezium** | Change Data Capture (CDC) | Ch.10 | debezium.io |
+| **Flyway** | Database migration versioning | Ch.10 | flywaydb.org |
+| **LaunchDarkly / Unleash** | Feature flags management | Ch.10 | launchdarkly.com / unleash.io |
 
 ## Observability
 

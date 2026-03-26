@@ -42,6 +42,10 @@ graph LR
     style B2 fill:#C8E6C9
 ```
 
+*Hình 5.1: So sánh giao tiếp đồng bộ (coupled) và bất đồng bộ (decoupled)*
+
+**Bảng 5.1:** Giao tiếp đồng bộ vs bất đồng bộ — giải pháp cho ba vấn đề
+
 | Vấn đề Sync | Giải pháp Async |
 |-------------|----------------|
 | **Temporal coupling** — cả hai service phải online | Producer gửi message xong tiếp tục, consumer xử lý khi sẵn sàng |
@@ -84,6 +88,8 @@ graph TB
     style CB3 fill:#E8F5E9
 ```
 
+*Hình 5.2: Point-to-Point (Queue) vs Publish/Subscribe (Topic)*
+
 > **💡 Tip — Command vs Event**
 >
 > Phân biệt rõ **command** (yêu cầu hành động: "ChấmBài", "GửiEmail") và **event** (thông báo sự kiện đã xảy ra: "BàiĐãĐượcChấm", "ĐiểmĐãCậpNhật"). Commands thường point-to-point, events thường pub/sub. Sự phân biệt này ảnh hưởng đến thiết kế schema và error handling [5, Ch.8].
@@ -119,6 +125,8 @@ graph TB
     style KEEP fill:#66BB6A,color:white
 ```
 
+*Hình 5.3: Ephemeral broker (message xóa sau ack) vs Durable broker (message vẫn còn)*
+
 Sự khác biệt này **không chỉ là kỹ thuật** — nó ảnh hưởng đến cách thiết kế hệ thống. Durable brokers cho phép replay, event sourcing, và multiple consumers đọc cùng data. Ephemeral brokers tập trung vào smart routing, priority queues, và point-to-point communication.
 
 ### RabbitMQ — Smart Routing & Flexible Messaging
@@ -143,6 +151,10 @@ graph LR
     style Q3 fill:#E8F5E9
 ```
 
+*Hình 5.4: Kiến trúc RabbitMQ — Exchange routing messages đến queues*
+
+**Bảng 5.2:** Các concepts cốt lõi của RabbitMQ
+
 | Concept RabbitMQ | Mô tả |
 |-----------------|--------|
 | **Exchange** | Nhận message và route đến queues theo rules |
@@ -154,6 +166,8 @@ graph LR
 RabbitMQ mạnh ở **smart routing**: một message có thể đến đúng queue dựa trên routing key, header matching, hoặc fanout tới tất cả queues. Kafka thì routing đơn giản (topic-based, key-based partitioning).
 
 ### So sánh toàn diện
+
+**Bảng 5.3:** Apache Kafka vs RabbitMQ — so sánh toàn diện
 
 | Tiêu chí | Apache Kafka | RabbitMQ |
 |----------|-------------|----------|
@@ -173,6 +187,8 @@ RabbitMQ mạnh ở **smart routing**: một message có thể đến đúng que
 > Rocha chia sẻ kinh nghiệm từ một e-commerce platform lớn [5, §3.1.3]: team đã dùng RabbitMQ nhiều năm trong production high-throughput. Vấn đề: khi message load peaks tích tụ, **toàn bộ cluster bị ảnh hưởng** — các service không liên quan cũng bị chậm. Nhìn lại, use case của họ (event streaming, high throughput) phù hợp với durable broker hơn. Bài học: **chọn broker phải dựa trên use case**, không phải quen thuộc.
 
 ### Khi nào dùng gì?
+
+**Bảng 5.4:** Khi nào chọn Kafka, khi nào chọn RabbitMQ
 
 | Nhu cầu | Chọn |
 |---------|------|
@@ -213,7 +229,9 @@ graph TB
     style CG fill:#E8F5E9
 ```
 
-**Concepts cốt lõi:**
+*Hình 5.5: Kiến trúc Kafka — Topic, Partitions và Consumer Group*
+
+**Bảng 5.5:** Các concepts cốt lõi của Apache Kafka
 
 | Concept | Mô tả | Ví dụ LMS |
 |---------|-------|-----------|
@@ -234,6 +252,8 @@ Kleppmann trong [7, Ch.11] giải thích: Kafka kết hợp ưu điểm của da
 ### Kafka Producer
 
 Trong LMS, submissions được gửi qua Kafka khi sinh viên nộp bài:
+
+**Listing 5.1:** Kafka Producer — Core Service gửi submission
 
 ```java
 // Producer: Core Service gửi submission vào Kafka
@@ -260,6 +280,8 @@ public class SubmitProducer extends BaseProducerService<SubmitMessage> {
 ### Kafka Consumer
 
 Judge Service consume submissions và trả kết quả:
+
+**Listing 5.2:** Kafka Consumer — Judge Service nhận và xử lý submission
 
 ```java
 // Consumer: Judge Service nhận và xử lý
@@ -303,6 +325,8 @@ sequenceDiagram
     FE-->>U: Show result
 ```
 
+*Hình 5.6: Luồng hoàn chỉnh — từ submit qua Kafka đến kết quả qua WebSocket*
+
 Lưu ý: response là **202 Accepted** (không phải 200 OK) — nghĩa là "request đã nhận, đang xử lý". User nhận kết quả qua WebSocket notification, không phải HTTP response.
 
 > **🔍 Phân tích gap — Thiếu error handling trong Kafka pipeline**
@@ -317,6 +341,8 @@ Lưu ý: response là **202 Accepted** (không phải 200 OK) — nghĩa là "re
 
 Đây là một trong những khái niệm quan trọng nhất trong messaging — và cũng dễ bị hiểu sai nhất [7, Ch.11]:
 
+**Bảng 5.6:** Ba cấp độ delivery guarantee
+
 | Guarantee | Mô tả | Hậu quả |
 |-----------|-------|---------|
 | **At-most-once** | Message được gửi tối đa 1 lần. Có thể mất. | Nhanh nhưng unreliable |
@@ -328,6 +354,8 @@ Kleppmann trong [7, Ch.11] phân tích: **exactly-once semantics** trong thực 
 ### Idempotency — Thiết kế to chịu được duplicate
 
 Khi dùng at-least-once (phổ biến nhất), consumer *có thể* nhận cùng message nhiều lần. Code phải **idempotent** — xử lý nhiều lần cho cùng kết quả [5, Ch.8]:
+
+**Listing 5.3:** Idempotent consumer — kiểm tra trước khi xử lý
 
 ```java
 // ❌ Không idempotent — chấm trùng = điểm sai
@@ -360,6 +388,8 @@ Rocha trong [5, Ch.8] nhấn mạnh quy tắc: **event consumption phải associ
 
 Rocha đề xuất mỗi event nên có ba phần [5, Ch.8]:
 
+**Listing 5.4:** Cấu trúc event với metadata và payload
+
 ```json
 {
   "metadata": {
@@ -380,6 +410,8 @@ Rocha đề xuất mỗi event nên có ba phần [5, Ch.8]:
 }
 ```
 
+**Bảng 5.7:** Cấu trúc event — metadata và payload
+
 | Phần | Mục đích | Fields quan trọng |
 |------|---------|-------------------|
 | **metadata** | Tracing, deduplication, versioning | `eventId` (cho idempotency), `correlationId` (cho tracing), `version` |
@@ -388,6 +420,8 @@ Rocha đề xuất mỗi event nên có ba phần [5, Ch.8]:
 ### Bốn loại message
 
 Rocha phân loại message thành 4 loại, mỗi loại có mục đích và naming convention riêng [5, §3.1.4]:
+
+**Bảng 5.8:** Bốn loại message trong event-driven architecture
 
 | Loại | Mô tả | Naming | Ví dụ LMS | Delivery |
 |------|-------|--------|-----------|----------|
@@ -418,6 +452,8 @@ Best practice: sử dụng **Schema Registry** (Confluent Schema Registry, AWS G
 
 Sau khi Judge Service chấm xong, kết quả cần đến tay sinh viên. Có ba cách:
 
+**Bảng 5.9:** Ba cách đưa kết quả đến client
+
 | Cách | Mô tả | Nhược điểm |
 |------|-------|-----------|
 | **Polling** | Client hỏi server mỗi X giây | Lãng phí bandwidth, delay |
@@ -425,6 +461,8 @@ Sau khi Judge Service chấm xong, kết quả cần đến tay sinh viên. Có 
 | **WebSocket** | Full-duplex connection, server push real-time | Cần maintain connection state |
 
 LMS sử dụng **STOMP over SockJS** — WebSocket protocol dựa trên Spring WebSocket:
+
+**Listing 5.5:** WebSocket server — push kết quả chấm bài qua STOMP
 
 ```java
 // Server-side: push kết quả chấm bài
@@ -441,6 +479,8 @@ public class NotificationService {
     }
 }
 ```
+
+**Listing 5.6:** WebSocket client — subscribe nhận kết quả real-time
 
 ```javascript
 // Client-side: subscribe nhận kết quả
@@ -492,6 +532,10 @@ graph LR
     style K3 fill:#FFF9C4
 ```
 
+*Hình 5.7: Kiến trúc 4-topic pipeline chấm bài trong Contest mode*
+
+**Bảng 5.10:** Chi tiết các Kafka topics trong pipeline
+
 | Topic | Producer | Consumer | Message | Key |
 |-------|----------|----------|---------|-----|
 | `submissions` | Core Service | Judge Service | SQL + metadata | `userId` |
@@ -500,6 +544,8 @@ graph LR
 | (WebSocket) | Core Service | Frontend | Notification | `userId` |
 
 ### Phân tích các vấn đề
+
+**Bảng 5.11:** Phân tích vấn đề Kafka pipeline trong LMS
 
 | # | Vấn đề | Hiện trạng | Best Practice [2a] |
 |---|--------|-----------|--------------------------|

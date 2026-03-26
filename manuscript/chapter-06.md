@@ -22,6 +22,8 @@
 
 Trong monolith LMS, khi sinh viên nộp bài SQL, toàn bộ flow nằm trong một database transaction:
 
+**Listing 6.1:** Monolith transaction — ACID đảm bảo tất cả thành công hoặc rollback
+
 ```sql
 BEGIN TRANSACTION;
   INSERT INTO submissions (id, user_id, sql_content) VALUES (...);
@@ -54,7 +56,11 @@ sequenceDiagram
     C->>S2: Commit!
 ```
 
+*Hình 6.1: Two-Phase Commit — Coordinator điều phối prepare và commit*
+
 Richardson trong [2a, Ch.4] liệt kê lý do 2PC (XA transactions) không phù hợp cho microservices:
+
+**Bảng 6.1:** Tại sao 2PC không phù hợp với microservices
 
 | Vấn đề | Mô tả | Ảnh hưởng đến LMS |
 |--------|-------|-------------------|
@@ -99,11 +105,15 @@ graph LR
     style CN fill:#FFCDD2
 ```
 
+*Hình 6.2: LMS Submit Saga — chuỗi local transactions và compensating transactions*
+
 Richardson trong [2a, Ch.4] minh họa saga pattern với 4 participants và credit card authorization làm pivot transaction. Trong LMS, saga đơn giản hơn (2-3 participants) nhưng phức tạp ở chỗ Judge execution là **long-running** (5-30 giây) — thách thức đặc thù của bài toán chấm bài tự động.
 
 ### Ba loại transactions trong saga
 
 Richardson phân loại mỗi step trong saga thành ba loại [2a, Ch.4]. Áp dụng cho LMS Submit Saga:
+
+**Bảng 6.2:** Ba loại transactions trong saga — áp dụng cho LMS Submit Saga
 
 | Loại | Mô tả | Có compensation? | Ví dụ trong LMS |
 |------|-------|-------------------|-----------------|
@@ -151,6 +161,10 @@ sequenceDiagram
     end
 ```
 
+*Hình 6.3: Choreography — các service tự phối hợp qua events*
+
+**Bảng 6.3:** Ưu và nhược điểm của Choreography
+
 | Ưu điểm | Nhược điểm |
 |---------|-----------|
 | **Đơn giản**: không cần thêm service orchestrator | **Khó theo dõi**: logic phân tán, không ai biết "saga ở bước nào" |
@@ -186,6 +200,10 @@ sequenceDiagram
     end
 ```
 
+*Hình 6.4: Orchestration — saga orchestrator điều phối toàn bộ flow*
+
+**Bảng 6.4:** Ưu và nhược điểm của Orchestration
+
 | Ưu điểm | Nhược điểm |
 |---------|-----------|
 | **Dễ hiểu**: logic tập trung, biết saga đang ở bước nào | **Centralization risk**: orchestrator là component thêm cần maintain |
@@ -195,6 +213,8 @@ sequenceDiagram
 ### Khi nào dùng gì?
 
 Rocha trong [5, §4.4] đề xuất kết hợp cả hai — và đây là cách tiếp cận thực tế nhất:
+
+**Bảng 6.5:** Choreography vs Orchestration — khi nào dùng gì
 
 | Scenario | Recommendation | LMS context |
 |----------|---------------|-------------|
@@ -214,6 +234,8 @@ Rocha trong [5, §4.4] đề xuất kết hợp cả hai — và đây là cách
 ### Thiết kế compensation trong LMS
 
 Compensation không phải "undo" — nó là **hành động nghiệp vụ ngược** [2a, Ch.4]. Trong ngữ cảnh LMS:
+
+**Bảng 6.6:** Thiết kế compensation trong LMS
 
 | Forward Transaction | Compensation | Lưu ý |
 |-------------------|-------------|-------|
@@ -245,6 +267,8 @@ sequenceDiagram
     Note over DB: Final: 105 ❌ (should be 115)
 ```
 
+*Hình 6.5: Lost Updates anomaly — hai saga ghi đè kết quả của nhau*
+
 Ví dụ LMS: hai submissions của cùng user — submission A (score +10) và B (score +5) xử lý đồng thời. Cả hai đọc score=100, A set 110, B set 105. Score đúng phải là 115 nhưng chỉ là 105 — update của A bị mất.
 
 **2. Dirty Reads** — Saga A đọc data mà Saga B đã ghi nhưng chưa hoàn thành (có thể sẽ rollback).
@@ -265,6 +289,8 @@ Richardson đề xuất các countermeasures [2a, Ch.4], áp dụng cho LMS:
 
 **1. Semantic Lock** — Đặt cờ "đang xử lý" trên record, ngăn saga khác đọc/ghi data chưa final:
 
+**Listing 6.2:** Semantic Lock — đặt cờ "JUDGING" ngăn thao tác trên data chưa final
+
 ```java
 // Khi saga bắt đầu — không cho phép re-submit cùng câu hỏi
 submission.setStatus(SubmissionStatus.JUDGING); // semantic lock
@@ -282,6 +308,8 @@ submissionRepository.save(submission);
 
 **2. Commutative Updates** — Thiết kế updates không phụ thuộc thứ tự — giải quyết **lost updates**:
 
+**Listing 6.3:** Commutative Updates — delta thay vì absolute value
+
 ```java
 // ❌ Không commutative: set absolute value — thứ tự quan trọng
 user.setTotalScore(150);
@@ -296,6 +324,8 @@ user.incrementScore(+5);   // submission B correct
 
 **4. Re-read Value** — Đọc lại data trước khi quyết định (tương tự optimistic locking) — giải quyết **non-repeatable reads**:
 
+**Listing 6.4:** Re-read Value — kiểm tra lại trước khi quyết định
+
 ```java
 // Trước khi update score, kiểm tra submission chưa bị cancel
 Submission fresh = submissionRepository.findById(submissionId);
@@ -307,6 +337,8 @@ if (fresh.getStatus() == SubmissionStatus.CANCELLED) {
 **5. Version File** — Ghi lại thứ tự operations, reorder nếu cần. Ví dụ: nếu Saga A và B đều update score, Version File ghi `[A:+10, B:+5]` — xử lý tuần tự thay vì đồng thời. Trong LMS, Kafka topic `score-updates` tự nhiên là Version File: messages xử lý theo thứ tự partition.
 
 ### Tổng hợp: Anomaly → Countermeasure
+
+**Bảng 6.7:** Anomaly → Countermeasure — áp dụng cho LMS
 
 | Anomaly | Countermeasure phù hợp | Áp dụng LMS |
 |---------|----------------------|-------------|
@@ -321,6 +353,8 @@ if (fresh.getStatus() == SubmissionStatus.CANCELLED) {
 ### Từ ACID đến BASE
 
 Microservices chuyển từ ACID sang **BASE** [7, Ch.9]:
+
+**Bảng 6.8:** ACID (Monolith) vs BASE (Microservices)
 
 | | ACID (Monolith LMS) | BASE (Microservices LMS) |
 |---|----------------|---------------------|
@@ -341,6 +375,8 @@ Trong LMS: sau khi sinh viên nộp bài, có consistency window 1–30 giây tr
 - UI hiện "Đang chấm..." — user chấp nhận được
 
 ### Strategies cho UI và business
+
+**Bảng 6.9:** Strategies cho UI khi chấp nhận eventual consistency
 
 | Strategy | Mô tả | Cách LMS implement |
 |----------|-------|---------------------|
@@ -386,9 +422,13 @@ sequenceDiagram
     end
 ```
 
+*Hình 6.6: Implicit Saga trong LMS — choreography qua Kafka events*
+
 Richardson trong [2a, Ch.4] mô tả saga pattern với explicit orchestrator, state machine rõ ràng, và compensation cho từng step. LMS flow đơn giản hơn (3 steps) nhưng thiếu các safety mechanisms cần thiết: không có explicit saga definition, không có compensation, không có timeout.
 
 ### Phân tích các vấn đề
+
+**Bảng 6.10:** Phân tích vấn đề Submit Flow trong LMS
 
 | # | Vấn đề | Hiện trạng LMS | Best Practice [2a, Ch.4] |
 |---|--------|---------------|--------------------------|
@@ -401,6 +441,8 @@ Richardson trong [2a, Ch.4] mô tả saga pattern với explicit orchestrator, s
 ### Đề xuất migration
 
 **Phase 1 — Semantic Lock + Timeout** (ưu tiên cao, effort thấp):
+**Listing 6.5:** Semantic Lock + Timeout compensation cho submissions
+
 ```java
 // Khi nhận submission — semantic lock
 submission.setStatus(SubmissionStatus.JUDGING);

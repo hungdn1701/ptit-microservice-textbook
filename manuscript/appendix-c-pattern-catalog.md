@@ -44,7 +44,7 @@
 | **Client-side Discovery** | Client query registry + tự load balance | Ch.4 §4.3 | [2a] Ch.3 |
 | **Server-side Discovery** | Load balancer query registry | Ch.4 §4.3 | [2a] Ch.3 |
 | **Sidecar** | Process phụ đi kèm mỗi service instance | Ch.12 §12.6 | [3] Ch.8 |
-| **Strangler Fig** | Migration incremental từ monolith | Ch.2 §2.3 | [4b] Ch.3 |
+| **Strangler Fig** | Migration incremental từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
 
 ## Security Patterns
 
@@ -75,14 +75,15 @@
 | **Infrastructure as Code** | Declare infra bằng code (Docker Compose, K8s) | Ch.12 §12.6 | [3] Ch.6 |
 | **CI/CD Pipeline** | Automate build → test → deploy | Ch.12 §12.4 | [3] Ch.10 |
 
-## Testing Patterns
+## Migration Patterns
 
 | Pattern | Mô tả ngắn | Chương | Ref |
 |---------|-----------|--------|-----|
-| **Test Pyramid** | Unit > Integration > E2E | Ch.10 §10.1 | [2a] Ch.9 |
-| **Contract Testing** | Verify API contracts giữa services | Ch.10 §10.4 | [2a] Ch.9 |
-| **Testcontainers** | Real dependencies trong Docker containers | Ch.10 §10.3 | [5] Ch.10 |
-| **Testing in Production** | Canary, Feature Flags, Shadowing | Ch.10 §10.5 | [5] §10.5 |
+| **Strangler Fig** | Migration incremental từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
+| **Anti-Corruption Layer** | Dịch model giữa old/new systems | Ch.10 §10.4 | [6] Ch.14 |
+| **Branch by Abstraction** | Tạo abstraction, switch implementation | Ch.10 §10.4 | [4b] Ch.3 |
+| **Outbox Pattern** | Reliable messaging khi tách database | Ch.10 §10.3 | [2a] Ch.4 |
+| **Parallel Run** | Chạy old + new, so sánh output | Ch.10 §10.4 | [4b] Ch.3 |
 
 ## DDD Patterns
 

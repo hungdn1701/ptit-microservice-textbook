@@ -31,7 +31,7 @@ graph LR
     end
     
     subgraph Act3["Hồi 3: Vận hành<br/>(Ch.10-12)"]
-        C10["Ch.10: Testing"]
+        C10["Ch.10: Migration"]
         C11["Ch.11: Observability"]
         C12["Ch.12: Deployment"]
     end
@@ -48,7 +48,7 @@ graph LR
 |-----|-------------------|--------|---------|
 | **1. Nền tảng** | "Tại sao chuyển? Tách ở đâu?" | 1-2 | MS là phản ứng trước giới hạn thực tế; tách theo bounded context, không theo entity |
 | **2. Xây dựng** | "Xây dựng thế nào? Trade-offs nào?" | 3-9 | Mỗi pattern giải quyết 1 vấn đề nhưng tạo ra thách thức mới; không có silver bullet |
-| **3. Vận hành** | "Vận hành, kiểm tra, triển khai ra sao?" | 10-12 | Automation là cốt lõi; build quality in thay vì inspect quality out |
+| **3. Vận hành** | "Chuyển đổi, vận hành, triển khai ra sao?" | 10-12 | Migration incremental, observability trước khi scale, automation là cốt lõi |
 
 ---
 
@@ -131,9 +131,9 @@ graph LR
 
 ---
 
-### Chương 10–11: Testing & Observability
+### Chương 10: Chuyển đổi Thực tế — Từ Monolith đến Microservices
 
-**Ch.10 Storyline**: Test pyramid + Component Testing + Contract Testing + Testing in Production.
+**Ch.10 Storyline**: Monolith First + Strangler Fig + Database Decomposition + Anti-Corruption Layer + LMS Migration Roadmap.
 **Ch.11 Storyline**: 3 trụ cột (Logs, Traces, Metrics) + SLI/SLO + Chaos Engineering + **Netflix Simian Army** (industry case study).
 
 ---

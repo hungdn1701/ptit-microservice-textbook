@@ -34,7 +34,7 @@ Sử dụng hệ thống LMS thực tế làm case study xuyên suốt, mỗi ch
 ### Phần III: Hạ tầng & Vận hành (Ch.8-12)
 - **Ch.8**: API Gateway — routing, cross-cutting concerns, Spring Cloud Gateway
 - **Ch.9**: Bảo mật — JWT, OAuth2, RBAC
-- **Ch.10**: Kiểm thử — test pyramid, contract testing, testing in production
+- **Ch.10**: Chuyển đổi thực tế — Strangler Fig, database decomposition, migration roadmap
 - **Ch.11**: Observability — logging, metrics, tracing, alerting
 - **Ch.12**: Deployment & DevOps — Docker, CI/CD, deployment strategies, IaC
 

@@ -22,7 +22,7 @@
 
 Trong monolith, toàn bộ ứng dụng truy cập một database duy nhất — đơn giản, nhất quán, và transactions ACID hoạt động tự nhiên. Khi chuyển sang microservices, nhiều team giữ nguyên shared database vì "tiện" — mọi service vẫn đọc/ghi cùng bảng. Thoạt nhìn, đây có vẻ là giải pháp tốt: không cần thay đổi data layer, không cần xử lý eventual consistency.
 
-Tuy nhiên, bài toán data trong distributed systems bị ràng buộc bởi một giới hạn lý thuyết quan trọng — **CAP Theorem** (Consistency, Availability, Partition tolerance): trong hệ thống phân tán, khi network partition xảy ra, bạn chỉ có thể chọn *hoặc* consistency *hoặc* availability, không thể có cả hai [7, Ch.9]. Newman trong [4a, Ch.11] giải thích: đây là lý do tại sao microservices buộc phải chấp nhận eventual consistency — và tại sao thiết kế data management cần cân nhắc kỹ trade-offs giữa consistency và availability cho *từng use case cụ thể*.
+Tuy nhiên, bài toán data trong distributed systems bị ràng buộc bởi một giới hạn lý thuyết quan trọng — **CAP Theorem** (Consistency, Availability, Partition tolerance): trong hệ thống phân tán, khi network partition xảy ra, hệ thống chỉ có thể chọn *hoặc* consistency *hoặc* availability, không thể có cả hai [7, Ch.9]. Newman trong [4a, Ch.11] giải thích: đây là lý do tại sao microservices buộc phải chấp nhận eventual consistency — và tại sao thiết kế data management cần cân nhắc kỹ trade-offs giữa consistency và availability cho *từng use case cụ thể*.
 
 Shared database **phá vỡ nguyên lý cốt lõi nhất** của microservices: independent deployability. Newman trong [4b, Ch.4] phân tích ba hậu quả nghiêm trọng:
 
@@ -38,6 +38,8 @@ graph TB
     style P2 fill:#FFCDD2
     style P3 fill:#FFCDD2
 ```
+
+*Hình 7.1: Ba hậu quả của shared database trong microservices*
 
 **1. Schema coupling** — Khi hai service đọc cùng bảng `users`, thay đổi schema (đổi tên cột, thêm constraint) ảnh hưởng cả hai. Mỗi database migration trở thành cross-team coordination exercise — chính xác vấn đề mà microservices muốn loại bỏ.
 
@@ -70,7 +72,11 @@ graph TB
     style DBC fill:#C8E6C9
 ```
 
+*Hình 7.2: Shared Database (đọc/ghi chung) vs Database-per-Service (data qua API)*
+
 "Database riêng" không nhất thiết là database server riêng. Có ba cấp độ tách:
+
+**Bảng 7.1:** Ba cấp độ tách database
 
 | Cấp độ | Mô tả | Isolation | Chi phí |
 |--------|-------|-----------|---------|
@@ -95,6 +101,8 @@ Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hi
 ### Industry Case Study: Uber — Domain-Oriented Microservice Architecture (DOMA)
 
 Uber (2020) công bố bài học từ việc quản lý **4,000+ microservices** — trong đó data ownership là thách thức lớn nhất. Adam Gluck mô tả cách Uber chuyển từ "microservices spaghetti" sang **DOMA** (Domain-Oriented Microservice Architecture):
+
+**Bảng 7.2:** Uber — hành trình từ microservices spaghetti đến DOMA
 
 | Giai đoạn | Vấn đề | Giải pháp |
 |-----------|--------|-----------|
@@ -123,11 +131,13 @@ graph TB
     style AP fill:#E8F5E9
 ```
 
+*Hình 7.3: CAP Theorem — CP (chọn consistency) vs AP (chọn availability) khi partition*
+
 **CP Systems** (Consistency when Partitioned): khi partition xảy ra, system từ chối request thay vì trả data không nhất quán. Ví dụ: PostgreSQL cluster đặt consistency lên trên — node không đồng bộ sẽ trả lỗi.
 
 **AP Systems** (Availability when Partitioned): khi partition xảy ra, system vẫn trả response nhưng data có thể stale. Ví dụ: Cassandra, DynamoDB cho phép đọc/ghi ở bất kỳ node nào — data *eventually* consistent.
 
-Áp dụng cho LMS:
+**Bảng 7.3:** CP vs AP cho từng service trong LMS
 
 | Service | Data | Nên CP hay AP? | Lý do |
 |---------|------|---------------|-------|
@@ -169,6 +179,10 @@ graph TB
     style WriteThrough fill:#FFF9C4
 ```
 
+*Hình 7.4: Ba caching patterns — Cache-Aside, Read-Through, Write-Behind*
+
+**Bảng 7.4:** So sánh ba caching patterns
+
 | Pattern | Ưu điểm | Nhược điểm | Áp dụng LMS |
 |---------|---------|------------|-------------|
 | **Cache-Aside** | Đơn giản, app kiểm soát | Cache miss = 2 calls (cache + DB) | Question list, user profiles |
@@ -176,6 +190,8 @@ graph TB
 | **Write-Behind** | Write nhanh (async) | Risk mất data nếu cache crash | Leaderboard score updates |
 
 **Cache Invalidation** — "There are only two hard things in Computer Science: cache invalidation and naming things." (Phil Karlton). Chiến lược:
+
+**Bảng 7.5:** Chiến lược cache invalidation
 
 | Chiến lược | Mô tả | Khi nào dùng |
 |-----------|-------|-------------|
@@ -216,6 +232,8 @@ graph TB
     style D fill:#FFCDD2
 ```
 
+*Hình 7.5: Năm chiến lược tách database — từ ít rủi ro đến nhiều rủi ro*
+
 **1. Database View** — Tạo view read-only cho service mới, ẩn schema gốc. Ưu điểm: không thay đổi data, service cũ không bị ảnh hưởng. Nhược điểm: chỉ read-only, vẫn coupled vào schema.
 
 **2. Database Wrapping Service** — Đặt một API đơn giản phía trước database, mọi access đi qua API này. Ưu điểm: bắt đầu tách coupling mà không di chuyển data. Nhược điểm: thêm một service cần maintain.
@@ -230,6 +248,8 @@ graph TB
 
 Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợp nhất là **incremental**:
 
+**Bảng 7.6:** Migration path tách database cho LMS
+
 | Phase | Chiến lược | Mô tả | Effort |
 |-------|-----------|-------|--------|
 | 1 | **Separate Schema** | Tách `app_db` thành schema `core` và schema `assignment` | Thấp |
@@ -239,6 +259,8 @@ Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợ
 > **💡 Tip — Khi nào đủ?**
 >
 > Không phải hệ thống nào cũng cần đến Phase 3. Với LMS, Phase 1 (separate schema) đã ngăn được schema coupling ngầm. Phase 2 (API wrapping) cần khi team mở rộng và cần deploy độc lập thực sự. Phase 3 chỉ cần khi có yêu cầu scale khác nhau hoặc polyglot persistence.
+>
+> *Chi tiết migration roadmap thực tế, Outbox Pattern (reliable messaging khi tách DB), và thứ tự triển khai → xem Ch.10.*
 
 ---
 
@@ -264,6 +286,10 @@ sequenceDiagram
     AS->>AS: Hiển thị assignment + tên student
 ```
 
+*Hình 7.7: Truy cập dữ liệu xuyên service bằng API Call*
+
+**Bảng 7.7:** Ưu và nhược điểm của API Call pattern
+
 | Ưu điểm | Nhược điểm |
 |---------|------------|
 | Data luôn mới nhất | Temporal coupling: Auth down → Assignment không hiển thị được tên |
@@ -287,6 +313,10 @@ sequenceDiagram
     AS->>AS: Query local copy (nhanh!)
 ```
 
+*Hình 7.8: Truy cập dữ liệu xuyên service bằng Data Duplication qua Event Pipeline*
+
+**Bảng 7.8:** Ưu và nhược điểm của Data Duplication pattern
+
 | Ưu điểm | Nhược điểm |
 |---------|------------|
 | Không runtime dependency | Data có thể stale (eventual consistency) |
@@ -308,12 +338,16 @@ graph LR
     style COMP fill:#FFF9C4
 ```
 
+*Hình 7.9: API Composition pattern — Gateway hoặc BFF gọi nhiều services và tổng hợp*
+
 Ví dụ: hiển thị bảng xếp hạng contest cần data từ Core (submissions) và Auth (user names). API Composer gọi cả hai services, sau đó **in-memory join** — batch fetch user IDs để tránh N+1 problem, rồi `stream().map()` kết hợp thành `LeaderboardEntry`.
 
 
 ### Khi nào chấp nhận duplication?
 
 Newman trong [4b] đưa ra nguyên tắc rõ ràng: **"Duplication is far better than coupling."** Tuy nhiên, đây không phải giấy phép duplicate mọi thứ. Quy tắc:
+
+**Bảng 7.9:** Khi nào chấp nhận data duplication
 
 | Data | Nên duplicate? | Lý do |
 |------|---------------|-------|
@@ -375,6 +409,8 @@ graph TB
     style SYNC fill:#FFF9C4
 ```
 
+*Hình 7.10: CQRS pattern — tách command model (write) và query model (read)*
+
 **Command side** (write):
 - Normalized data model (đúng 3NF)
 - Strong validation, business rules
@@ -388,6 +424,8 @@ graph TB
 ### Khi nào cần CQRS?
 
 CQRS thêm complexity đáng kể — **đừng dùng khi không cần** [5, §4.5]:
+
+**Bảng 7.10:** Khi nào cần CQRS
 
 | Scenario | Cần CQRS? | Lý do |
 |----------|-----------|-------|
@@ -417,6 +455,8 @@ sequenceDiagram
     C->>R: GET /contests/{id}/leaderboard
     R-->>C: Pre-computed, no JOIN needed
 ```
+
+*Hình 7.11: CQRS cho Leaderboard — write side publish events, read side denormalized*
 
 > **📐 Nguyên tắc — CQRS ≠ Event Sourcing**
 >
@@ -457,9 +497,11 @@ graph LR
     style ES fill:#E8F5E9
 ```
 
+*Hình 7.12: Event Sourcing — lưu chuỗi events thay vì chỉ state hiện tại*
+
 Kleppmann trong [7, Ch.11] giải thích: Event Sourcing coi event log là **nguồn sự thật** (*source of truth*), còn state views (database tables, materialized views) là **derived data** — có thể rebuild bất kỳ lúc nào bằng cách replay events.
 
-### Ưu và nhược điểm
+**Bảng 7.11:** Ưu và nhược điểm của Event Sourcing
 
 | Ưu điểm | Nhược điểm |
 |---------|------------|
@@ -483,7 +525,9 @@ graph LR
     style SNAP fill:#FFE082
 ```
 
-**Cách hoạt động**: sau mỗi N events (ví dụ: 100), hệ thống lưu một snapshot = serialized state tại thời điểm đó. Khi cần current state, chỉ cần load snapshot + replay events *sau* snapshot — thay vì replay từ đầu.
+*Hình 7.12: Snapshot pattern — replay từ snapshot thay vì từ đầu*
+
+**Bảng 7.12:** Chiến lược snapshot
 
 | Chiến lược snapshot | Khi nào tạo | Trade-off |
 |-------------------|------------|-----------|
@@ -511,7 +555,9 @@ graph TB
     style VIEW_C fill:#FFF9C4
 ```
 
-### Event Store — Chọn Công cụ
+*Hình 7.13: Projection Rebuilds — tạo views mới từ events mà không cần migration*
+
+**Bảng 7.13:** Event Store — các công cụ phổ biến
 
 | Event Store | Mô tả | Phù hợp khi |
 |------------|-------|-------------|
@@ -530,6 +576,8 @@ Events, giống API (Ch.3), cần **schema evolution** khi business thay đổi.
 
 **1. Upcasting** — Khi load events cũ, transform sang format mới trước khi apply:
 
+**Listing 7.1:** Upcasting — transform events cũ sang format mới
+
 ```
 // Event v1 (2024): { type: "SubmissionCreated", userId: "123", sql: "SELECT ..." }
 // Event v2 (2025): { type: "SubmissionCreated", userId: "123", sql: "SELECT ...", language: "SQL" }
@@ -543,6 +591,8 @@ Events, giống API (Ch.3), cần **schema evolution** khi business thay đổi.
 > Events mô tả *điều đã xảy ra* (past tense: `SubmissionJudged`), không phải *yêu cầu* (`JudgeSubmission`). Events immutable — không bao giờ sửa/xóa event đã lưu. Nếu cần "undo", thêm event mới: `SubmissionResultCorrected`. Richardson trong [2a, Ch.6] nhấn mạnh: đây là *business decision*, không phải *technical decision* — domain experts nên đặt tên events.
 
 ### Khi nào dùng Event Sourcing?
+
+**Bảng 7.14:** Khi nào dùng Event Sourcing
 
 | Scenario | Phù hợp? | Lý do |
 |----------|----------|-------|
@@ -586,6 +636,8 @@ graph TB
     style AUTH_DB fill:#C8E6C9
 ```
 
+*Hình 7.14: Kiến trúc dữ liệu hiện tại của LMS — shared database là gap chính*
+
 **Quan sát chính:**
 
 1. **Auth Service** — đã tách database riêng (`auth_db`) → ✅ đúng database-per-service
@@ -598,6 +650,8 @@ graph TB
 LMS sử dụng hai pattern để truy vấn dữ liệu xuyên service: (1) **Interface Projections** (Spring Data JPA) — query trả về lightweight projection thay vì full entity, giảm data transfer, (2) **Feign calls** — gọi API service khác khi cần data ngoài boundary.
 
 ### Từ hiện trạng đến best practice
+
+**Bảng 7.15:** Tổng hợp vấn đề data management trong LMS và chiến lược migration
 
 | # | Vấn đề | Hiện trạng LMS | Chiến lược migration |
 |---|--------|---------------|---------------------|
