@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
-# Build the full book or individual chapters as HTML
-# Pandoc assembles all Markdown files in correct book order
+# Build the full book or individual chapters as HTML + PDF
+# Pandoc assembles Markdown → HTML, Edge headless converts HTML → PDF
 #
 # Usage:
 #   .\scripts\build-pdf.ps1            # Build full book
@@ -82,7 +82,11 @@ function Get-BookFiles {
         if (Test-Path $pidx) { $files += $pidx }
     }
 
-    # Appendices
+    # Appendices (both manuscript/appendix-*.md and manuscript/appendices/*.md)
+    $rootAppendices = Get-ChildItem -Path $m -Filter "appendix-*.md" -ErrorAction SilentlyContinue | Sort-Object Name
+    if ($rootAppendices) {
+        $files += $rootAppendices | ForEach-Object { $_.FullName }
+    }
     $appDir = Join-Path $m "appendices"
     if (Test-Path $appDir) {
         Get-ChildItem -Path $appDir -Filter "*.md" | Sort-Object Name | ForEach-Object {
@@ -95,6 +99,63 @@ function Get-BookFiles {
     if (Test-Path $bib) { $files += $bib }
 
     return $files
+}
+
+# ──────────────────────────────────────────────────────────────
+# Helper: Convert HTML to PDF using MSEdge (headless)
+# Uses --no-pdf-header-footer to suppress browser chrome
+# ──────────────────────────────────────────────────────────────
+function Convert-HtmlToPdf {
+    param(
+        [string]$HtmlPath,
+        [string]$PdfPath
+    )
+    $EdgePaths = @(
+        "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
+        "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
+    )
+    $EdgeExecutable = $null
+    foreach ($path in $EdgePaths) {
+        if (Test-Path $path) {
+            $EdgeExecutable = $path
+            break
+        }
+    }
+
+    if (-not $EdgeExecutable) {
+        Write-Host "[WARN] msedge.exe not found. PDF conversion skipped." -ForegroundColor Yellow
+        return
+    }
+
+    $fullHtml = (Resolve-Path $HtmlPath).Path
+    if (-not [System.IO.Path]::IsPathRooted($PdfPath)) {
+        $PdfPath = Join-Path (Get-Location) $PdfPath
+    }
+    
+    $fileUri = "file:///" + $fullHtml.Replace('\', '/')
+    
+    # Use a temp user-data-dir to avoid conflicts with running Edge
+    $tempProfile = Join-Path $env:TEMP "edge-pdf-print"
+    
+    $argList = @(
+        "--headless=old",
+        "--disable-gpu",
+        "--no-pdf-header-footer",
+        "--user-data-dir=`"$tempProfile`"",
+        "--print-to-pdf=`"$PdfPath`"",
+        "`"$fileUri`""
+    )
+    $proc = Start-Process -FilePath $EdgeExecutable -ArgumentList $argList -Wait -PassThru -NoNewWindow 2>$null
+    
+    # Brief pause for file system sync
+    Start-Sleep -Milliseconds 500
+
+    if (Test-Path $PdfPath) {
+        $size = [math]::Round((Get-Item $PdfPath).Length / 1KB, 1)
+        Write-Host "[OK] $PdfPath ($size KB)" -ForegroundColor Green
+    } else {
+        Write-Host "[ERROR] Failed to generate $PdfPath" -ForegroundColor Red
+    }
 }
 
 # ──────────────────────────────────────────────────────────────
@@ -112,14 +173,49 @@ if ($Target -ne "all") {
 
     Write-Host "Building chapter $chapterNum..." -ForegroundColor Cyan
     $outputFile = Join-Path $OutputDir "chapter-$chapterNum.html"
-    & pandoc @commonArgs -o $outputFile $chapterFile
+    $pdfFile = Join-Path $OutputDir "chapter-$chapterNum.pdf"
+    
+    $meta = Join-Path $ManuscriptDir "metadata.yaml"
+    $srcFiles = @($chapterFile)
+    if (Test-Path $meta) {
+        $srcFiles = @($meta) + $srcFiles
+    }
+
+    & pandoc @commonArgs -o $outputFile $srcFiles
 
     $size = [math]::Round((Get-Item $outputFile).Length / 1KB, 1)
     Write-Host "[OK] $outputFile ($size KB)" -ForegroundColor Green
+    
+    Convert-HtmlToPdf -HtmlPath $outputFile -PdfPath $pdfFile
 
 } else {
+    # Build all individual chapters first
+    Write-Host "Building all individual chapters..." -ForegroundColor Cyan
+    $chapters = Get-ChildItem -Path $ManuscriptDir -Filter "chapter-*.md" | Sort-Object Name
+    $meta = Join-Path $ManuscriptDir "metadata.yaml"
+    
+    foreach ($chap in $chapters) {
+        $chapterNum = $chap.Name -replace "chapter-(.+)\.md", "`$1"
+        Write-Host "`nBuilding chapter $chapterNum..." -ForegroundColor Cyan
+        
+        $outputFile = Join-Path $OutputDir "chapter-$chapterNum.html"
+        $pdfFile = Join-Path $OutputDir "chapter-$chapterNum.pdf"
+        
+        $srcFiles = @($chap.FullName)
+        if (Test-Path $meta) {
+            $srcFiles = @($meta) + $srcFiles
+        }
+        
+        & pandoc @commonArgs -o $outputFile $srcFiles
+        
+        $size = [math]::Round((Get-Item $outputFile).Length / 1KB, 1)
+        Write-Host "[OK] $outputFile ($size KB)" -ForegroundColor Green
+        
+        Convert-HtmlToPdf -HtmlPath $outputFile -PdfPath $pdfFile
+    }
+
     # Full book build
-    Write-Host "Building full book..." -ForegroundColor Cyan
+    Write-Host "`nBuilding full book..." -ForegroundColor Cyan
     $bookFiles = Get-BookFiles
 
     Write-Host "Files in assembly order:" -ForegroundColor Gray
@@ -129,10 +225,14 @@ if ($Target -ne "all") {
     }
 
     $outputFile = Join-Path $OutputDir "SOA-Microservices-Book.html"
+    $pdfFile = Join-Path $OutputDir "SOA-Microservices-Book.pdf"
+    
     & pandoc @commonArgs -o $outputFile @bookFiles
 
     $size = [math]::Round((Get-Item $outputFile).Length / 1KB, 1)
     Write-Host "[OK] $outputFile ($size KB)" -ForegroundColor Green
+    
+    Convert-HtmlToPdf -HtmlPath $outputFile -PdfPath $pdfFile
 }
 
-Write-Host "Open in browser: start $outputFile" -ForegroundColor Yellow
+Write-Host "`nDone! Output files are in $OutputDir" -ForegroundColor Yellow

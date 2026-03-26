@@ -37,11 +37,12 @@
 | Jaeger / Zipkin | Distributed tracing |
 | OpenTelemetry | Observability framework |
 
-## Testing
+## Migration & Testing
 
 | Công cụ | Mục đích |
 |---|---|
+| Debezium | Change Data Capture (CDC) |
+| Flyway | Database migration versioning |
 | JUnit 5 | Unit testing |
 | Testcontainers | Integration testing |
-| Pact | Consumer-driven contract testing |
 | WireMock | Service virtualization |

@@ -2,8 +2,11 @@
 
 ## Sách tham khảo chính (theo chương)
 
-### Chương 1 & Chương 10
+### Chương 1
 - Newman, S. (2021). *Building Microservices: Designing Fine-Grained Systems*, 2nd Edition. O'Reilly Media.
+
+### Chương 10
+- Newman, S. (2019). *Monolith to Microservices: Evolutionary Patterns to Transform Your Monolith*. O'Reilly Media.
 
 ### Chương 2
 - Evans, E. (2003). *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley.

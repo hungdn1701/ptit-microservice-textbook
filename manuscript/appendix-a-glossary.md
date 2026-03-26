@@ -41,7 +41,7 @@
 | Service | service | Ch.1 |
 | Service Discovery | Service Discovery | Ch.4 |
 | SLI/SLO/SLA | SLI, SLO, SLA | Ch.11 |
-| Strangler Fig | Strangler Fig pattern | Ch.2 |
+| Strangler Fig | Strangler Fig pattern | Ch.10 |
 
 ---
 

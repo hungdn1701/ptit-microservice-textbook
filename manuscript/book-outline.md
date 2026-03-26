@@ -244,24 +244,24 @@
 
 ---
 
-### Chương 10: Kiểm thử Microservices ✅ DRAFTED
+### Chương 10: Chuyển đổi Thực tế — Từ Monolith đến Microservices ✅ DRAFTED
 
-**Mục tiêu:** Test pyramid, integration testing, contract testing, testing in EDA.
+**Mục tiêu:** Migration strategies, Strangler Fig, database decomposition, migration roadmap.
 
 | Section | Nội dung | DBLAB Source | Ref |
 |---|---|---|---|
-| 10.1 | Test pyramid trong microservices | Lý thuyết | Richardson(2a) Ch.9–10, Newman(4a) Ch.7 |
-| 10.2 | Unit testing service layer | Test packages | Richardson(2a) |
-| 10.3 | Integration testing với testcontainers | Lý thuyết + practical | Rocha(5) Ch.10 |
-| 10.4 | Contract testing (Pact, Spring Cloud Contract) | Lý thuyết | Richardson(2a) Ch.9, Rocha(5) §10.2 |
-| 10.5 | Testing in production: Shadowing, Canaries, Feature Flags | Lý thuyết | Rocha(5) §10.5, Mitra(3) Ch.11 |
-| 10.6 | **Case Study:** Test strategy cho DBLAB | Current test coverage | source-registry.md |
+| 10.1 | Khi nào (KHÔNG) nên chuyển sang microservices | Architecture decisions | Newman(4b) Ch.1, Richardson(2a) Ch.13 |
+| 10.2 | Strangler Fig Pattern — migration incremental | Gateway routing | Newman(4b) Ch.3, Fowler(W2) |
+| 10.3 | Tách database — thách thức lớn nhất + Outbox Pattern | Shared DB analysis | Newman(4b) Ch.4, Richardson(2a) Ch.4 |
+| 10.4 | Anti-Corruption Layer & Migration Patterns | Service boundaries | Evans(6) Ch.14, Newman(4b) Ch.3 |
+| 10.5 | **Case Study:** Migration Roadmap cho LMS — tổng hợp gaps | All gap analyses | source-registry.md |
+| 10.6 | Sai lầm thường gặp khi migration | Practical experience | Newman(4b), Richardson(2a) |
 
-> **📐 Nguyên tắc — Mastery Through Restraint**
+> **📐 Nguyên tắc — Monolith First**
 >
-> "You haven't mastered a tool until you understand when it should not be used."
+> "Start with a monolith. Move to microservices only when the monolith becomes a problem."
 >
-> *— Kelsey Hightower (trích dẫn bởi Hugo Rocha)*
+> *— Martin Fowler [W1]*
 
 ---
 
@@ -334,5 +334,5 @@
 | 2026-03-12 | Ch.1–6 revised: +⚠️ Sai lầm thường gặp callout per chapter (3-4 items each), +problem-first framing strengthened in Ch.4 §4.2. Based on IDEAS.md review. Updated write-chapter.md workflow with new checklist items. | AI+Author |
 | 2026-03-12 | Ch.7 drafted: database-per-service, DB decomposition strategies (5 methods), data duplication vs coupling, CQRS with leaderboard example, Event Sourcing overview, LMS shared DB analysis + migration path. | AI+Author |
 | 2026-03-12 | Ch.8 drafted: API Gateway pattern + BFF, Spring Cloud Gateway (WebFlux), route config with Eureka lb://, cross-cutting concerns (JWT, CORS, rate limiting, correlation ID), LMS gateway analysis. | AI+Author |
-| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed DBLAB naming in CORS config (Ch.8). Ch.10 drafted: test pyramid, unit testing (mocks), integration testing (Testcontainers), contract testing (Pact/Spring Cloud Contract), testing in production (canary/feature flags/shadowing), LMS zero-test-coverage gap analysis + 3-phase migration path. | AI+Author |\r\n| 2026-03-19 | Ch.10–11 rebalanced: reduced code blocks (Ch.10: 16→9, Ch.11: 21→11), added theory depth (Ch.10: +Testing EDA, Mock vs Stub, Test ROI; Ch.11: +Observability Maturity Model, SLI/SLO/SLA, Sampling Strategies, Alerting Strategy). Case studies shifted from source-code to business context analysis. | AI+Author |\r\n| 2026-03-19 | Ch.12 drafted: deployment challenges, containerization (Docker vs VM, 5 patterns), Docker Compose orchestration, CI/CD pipelines (mono/poly-repo), deployment strategies (Rolling/Blue-Green/Canary), IaC (3 levels), LMS deployment architecture analysis + 4-phase migration path. | AI+Author |
+| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed DBLAB naming in CORS config (Ch.8). Ch.10 drafted (Testing — later replaced): test pyramid, unit testing, contract testing, testing in production. | AI+Author |\r\n| 2026-03-19 | Ch.10–11 rebalanced (Testing version — later replaced). Ch.12 drafted: deployment challenges, containerization, CI/CD, deployment strategies, IaC, LMS deployment architecture analysis. | AI+Author |\r\n| 2026-03-25 | **Ch.10 replaced**: Testing → "Chuyển đổi Thực tế — Từ Monolith đến Microservices". Old Testing content archived to `archive/chapter-10-testing.md`. New content: Monolith First, Strangler Fig, Database Decomposition (Outbox Pattern), Anti-Corruption Layer, LMS Migration Roadmap (4 phases), 6 common migration mistakes. Updated 14+ cross-references (Ch.1, Ch.9, Ch.12, introduction, storyline, book-outline, appendices A/B/C/D, bibliography, part-3 index). Renamed `part-3/ch10-testing.md` → `ch10-migration.md`. Setup `code/` directory (interactive/ + lms/). | AI+Author |
 

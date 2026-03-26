@@ -1,7 +1,7 @@
 # Style Guide — SOA & Microservices Architecture
 
 > Living document — cập nhật khi có thống nhất mới.
-> Last updated: 2026-03-12
+> Last updated: 2026-03-26
 
 ---
 
@@ -236,7 +236,7 @@ Nguyên tắc sử dụng:
 ## 6. Hình ảnh & Sơ đồ
 
 - **Format:** Mermaid (inline trong Markdown) hoặc PNG trong `figures/chXX/`
-- **Đánh số:** `Hình 4.1: Luồng giao tiếp đồng bộ qua OpenFeign`
+- **Đánh số:** Bắt buộc theo hệ thống `Hình N.M` (xem §8)
 - **Ngôn ngữ trong diagram:** Tiếng Anh (vì phản ánh code/architecture)
 - **Alt text:** Luôn có mô tả
 
@@ -251,3 +251,111 @@ Nguyên tắc sử dụng:
 - **Bullet list:** dùng `-` (không `*`)
 - **Numbered list:** dùng `1.`, `2.`, ...
 - **Line length:** không giới hạn (Markdown handles wrapping)
+
+---
+
+## 8. Caption & Đánh số Visual Elements
+
+> **BẮT BUỘC:** Mọi bảng, hình, và code block có ý nghĩa phải có caption đánh số theo hệ thống `N.M` (N = chương, M = thứ tự trong chương). Đây là tiêu chuẩn bắt buộc của sách kỹ thuật chuyên nghiệp (Manning, O'Reilly, Packt).
+
+### Hệ thống đánh số
+
+| Loại | Prefix | Counter | Ví dụ |
+|------|--------|---------|-------|
+| Bảng | **Bảng** | Riêng (Bảng 4.1, 4.2...) | Bảng 4.1 |
+| Hình/Diagram | **Hình** | Riêng (Hình 4.1, 4.2...) | Hình 4.3 |
+| Code listing | **Listing** | Riêng (Listing 4.1, 4.2...) | Listing 4.2 |
+
+- Mỗi loại có bộ đếm riêng biệt (Bảng 4.1 và Hình 4.1 có thể cùng tồn tại)
+- Đánh số reset ở đầu mỗi chương
+- Bảng nhỏ mang tính minh họa inline (2-3 dòng, không tham chiếu lại) có thể không đánh số
+
+### Format Markdown
+
+**Bảng — caption ĐẶT TRƯỚC bảng:**
+```markdown
+**Bảng 4.1:** So sánh các pattern giao tiếp đồng bộ
+
+| Pattern | Ưu điểm | Nhược điểm |
+|---------|---------|------------|
+| REST    | ...     | ...        |
+```
+
+**Hình (Mermaid) — caption ĐẶT SAU diagram:**
+````markdown
+```mermaid
+graph TD
+    A[Client] --> B[Gateway]
+    B --> C[Core Service]
+```
+
+*Hình 4.2: Luồng request từ client qua Gateway đến Core Service*
+````
+
+**Code listing — caption ĐẶT TRƯỚC code block:**
+````markdown
+**Listing 4.3:** SqlExecutorService — Strategy pattern for multi-DBMS dispatch
+
+```java
+@Service
+public class SqlExecutorService { ... }
+```
+````
+
+### Tham chiếu chéo
+
+- Tham chiếu trong text: "xem **Hình 4.2**" hoặc "như trình bày trong **Bảng 3.1**"
+- Tham chiếu chéo chương: "xem **Hình 7.3** (Chương 7)"
+- Luôn in đậm số hiệu khi tham chiếu
+
+### Ngôn ngữ caption
+
+| Thành phần | Ngôn ngữ | Ví dụ |
+|---|---|---|
+| Label (Bảng/Hình/Listing) | Tiếng Việt | **Bảng 4.1:** |
+| Tiêu đề caption | Tiếng Việt | So sánh các pattern giao tiếp |
+| Nội dung trong diagram | Tiếng Anh | `Client`, `Gateway`, `Core Service` |
+| Code và comments | Tiếng Anh | `// Strategy pattern` |
+
+---
+
+## 9. Ngôn ngữ học thuật
+
+> Sách mang tính kỹ thuật — học thuật. Giọng văn gần gũi (Manning-style) nhưng phải **khách quan, có căn cứ**, không dùng văn nói hoặc từ ngữ chủ quan.
+
+### Xưng hô & Ngôi
+
+| Context | Cho phép | Không cho phép |
+|---|---|---|
+| Thân bài | "chúng ta" (inclusive) | "bạn", "mình", "các bạn", "anh em" |
+| Heading | "Bạn sẽ học được gì" (OK — Manning convention) | |
+| Trích dẫn trực tiếp | Giữ nguyên lời gốc | |
+| Giải thích concept | "người đọc", "developer", "team" | "bạn" |
+
+### "Best practice" — Quy tắc sử dụng
+
+"Best practice" là thuật ngữ kỹ thuật được chấp nhận rộng rãi (Richardson, Newman, Kleppmann đều sử dụng). Tuy nhiên, cần tuân thủ:
+
+| ✅ Chấp nhận | ❌ Cần sửa |
+|---|---|
+| Tên cột bảng: `\| Best Practice \|` | Heading: "Best Practices" → "Nguyên tắc triển khai" |
+| Có nguồn: "Best practice theo [2a, Ch.4]" | Không nguồn: "Best practice: dùng Schema Registry" |
+| Trong phân tích gap: "so với best practice" | Nhận định chung: "đây là best practice" |
+
+### Từ ngữ cần tránh hoặc thay thế
+
+| ❌ Tránh | ✅ Thay bằng | Lý do |
+|---|---|---|
+| rất tốt, rất hay | hiệu quả, phù hợp | Subjective intensifier |
+| hoàn hảo | tối ưu, đầy đủ | Absolute claim |
+| tuyệt vời | đáng chú ý, hiệu quả | Subjective |
+| cực kỳ | đặc biệt, rất (nếu cần) | Informal intensifier |
+| thú vị | đáng lưu ý, quan trọng | Subjective |
+| nói thẳng/nói thật | thực tế cho thấy | Informal register |
+| chắc chắn rồi | rõ ràng, hiển nhiên | Informal |
+
+### Nhận định phải có căn cứ
+
+- **Mọi nhận định kỹ thuật** phải kèm: (a) tham chiếu nguồn, HOẶC (b) reasoning logic rõ ràng
+- **Số liệu cụ thể** ("giảm 40%", "100K requests") phải có nguồn hoặc ghi "ước tính"
+- **So sánh/đánh giá** phải nêu tiêu chí: không viết "A tốt hơn B" mà viết "A có latency thấp hơn B trong kịch bản X"

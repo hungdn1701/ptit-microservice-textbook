@@ -186,10 +186,7 @@
         font-size: 0.95em;
     }
 
-    /* Warning callouts */
-    blockquote:has(strong:first-child) {
-        /* Default blue callout */
-    }
+    /* Warning callouts: blue by default, styled via blockquote above */
 
     /* ── CODE (Packt/Manning style: dark background, soft corners) ── */
     code {
@@ -311,23 +308,251 @@
 
     .date { display: none; }
 
-    /* ── PRINT STYLES ── */
+    /* ══════════════════════════════════════════════════════════
+       PRINT STYLES — Production-grade book layout
+       Designed for A4 output via Edge headless --no-pdf-header-footer
+       ══════════════════════════════════════════════════════════ */
+
+    @page {
+        size: A4;
+        margin: 2.5cm 2.5cm 3cm 3cm; /* top right bottom left (left=gutter for binding) */
+    }
+
+    /* First page: extra top margin for title */
+    @page :first {
+        margin-top: 4cm;
+    }
+
     @media print {
+        /* ── BASE ── */
         body {
             max-width: none;
-            font-size: 10pt;
+            font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+            font-size: 11pt;
+            line-height: 1.55;
             padding: 0;
-            color: black;
+            margin: 0;
+            color: #1a1a1a;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        h1 { page-break-before: always; font-size: 20pt; }
-        h2 { font-size: 16pt; }
-        h3 { font-size: 13pt; }
-        pre { white-space: pre-wrap; box-shadow: none; border: 1px solid #ccc; }
-        table { font-size: 9pt; }
-        .mermaid { page-break-inside: avoid; }
-        #TOC { page-break-after: always; }
-        a { color: black; text-decoration: none; }
-        blockquote { background: #f5f5f5 !important; border-left-color: #999 !important; }
+
+        /* ── HEADINGS ── */
+        h1 {
+            font-size: 22pt;
+            page-break-before: always;
+            page-break-after: avoid;
+            margin-top: 0;
+            padding-top: 1cm;
+            border-bottom: 2pt solid #1B2A4A;
+        }
+
+        h1:first-of-type {
+            page-break-before: avoid;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        h2 {
+            font-size: 16pt;
+            page-break-after: avoid;
+            margin-top: 1.5em;
+            border-bottom: 0.5pt solid #ccc;
+        }
+
+        h3 {
+            font-size: 13pt;
+            page-break-after: avoid;
+            margin-top: 1.2em;
+        }
+
+        h4 {
+            font-size: 11pt;
+            page-break-after: avoid;
+        }
+
+        /* ── PARAGRAPHS & LISTS ── */
+        p {
+            orphans: 3;
+            widows: 3;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        li {
+            orphans: 2;
+            widows: 2;
+        }
+
+        /* ── CODE BLOCKS ── */
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: none;
+            border: 1px solid #d0d0d0;
+            background: #f5f5f5 !important;
+            color: #1a1a1a !important;
+            padding: 0.8em 1em;
+            border-radius: 4px;
+            font-size: 9pt;
+            line-height: 1.4;
+            page-break-inside: avoid;
+        }
+
+        pre code {
+            color: #1a1a1a !important;
+            background: transparent !important;
+        }
+
+        code {
+            font-size: 9.5pt;
+            background: #eee !important;
+            color: #c53030 !important;
+            border-radius: 2px;
+            padding: 1px 4px;
+        }
+
+        /* ── TABLES ── */
+        table {
+            font-size: 9pt;
+            page-break-inside: avoid;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        thead {
+            display: table-header-group; /* repeat header on page break */
+        }
+
+        thead th {
+            background: #2d3748 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        tbody td {
+            border-bottom: 0.5pt solid #ccc;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f7f7f7 !important;
+        }
+
+        tbody tr:hover {
+            background: inherit;
+        }
+
+        /* ── BLOCKQUOTES / CALLOUTS ── */
+        blockquote {
+            background: #f5f5f5 !important;
+            border-left: 3pt solid #666 !important;
+            page-break-inside: avoid;
+            padding: 0.6em 1em;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+
+        /* ── IMAGES & FIGURES ── */
+        img {
+            max-width: 100%;
+            height: auto;
+            page-break-inside: avoid;
+        }
+
+        figure {
+            page-break-inside: avoid;
+            margin: 1em 0;
+        }
+
+        /* ── MERMAID DIAGRAMS ── */
+        .mermaid {
+            page-break-inside: avoid;
+            border: 0.5pt solid #ccc;
+            background: white !important;
+        }
+
+        /* ── LINKS ── */
+        a {
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        /* Show URL for external links in print */
+        a[href^="http"]::after {
+            content: " (" attr(href) ")";
+            font-size: 8pt;
+            color: #666;
+            word-break: break-all;
+        }
+
+        /* But not for internal anchors or TOC links */
+        #TOC a[href]::after,
+        a[href^="#"]::after {
+            content: none;
+        }
+
+        /* ── TITLE PAGE ── */
+        .title {
+            font-size: 28pt;
+            margin-top: 3cm;
+            border: none;
+            page-break-before: avoid;
+        }
+
+        .subtitle {
+            font-size: 14pt;
+            margin-bottom: 1cm;
+        }
+
+        .author {
+            font-size: 12pt;
+            margin-bottom: 2cm;
+        }
+
+        .date { display: none; }
+
+        /* ── TABLE OF CONTENTS ── */
+        #TOC {
+            page-break-after: always;
+            background: white !important;
+            border: none;
+            padding: 0;
+        }
+
+        #TOC a {
+            color: #1a1a1a;
+        }
+
+        /* ── HORIZONTAL RULES ── */
+        hr {
+            border-top: 1pt solid #ccc;
+            margin: 2em 0;
+        }
+
+        /* ── GENERAL PAGE BREAK RULES ── */
+        /* Avoid breaking right after headings */
+        h1, h2, h3, h4, h5, h6 {
+            page-break-after: avoid;
+        }
+
+        /* Keep captions with their content */
+        figcaption {
+            page-break-before: avoid;
+        }
+
+        /* ── STRONG / EMPHASIS ── */
+        strong {
+            color: #1a1a1a;
+        }
+
+        /* ── FOOTNOTES ── */
+        .footnotes {
+            font-size: 9pt;
+            border-top: 0.5pt solid #ccc;
+            margin-top: 2em;
+            padding-top: 0.5em;
+        }
     }
     </style>
 </head>

@@ -35,7 +35,11 @@ graph LR
     style FE fill:#FFCDD2
 ```
 
+*Hình 8.1: Không có Gateway — client phải biết địa chỉ của từng service*
+
 Richardson trong [2a, Ch.8] liệt kê năm vấn đề khi client gọi trực tiếp:
+
+**Bảng 8.1:** Vấn đề khi client gọi trực tiếp microservices
 
 | # | Vấn đề | Hậu quả |
 |---|--------|---------|
@@ -61,6 +65,8 @@ graph LR
     
     style GW fill:#FFF9C4
 ```
+
+*Hình 8.2: API Gateway — single entry point route đến từng service*
 
 Gateway xử lý **cross-cutting concerns tập trung**: authentication, CORS, rate limiting, logging, SSL termination. Services phía sau chỉ tập trung vào business logic — không cần biết CORS là gì.
 
@@ -90,6 +96,10 @@ graph TB
     style GW3 fill:#BBDEFB
 ```
 
+*Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)*
+
+**Bảng 8.2:** API Gateway vs BFF — khi nào dùng gì
+
 | Pattern | Mô tả | Khi nào dùng |
 |---------|-------|-------------|
 | **API Gateway** | Một gateway cho tất cả clients | Team nhỏ, clients cần API tương tự |
@@ -98,6 +108,8 @@ graph TB
 LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web frontends (student + admin) với API requirements tương tự.
 
 **Khi nào cần BFF?** BFF trở nên cần thiết khi different clients có **fundamentally different API needs** — không chỉ "filter bớt fields":
+
+**Bảng 8.3:** Kịch bản chọn Single Gateway vs BFF
 
 | Scenario | Single Gateway | BFF |
 |----------|---------------|-----|
@@ -116,6 +128,8 @@ Newman trong [4a, Ch.4] khuyến nghị: BFF nên **owned by frontend team** —
 ### Vấn đề: chọn gateway technology
 
 Hai lựa chọn phổ biến nhất trong Spring ecosystem:
+
+**Bảng 8.4:** Spring Cloud Gateway vs Netflix Zuul
 
 | | Spring Cloud Gateway | Netflix Zuul (1.x) |
 |---|---|---|
@@ -143,7 +157,9 @@ graph LR
     style POST fill:#FFF9C4
 ```
 
-Ba khái niệm cốt lõi:
+*Hình 8.4: Kiến trúc Spring Cloud Gateway — Predicates, Filters, Routes*
+
+**Bảng 8.5:** Ba khái niệm cốt lõi của Spring Cloud Gateway
 
 | Concept | Mô tả | Ví dụ LMS |
 |---------|-------|-----------|
@@ -166,6 +182,8 @@ Cách đơn giản nhất: hardcode URL cho mỗi service trong gateway config. 
 Giải pháp: kết hợp gateway routing với **Eureka service discovery** (đã học ở Ch.4). Gateway không cần biết IP:port cụ thể — chỉ cần tên service, Eureka giải quyết phần còn lại.
 
 ### LMS Gateway Route Configuration
+
+**Listing 8.1:** LMS Gateway route configuration (YAML + Eureka)
 
 ```yaml
 # application-lb.yml — LMS Gateway routing configuration
@@ -224,6 +242,8 @@ sequenceDiagram
     GW-->>C: 200 OK [questions]
 ```
 
+*Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route*
+
 `lb://core-service` thực hiện ba bước tự động:
 1. **Lookup**: query Eureka tìm tất cả instances có tên `core-service`
 2. **Load balance**: chọn instance bằng Spring Cloud LoadBalancer (round-robin mặc định)
@@ -246,6 +266,8 @@ Nếu mỗi service tự validate JWT token, tự configure CORS, tự implement
 ### 1. Authentication — JWT Validation tại Gateway
 
 LMS implement JWT validation ở gateway thông qua custom `GatewayFilter`:
+
+**Listing 8.2:** JWT validation filter tại Gateway
 
 ```java
 // Gateway JWT Filter — validate token trước khi route
@@ -305,6 +327,8 @@ sequenceDiagram
     end
 ```
 
+*Hình 8.6: Luồng JWT validation tại Gateway — claims propagation qua trusted headers*
+
 Services phía sau nhận user info qua **custom headers** (`X-User-Id`, `X-User-Roles`) — không cần validate JWT lại. Đây là pattern **claims-based identity propagation**: gateway validate token, services tin tưởng gateway (vì traffic internal).
 
 ### 2. CORS — Cross-Origin Resource Sharing
@@ -318,6 +342,8 @@ CORS tại gateway = **một nơi duy nhất** quản lý origins, methods, head
 ### 3. Rate Limiting
 
 Rate limiting ngăn một client gửi quá nhiều requests — bảo vệ services khỏi abuse hoặc DDoS. Spring Cloud Gateway hỗ trợ sẵn `RequestRateLimiter` filter kết hợp Redis: cấu hình `replenishRate` (requests/giây), `burstCapacity` (burst tối đa), và `KeyResolver` (rate limit theo user, IP, hoặc route).
+
+**Bảng 8.6:** Chiến lược rate limiting
 
 | Chiến lược rate limit | Mô tả | Use case |
 |----------------------|-------|----------|
@@ -369,7 +395,11 @@ graph TB
     style EUR fill:#E8F5E9
 ```
 
+*Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point*
+
 ### Phân tích configuration
+
+**Bảng 8.7:** Phân tích configuration Gateway trong LMS
 
 | Aspect | Hiện trạng LMS | Best Practice | Gap |
 |--------|---------------|---------------|-----|
