@@ -61,18 +61,18 @@ Hệ thống LMS bắt đầu với kiến trúc microservices — ngược vớ
 
 ### Bài học thực tế — Khi Migration đi sai hướng (Anti-patterns)
 
-Dù quyết định chuyển đổi là đúng đắn, *cách thức* chuyển đổi vẫn có thể dìm chết dự án. Dựa trên kinh nghiệm từ Richardson [2b, Ch.2], có bốn anti-patterns phổ biến nhất khi chuyển tử monolith sang microservices — được minh họa qua các sai lầm (tiềm năng) nếu chia tách sai trong hệ thống LMS:
+Dù quyết định chuyển đổi là đúng đắn, *cách thức* chuyển đổi vẫn có thể dìm chết dự án. Richardson trong [2b, Ch.2] phân tích bốn anti-patterns phổ biến nhất khi chuyển từ monolith sang microservices — chúng ta minh họa qua các sai lầm *tiềm năng* nếu chia tách sai trong hệ thống LMS:
 
-**Bảng 10.2:** Các Anti-patterns phổ biến khi chuyển đổi Microservices
+**Bảng 10.1b:** Anti-patterns khi chuyển đổi Microservices (minh họa với LMS)
 
-| Anti-pattern | Bối cảnh khi migrate | Vấn đề trong LMS | Hậu quả |
-|---|---|---|---|
-| **Data Services**<br/>*(CRUD wrappers)* | Tách riêng database layer thành service độc lập (ví dụ: chia `SqlExecutorService` hoặc xây `QuestionDataService`) | Mọi logic nghiệp vụ ở Core muốn truy vấn câu hỏi phải gọi `QuestionDataService` qua HTTP | Tăng latency mạng khổng lồ, tightly coupled, mất lợi ích transaction nội bộ |
-| **Fine-grained Services**<br/>*(Chia quá nhỏ)* | Cố gắng chia LMS Auth thành 3 service siêu nhỏ: `UserProfile`, `UserCredential`, `UserSession` | Mỗi lần sinh viên login, API Gateway phải gọi orchestrate qua cả 3 services | Unnecessary complexity, "microservice madness", rất khó debug khi lỗi |
-| **Microservices-first** | LMS được xây dựng ngay thành 4 microservices khi ranh giới và domain chưa rõ ràng | Thay đổi một tính năng chấm điểm khiến cả Core, Judge, và Assignment đều phải update API cùng lúc | Phát sinh "Distributed Monolith" — có nhược điểm của service rời rạc mà không có lợi ích độc lập |
-| **End-to-end QA Gate** | Deploy microservices độc lập, nhưng QA phải gom lại để test tích hợp toàn hệ thống | Core Service code xong, nhưng phải chờ Assignment Service và Judge Service build xong mới test được | Triệt tiêu khả năng *Independent Deployability* — lợi ích lớn nhất của việc chia microservices |
+| Anti-pattern | Ví dụ sai lầm tiềm năng trong LMS | Hậu quả |
+|---|---|---|
+| **Data Services** *(CRUD wrappers)* | Tách `SqlExecutorService` thành `QuestionDataService` riêng — Core phải gọi HTTP mỗi lần cần data câu hỏi | Tăng latency mạng, mất lợi ích transaction nội bộ |
+| **Fine-grained Services** *(Chia quá nhỏ)* | Chia Auth thành 3 service: `UserProfile`, `UserCredential`, `UserSession` | Mỗi lần login phải orchestrate 3 services, khó debug |
+| **Microservices-first** | Xây LMS thành 4 microservices khi domain chưa rõ → thay đổi chấm điểm ảnh hưởng 3 services cùng lúc | Phát sinh "Distributed Monolith" (xem thêm §10.6) |
+| **End-to-end QA Gate** | Deploy độc lập nhưng QA phải chờ gộp tất cả để test | Triệt tiêu *Independent Deployability* |
 
-Tránh 4 anti-patterns này là bước đầu tiên để đảm bảo lộ trình migration mang lại giá trị thực tế thay vì cộng dồn technical debt.
+Chúng ta sẽ phân tích sâu hơn về các sai lầm migration bổ sung (Big Bang Rewrite, Lift-and-Shift, Over-engineering) tại §10.6.
 
 ---
 
@@ -556,12 +556,13 @@ graph TB
 
 > **⚠️ Sai lầm thường gặp**
 >
-> 1. **Distributed Monolith** — Tách services nhưng giữ shared database, shared library chứa business logic, deploy phải đồng bộ tất cả services. Hậu quả: có *tất cả* complexity của microservices mà *không có* bất kỳ benefit nào (independent deployment, scaling). Newman trong [4b, Ch.1] gọi đây là "the worst of both worlds". *Phòng tránh*: database-per-service là tiêu chí quyết định — nếu chưa tách DB, chưa phải microservices thật sự.
-> 2. **Big Bang Rewrite** — Viết lại toàn bộ hệ thống từ zero, chạy song song 2 hệ thống trong nhiều năm, ngày "switch" không bao giờ đến. Hậu quả: cả hai hệ thống cần maintain, team chia đôi, feature parity không bao giờ đạt. *Phòng tránh*: Strangler Fig — mỗi sprint tách một phần, mỗi phần mang giá trị ngay, system luôn ở trạng thái deployable.
-> 3. **Migrate quá nhanh ("Decompositional mania")** — Team tách monolith thành 20 services trong 2 tháng vì "architecture decision". Hậu quả: 20 services với boundaries sai, phải refactor lại — effort gấp đôi so với làm đúng từ đầu. Richardson trong [2a, Ch.13] khuyên: *"Migrate one service at a time, starting with the service that gives the most value."*
-> 4. **Bỏ qua Conway's Law** — Tách services nhưng team structure vẫn như cũ (một team maintain tất cả). Hậu quả: mọi thay đổi vẫn cần coordinate, meetings tăng thay vì giảm, speed không cải thiện. *Phòng tránh*: tổ chức team theo bounded context (Ch.2) — mỗi team sở hữu 1-2 services, deploy độc lập.
-> 5. **"Lift and Shift" không redesign** — Copy code monolith nguyên xi vào containers, gọi nhau qua HTTP thay vì method call, coi như "đã microservices". Hậu quả: thêm network latency, thêm failure modes, nhưng logic coupling giữ nguyên. *Phòng tránh*: mỗi service phải có independent domain model — Anti-Corruption Layer ngăn legacy model lan sang.
-> 6. **Over-engineering infrastructure trước khi cần** — Deploy Kubernetes, Istio service mesh, full monitoring stack cho hệ thống 3 services với traffic 100 requests/phút. Hậu quả: team dành 70% thời gian maintain infra thay vì phát triển features. *Phòng tránh*: bắt đầu đơn giản (Docker Compose, Ch.12), scale infra khi traffic/complexity thực sự đòi hỏi.
+> Ngoài 4 anti-patterns ở **Bảng 10.1b** (§10.1), những sai lầm sau cũng phổ biến trong quá trình migration:
+>
+> 1. **Distributed Monolith** — Tách services nhưng giữ shared database, deploy phải đồng bộ. Newman trong [4b, Ch.1] gọi đây là "the worst of both worlds". *Phòng tránh*: database-per-service là tiêu chí quyết định.
+> 2. **Big Bang Rewrite** — Viết lại toàn bộ từ zero, ngày "switch" không bao giờ đến. *Phòng tránh*: Strangler Fig (§10.2) — mỗi sprint tách một phần, system luôn deployable.
+> 3. **Bỏ qua Conway's Law** — Tách services nhưng team structure vẫn như cũ. *Phòng tránh*: tổ chức team theo bounded context (Ch.2) — mỗi team sở hữu 1-2 services.
+> 4. **"Lift and Shift" không redesign** — Copy code nguyên xi vào containers, coi như "đã microservices". *Phòng tránh*: Anti-Corruption Layer (§10.4) ngăn legacy model lan sang.
+> 5. **Over-engineering infrastructure** — Deploy K8s + Istio cho 3 services với 100 req/min. *Phòng tránh*: bắt đầu đơn giản (Docker Compose, Ch.12), scale khi traffic thực sự đòi hỏi.
 
 ---
 

@@ -530,28 +530,28 @@ graph LR
 
 ---
 
-## 2.7 Assemblage Process — Lắp ráp kiến trúc hoàn chỉnh
+## 2.7 Assemblage Process — Quy trình thiết kế service architecture
 
-Làm thế nào để tổng hợp tất cả các kỹ thuật trên thành một quy trình thiết kế mang tính thực hành? Chris Richardson (trong bản thứ 2) trình bày một quy trình gọi là **Assemblage Process** [2b, Ch.20]. Đây là sơ đồ step-by-step lý tưởng:
+Làm thế nào để tổng hợp tất cả các kỹ thuật trên — Bounded Context, Context Map, Dark Energy/Matter — thành một quy trình thiết kế mang tính thực hành? Richardson trong [2b, Ch.20] trình bày **Assemblage Process**: quy trình step-by-step để đi từ yêu cầu nghiệp vụ đến kiến trúc microservices cụ thể.
 
-1. **Định nghĩa System Operations**: Liệt kê các thao tác chính (ví dụ: `submitAnswer()`, `createContest()`).
-2. **Định nghĩa Subdomains**: Dùng Bounded Contexts định hình ranh giới nghiệp vụ (SQL Practice, Evaluation).
-3. **Gán Operations vào Subdomains**: Quyết định logic nghiệp vụ nằm ở đâu.
-4. **Áp dụng Dark Energy & Dark Matter**: Đối với mỗi subdomain, phân tích 10 lực đã thảo luận ở phần 2.5. Lực đẩy (Dark Energy) khuyến khích tách thành service độc lập (ví dụ: Judge Service). Lực hút (Dark Matter) giữ các phần chặt chẽ lại với nhau.
-5. **Thiết kế Giao tiếp (IPC)**: Chọn mô hình tương tác giữa các service sau khi tách (đồng bộ REST hay bất đồng bộ Kafka).
-6. **Lặp lại (Iterate)**: Quy trình này không chạy một lần, thiết kế phải liên tục tự tiến hóa khi kiến thức domain sâu hơn.
+1. **Định nghĩa System Operations** — Liệt kê các thao tác chính mà hệ thống phải hỗ trợ (ví dụ: `submitAnswer()`, `createContest()`, `gradeSubmission()`).
+2. **Xác định Subdomains** — Dùng Bounded Contexts (§2.3) để phân vùng nghiệp vụ: SQL Practice, Evaluation, Identity, Academic.
+3. **Gán Operations → Subdomains** — Quyết định logic nghiệp vụ của mỗi operation thuộc subdomain nào.
+4. **Áp dụng Dark Energy & Dark Matter** — Với mỗi cặp subdomains, phân tích 10 lực đã thảo luận ở §2.5: lực đẩy (Dark Energy) khuyến khích tách thành service độc lập; lực hút (Dark Matter) giữ các phần chặt chẽ lại cùng nhau.
+5. **Thiết kế IPC** — Chọn mô hình giao tiếp giữa các service: đồng bộ REST/gRPC (Ch.4) hay bất đồng bộ Kafka (Ch.5).
+6. **Lặp lại** — Quy trình không chạy một lần. Khi kiến thức domain sâu hơn, ranh giới service cần được đánh giá lại.
 
-Assemblage process giúp biến một quá trình nghệ thuật (thiết kế architecture) thành chuỗi các quyết định kỹ thuật có thể giải thích được — "Tôi tách Judge Service ra vì Dark Energy force số 3 ảnh hưởng mạnh đến deployability của Subdomains".
+Assemblage process biến quá trình thiết kế kiến trúc — vốn mang tính nghệ thuật và chủ quan — thành chuỗi các quyết định kỹ thuật có thể giải thích được. Thay vì nói "tách Judge Service vì nó cảm thấy đúng", chúng ta có thể lập luận: *"Judge Service được tách vì Dark Energy force #1 (simple components) và #3 (fast deployment pipeline) vượt trội so với Dark Matter force #2 (efficient interaction) trong context này."*
 
 ---
 
 ## Tổng kết
 
-Chương này đã trang bị cho chúng ta bộ công cụ tư duy để phân tích và phân tách hệ thống — từ quy luật vĩ mô (Conway's Law) đến kỹ thuật vi mô (Entity, Aggregate, Repository).
+Chương này đã trang bị cho chúng ta bộ công cụ tư duy để phân tích và phân tách hệ thống — từ quy luật vĩ mô (Conway's Law) đến kỹ thuật vi mô (Entity, Aggregate, Repository), và quy trình tổng hợp (Assemblage Process).
 
 Conway's Law nhắc nhở rằng kiến trúc phần mềm không tồn tại trong chân không — nó phản ánh và bị ràng buộc bởi cấu trúc tổ chức. Inverse Conway Maneuver cho phép chúng ta chủ động thiết kế team để đạt kiến trúc mong muốn.
 
-DDD cung cấp ngôn ngữ và phương pháp để xác định ranh giới service. Bounded Context — nơi mà ngôn ngữ có ý nghĩa nhất quán — là đơn vị tự nhiên nhất cho một microservice. Context Map cho thấy các context quan hệ với nhau theo nhiều kiểu khác nhau, từ Shared Kernel (coupling cao) đến Anti-Corruption Layer (isolation tốt).
+DDD cung cấp ngôn ngữ và phương pháp để xác định ranh giới service. Bounded Context — nơi mà ngôn ngữ có ý nghĩa nhất quán — là đơn vị tự nhiên nhất cho một microservice. Context Map cho thấy các context quan hệ với nhau theo nhiều kiểu khác nhau, từ Shared Kernel (coupling cao) đến Anti-Corruption Layer (isolation tốt). Dark Energy/Dark Matter forces (§2.5) lượng hóa các yếu tố ảnh hưởng đến quyết định tách/gộp, và Assemblage Process (§2.7) tổng hợp tất cả thành quy trình thiết kế có hệ thống.
 
 Phân tích LMS cho thấy 4 bounded contexts rõ ràng, mỗi context tương ứng với một nhóm service. Shared Kernel — dù tiện lợi cho team nhỏ — cần được quản lý có chủ đích, phân biệt rõ giữa cross-cutting concerns (nên share) và domain logic (không nên share).
 
