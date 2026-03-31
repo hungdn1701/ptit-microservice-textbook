@@ -335,22 +335,29 @@ Làm sao biết mình đã đạt fast flow? Nghiên cứu của Forsgren, Humbl
 >
 > **Migration path**: Implement CI/CD pipeline (Chương 12) là bước đầu tiên để cải thiện DORA metrics. Mục tiêu: đạt Medium Performer (deploy hàng tuần, lead time < 1 tuần).
 
-### Quality Attribute Scenarios — Đặt spec cho kiến trúc
+### Quality Attribute Scenarios — Chỉ định yêu cầu kiến trúc
 
-DORA metrics đo lường kết quả cuối cùng, nhưng làm sao chỉ định kiến trúc phải hỗ trợ kết quả đó ngay từ khâu thiết kế? Richardson trong [2b, Ch.5] khuyên dùng **Quality Attribute Scenarios** — một kỹ thuật do Software Engineering Institute (SEI) phát triển. 
+DORA metrics đo lường kết quả cuối cùng, nhưng làm sao chỉ định kiến trúc phải hỗ trợ kết quả đó ngay từ khâu thiết kế? Richardson trong [2b, Ch.5] khuyên dùng **Quality Attribute Scenarios** — kỹ thuật do Software Engineering Institute (SEI) phát triển, cho phép viết "spec" cho các thuộc tính phi chức năng một cách đo lường được.
 
-Thay vì nói chung chung "hệ thống phải dễ deploy", một scenario định nghĩa rõ ràng:
+Thay vì nói chung chung "hệ thống phải dễ deploy", một scenario định nghĩa rõ ràng theo format:
 **Source → Stimulus → Artifact → Environment → Response → Response Measure**
 
-Ví dụ về deployability scenario cho LMS:
+Ví dụ — deployability scenario cho LMS:
 > **Source**: Developer (stream-aligned team)
-> **Stimulus**: Commit code thay đổi chấm điểm SQL
+> **Stimulus**: Commit code thay đổi logic chấm điểm SQL
 > **Artifact**: Core Service
 > **Environment**: Deployment pipeline
-> **Response**: Pipeline chạy CI, build, test, và deploy version mới lên production mà không cần sự can thiệp của team khác
+> **Response**: Pipeline tự động chạy CI, build, test, và deploy version mới lên production — không cần sự can thiệp của team khác
 > **Response Measure**: Lead time < 40 phút
 
-Bằng cách viết ra các scenarios này, bạn có một "unit test cho kiến trúc" — bất kỳ quyết định tách hay gộp service nào (Chương 2) cũng phải được đối chiếu lại: "Nó có giúp chúng ta đạt được scenario này không?"
+Ví dụ — scalability scenario cho LMS:
+> **Source**: 200 sinh viên thi cùng lúc (contest mode)
+> **Stimulus**: Spike 200 submissions trong 5 phút
+> **Artifact**: Judge Service cluster
+> **Response**: Tất cả submissions được xử lý mà không có request bị reject
+> **Response Measure**: p99 latency < 10 giây, 0% message loss
+
+Bằng cách viết ra các scenarios này, chúng ta có một dạng "unit test cho kiến trúc" — bất kỳ quyết định tách hay gộp service nào (Chương 2) đều phải đối chiếu lại: *"Quyết định này có giúp chúng ta đạt scenario hay không?"*
 
 ---
 
