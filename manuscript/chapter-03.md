@@ -192,6 +192,30 @@ Trong monolith, thay đổi internal API chỉ cần refactor code + chạy lạ
 
 Theo Sam Newman, **URL path versioning** phổ biến nhất vì đơn giản và developer-friendly [4a, Ch.4]. Đây cũng là cách mà hầu hết API public lớn (GitHub, Stripe, Twitter) sử dụng.
 
+Ngoài ba chiến lược trên, còn có **Content-Type versioning** (`Accept: application/vnd.lms.question.v2+json`) — phổ biến ở GitHub API: cho phép version từng resource riêng lẻ thay vì toàn bộ API. Tuy nhiên, phức tạp hơn cho cả provider và consumer.
+
+**Bảng 3.6b:** Decision criteria — chọn versioning strategy nào?
+
+| Tiêu chí | URL path | Query param | Header | Content-Type |
+|----------|----------|-------------|--------|-------------|
+| **Dễ implement** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐ |
+| **Cache-friendly** | ✅ (url khác nhau) | ⚠️ (cần Vary) | ❌ (cần Vary header) | ❌ |
+| **API Gateway routing** | ✅ Dễ (path-based) | ⚠️ Trung bình | ⚠️ Trung bình | ❌ Khó |
+| **Granularity** | Toàn bộ API | Toàn bộ API | Toàn bộ API | Per resource |
+| **Dùng bởi** | Stripe, Twitter | Ít phổ biến | Azure | GitHub |
+
+#### Versioning Policy — Nguyên tắc vận hành
+
+Chọn strategy chưa đủ — cần **policy** rõ ràng cho cách version API:
+
+1. **Khi nào bump version?** — Chỉ khi có **breaking change** (xóa field, đổi type, đổi behavior). Thêm field optional → KHÔNG cần version mới (backward compatible)
+2. **Deprecation timeline** — Thông báo deprecation trước ít nhất **1 release cycle**: response header `Deprecation: true`, `Sunset: 2026-06-01`
+3. **Chạy song song** — Version cũ và mới chạy đồng thời trong giai đoạn transition. Dùng Gateway routing để chuyển dần traffic (Strangler Fig pattern — xem Ch.10)
+
+> **💡 Tip — LMS Versioning Policy đề xuất**
+>
+> Với LMS (internal API, team nhỏ), chiến lược đơn giản nhất: (1) **URL path versioning** (`/api/v1/questions`), (2) giữ **backward compatibility** bằng cách chỉ thêm fields, không xóa, (3) khi breaking change bắt buộc → tạo `/api/v2/` → chạy song song 1 semester → sunset v1. Phức tạp hơn không cần thiết cho hệ thống giáo dục nội bộ.
+
 ### Schema Evolution — Thay đổi mà không breaking
 
 Martin Kleppmann phân tích hai chiều compatibility [7, Ch.4]:
@@ -369,6 +393,55 @@ public interface QuestionMapper {
 
 Trong hệ thống LMS, pattern này được áp dụng qua `dto/request/` và `dto/response/` packages, với MapStruct (`BaseMapper`) để tự động chuyển đổi. Các base classes `BaseRequest` và `BaseResponse` trong shared library cung cấp format phản hồi chuẩn (`status`, `message`, `data` wrapper).
 
+### Hexagonal Architecture — Service như hệ thống cổng và adapter
+
+DTO pattern ở trên là một phần của kiến trúc rộng hơn mà Richardson mô tả chi tiết trong [2b, Ch.3 & Ch.13]: **Hexagonal Architecture** (còn gọi là Ports & Adapters, do Alistair Cockburn đề xuất). Đây là kiến trúc được đề xuất cho mỗi service trong microservices:
+
+```mermaid
+graph LR
+    subgraph Adapters["Adapters (bên ngoài)"]
+        IA1["REST Controller<br/>(inbound adapter)"]
+        IA2["Kafka Consumer<br/>(inbound adapter)"]
+        OA1["JPA Repository<br/>(outbound adapter)"]
+        OA2["Feign Client<br/>(outbound adapter)"]
+    end
+    
+    subgraph Core["Business Logic (bên trong)"]
+        IP["Inbound Port<br/>(Service Interface)"]
+        BL["Domain Logic"]
+        OP["Outbound Port<br/>(Repository Interface)"]
+    end
+    
+    IA1 --> IP
+    IA2 --> IP
+    IP --> BL
+    BL --> OP
+    OP --> OA1
+    OP --> OA2
+    
+    style Core fill:#E8F5E9
+    style Adapters fill:#E3F2FD
+```
+
+*Hình 3.6b: Hexagonal Architecture cho Core Service trong LMS*
+
+**Nguyên tắc cốt lõi**: Business logic **không phụ thuộc** vào adapters — ngược lại, adapters phụ thuộc vào business logic. Điều này có nghĩa:
+- Đổi từ REST sang gRPC? → chỉ thay inbound adapter, business logic không đổi
+- Đổi từ MySQL sang PostgreSQL? → chỉ thay outbound adapter  
+- Test business logic? → mock outbound ports, gọi inbound ports trực tiếp
+
+| Thành phần | Trong LMS | Vai trò |
+|-----------|-----------|---------|
+| **Inbound Adapter** | `@RestController`, `@KafkaListener` | Nhận request từ bên ngoài |
+| **Inbound Port** | Service interface (ví dụ: `QuestionService`) | API của business logic |
+| **Business Logic** | Domain entities, service implementations | Xử lý nghiệp vụ |
+| **Outbound Port** | Repository interface (`JpaRepository`) | Cách business logic gọi external |
+| **Outbound Adapter** | JPA impl, Feign client, Kafka producer | Kết nối bên ngoài |
+
+> **💡 Tip — Iceberg Principle trong API Design**
+>
+> Hexagonal Architecture là hiện thực hóa của **Iceberg Principle** (Richardson [2b, Ch.4]): Inbound Ports (API) là phần nổi — nhỏ, ổn định. Business Logic + Outbound Adapters là phần chìm — lớn, tự do thay đổi. DTO pattern là cơ chế đảm bảo entity (phần chìm) không bị expose qua API (phần nổi).
+
 ---
 
 ## 3.5 Case Study: API Design trong hệ thống LMS — Bài học từ thực tế
@@ -527,7 +600,7 @@ Phân tích LMS cho thấy: API design "đủ tốt" hoàn toàn khả thi cho t
 **Sách tham khảo chính:**
 1. [1] Thomas Erl, *SOA: Analysis and Design for Services and Microservices*, 2nd Ed. — Ch.7: Service API Design, Service Contract
 2. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.3: Interprocess Communication, REST API Design
-3. [2b] Chris Richardson, *Microservices Patterns*, 2nd Ed. — Ch.3: API Design
+3. [2b] Chris Richardson, *Microservices Patterns*, 2nd Ed. — Ch.3: Architecture Fundamentals, Hexagonal Architecture; Ch.13: Service Design with Ports & Adapters
 4. [4a] Sam Newman, *Building Microservices* — Ch.4: Integration, REST best practices
 5. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.4: Encoding and Evolution, Schema Evolution
 

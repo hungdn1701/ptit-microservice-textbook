@@ -352,6 +352,68 @@ Rate limiting ngăn một client gửi quá nhiều requests — bảo vệ serv
 | **Per route** | Mỗi endpoint N requests/giây | Bảo vệ heavy endpoints |
 | **Global** | Tổng requests hệ thống | Bảo vệ infrastructure |
 
+#### Rate Limiting Implementation với Redis
+
+Spring Cloud Gateway sử dụng **Token Bucket algorithm** (Redis-backed) — mỗi user có một "bucket" chứa tokens, mỗi request tiêu thụ 1 token, tokens được bổ sung theo `replenishRate`:
+
+**Listing 8.3:** Rate limiting configuration cho submission endpoint
+
+```yaml
+# application.yml — Rate limiting cho endpoint chấm bài
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: core-service-rate-limited
+          uri: lb://core-service
+          predicates:
+            - Path=/api/core/submissions/**
+          filters:
+            - StripPrefix=2
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5    # 5 requests/giây
+                redis-rate-limiter.burstCapacity: 10   # Burst tối đa 10
+                redis-rate-limiter.requestedTokens: 1  # 1 token/request
+                key-resolver: "#{@userKeyResolver}"    # Rate limit theo user
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+```
+
+**Listing 8.4:** KeyResolver — xác định rate limit theo userId từ JWT claims
+
+```java
+@Configuration
+public class RateLimitConfig {
+
+    @Bean
+    public KeyResolver userKeyResolver() {
+        return exchange -> {
+            // Lấy userId từ header đã được JWT filter inject
+            String userId = exchange.getRequest().getHeaders()
+                .getFirst("X-User-Id");
+            if (userId != null) {
+                return Mono.just(userId);            // Rate limit per user
+            }
+            // Fallback: rate limit per IP cho anonymous requests
+            return Mono.just(
+                exchange.getRequest().getRemoteAddress()
+                    .getAddress().getHostAddress()
+            );
+        };
+    }
+}
+```
+
+Khi user vượt limit, Gateway tự động trả **HTTP 429 Too Many Requests** — client nhận thông báo rõ ràng, không cần services phía sau xử lý.
+
+> **💡 Tip — Rate limit cho contest mode**
+>
+> Trong contest mode, submission rate cao hơn bình thường (100+ students submit cùng lúc). Cân nhắc: (1) set rate limit cao hơn cho route `/submissions/**` trong contest, (2) hoặc dùng **per-route rate limit** riêng cho contest endpoints, (3) Redis atomic operations đảm bảo đếm chính xác ngay cả khi concurrent requests cao.
+
 ### 4. Logging & Tracing
 
 Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID theo dõi request xuyên suốt hệ thống. Pattern: `GlobalFilter` tại gateway kiểm tra header `X-Correlation-Id`, nếu chưa có thì generate UUID mới, gắn vào request → truyền qua mọi downstream service. Khi debug, grep logs bằng correlation ID để thấy *toàn bộ* journey của request (xem thêm Ch.11 Observability).

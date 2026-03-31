@@ -211,6 +211,80 @@ sequenceDiagram
 >
 > Hệ thống LMS sử dụng HS256 (symmetric) — tất cả services chia sẻ cùng `jwt.secretKey`. Trong production, nếu bất kỳ service nào bị compromise, attacker có thể tạo JWT token giả mạo cho bất kỳ user nào. Với LMS (academic, internal), rủi ro chấp nhận được vì trust boundary ở gateway. **Migration path** (khi cần nâng security): (1) chuyển sang RS256 — Auth Service giữ private key, các service khác chỉ có public key, (2) dùng Spring Security OAuth2 Resource Server (built-in JWT verification), (3) key rotation qua config server.
 
+### Token Refresh & Rotation — Vòng đời của JWT
+
+JWT có thời hạn (`exp`). Khi access token hết hạn, user phải **re-authenticate** — kém trải nghiệm nếu session dài (giảng viên dùng suốt buổi giảng). **Refresh token** giải quyết: access token ngắn (15-60 phút), refresh token dài (7-30 ngày). Khi access token hết hạn, client dùng refresh token để nhận access token mới — không cần login lại.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant GW as Gateway
+    participant AUTH as Auth Service
+    
+    Note over C,AUTH: Access token hết hạn
+    C->>GW: GET /api/core/questions<br/>Authorization: Bearer eyJ...(expired)
+    GW-->>C: 401 Unauthorized (token expired)
+    
+    Note over C,AUTH: Refresh flow
+    C->>GW: POST /api/auth/refresh<br/>{refreshToken: "rft_abc123"}
+    GW->>AUTH: Forward refresh request
+    AUTH->>AUTH: Validate refresh token (DB lookup)
+    AUTH->>AUTH: Generate new access token
+    AUTH->>AUTH: Rotate: invalidate old refresh token,<br/>generate new refresh token
+    AUTH-->>C: {accessToken: "eyJ...(new)", refreshToken: "rft_xyz789"}
+    
+    Note over C,AUTH: Tiếp tục với token mới
+    C->>GW: GET /api/core/questions<br/>Authorization: Bearer eyJ...(new)
+    GW-->>C: 200 OK
+```
+
+*Hình 9.5b: Token Refresh & Rotation flow — access token mới + refresh token mới*
+
+**Token Rotation** là chiến lược quan trọng: mỗi lần dùng refresh token, **cả refresh token cũng được thay mới** (rotate) và token cũ bị invalidate. Lợi ích: nếu refresh token bị đánh cắp và reuse, Auth Service phát hiện token đã dùng → **invalidate toàn bộ token family** → buộc user login lại [4a, Ch.9].
+
+**Listing 9.1:** Token refresh endpoint với rotation
+
+```java
+// Auth Service — Token refresh với rotation
+@PostMapping("/refresh")
+public TokenResponse refreshToken(@RequestBody RefreshRequest request) {
+    RefreshToken stored = refreshTokenRepository
+        .findByToken(request.getRefreshToken())
+        .orElseThrow(() -> new AuthException("Invalid refresh token"));
+
+    // Kiểm tra đã bị dùng chưa (reuse detection)
+    if (stored.isUsed()) {
+        // Token reuse detected! → Invalidate toàn bộ family
+        refreshTokenRepository.invalidateFamily(stored.getFamily());
+        throw new AuthException("Token reuse detected — please login again");
+    }
+
+    // Kiểm tra hết hạn
+    if (stored.isExpired()) {
+        throw new AuthException("Refresh token expired");
+    }
+
+    // Mark token cũ là đã dùng
+    stored.setUsed(true);
+    refreshTokenRepository.save(stored);
+
+    // Generate tokens mới (cùng family)
+    User user = stored.getUser();
+    String newAccessToken = jwtUtil.generateAccessToken(user);  // 30 phút
+    String newRefreshToken = createRefreshToken(user, stored.getFamily()); // 7 ngày
+
+    return new TokenResponse(newAccessToken, newRefreshToken);
+}
+```
+
+**Bảng 9.5b:** Chiến lược token expiry
+
+| Token | Thời hạn | Lưu ở đâu | Lý do |
+|-------|---------|-----------|-------|
+| **Access token** | 15-60 phút | Client memory/cookie | Ngắn → giảm window nếu bị leak |
+| **Refresh token** | 7-30 ngày | HttpOnly cookie + DB | Dài → trải nghiệm mượt, DB cho revocation |
+| **Token family** | Theo refresh token | DB (family ID) | Phát hiện reuse → revoke toàn bộ |
+
 ---
 
 ## 9.3 Dual Validation Strategy
@@ -318,7 +392,7 @@ Authentication trả lời "người dùng là ai?". Authorization trả lời "
 
 LMS dùng Spring Security `@PreAuthorize` annotation với roles lưu trong JWT:
 
-**Listing 9.1:** Spring Security `@PreAuthorize` — RBAC declarative
+**Listing 9.2:** Spring Security `@PreAuthorize` — RBAC declarative
 
 ```java
 // Spring Security @PreAuthorize — declarative RBAC
@@ -437,6 +511,72 @@ graph TB
 - Service-to-service authentication (mTLS hoặc internal JWT)
 - Centralized secret management (HashiCorp Vault)
 - API-level authorization policies (Open Policy Agent)
+
+### Secret Management trong Production
+
+Bảng 9.9 cho thấy "Secret Management" là risk level 🔴 High — `jwt.secretKey` hardcoded trong `application.yml` và commit vào Git. Đây là lỗ hổng phổ biến nhất trong microservices và cần được xử lý ở mọi hệ thống production.
+
+**Ba cấp độ Secret Management:**
+
+**Bảng 9.10:** Chiến lược Secret Management — từ cơ bản đến enterprise
+
+| Cấp độ | Cách tiếp cận | Ưu điểm | Nhược điểm | Phù hợp |
+|--------|--------------|---------|-----------|---------|
+| **Level 1** | Environment Variables | Đơn giản, tách secret khỏi code | Secrets trong plaintext trên server, không audit trail | Dev/Staging |
+| **Level 2** | Encrypted Config (Spring Cloud Config + Jasypt) | Secrets mã hóa trong repo, decrypt lúc runtime | Vẫn cần quản lý encryption key | Small production |
+| **Level 3** | Secret Manager (HashiCorp Vault, AWS Secrets Manager, GCP Secret Manager) | Auto-rotation, audit log, access policies, dynamic secrets | Infrastructure cost, operational complexity | Production at scale |
+
+**Level 1 — Environment Variables** (LMS nên áp dụng ngay):
+
+Thay vì:
+```yaml
+# ❌ application.yml — KHÔNG BAO GIỜ commit secrets
+jwt:
+  secretKey: "mySecretKey123"
+  expiration: 86400000
+```
+
+Sử dụng:
+```yaml
+# ✅ application.yml — reference environment variable
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+  expiration: ${JWT_EXPIRATION:86400000}
+```
+
+```bash
+# Docker Compose — inject từ .env file (không commit .env)
+services:
+  auth-service:
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+```
+
+**Level 3 — HashiCorp Vault** (khi hệ thống production hoàn chỉnh):
+
+Vault cung cấp **dynamic secrets** — database credentials được tạo tự động, có thời hạn, và auto-rotate. Không ai biết password database thực sự — kể cả developer.
+
+```mermaid
+sequenceDiagram
+    participant App as Auth Service
+    participant V as Vault
+    participant DB as Database
+    
+    App->>V: Authenticate (AppRole/K8s auth)
+    V-->>App: Vault Token (TTL: 1h)
+    App->>V: GET /v1/database/creds/auth-service
+    V->>DB: CREATE ROLE auth_temp_xyz
+    V-->>App: {username, password, TTL: 30min}
+    App->>DB: Connect (auth_temp_xyz / auto-password)
+    Note over V: After 30min: revoke credentials
+```
+
+*Hình 9.8: Vault Dynamic Secrets — credentials tạm thời, tự động xoay vòng*
+
+> **💡 Tip — .env file và .gitignore**
+>
+> Bước đầu tiên và quan trọng nhất: thêm `.env` vào `.gitignore`. Tạo `.env.example` (không chứa giá trị thật) để team members biết cần set biến nào. Đây là "zero-cost security improvement" mà mọi project nên làm ngay.
 
 ---
 
