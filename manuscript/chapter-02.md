@@ -530,6 +530,21 @@ graph LR
 
 ---
 
+## 2.7 Assemblage Process — Lắp ráp kiến trúc hoàn chỉnh
+
+Làm thế nào để tổng hợp tất cả các kỹ thuật trên thành một quy trình thiết kế mang tính thực hành? Chris Richardson (trong bản thứ 2) trình bày một quy trình gọi là **Assemblage Process** [2b, Ch.20]. Đây là sơ đồ step-by-step lý tưởng:
+
+1. **Định nghĩa System Operations**: Liệt kê các thao tác chính (ví dụ: `submitAnswer()`, `createContest()`).
+2. **Định nghĩa Subdomains**: Dùng Bounded Contexts định hình ranh giới nghiệp vụ (SQL Practice, Evaluation).
+3. **Gán Operations vào Subdomains**: Quyết định logic nghiệp vụ nằm ở đâu.
+4. **Áp dụng Dark Energy & Dark Matter**: Đối với mỗi subdomain, phân tích 10 lực đã thảo luận ở phần 2.5. Lực đẩy (Dark Energy) khuyến khích tách thành service độc lập (ví dụ: Judge Service). Lực hút (Dark Matter) giữ các phần chặt chẽ lại với nhau.
+5. **Thiết kế Giao tiếp (IPC)**: Chọn mô hình tương tác giữa các service sau khi tách (đồng bộ REST hay bất đồng bộ Kafka).
+6. **Lặp lại (Iterate)**: Quy trình này không chạy một lần, thiết kế phải liên tục tự tiến hóa khi kiến thức domain sâu hơn.
+
+Assemblage process giúp biến một quá trình nghệ thuật (thiết kế architecture) thành chuỗi các quyết định kỹ thuật có thể giải thích được — "Tôi tách Judge Service ra vì Dark Energy force số 3 ảnh hưởng mạnh đến deployability của Subdomains".
+
+---
+
 ## Tổng kết
 
 Chương này đã trang bị cho chúng ta bộ công cụ tư duy để phân tích và phân tách hệ thống — từ quy luật vĩ mô (Conway's Law) đến kỹ thuật vi mô (Entity, Aggregate, Repository).
