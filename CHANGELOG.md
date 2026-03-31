@@ -13,7 +13,9 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 
 ### Changed
 - **Ch.1**: Thêm Fast Flow Success Triangle framework (DevOps + Team Topologies + Architecture) và DORA Metrics table với elite/low performer comparison (+60 dòng) — từ Richardson 2nd Ed.
+- **Ch.1**: Thêm Quality Attribute Scenarios chuẩn SEI (Source → Stimulus → Response) kết nối với DORA metrics (+20 dòng) — từ Richardson 2nd Ed.
 - **Ch.2**: Thêm Dark Energy / Dark Matter Forces — 10 lực chi phối service decomposition, bảng phân tích chi tiết với ví dụ LMS (+32 dòng) — từ Richardson 2nd Ed.
+- **Ch.2**: Thêm Assemblage Process — quy trình 6 bước thiết kế kiến trúc microservices (+15 dòng) — từ Richardson 2nd Ed.
 - **Ch.3**: Thêm API versioning decision criteria table (4 strategies), versioning policy, deprecation strategy
 - **Ch.3**: Thêm Hexagonal Architecture (Ports & Adapters) — mermaid diagram, LMS component mapping, Iceberg Principle connection (+49 dòng) — từ Richardson 2nd Ed.
 - **Ch.4**: Thêm Resilience4j implementation — annotated Feign client, YAML config, environment parameter table, annotation ordering tip (+87 dòng)
@@ -22,6 +24,7 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 - **Ch.9**: Thêm Token Refresh & Rotation section — sequence diagram, rotation code with reuse detection, expiry strategy table (+74 dòng)
 - **Ch.9**: Thêm Secret Management 3-level guide — Environment Variables → Encrypted Config → HashiCorp Vault, với Vault dynamic secrets sequence diagram (+66 dòng)
 - **Ch.9**: Fix Listing numbering (9.1 ↔ 9.2 swap cho sequential order)
+- **Ch.10**: Thêm Bài học thực tế (Migration Anti-patterns) — phân tích Data Services, Fine-grained Services, Microservices-first, End-to-end QA Gate áp dụng vào case study LMS (+20 dòng) — từ Richardson 2nd Ed.
 
 ## [0.9.1] - 2026-03-25
 

@@ -335,8 +335,24 @@ Làm sao biết mình đã đạt fast flow? Nghiên cứu của Forsgren, Humbl
 >
 > **Migration path**: Implement CI/CD pipeline (Chương 12) là bước đầu tiên để cải thiện DORA metrics. Mục tiêu: đạt Medium Performer (deploy hàng tuần, lead time < 1 tuần).
 
----
+### Quality Attribute Scenarios — Đặt spec cho kiến trúc
 
+DORA metrics đo lường kết quả cuối cùng, nhưng làm sao chỉ định kiến trúc phải hỗ trợ kết quả đó ngay từ khâu thiết kế? Richardson trong [2b, Ch.5] khuyên dùng **Quality Attribute Scenarios** — một kỹ thuật do Software Engineering Institute (SEI) phát triển. 
+
+Thay vì nói chung chung "hệ thống phải dễ deploy", một scenario định nghĩa rõ ràng:
+**Source → Stimulus → Artifact → Environment → Response → Response Measure**
+
+Ví dụ về deployability scenario cho LMS:
+> **Source**: Developer (stream-aligned team)
+> **Stimulus**: Commit code thay đổi chấm điểm SQL
+> **Artifact**: Core Service
+> **Environment**: Deployment pipeline
+> **Response**: Pipeline chạy CI, build, test, và deploy version mới lên production mà không cần sự can thiệp của team khác
+> **Response Measure**: Lead time < 40 phút
+
+Bằng cách viết ra các scenarios này, bạn có một "unit test cho kiến trúc" — bất kỳ quyết định tách hay gộp service nào (Chương 2) cũng phải được đối chiếu lại: "Nó có giúp chúng ta đạt được scenario này không?"
+
+---
 
 ## 1.5 Modular Monolith — Lựa chọn hợp lệ
 
