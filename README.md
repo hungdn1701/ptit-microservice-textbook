@@ -1,18 +1,22 @@
-# Service-Oriented Architecture & Microservices
+# Kiến trúc Hướng Dịch vụ & Microservices — Từ Lý thuyết đến Thực tiễn
 
-**Kiến trúc Hướng Dịch vụ & Microservices — Từ Lý thuyết đến Thực tiễn**
+[![License: CC BY 4.0](https://img.shields.io/badge/Content-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![License: MIT](https://img.shields.io/badge/Code-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-> *Cuốn sách đi từ nền tảng kiến trúc SOA đến triển khai thực tế hệ thống Microservices, minh họa qua case study hệ thống LMS (Learning Management System).*
+**Service-Oriented Architecture & Microservices: From Theory to Practice**
+
+> *Giáo trình đi từ nền tảng kiến trúc SOA đến triển khai thực tế hệ thống Microservices, minh họa qua case study hệ thống LMS (Learning Management System).*
 
 ---
 
-## Về cuốn sách
+## 📖 Về giáo trình
 
-Cuốn sách được thiết kế cho sinh viên CNTT năm 3-4 và các kỹ sư phần mềm muốn nắm vững quá trình tiến hóa từ kiến trúc Monolith sang Microservices. Nội dung bám sát logic **"Nỗi đau → Giải pháp"**: từ phân tách hệ thống, cô lập dữ liệu, giao tiếp đồng bộ/bất đồng bộ, đến nhất quán dữ liệu, API Gateway, và vận hành thực tế.
+Giáo trình được thiết kế cho sinh viên CNTT năm 3-4 và các kỹ sư phần mềm muốn nắm vững quá trình tiến hóa từ kiến trúc Monolith sang Microservices. Nội dung bám sát logic **"Nỗi đau → Giải pháp"**: từ phân tách hệ thống, cô lập dữ liệu, giao tiếp đồng bộ/bất đồng bộ, đến nhất quán dữ liệu, API Gateway, và vận hành thực tế.
 
 ### Case Study: Hệ thống LMS
 
-Toàn bộ ví dụ minh họa xoay quanh một hệ thống **Learning Management System** thực tế, bao gồm:
+Toàn bộ ví dụ minh họa xoay quanh một hệ thống **Learning Management System** thực tế:
 
 | Bounded Context | Mô tả | Services |
 |---|---|---|
@@ -21,9 +25,11 @@ Toàn bộ ví dụ minh họa xoay quanh một hệ thống **Learning Manageme
 | Practical Assessment | Thực hành & Đánh giá | `dblab-app`, `dblab-judge`, sandbox executors |
 | Communication | Giao tiếp & Thông báo | `dblab-notification` (Kafka + WebSocket) |
 
-## Cấu trúc sách
+---
 
-Sách chia thành **3 phần**, **12 chương**:
+## 📚 Cấu trúc sách
+
+Giáo trình chia thành **3 phần**, **12 chương**:
 
 ### Part I — Foundations (Nền tảng)
 1. **Tổng quan SOA & Microservices** — Sự tiến hóa từ Monolith
@@ -39,30 +45,112 @@ Sách chia thành **3 phần**, **12 chương**:
 ### Part III — Infrastructure & Operations (Hạ tầng & Vận hành)
 8. **API Gateway** — Spring Cloud Gateway
 9. **Bảo mật trong Microservices** — JWT, OAuth2
-10. **Kiểm thử Hệ thống Phân tán** — Test Pyramid, Contract Testing
+10. **Practical Migration** — Chiến lược chuyển đổi từ Monolith
 11. **Observability** — Logging, Tracing, Monitoring
 12. **Triển khai & Tự động hóa** — Docker, CI/CD
 
-## Cấu trúc Repository
+---
+
+## 🗂️ Cấu trúc Repository
 
 ```
-manuscript/     Nội dung sách (Markdown)
-figures/        Hình ảnh & sơ đồ minh họa
-code/           Code examples theo chương
-case-study/     Case study hệ thống LMS
-references/     Tài liệu tham khảo
+manuscript/     📖 Nội dung giáo trình (Markdown)
+figures/        🖼️ Hình ảnh & sơ đồ minh họa
+code/           💻 Code examples theo chương
+case-study/     📋 Case study hệ thống LMS
+scripts/        🔧 Build scripts (PDF, HTML)
+templates/      🎨 Templates cho output
 ```
 
-## Nguồn tham khảo chính
+---
+
+## 🚀 Build giáo trình
+
+### Yêu cầu
+- [Pandoc](https://pandoc.org/) (>= 2.19)
+- Python 3.x (cho một số scripts hỗ trợ)
+
+### Build HTML
+```bash
+# Build toàn bộ sách
+pandoc manuscript/chapter-*.md -o output/book.html --template=templates/book.html
+
+# Build từng chương
+pandoc manuscript/chapter-01.md -o output/chapter-01.html --template=templates/book.html
+```
+
+### Build PDF
+```powershell
+# Sử dụng build script
+./scripts/build-pdf.ps1
+```
+
+---
+
+## 🤝 Đóng góp
+
+Chúng tôi rất hoan nghênh mọi đóng góp! Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết chi tiết.
+
+### Các cách đóng góp
+
+| Loại | Mô tả |
+|---|---|
+| 📝 Nội dung | Sửa lỗi chính tả, cải thiện diễn đạt, bổ sung giải thích |
+| 💡 Ví dụ | Thêm ví dụ minh họa, case study thực tế |
+| 🖼️ Hình ảnh | Tạo/cải thiện diagram, sơ đồ kiến trúc |
+| 💻 Code | Bổ sung code examples, cập nhật Spring Boot versions |
+| 🐛 Báo lỗi | Phát hiện sai sót kỹ thuật trong nội dung |
+
+### Quick Start cho Contributors
+
+```bash
+# 1. Fork repo này
+# 2. Clone fork của bạn
+git clone https://github.com/<your-username>/ptit-microservice-textbook.git
+
+# 3. Tạo branch cho thay đổi
+git checkout -b fix/chapter-03-typo
+
+# 4. Commit và push
+git add .
+git commit -m "docs(ch03): fix typo in API versioning section"
+git push origin fix/chapter-03-typo
+
+# 5. Tạo Pull Request trên GitHub
+```
+
+---
+
+## 📚 Nguồn tham khảo chính
 
 - *Building Microservices* — Sam Newman (O'Reilly)
 - *Microservices Patterns* — Chris Richardson (Manning)
 - *Domain-Driven Design* — Eric Evans (Addison-Wesley)
 - *Designing Data-Intensive Applications* — Martin Kleppmann (O'Reilly)
-- *Practical Event-Driven Microservices* (O'Reilly)
+- *Practical Event-Driven Microservices* (Apress)
 - *Monolith to Microservices* — Sam Newman (O'Reilly)
 - *Microservices: Up and Running* (O'Reilly)
 
-## License
+---
 
-All rights reserved. See [LICENSE](LICENSE) for details.
+## 📜 License
+
+Dự án sử dụng **dual license**:
+
+- **📖 Nội dung giáo trình** (`manuscript/`, `figures/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — Tự do sử dụng với điều kiện ghi nguồn tác giả
+- **💻 Code examples** (`code/`, `scripts/`): [MIT License](https://opensource.org/licenses/MIT)
+
+Xem [LICENSE](LICENSE) để biết chi tiết.
+
+---
+
+## 📞 Liên hệ
+
+- **Issues**: [Tạo issue mới](../../issues/new/choose)
+- **Discussions**: [Thảo luận](../../discussions)
+
+---
+
+<p align="center">
+  <em>PTIT — Posts and Telecommunications Institute of Technology</em>
+</p>
