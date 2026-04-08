@@ -348,14 +348,7 @@ Cuốn sách **khoa học nhất** trong danh mục — Kleppmann (nhà nghiên 
 ## Cách sử dụng tài liệu này
 
 1. **Khi viết chương mới**: Tham khảo ma trận ánh xạ để xác định sách nào là nguồn chính
-2. **Khi cần trích dẫn**: Các extracted files trong `references/extracted/` chứa nội dung đã trích xuất
-3. **Khi cần đi sâu**: Sử dụng script `scripts/pdf_to_md.py` để trích xuất thêm các trang cụ thể
-4. **Naming convention**: File extracted đặt theo format `{số thứ tự}. {Tên sách}.md`
+2. **Khi cần đối chiếu**: Sử dụng outline summaries trong `references/outlines/` để tra cứu nhanh cấu trúc từng sách
+3. **Khi trích dẫn**: Ghi rõ tên sách, tác giả, và chương/section liên quan
 
-### Lệnh trích xuất thêm nội dung từ PDF
-
-```bash
-python scripts/pdf_to_md.py "references/{filename}.pdf" --pages START-END --output "references/extracted/{output}.md"
-```
-
-> **Lưu ý**: Không commit file PDF bản quyền vào repository. Chỉ commit notes, summaries, và excerpts ngắn phục vụ giáo dục.
+> **Lưu ý**: Các file PDF bản quyền **không** được commit vào repository. Chỉ có outlines, summaries, và analysis notes phục vụ mục đích giáo dục được giữ lại.

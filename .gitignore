@@ -1,16 +1,33 @@
-# Build outputs
+# ============================================
+# SOA & Microservices Textbook — .gitignore
+# ============================================
+
+# ----- Copyrighted reference materials -----
+# DO NOT commit — these are personal reference copies
+references/*.pdf
+references/extracted/
+
+# ----- AI agent config (personal workflows) -----
+.agents/
+.gemini/
+
+# ----- Build outputs -----
+output/
 _build/
 _output/
-output/
 *.epub
 *.mobi
+
+# ----- Embedded runtimes -----
+python-embed.zip
 python_env/
-# OS files
+
+# ----- OS files -----
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Editor files
+# ----- Editor / IDE -----
 *.swp
 *.swo
 *~
@@ -18,17 +35,17 @@ desktop.ini
 .idea/
 *.sublime-*
 
-# Node (if using build tools)
+# ----- Node (if using build tools) -----
 node_modules/
 package-lock.json
 
-# Python
+# ----- Python -----
 __pycache__/
 *.pyc
 .venv/
 venv/
 
-# Java/Maven/Gradle (for code examples)
+# ----- Java / Maven / Gradle (code examples) -----
 *.class
 target/
 build/
@@ -36,10 +53,12 @@ build/
 *.jar
 *.war
 
-# Docker
+# ----- Docker -----
 docker-compose.override.yml
 
-# Temporary
+# ----- Temporary / local -----
 *.tmp
 *.bak
 *.log
+*.local.md
+tracked_files.txt
