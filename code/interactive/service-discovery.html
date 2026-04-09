@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Discovery — Ch.4 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .registry-panel { display: grid; grid-template-columns: 260px 1fr; gap: 24px; }
+    @media (max-width: 768px) { .registry-panel { grid-template-columns: 1fr; } }
+    .service-list { display: flex; flex-direction: column; gap: 8px; }
+    .service-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: all 0.3s; cursor: pointer; }
+    .service-entry:hover { border-color: var(--primary); box-shadow: var(--shadow-warm); }
+    .service-entry.registering { animation: borderGlow 1.5s ease-in-out infinite; }
+    .service-entry.unhealthy { border-color: var(--danger); opacity: 0.6; }
+    .service-info { display: flex; align-items: center; gap: 10px; }
+    .service-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+    .service-dot.unhealthy { background: var(--danger); }
+    .service-dot.registering { background: var(--warning); animation: pulse 1s infinite; }
+    .service-name { font-size: 13px; font-weight: 600; }
+    .service-port { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .registry-viz { position: relative; min-height: 340px; }
+    .eureka-hub { width: 100px; height: 100px; border-radius: 50%; background: var(--primary-light); border: 2.5px solid var(--primary); display: flex; align-items: center; justify-content: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+    .eureka-label { font-size: 12px; font-weight: 700; color: var(--primary); text-align: center; line-height: 1.3; }
+    .orbit-node { position: absolute; width: 72px; height: 72px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.4s; z-index: 3; }
+    .orbit-node.healthy { border-color: var(--success); }
+    .orbit-node.unhealthy { border-color: var(--danger); opacity: 0.5; }
+    .orbit-node .node-icon { font-size: 20px; }
+    .orbit-node .node-name { font-size: 9px; font-weight: 600; margin-top: 2px; }
+    .orbit-ring { position: absolute; top: 50%; left: 50%; border: 1px dashed var(--border); border-radius: 50%; transform: translate(-50%, -50%); }
+    .heartbeat-line { position: absolute; height: 1px; background: var(--success); opacity: 0; transform-origin: left center; z-index: 1; }
+    .heartbeat-line.active { animation: heartbeat 1.5s ease-out forwards; }
+    @keyframes heartbeat { 0% { opacity: 0.8; width: 0; } 50% { opacity: 0.6; } 100% { opacity: 0; width: 100%; } }
+    .event-ticker { background: #1E1E1E; border-radius: var(--radius-md); padding: 12px 16px; font-family: var(--font-mono); font-size: 12px; color: #D4D4D4; max-height: 160px; overflow-y: auto; margin-top: 16px; }
+    .controls { display: flex; gap: 12px; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="circuit-breaker.html">Circuit Breaker</a><a href="service-discovery.html" class="active">Discovery</a><a href="saga-orchestration.html">Saga</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 4 — Service Discovery</div>
+      <h1>🔍 Service Discovery — Eureka</h1>
+      <p class="subtitle">Services tự đăng ký và tìm kiếm nhau qua Service Registry</p>
+    </header>
+
+    <div class="registry-panel">
+      <!-- Registry List -->
+      <div class="card animate-fadeIn">
+        <div class="card-title">📋 Eureka Registry</div>
+        <div class="service-list" id="service-list">
+          <!-- Rendered by JS -->
+        </div>
+        <div style="margin-top:16px;">
+          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
+            <span style="font-size:12px;color:var(--text-muted);">Registered</span>
+            <span style="font-size:12px;font-weight:600;" id="count-registered">0</span>
+          </div>
+          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
+            <span style="font-size:12px;color:var(--text-muted);">Healthy</span>
+            <span style="font-size:12px;font-weight:600;color:var(--success);" id="count-healthy">0</span>
+          </div>
+          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
+            <span style="font-size:12px;color:var(--text-muted);">Unhealthy</span>
+            <span style="font-size:12px;font-weight:600;color:var(--danger);" id="count-unhealthy">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visualization -->
+      <div class="card animate-fadeIn">
+        <div class="card-title">🌐 Topology</div>
+        <div class="registry-viz" id="registry-viz">
+          <div class="orbit-ring" style="width:260px;height:260px;"></div>
+          <div class="eureka-hub">
+            <div class="eureka-label">📋<br>Eureka<br>Server</div>
+          </div>
+          <!-- Orbit nodes rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn btn-primary" onclick="registerService()">➕ Register Service</button>
+      <button class="btn btn-danger" onclick="killRandom()">💀 Kill Random</button>
+      <button class="btn" onclick="sendHeartbeats()">💗 Heartbeat All</button>
+      <button class="btn" onclick="resetAll()">🔄 Reset</button>
+    </div>
+
+    <!-- Event Ticker -->
+    <div class="card">
+      <div class="card-title">📡 Events</div>
+      <div class="event-ticker" id="events">
+        <div><span style="color:#6A9955">[INIT]</span> Eureka Server started, waiting for registrations...</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Các service (Auth, Core, Assignment, Judge) đăng ký với Eureka khi khởi động. Gateway dùng Eureka để route requests. Khi Judge Service scale thêm 1 instance, nó tự register → Gateway tự biết, không cần cấu hình thủ công.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    const serviceTemplates = [
+      { name: 'Auth Service', icon: '🔑', port: 8081 },
+      { name: 'Core Service', icon: '📝', port: 8082 },
+      { name: 'Assignment', icon: '📚', port: 8083 },
+      { name: 'Judge Service', icon: '⚖️', port: 8084 },
+      { name: 'Notification', icon: '🔔', port: 8085 },
+      { name: 'Judge (2)', icon: '⚖️', port: 8086 },
+    ];
+
+    let services = [];
+    let nextIdx = 0;
+
+    const orbitPositions = [
+      { x: 50, y: 0 }, { x: 93, y: 25 }, { x: 93, y: 75 },
+      { x: 50, y: 100 }, { x: 7, y: 75 }, { x: 7, y: 25 },
+    ];
+
+    function registerService() {
+      if (nextIdx >= serviceTemplates.length) { addEvent('⚠️ All services already registered', '#FFBD2E'); return; }
+      const tmpl = serviceTemplates[nextIdx];
+      services.push({ ...tmpl, healthy: true, id: nextIdx });
+      addEvent(`✅ REGISTER: ${tmpl.name} (port ${tmpl.port})`, '#27C93F');
+      nextIdx++;
+      renderAll();
+    }
+
+    function killRandom() {
+      const healthy = services.filter(s => s.healthy);
+      if (!healthy.length) { addEvent('⚠️ No healthy services to kill', '#FFBD2E'); return; }
+      const victim = healthy[Math.floor(Math.random() * healthy.length)];
+      victim.healthy = false;
+      addEvent(`💀 DOWN: ${victim.name} (port ${victim.port}) — missed heartbeats`, '#FF5F56');
+      renderAll();
+    }
+
+    function sendHeartbeats() {
+      services.filter(s => s.healthy).forEach(s => {
+        addEvent(`💗 HEARTBEAT: ${s.name} — OK`, '#27C93F');
+      });
+      services.filter(s => !s.healthy).forEach(s => {
+        addEvent(`❌ HEARTBEAT MISSED: ${s.name}`, '#FF5F56');
+      });
+    }
+
+    function resetAll() {
+      services = [];
+      nextIdx = 0;
+      document.getElementById('events').innerHTML =
+        '<div><span style="color:#6A9955">[INIT]</span> Eureka Server started, waiting for registrations...</div>';
+      renderAll();
+    }
+
+    function renderAll() {
+      // List
+      const list = document.getElementById('service-list');
+      list.innerHTML = services.map(s => `
+        <div class="service-entry ${s.healthy ? '' : 'unhealthy'}">
+          <div class="service-info">
+            <div class="service-dot ${s.healthy ? '' : 'unhealthy'}"></div>
+            <div>
+              <div class="service-name">${s.icon} ${s.name}</div>
+              <div class="service-port">:${s.port}</div>
+            </div>
+          </div>
+          <span class="badge ${s.healthy ? 'badge-success' : 'badge-danger'}">${s.healthy ? 'UP' : 'DOWN'}</span>
+        </div>
+      `).join('');
+
+      // Counts
+      document.getElementById('count-registered').textContent = services.length;
+      document.getElementById('count-healthy').textContent = services.filter(s => s.healthy).length;
+      document.getElementById('count-unhealthy').textContent = services.filter(s => !s.healthy).length;
+
+      // Orbit nodes
+      const viz = document.getElementById('registry-viz');
+      viz.querySelectorAll('.orbit-node').forEach(n => n.remove());
+      services.forEach((s, i) => {
+        const pos = orbitPositions[i % orbitPositions.length];
+        const node = document.createElement('div');
+        node.className = `orbit-node ${s.healthy ? 'healthy' : 'unhealthy'} animate-fadeIn`;
+        node.style.left = `calc(${pos.x}% - 36px)`;
+        node.style.top = `calc(${pos.y}% - 36px)`;
+        node.innerHTML = `<div class="node-icon">${s.icon}</div><div class="node-name">${s.name.split(' ')[0]}</div>`;
+        viz.appendChild(node);
+      });
+    }
+
+    function addEvent(msg, color) {
+      const events = document.getElementById('events');
+      const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+      events.innerHTML += `<div><span style="color:#6A9955">[${time}]</span> <span style="color:${color}">${msg}</span></div>`;
+      events.scrollTop = events.scrollHeight;
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>

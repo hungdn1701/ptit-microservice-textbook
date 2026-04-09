@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Gateway Routing — Ch.8 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .pipeline { display: flex; flex-direction: column; gap: 0; }
+    .pipeline-stage { display: flex; align-items: stretch; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: all 0.3s; }
+    .pipeline-stage + .pipeline-stage { margin-top: -1px; }
+    .pipeline-stage.active { border-color: var(--primary); z-index: 1; box-shadow: var(--shadow-warm); }
+    .pipeline-stage.pass { border-color: var(--success); }
+    .pipeline-stage.fail { border-color: var(--danger); }
+    .stage-icon { width: 50px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--bg-alt); border-right: 1px solid var(--border); flex-shrink: 0; }
+    .stage-body { flex: 1; padding: 12px 16px; background: var(--surface); }
+    .stage-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .stage-desc { font-size: 11px; color: var(--text-muted); }
+    .stage-result { width: 60px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+    .endpoint-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin: 20px 0; }
+    .endpoint-btn { padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; text-align: left; transition: all 0.2s; font-family: var(--font-sans); }
+    .endpoint-btn:hover { border-color: var(--primary); box-shadow: var(--shadow-warm); }
+    .endpoint-btn.selected { border-color: var(--primary); background: var(--primary-light); }
+    .endpoint-method { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; margin-right: 6px; }
+    .endpoint-method.get { background: rgba(39,201,63,0.15); color: #1fa834; }
+    .endpoint-method.post { background: rgba(74,158,255,0.15); color: #3a8ae5; }
+    .endpoint-path { font-size: 12px; font-family: var(--font-mono); color: var(--text-main); }
+    .endpoint-target { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .rate-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .rate-bar { flex: 1; min-width: 150px; }
+    .rate-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .result-panel { margin-top: 24px; }
+    .controls { display: flex; gap: 12px; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="api-gateway-routing.html" class="active">Gateway</a><a href="circuit-breaker.html">Circuit Breaker</a><a href="saga-orchestration.html">Saga</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 8 — API Gateway</div>
+      <h1>🚪 API Gateway — Request Pipeline</h1>
+      <p class="subtitle">JWT validation → Routing → Rate Limiting → Backend Service</p>
+    </header>
+
+    <!-- Endpoint Picker -->
+    <div class="card animate-fadeIn">
+      <div class="card-title">🎯 Select Endpoint</div>
+      <div class="endpoint-picker" id="endpoints">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Pipeline Visualization -->
+    <div class="card animate-fadeIn" style="margin-top:20px;">
+      <div class="card-title">⛓️ Request Pipeline</div>
+      <div class="pipeline" id="pipeline">
+        <div class="pipeline-stage" id="stage-jwt">
+          <div class="stage-icon">🔑</div>
+          <div class="stage-body">
+            <div class="stage-name">JWT Validation</div>
+            <div class="stage-desc">Verify token signature (RS256), check expiry, extract roles</div>
+          </div>
+          <div class="stage-result" id="result-jwt">—</div>
+        </div>
+        <div class="pipeline-stage" id="stage-cors">
+          <div class="stage-icon">🌐</div>
+          <div class="stage-body">
+            <div class="stage-name">CORS Filter</div>
+            <div class="stage-desc">Check origin whitelist, set Access-Control headers</div>
+          </div>
+          <div class="stage-result" id="result-cors">—</div>
+        </div>
+        <div class="pipeline-stage" id="stage-rate">
+          <div class="stage-icon">⏱️</div>
+          <div class="stage-body">
+            <div class="stage-name">Rate Limiting</div>
+            <div class="stage-desc">Token bucket — <span id="rate-current">10</span>/<span id="rate-max">10</span> remaining</div>
+          </div>
+          <div class="stage-result" id="result-rate">—</div>
+        </div>
+        <div class="pipeline-stage" id="stage-route">
+          <div class="stage-icon">🔀</div>
+          <div class="stage-body">
+            <div class="stage-name">Route to Backend</div>
+            <div class="stage-desc" id="route-target">Select an endpoint above</div>
+          </div>
+          <div class="stage-result" id="result-route">—</div>
+        </div>
+        <div class="pipeline-stage" id="stage-response">
+          <div class="stage-icon">📦</div>
+          <div class="stage-body">
+            <div class="stage-name">Response</div>
+            <div class="stage-desc" id="response-desc">Waiting for request...</div>
+          </div>
+          <div class="stage-result" id="result-response">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <button class="btn btn-primary" onclick="sendRequest('valid')">🔑 Send with Valid JWT</button>
+      <button class="btn btn-danger" onclick="sendRequest('invalid')">🚫 Send Invalid JWT</button>
+      <button class="btn" style="border-color:var(--warning);color:#c99100;" onclick="sendRequest('no-token')">❓ Send No Token</button>
+      <button class="btn" onclick="resetPipeline()">🔄 Reset</button>
+    </div>
+
+    <!-- Rate Limit Info -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">📊 Rate Limit Status</div>
+      <div class="rate-info">
+        <div class="rate-bar">
+          <div class="rate-label">
+            <span>Remaining Tokens</span>
+            <span id="rate-display">10 / 10</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="rate-bar-fill" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-value" id="m-total" style="color:var(--primary)">0</div>
+          <div class="metric-label">Total Requests</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value" id="m-blocked" style="color:var(--danger)">0</div>
+          <div class="metric-label">Rate Limited</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Spring Cloud Gateway xử lý tất cả requests. Contest Mode cần rate limiting nghiêm ngặt (tránh spam submit), trong khi Practice Mode có thể thoải mái hơn. Gateway cũng rewrite paths: <code>/api/v1/submissions</code> → <code>core-service/submissions</code>.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    const endpoints = [
+      { method: 'POST', path: '/api/v1/submissions', target: 'core-service:8082', auth: true, desc: 'Submit SQL (Contest)' },
+      { method: 'GET', path: '/api/v1/problems', target: 'core-service:8082', auth: false, desc: 'List problems (public)' },
+      { method: 'POST', path: '/api/v1/auth/login', target: 'auth-service:8081', auth: false, desc: 'Login' },
+      { method: 'GET', path: '/api/v1/assignments', target: 'assignment-service:8083', auth: true, desc: 'My assignments' },
+      { method: 'POST', path: '/api/v1/judge', target: 'judge-service:8084', auth: true, desc: 'Execute SQL' },
+    ];
+
+    let selectedEndpoint = null;
+    let rateTokens = 10;
+    let totalRequests = 0;
+    let blockedRequests = 0;
+
+    function renderEndpoints() {
+      const container = document.getElementById('endpoints');
+      container.innerHTML = endpoints.map((ep, i) => `
+        <div class="endpoint-btn ${selectedEndpoint === i ? 'selected' : ''}" onclick="selectEndpoint(${i})">
+          <div><span class="endpoint-method ${ep.method.toLowerCase()}">${ep.method}</span><span class="endpoint-path">${ep.path}</span></div>
+          <div class="endpoint-target">→ ${ep.target} ${ep.auth ? '🔒' : '🔓'}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectEndpoint(i) {
+      selectedEndpoint = i;
+      renderEndpoints();
+      document.getElementById('route-target').textContent = `→ ${endpoints[i].target}`;
+    }
+
+    async function sendRequest(tokenType) {
+      if (selectedEndpoint === null) { alert('Vui lòng chọn endpoint trước!'); return; }
+      resetStages();
+      totalRequests++;
+      const ep = endpoints[selectedEndpoint];
+
+      // Stage 1: JWT
+      await highlight('stage-jwt', 600);
+      if (tokenType === 'no-token' && ep.auth) {
+        setResult('jwt', '❌', 'fail');
+        setResult('response', '401', 'fail');
+        document.getElementById('response-desc').textContent = '401 Unauthorized — Missing token';
+        document.getElementById('stage-response').classList.add('fail');
+        updateMetrics(); return;
+      }
+      if (tokenType === 'invalid' && ep.auth) {
+        setResult('jwt', '❌', 'fail');
+        setResult('response', '403', 'fail');
+        document.getElementById('response-desc').textContent = '403 Forbidden — Invalid JWT signature';
+        document.getElementById('stage-response').classList.add('fail');
+        updateMetrics(); return;
+      }
+      setResult('jwt', '✅', 'pass');
+
+      // Stage 2: CORS
+      await highlight('stage-cors', 400);
+      setResult('cors', '✅', 'pass');
+
+      // Stage 3: Rate Limit
+      await highlight('stage-rate', 400);
+      if (rateTokens <= 0) {
+        setResult('rate', '❌', 'fail');
+        setResult('response', '429', 'fail');
+        document.getElementById('response-desc').textContent = '429 Too Many Requests — Rate limit exceeded';
+        document.getElementById('stage-response').classList.add('fail');
+        blockedRequests++;
+        updateMetrics(); return;
+      }
+      rateTokens--;
+      document.getElementById('rate-current').textContent = rateTokens;
+      setResult('rate', '✅', 'pass');
+
+      // Stage 4: Route
+      await highlight('stage-route', 500);
+      setResult('route', '✅', 'pass');
+
+      // Stage 5: Response
+      await highlight('stage-response', 300);
+      setResult('response', '200', 'pass');
+      document.getElementById('response-desc').textContent = `200 OK — Routed to ${ep.target}`;
+      document.getElementById('stage-response').classList.add('pass');
+
+      updateMetrics();
+    }
+
+    function highlight(stageId, ms) {
+      return new Promise(resolve => {
+        document.getElementById(stageId).classList.add('active');
+        setTimeout(() => {
+          document.getElementById(stageId).classList.remove('active');
+          resolve();
+        }, ms);
+      });
+    }
+
+    function setResult(stage, text, cls) {
+      const el = document.getElementById(`result-${stage}`);
+      el.textContent = text;
+      el.style.color = cls === 'pass' ? 'var(--success)' : 'var(--danger)';
+      document.getElementById(`stage-${stage}`).classList.add(cls);
+    }
+
+    function resetStages() {
+      ['jwt','cors','rate','route','response'].forEach(s => {
+        document.getElementById(`stage-${s}`).className = 'pipeline-stage';
+        document.getElementById(`result-${s}`).textContent = '—';
+        document.getElementById(`result-${s}`).style.color = '';
+      });
+      document.getElementById('response-desc').textContent = 'Processing...';
+    }
+
+    function resetPipeline() {
+      resetStages();
+      rateTokens = 10; totalRequests = 0; blockedRequests = 0;
+      document.getElementById('rate-current').textContent = '10';
+      document.getElementById('response-desc').textContent = 'Waiting for request...';
+      updateMetrics();
+    }
+
+    function updateMetrics() {
+      document.getElementById('m-total').textContent = totalRequests;
+      document.getElementById('m-blocked').textContent = blockedRequests;
+      document.getElementById('rate-display').textContent = `${rateTokens} / 10`;
+      document.getElementById('rate-bar-fill').style.width = `${(rateTokens / 10) * 100}%`;
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderEndpoints();
+    selectEndpoint(0);
+  </script>
+</body>
+</html>

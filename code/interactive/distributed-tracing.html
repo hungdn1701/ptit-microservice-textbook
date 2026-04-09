@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributed Tracing — Ch.11 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .trace-container { position: relative; margin: 24px 0; }
+    .trace-row { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .trace-service { font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .trace-bar-container { position: relative; height: 28px; }
+    .trace-bar { position: absolute; height: 24px; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 10px; font-weight: 500; font-family: var(--font-mono); color: #fff; transition: all 0.5s ease; opacity: 0; }
+    .trace-bar.visible { opacity: 1; }
+    .trace-bar .bar-time { margin-left: auto; font-size: 9px; opacity: 0.8; }
+    .span-detail { margin-top: 16px; padding: 16px; background: var(--bg-elevated); border-radius: var(--radius-md); font-size: 12px; display: none; }
+    .span-detail.visible { display: block; }
+    .span-tag { display: inline-flex; gap: 4px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: var(--font-mono); margin: 2px; }
+    .span-tag .key { color: var(--text-dim); }
+    .span-tag .val { color: var(--primary); }
+    .timeline-ruler { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); padding: 0 0 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .correlation-id { font-family: var(--font-mono); font-size: 12px; color: var(--primary); background: var(--primary-dim); padding: 4px 12px; border-radius: 4px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="oauth2-jwt-flow.html">OAuth2</a><a href="distributed-tracing.html" class="active">Tracing</a><a href="deployment-strategies.html">Deploy</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 11 — Observability</div>
+      <h1>🔭 Distributed Tracing</h1>
+      <p class="subtitle">Trace request xuyên qua multiple services — Zipkin/Sleuth style</p>
+    </header>
+
+    <div class="controls">
+      <button class="btn btn-primary" onclick="traceRequest('success')">📤 Trace: Submit SQL (Success)</button>
+      <button class="btn btn-danger" onclick="traceRequest('error')">💥 Trace: Submit SQL (Error)</button>
+      <button class="btn" onclick="resetTrace()">🔄 Reset</button>
+    </div>
+
+    <!-- Trace Waterfall -->
+    <div class="card">
+      <div class="card-title">📊 Trace Waterfall — <span class="correlation-id" id="trace-id">—</span></div>
+      <div class="timeline-ruler"><span>0ms</span><span>100ms</span><span>200ms</span><span>500ms</span><span>1000ms</span></div>
+      <div class="trace-container" id="trace-container">
+        <div class="trace-row"><div class="trace-service">🚪 Gateway</div><div class="trace-bar-container"><div class="trace-bar" id="bar-gateway" style="left:0; width:100%; background: var(--info);">gateway.filter</div></div></div>
+        <div class="trace-row"><div class="trace-service">📝 Core Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-core" style="left:5%; width:90%; background: var(--success);">POST /submissions <span class="bar-time">450ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">📦 Kafka Produce</div><div class="trace-bar-container"><div class="trace-bar" id="bar-kafka" style="left:15%; width:10%; background: var(--warning);">produce <span class="bar-time">50ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">⚖️ Judge Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-judge" style="left:30%; width:55%; background: var(--primary);">executeSQL <span class="bar-time">550ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">🗄️ MySQL Sandbox</div><div class="trace-bar-container"><div class="trace-bar" id="bar-db" style="left:40%; width:30%; background: #8b5cf6;">SQL exec <span class="bar-time">300ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">📤 Kafka Result</div><div class="trace-bar-container"><div class="trace-bar" id="bar-result" style="left:85%; width:8%; background: var(--warning);">produce <span class="bar-time">40ms</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Span Detail -->
+    <div class="card span-detail" id="span-detail">
+      <div class="card-title">📋 Span Details</div>
+      <div id="span-info"></div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="grid-3" style="margin-top:20px;">
+      <div class="card">
+        <div class="metric"><div class="metric-value" id="m-total" style="color:var(--primary);">0</div><div class="metric-label">Total Spans</div></div>
+      </div>
+      <div class="card">
+        <div class="metric"><div class="metric-value" id="m-latency" style="color:var(--warning);">0</div><div class="metric-label">Total Latency (ms)</div></div>
+      </div>
+      <div class="card">
+        <div class="metric"><div class="metric-value" id="m-services" style="color:var(--success);">0</div><div class="metric-label">Services</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Spring Cloud Sleuth tự động inject traceId/spanId vào mỗi request header. Zipkin server thu thập và visualize trace — cho phép debug latency: "Tại sao submit mất 2 giây?" → thấy ngay Judge Service SQL execution mất 1.5s.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    let traceCount = 0;
+
+    function traceRequest(type) {
+      traceCount++;
+      const id = `trace-${Date.now().toString(36)}`;
+      document.getElementById('trace-id').textContent = id;
+      const bars = ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'];
+      bars.forEach(b => document.getElementById(b).classList.remove('visible'));
+
+      // Animate bars sequentially
+      const delays = [0, 200, 400, 700, 900, 1400];
+      bars.forEach((b, i) => {
+        setTimeout(() => {
+          const el = document.getElementById(b);
+          el.classList.add('visible');
+          if (type === 'error' && b === 'bar-judge') {
+            el.style.background = 'var(--danger)';
+            el.innerHTML = '❌ executeSQL FAILED <span class="bar-time">ERROR</span>';
+          }
+        }, delays[i]);
+      });
+
+      // Update metrics
+      setTimeout(() => {
+        document.getElementById('m-total').textContent = 6;
+        document.getElementById('m-latency').textContent = type === 'error' ? '350' : '1000';
+        document.getElementById('m-services').textContent = 4;
+
+        // Show span detail
+        const detail = document.getElementById('span-detail');
+        detail.classList.add('visible');
+        document.getElementById('span-info').innerHTML = `
+          <div style="margin-bottom:8px;"><span class="span-tag"><span class="key">traceId:</span><span class="val">${id}</span></span><span class="span-tag"><span class="key">duration:</span><span class="val">${type === 'error' ? '350ms' : '1000ms'}</span></span><span class="span-tag"><span class="key">status:</span><span class="val" style="color:${type === 'error' ? 'var(--danger)' : 'var(--success)'}">${type === 'error' ? 'ERROR' : 'OK'}</span></span></div>
+          <div style="font-size:11px; color:var(--text-secondary);">
+            <div>Gateway → Core: 10ms (JWT validation)</div>
+            <div>Core → Kafka: 50ms (produce SubmitMessage)</div>
+            <div>Judge: ${type === 'error' ? '❌ SQLException: Table not found' : '550ms (SQL execution on MySQL sandbox)'}</div>
+            <div>Judge → Kafka: 40ms (produce JudgeResult)</div>
+          </div>
+        `;
+      }, 1600);
+    }
+
+    function resetTrace() {
+      ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'].forEach(b => {
+        const el = document.getElementById(b);
+        el.classList.remove('visible');
+        if (b === 'bar-judge') { el.style.background = 'var(--primary)'; el.innerHTML = 'executeSQL <span class="bar-time">550ms</span>'; }
+      });
+      document.getElementById('trace-id').textContent = '—';
+      document.getElementById('m-total').textContent = '0';
+      document.getElementById('m-latency').textContent = '0';
+      document.getElementById('m-services').textContent = '0';
+      document.getElementById('span-detail').classList.remove('visible');
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+  </script>
+</body>
+</html>

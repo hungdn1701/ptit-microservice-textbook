@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REST API Explorer — Ch.3 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .method-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: var(--font-mono); }
+    .method-GET { background: var(--info-dim); color: var(--info); }
+    .method-POST { background: var(--success-dim); color: var(--success); }
+    .method-PUT { background: var(--warning-dim); color: var(--warning); }
+    .method-DELETE { background: var(--danger-dim); color: var(--danger); }
+    .endpoint-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; border-radius: var(--radius-sm); }
+    .endpoint-row:hover { background: rgba(255,255,255,0.03); }
+    .endpoint-row.selected { background: var(--primary-dim); border-color: rgba(255,122,0,0.2); }
+    .endpoint-path { font-family: var(--font-mono); font-size: 13px; flex: 1; }
+    .endpoint-desc { font-size: 11px; color: var(--text-dim); }
+    .req-res { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    @media (max-width: 768px) { .req-res { grid-template-columns: 1fr; } }
+    .status-200 { color: var(--success); }
+    .status-201 { color: var(--success); }
+    .status-400 { color: var(--warning); }
+    .status-404 { color: var(--danger); }
+    .status-500 { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="context-map.html">Context Map</a><a href="rest-api-explorer.html" class="active">API Explorer</a><a href="circuit-breaker.html">Circuit Breaker</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 3 — Thiết kế API</div>
+      <h1>📋 REST API Explorer</h1>
+      <p class="subtitle">Khám phá REST endpoints — click endpoint, xem request/response mẫu</p>
+    </header>
+
+    <!-- Endpoints List -->
+    <div class="card">
+      <div class="card-title">🔗 KBLab LMS — Core Service Endpoints</div>
+      <div id="endpoints-list"></div>
+    </div>
+
+    <!-- Request / Response -->
+    <div class="req-res" id="req-res" style="display: none;">
+      <div class="card">
+        <div class="card-title">📤 Request</div>
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
+            <span class="code-block-title" id="req-title">—</span>
+          </div>
+          <pre id="req-body" style="white-space: pre-wrap;"></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📥 Response — <span id="res-status"></span></div>
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
+            <span class="code-block-title" id="res-title">response.json</span>
+          </div>
+          <pre id="res-body" style="white-space: pre-wrap;"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Richardson Maturity -->
+    <div class="card" style="margin-top:24px;">
+      <div class="card-title">📊 Richardson Maturity Model — LMS ở Level 2</div>
+      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--danger-dim); text-align:center;">
+          <div style="font-weight:700; font-size:13px;">Level 0</div><div style="font-size:11px; color:var(--text-dim);">Swamp of POX</div>
+        </div>
+        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--warning-dim); text-align:center;">
+          <div style="font-weight:700; font-size:13px;">Level 1</div><div style="font-size:11px; color:var(--text-dim);">Resources</div>
+        </div>
+        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--primary-dim); border:2px solid var(--primary); text-align:center;">
+          <div style="font-weight:700; font-size:13px; color:var(--primary);">Level 2 ✓</div><div style="font-size:11px; color:var(--text-secondary);">HTTP Verbs</div>
+        </div>
+        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--bg-elevated); text-align:center;">
+          <div style="font-weight:700; font-size:13px;">Level 3</div><div style="font-size:11px; color:var(--text-dim);">HATEOAS</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> API sử dụng Level 2 REST — resource-oriented URLs, đúng HTTP verbs, DTO pattern (tách entity khỏi response). Còn thiếu: API versioning (/api/v1/), inconsistent naming (/question singular vs /users plural).
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    const endpoints = [
+      { method:'GET', path:'/api/questions', desc:'Lấy danh sách câu hỏi (paginated)', req:'GET /api/questions?page=0&size=20&difficulty=HARD\nAuthorization: Bearer eyJhbGci...', res:{ status:200, body:{ data:[{ id:"q-001", title:"SELECT cơ bản", difficulty:"EASY", submitCount:245, acceptRate:0.72 }, { id:"q-002", title:"JOIN 3 bảng", difficulty:"HARD", submitCount:89, acceptRate:0.31 }], pagination:{ page:0, size:20, totalElements:157, totalPages:8, hasNext:true }}}},
+      { method:'GET', path:'/api/questions/{id}', desc:'Chi tiết câu hỏi theo ID', req:'GET /api/questions/q-001\nAuthorization: Bearer eyJhbGci...', res:{ status:200, body:{ id:"q-001", title:"SELECT cơ bản", description:"Viết câu SQL lấy tên sinh viên có điểm > 8", difficulty:"EASY", schema:"students(id, name, gpa)", solution:"SELECT name FROM students WHERE gpa > 8", submitCount:245 }}},
+      { method:'POST', path:'/api/submissions', desc:'Nộp bài SQL', req:'POST /api/submissions\nContent-Type: application/json\nAuthorization: Bearer eyJhbGci...\n\n{\n  "questionId": "q-001",\n  "sqlAnswer": "SELECT name FROM students WHERE gpa > 8",\n  "dbType": "MYSQL"\n}', res:{ status:201, body:{ id:"sub-099", questionId:"q-001", status:"PENDING", message:"Bài nộp đang được chấm...", createdAt:"2026-04-09T10:30:00Z" }}},
+      { method:'PUT', path:'/api/questions/{id}', desc:'Cập nhật câu hỏi', req:'PUT /api/questions/q-001\nContent-Type: application/json\n\n{\n  "title": "SELECT cơ bản (updated)",\n  "difficulty": "MEDIUM"\n}', res:{ status:200, body:{ id:"q-001", title:"SELECT cơ bản (updated)", difficulty:"MEDIUM", updatedAt:"2026-04-09T10:35:00Z" }}},
+      { method:'DELETE', path:'/api/questions/{id}', desc:'Xóa câu hỏi', req:'DELETE /api/questions/q-001\nAuthorization: Bearer eyJhbGci...', res:{ status:204, body:null }},
+      { method:'GET', path:'/api/questions/99999', desc:'Resource không tồn tại → 404', req:'GET /api/questions/99999', res:{ status:404, body:{ status:404, error:"NOT_FOUND", message:"Question not found", timestamp:"2026-04-09T10:30:00Z", path:"/api/questions/99999" }}},
+    ];
+
+    function renderEndpoints() {
+      const el = document.getElementById('endpoints-list');
+      el.innerHTML = endpoints.map((e, i) => `
+        <div class="endpoint-row" onclick="selectEndpoint(${i})" id="ep-${i}">
+          <span class="method-badge method-${e.method}">${e.method}</span>
+          <span class="endpoint-path">${e.path}</span>
+          <span class="endpoint-desc">${e.desc}</span>
+        </div>`).join('');
+    }
+
+    function selectEndpoint(i) {
+      const e = endpoints[i];
+      document.querySelectorAll('.endpoint-row').forEach(el => el.classList.remove('selected'));
+      document.getElementById(`ep-${i}`).classList.add('selected');
+      document.getElementById('req-res').style.display = 'grid';
+      document.getElementById('req-title').textContent = `${e.method} ${e.path}`;
+      document.getElementById('req-body').textContent = e.req;
+      const statusCls = `status-${e.res.status}`;
+      document.getElementById('res-status').innerHTML = `<span class="${statusCls}">${e.res.status}</span>`;
+      document.getElementById('res-body').textContent = e.res.body ? JSON.stringify(e.res.body, null, 2) : '(No Content)';
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderEndpoints();
+  </script>
+</body>
+</html>

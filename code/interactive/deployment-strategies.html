@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployment Strategies — Ch.12 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .strategy-tabs { display: flex; gap: 4px; background: var(--bg-elevated); border-radius: var(--radius-md); padding: 4px; margin-bottom: 20px; }
+    .strategy-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; background: transparent; color: var(--text-secondary); border: none; font-family: var(--font-sans); }
+    .strategy-tab.active { background: var(--primary); color: #fff; }
+    .instance-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin: 16px 0; }
+    .instance { padding: 10px; border-radius: var(--radius-sm); text-align: center; font-size: 11px; font-weight: 600; font-family: var(--font-mono); transition: all 0.5s ease; border: 2px solid transparent; }
+    .instance.v1 { background: var(--info-dim); color: var(--info); border-color: rgba(59,130,246,0.3); }
+    .instance.v2 { background: var(--success-dim); color: var(--success); border-color: rgba(16,185,129,0.3); }
+    .instance.down { background: var(--bg-elevated); color: var(--text-dim); border-color: var(--border); opacity: 0.5; }
+    .traffic-split { display: flex; height: 20px; border-radius: 10px; overflow: hidden; margin: 12px 0; }
+    .traffic-v1 { background: var(--info); transition: width 0.5s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: 600; }
+    .traffic-v2 { background: var(--success); transition: width 0.5s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: 600; }
+    .phase-info { padding: 12px 16px; background: var(--bg-elevated); border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; margin-top: 12px; }
+    .phase-step { font-weight: 600; color: var(--primary); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="distributed-tracing.html">Tracing</a><a href="deployment-strategies.html" class="active">Deploy</a><a href="strangler-fig-migration.html">Strangler Fig</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 12 — Deployment</div>
+      <h1>🚀 Deployment Strategies</h1>
+      <p class="subtitle">So sánh Blue/Green, Canary, và Rolling deployment — click Deploy để xem animation</p>
+    </header>
+
+    <div class="strategy-tabs" id="tabs">
+      <button class="strategy-tab active" onclick="selectStrategy('bluegreen')">🔵🟢 Blue/Green</button>
+      <button class="strategy-tab" onclick="selectStrategy('canary')">🐤 Canary</button>
+      <button class="strategy-tab" onclick="selectStrategy('rolling')">🔄 Rolling</button>
+    </div>
+
+    <div class="card" id="strategy-panel">
+      <div class="card-title" id="strategy-title">🔵🟢 Blue/Green Deployment</div>
+      <p id="strategy-desc" style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;"></p>
+
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <span class="badge badge-info">v1 (current)</span>
+        <span class="badge badge-success">v2 (new)</span>
+      </div>
+
+      <div id="instances-display"></div>
+
+      <div style="margin-top:12px; font-size:12px; font-weight:600;">Traffic Split</div>
+      <div class="traffic-split" id="traffic-bar">
+        <div class="traffic-v1" id="tv1" style="width:100%;">v1: 100%</div>
+        <div class="traffic-v2" id="tv2" style="width:0%;"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()">🚀 Deploy v2</button>
+        <button class="btn" onclick="resetStrategy()">🔄 Reset</button>
+      </div>
+
+      <div class="phase-info" id="phase-info">Click Deploy để bắt đầu.</div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="card" style="margin-top:24px;">
+      <div class="card-title">📊 So sánh Strategies</div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Tiêu chí</th><th>Blue/Green</th><th>Canary</th><th>Rolling</th></tr></thead>
+          <tbody>
+            <tr><td>Downtime</td><td>Zero ✅</td><td>Zero ✅</td><td>Near-zero ✅</td></tr>
+            <tr><td>Rollback speed</td><td>Instant ⚡</td><td>Fast 🚀</td><td>Moderate ⏱️</td></tr>
+            <tr><td>Resource cost</td><td>2x infra ❌</td><td>+10-20% ⚠️</td><td>Same ✅</td></tr>
+            <tr><td>Risk</td><td>Low ✅</td><td>Very low ✅</td><td>Medium ⚠️</td></tr>
+            <tr><td>Complexity</td><td>Low</td><td>High (monitoring)</td><td>Medium</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Docker Compose cho phép Blue/Green đơn giản: chạy song song 2 bản core-service, đổi port mapping khi sẵn sàng. Với Kubernetes, Rolling Update là mặc định — mỗi pod được thay thế tuần tự.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    let strategy = 'bluegreen', phase = 0;
+    const TOTAL_INSTANCES = 6;
+
+    const strategies = {
+      bluegreen: {
+        title: '🔵🟢 Blue/Green Deployment',
+        desc: 'Chạy song song 2 environments giống hệt nhau. Switch traffic toàn bộ khi Green sẵn sàng.',
+        phases: [
+          { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> All traffic → Blue (v1). Green environment đang được chuẩn bị.' },
+          { instances: 'v1 v1 v1 v1 v1 v1|v2 v2 v2 v2 v2 v2', v1: 100, v2: 0, info: '<span class="phase-step">Phase 1:</span> Green (v2) deployed & tested. Traffic vẫn ở Blue.' },
+          { instances: 'down down down down down down|v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 2:</span> ⚡ Switch! Traffic chuyển sang Green. Blue giữ lại cho rollback.' },
+        ]
+      },
+      canary: {
+        title: '🐤 Canary Deployment',
+        desc: 'Triển khai v2 cho một nhóm nhỏ users trước, tăng dần nếu metrics OK.',
+        phases: [
+          { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> Tất cả instances chạy v1.' },
+          { instances: 'v1 v1 v1 v1 v1 v2', v1: 85, v2: 15, info: '<span class="phase-step">Phase 1:</span> 1 canary instance v2 — 15% traffic. Monitor error rate, latency...' },
+          { instances: 'v1 v1 v1 v2 v2 v2', v1: 50, v2: 50, info: '<span class="phase-step">Phase 2:</span> Metrics OK! Tăng lên 50%. Tiếp tục monitor...' },
+          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 3:</span> ✅ Full rollout — tất cả instances chạy v2.' },
+        ]
+      },
+      rolling: {
+        title: '🔄 Rolling Deployment',
+        desc: 'Thay thế từng instance một — luôn có ít nhất N-1 instances running.',
+        phases: [
+          { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> Tất cả 6 instances chạy v1.' },
+          { instances: 'v2 v1 v1 v1 v1 v1', v1: 83, v2: 17, info: '<span class="phase-step">Phase 1:</span> Instance 1 → v2. 5 instances vẫn serving.' },
+          { instances: 'v2 v2 v1 v1 v1 v1', v1: 67, v2: 33, info: '<span class="phase-step">Phase 2:</span> Instance 2 → v2.' },
+          { instances: 'v2 v2 v2 v2 v1 v1', v1: 33, v2: 67, info: '<span class="phase-step">Phase 3:</span> Instances 3-4 → v2.' },
+          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 4:</span> ✅ All instances updated to v2.' },
+        ]
+      }
+    };
+
+    function selectStrategy(s) {
+      strategy = s; phase = 0;
+      document.querySelectorAll('.strategy-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.strategy-tab[onclick="selectStrategy('${s}')"]`).classList.add('active');
+      renderPhase();
+    }
+
+    function deploy() {
+      const s = strategies[strategy];
+      if (phase < s.phases.length - 1) { phase++; renderPhase(); }
+    }
+
+    function resetStrategy() { phase = 0; renderPhase(); }
+
+    function renderPhase() {
+      const s = strategies[strategy];
+      const p = s.phases[phase];
+      document.getElementById('strategy-title').textContent = s.title;
+      document.getElementById('strategy-desc').textContent = s.desc;
+
+      // Instances
+      const groups = p.instances.split('|');
+      let html = '';
+      groups.forEach((g, gi) => {
+        if (gi > 0) html += '<div style="margin:8px 0; font-size:10px; color:var(--text-dim); text-align:center;">─── Green Environment ───</div>';
+        html += '<div class="instance-grid">';
+        g.trim().split(' ').forEach(v => { html += `<div class="instance ${v}">${v.toUpperCase()}</div>`; });
+        html += '</div>';
+      });
+      document.getElementById('instances-display').innerHTML = html;
+
+      // Traffic
+      document.getElementById('tv1').style.width = p.v1 + '%';
+      document.getElementById('tv1').textContent = p.v1 > 0 ? `v1: ${p.v1}%` : '';
+      document.getElementById('tv2').style.width = p.v2 + '%';
+      document.getElementById('tv2').textContent = p.v2 > 0 ? `v2: ${p.v2}%` : '';
+
+      // Phase info
+      document.getElementById('phase-info').innerHTML = p.info;
+      document.getElementById('deploy-btn').disabled = phase >= s.phases.length - 1;
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderPhase();
+  </script>
+</body>
+</html>

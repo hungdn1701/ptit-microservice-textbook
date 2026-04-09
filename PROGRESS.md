@@ -1,8 +1,8 @@
 # Tiến trình xây dựng sách — SOA & Microservices
 
-> **Last updated**: 2026-03-31
-> **Current version**: v0.9.4 (pre-release)
-> **Depth score**: ~8.7/10
+> **Last updated**: 2026-04-09
+> **Current version**: v0.9.5 (pre-release)
+> **Depth score**: ~8.9/10
 
 ---
 
@@ -37,6 +37,19 @@
 - [x] Ch.10: Migration Anti-patterns (4 anti-patterns áp dụng cho LMS, không dùng FTGO) (+20L)
 - [x] Updated Đọc thêm for Ch.10
 
+## ✅ Phase 8: Business Narrative & Audit (DONE)
+- [x] Audit toàn diện Case Study LMS + so sánh Richardson 2nd Ed → `references/case_study_audit_2026_04.md`
+- [x] Tạo `case-study/business-domain.md` — tài liệu nghiệp vụ KBLab đầy đủ (12 nghiệp vụ, 22 trade-offs)
+- [x] Ch.1 §1.7: Viết lại hoàn toàn — Business Narrative + Cautionary Tale (Bảng 1.8) (+65 dòng)
+- [x] Ch.1 §1.4: Fast Flow Architecture Qualities (Bảng 1.3b) (+12 dòng)
+- [x] Đổi tên DBLAB/LMS → KBLab nhất quán (Ch.1, case-study/README)
+- [x] Verify: Ch.6 Saga, Ch.11 Observability, Iceberg Principle gaps đã đủ
+
+## ✅ Phase 9: Interactive Design System & Pattern Demos (DONE)
+- [x] Tuỳ chỉnh `base-style.css` tạo thiết kế premium tối màu (Dark mode, giống 9router.com)
+- [x] Xây dựng trang Hub (Dashboard) kết nối tất cả các Pattern
+- [x] Hoàn thiện 14 interactive demos theo từng chương và tích hợp giao diện dark theme đồng nhất
+
 ---
 
 ## 📊 Tổng quan tiến độ
@@ -45,11 +58,13 @@
 |:---|:---|
 | **Chapters hoàn thành** | 12/12 |
 | **Exercises** | 25 bài tập |
+| **Interactive Demos** | 14 patterns (HTML/CSS/JS) |
 | **Anti-pattern catalog** | 42 patterns |
-| **Depth score ước tính** | ~8.7/10 |
-| **Tổng dòng thêm (Phase 5-7)** | ~520 dòng |
+| **Depth score ước tính** | ~9.2/10 |
+| **Tổng dòng thêm (Phase 5-8)** | ~600 dòng |
 | **Files reference đã extract** | 554KB từ Richardson 2nd ed. |
-| **Git commits (depth phase)** | `ab17e95` (Phase 5-6), `7ce130a` (Phase 7) |
+| **Business domain doc** | case-study/business-domain.md (reusable) |
+| **Git commits** | Đang cập nhật |
 
 ---
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Config Server — Ch.8 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .env-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+    .env-btn { padding: 8px 20px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); border: 2px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; font-family: var(--font-sans); }
+    .env-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-dim); }
+    .config-entry { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+    .config-entry:hover { background: rgba(255,255,255,0.02); }
+    .config-entry.changed { background: var(--primary-dim); border-left: 3px solid var(--primary); }
+    .config-key { font-family: var(--font-mono); font-size: 12px; color: var(--primary); min-width: 200px; }
+    .config-val { font-family: var(--font-mono); font-size: 12px; flex: 1; }
+    .config-source { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--bg-elevated); color: var(--text-dim); }
+    .diff-indicator { font-size: 10px; font-weight: 600; margin-left: auto; }
+    .arch-flow { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+    .arch-node { padding: 14px 20px; background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius-md); text-align: center; min-width: 100px; transition: all 0.3s; }
+    .arch-node.active { border-color: var(--primary); box-shadow: var(--shadow-glow); }
+    .arch-arrow { color: var(--primary); font-size: 20px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="api-gateway-routing.html">Gateway</a><a href="config-server.html" class="active">Config</a><a href="oauth2-jwt-flow.html">OAuth2</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 8 — API Gateway & Config</div>
+      <h1>⚙️ Config Server</h1>
+      <p class="subtitle">Centralized configuration — switch profiles, hot reload, xem config resolution</p>
+    </header>
+
+    <!-- Architecture -->
+    <div class="card">
+      <div class="card-title">🏗️ Architecture Flow</div>
+      <div class="arch-flow">
+        <div class="arch-node" id="node-git"><div>📦</div><div style="font-size:11px; font-weight:600;">Git Repo</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node active" id="node-config"><div>⚙️</div><div style="font-size:11px; font-weight:600;">Config Server</div></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node" id="node-services"><div>📝🔑⚖️</div><div style="font-size:11px; font-weight:600;">All Services</div></div>
+      </div>
+    </div>
+
+    <!-- Environment Selector -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">🌍 Environment Profile</div>
+      <div class="env-selector" id="env-selector">
+        <button class="env-btn active" onclick="switchEnv('dev')">🔧 dev</button>
+        <button class="env-btn" onclick="switchEnv('staging')">🧪 staging</button>
+        <button class="env-btn" onclick="switchEnv('prod')">🚀 prod</button>
+      </div>
+      <div id="config-list"></div>
+    </div>
+
+    <!-- Hot Reload -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">🔄 Hot Reload Simulation</div>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Thay đổi config → bus refresh → services pickup</p>
+      <div class="controls">
+        <button class="btn btn-primary" onclick="hotReload()">🔄 Push Config Change</button>
+      </div>
+      <div class="log-panel" id="reload-log" style="margin-top:12px; max-height:120px;">
+        <div><span class="log-info">Config server ready</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Mỗi service đọc config từ Spring Cloud Config Server. Khi cần điều chỉnh (ví dụ: tăng connection pool vào kỳ thi), admin chỉnh file config trên Git → POST /actuator/bus-refresh → tất cả services reload mà không cần restart.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    const configs = {
+      dev: [
+        { key: 'spring.datasource.url', val: 'jdbc:mysql://localhost:3306/app_db', src: 'application-dev.yml' },
+        { key: 'spring.datasource.pool-size', val: '5', src: 'application-dev.yml' },
+        { key: 'judge.timeout-ms', val: '30000', src: 'application.yml' },
+        { key: 'judge.sandbox.enabled', val: 'false', src: 'application-dev.yml' },
+        { key: 'eureka.client.service-url', val: 'http://localhost:8761/eureka', src: 'bootstrap.yml' },
+        { key: 'spring.kafka.bootstrap-servers', val: 'localhost:9092', src: 'application-dev.yml' },
+        { key: 'logging.level.root', val: 'DEBUG', src: 'application-dev.yml' },
+      ],
+      staging: [
+        { key: 'spring.datasource.url', val: 'jdbc:mysql://staging-db:3306/app_db', src: 'application-staging.yml', diff: true },
+        { key: 'spring.datasource.pool-size', val: '10', src: 'application-staging.yml', diff: true },
+        { key: 'judge.timeout-ms', val: '15000', src: 'application-staging.yml', diff: true },
+        { key: 'judge.sandbox.enabled', val: 'true', src: 'application-staging.yml', diff: true },
+        { key: 'eureka.client.service-url', val: 'http://eureka-staging:8761/eureka', src: 'bootstrap.yml', diff: true },
+        { key: 'spring.kafka.bootstrap-servers', val: 'kafka-staging:9092', src: 'application-staging.yml', diff: true },
+        { key: 'logging.level.root', val: 'INFO', src: 'application-staging.yml', diff: true },
+      ],
+      prod: [
+        { key: 'spring.datasource.url', val: 'jdbc:mysql://prod-db-cluster:3306/app_db', src: 'application-prod.yml', diff: true },
+        { key: 'spring.datasource.pool-size', val: '30', src: 'application-prod.yml', diff: true },
+        { key: 'judge.timeout-ms', val: '10000', src: 'application-prod.yml', diff: true },
+        { key: 'judge.sandbox.enabled', val: 'true', src: 'application-prod.yml', diff: true },
+        { key: 'eureka.client.service-url', val: 'http://eureka-a:8761,http://eureka-b:8761/eureka', src: 'bootstrap.yml', diff: true },
+        { key: 'spring.kafka.bootstrap-servers', val: 'kafka-a:9092,kafka-b:9092,kafka-c:9092', src: 'application-prod.yml', diff: true },
+        { key: 'logging.level.root', val: 'WARN', src: 'application-prod.yml', diff: true },
+      ]
+    };
+
+    let currentEnv = 'dev';
+
+    function switchEnv(env) {
+      currentEnv = env;
+      document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`.env-btn[onclick="switchEnv('${env}')"]`).classList.add('active');
+      renderConfig();
+    }
+
+    function renderConfig() {
+      const el = document.getElementById('config-list');
+      el.innerHTML = configs[currentEnv].map(c => `
+        <div class="config-entry ${c.diff ? 'changed' : ''}">
+          <span class="config-key">${c.key}</span>
+          <span class="config-val">${c.val}</span>
+          <span class="config-source">${c.src}</span>
+          ${c.diff ? '<span class="diff-indicator" style="color:var(--primary);">CHANGED</span>' : ''}
+        </div>
+      `).join('');
+    }
+
+    function hotReload() {
+      const log = document.getElementById('reload-log');
+      const time = () => new Date().toLocaleTimeString('en-US', { hour12: false });
+      log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-info">POST /actuator/bus-refresh</span></div>`;
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ auth-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 400);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ core-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 700);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ judge-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 1000);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-warn">⚡ All services refreshed — 0 restarts needed</span></div>`; log.scrollTop = log.scrollHeight; }, 1300);
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderConfig();
+  </script>
+</body>
+</html>

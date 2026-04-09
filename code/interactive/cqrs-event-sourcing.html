@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CQRS & Event Sourcing — Ch.7 | KBLab LMS</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .cqrs-layout { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 0; align-items: start; }
+    @media (max-width: 768px) { .cqrs-layout { grid-template-columns: 1fr; } .cqrs-divider { display: none; } }
+    .cqrs-divider { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding-top: 60px; }
+    .cqrs-divider .arrow { font-size: 20px; color: var(--primary); }
+    .cqrs-divider .divider-label { writing-mode: vertical-lr; font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .event-store { margin-top: 24px; }
+    .event-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 4px; font-size: 12px; font-family: var(--font-mono); transition: background 0.2s; }
+    .event-row:hover { background: var(--surface-hover); }
+    .event-row.new { animation: fadeIn 0.4s ease-out; background: var(--primary-light); }
+    .event-seq { color: var(--text-muted); width: 30px; text-align: right; }
+    .event-type { font-weight: 600; color: var(--primary); }
+    .event-data { color: var(--text-muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .event-time { color: var(--text-muted); font-size: 11px; }
+    .read-model { margin-top: 16px; }
+    .read-row { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .read-row:last-child { border-bottom: none; }
+    .read-key { color: var(--text-muted); }
+    .read-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .write-form { display: flex; flex-direction: column; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+    .form-select, .form-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); color: var(--text-main); font-family: var(--font-sans); font-size: 13px; outline: none; }
+    .form-select:focus, .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .controls { display: flex; gap: 12px; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+    .replay-progress { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand"><span class="logo">📐</span><span>SOA & MS <span class="label">Patterns</span></span></a>
+    <div class="navbar-links"><a href="index.html">All</a><a href="cqrs-event-sourcing.html" class="active">CQRS</a><a href="saga-orchestration.html">Saga</a><a href="strangler-fig-migration.html">Strangler Fig</a></div>
+    <div class="navbar-actions"><button class="theme-toggle" onclick="toggleTheme()">☀️</button></div>
+  </nav>
+
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 7 — Data Management</div>
+      <h1>📊 CQRS & Event Sourcing</h1>
+      <p class="subtitle">Write Model (Command) → Event Store → Read Model (Query) — tách biệt ghi / đọc</p>
+    </header>
+
+    <div class="cqrs-layout">
+      <!-- Write Side -->
+      <div class="card animate-fadeIn">
+        <div class="card-title">✏️ Write Model (Command)</div>
+        <div class="write-form">
+          <div class="form-group">
+            <label class="form-label">Action</label>
+            <select class="form-select" id="cmd-action">
+              <option value="SubmissionCreated">Submit SQL</option>
+              <option value="SubmissionJudged">Judge Result</option>
+              <option value="ScoreUpdated">Update Score</option>
+              <option value="ContestStarted">Start Contest</option>
+              <option value="ContestEnded">End Contest</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Student</label>
+            <select class="form-select" id="cmd-student">
+              <option value="SV001">SV001 — Nguyễn Văn A</option>
+              <option value="SV002">SV002 — Trần Thị B</option>
+              <option value="SV003">SV003 — Lê Minh C</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Details</label>
+            <input class="form-input" id="cmd-detail" placeholder="SELECT * FROM students" value="SELECT * FROM students">
+          </div>
+          <button class="btn btn-primary" onclick="executeCommand()" style="width:100%;">▶️ Execute Command</button>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="cqrs-divider">
+        <div class="arrow">→</div>
+        <div class="divider-label">Event Bus</div>
+        <div class="arrow">→</div>
+      </div>
+
+      <!-- Read Side -->
+      <div class="card animate-fadeIn">
+        <div class="card-title">👁️ Read Model (Query)</div>
+        <div class="read-model" id="read-model">
+          <div class="read-row"><span class="read-key">Total Submissions</span><span class="read-val" id="rm-submissions">0</span></div>
+          <div class="read-row"><span class="read-key">Correct Answers</span><span class="read-val" id="rm-correct" style="color:var(--success)">0</span></div>
+          <div class="read-row"><span class="read-key">Active Contests</span><span class="read-val" id="rm-contests">0</span></div>
+          <div class="read-row"><span class="read-key">Top Scorer</span><span class="read-val" id="rm-top">—</span></div>
+          <div class="read-row"><span class="read-key">Last Event</span><span class="read-val" id="rm-last" style="color:var(--primary)">—</span></div>
+        </div>
+        <div class="replay-progress" style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--text-muted);">Projection Sync</span>
+            <span style="font-size:12px;font-weight:600;" id="sync-status">Up to date</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="sync-bar" style="width:100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Store -->
+    <div class="card event-store animate-fadeIn">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📚 Event Store</span>
+        <div class="btn-group">
+          <button class="btn btn-sm" onclick="replayEvents()">🔄 Replay All</button>
+          <button class="btn btn-sm" onclick="clearEvents()">🗑️ Clear</button>
+        </div>
+      </div>
+      <div id="event-list" style="max-height:240px;overflow-y:auto;margin-top:12px;">
+        <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No events yet. Execute a command above.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="callout">
+        <strong>🔍 Trong KBLab LMS:</strong> Hiện tại hệ thống dùng shared database (anti-pattern). Với CQRS: write model xử lý submissions/scoring (consistency cao), read model phục vụ leaderboard + statistics (eventual consistency, cache-friendly). Event Sourcing cho phép rebuild leaderboard từ event history — rất hữu ích khi cần kiểm tra gian lận cuộc thi.
+      </div>
+    </div>
+
+    <footer class="page-footer">SOA & Microservices Textbook — KBLab LMS Case Study</footer>
+  </div>
+
+  <script>
+    let events = [];
+    let seqNo = 0;
+    let scores = { SV001: 0, SV002: 0, SV003: 0 };
+    let submissions = 0, correct = 0, activeContests = 0;
+
+    function executeCommand() {
+      const action = document.getElementById('cmd-action').value;
+      const student = document.getElementById('cmd-student').value;
+      const detail = document.getElementById('cmd-detail').value;
+
+      const event = {
+        seq: ++seqNo,
+        type: action,
+        student: student,
+        data: detail,
+        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+      };
+      events.push(event);
+
+      // Apply to read model
+      applyEvent(event);
+      renderEventList();
+      updateReadModel();
+    }
+
+    function applyEvent(event) {
+      switch (event.type) {
+        case 'SubmissionCreated': submissions++; break;
+        case 'SubmissionJudged':
+          const isCorrect = Math.random() > 0.4;
+          event.result = isCorrect ? 'CORRECT' : 'WRONG';
+          if (isCorrect) { correct++; scores[event.student] = (scores[event.student] || 0) + 10; }
+          break;
+        case 'ScoreUpdated': scores[event.student] = (scores[event.student] || 0) + 5; break;
+        case 'ContestStarted': activeContests++; break;
+        case 'ContestEnded': activeContests = Math.max(0, activeContests - 1); break;
+      }
+    }
+
+    function updateReadModel() {
+      document.getElementById('rm-submissions').textContent = submissions;
+      document.getElementById('rm-correct').textContent = correct;
+      document.getElementById('rm-contests').textContent = activeContests;
+      const topEntry = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+      document.getElementById('rm-top').textContent = topEntry[1] > 0 ? `${topEntry[0]} (${topEntry[1]}pts)` : '—';
+      document.getElementById('rm-last').textContent = events.length ? events[events.length-1].type : '—';
+    }
+
+    function renderEventList() {
+      const container = document.getElementById('event-list');
+      container.innerHTML = events.map((e, i) => `
+        <div class="event-row ${i === events.length - 1 ? 'new' : ''}">
+          <span class="event-seq">#${e.seq}</span>
+          <span class="event-type">${e.type}</span>
+          <span class="event-data">${e.student} — ${e.data}${e.result ? ` → ${e.result}` : ''}</span>
+          <span class="event-time">${e.time}</span>
+        </div>
+      `).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function replayEvents() {
+      // Reset read model
+      submissions = 0; correct = 0; activeContests = 0;
+      scores = { SV001: 0, SV002: 0, SV003: 0 };
+      updateReadModel();
+      document.getElementById('sync-status').textContent = 'Replaying...';
+      document.getElementById('sync-bar').style.width = '0%';
+
+      for (let i = 0; i < events.length; i++) {
+        await new Promise(r => setTimeout(r, 200));
+        applyEvent(events[i]);
+        updateReadModel();
+        const pct = ((i + 1) / events.length) * 100;
+        document.getElementById('sync-bar').style.width = `${pct}%`;
+      }
+      document.getElementById('sync-status').textContent = 'Up to date';
+    }
+
+    function clearEvents() {
+      events = []; seqNo = 0; submissions = 0; correct = 0; activeContests = 0;
+      scores = { SV001: 0, SV002: 0, SV003: 0 };
+      document.getElementById('event-list').innerHTML =
+        '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No events yet. Execute a command above.</div>';
+      updateReadModel();
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+  </script>
+</body>
+</html>

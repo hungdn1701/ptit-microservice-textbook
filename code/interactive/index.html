@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern Library — SOA & Microservices Textbook</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    .hero { text-align: center; padding: 48px 0 32px; position: relative; }
+    .hero h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .hero h1 .accent { color: var(--primary); }
+    .hero .desc { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin: 0 auto 24px; line-height: 1.6; }
+    .hero-glow-orb { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,122,0,0.08) 0%, transparent 70%); pointer-events: none; }
+    .filters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+    .filter-btn { padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; font-family: var(--font-sans); }
+    .filter-btn:hover { border-color: var(--border-hover); color: var(--text-main); }
+    .filter-btn.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.3); color: var(--primary); }
+    .pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .stat-bar { display: flex; gap: 32px; justify-content: center; margin: 32px 0; flex-wrap: wrap; }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    @media (max-width: 600px) { .hero h1 { font-size: 26px; } .pattern-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">
+      <span class="logo">📐</span>
+      <span>SOA & Microservices <span class="label">Patterns</span></span>
+    </a>
+    <div class="navbar-links">
+      <a href="#" class="active">All Patterns</a>
+      <a href="#communication">Communication</a>
+      <a href="#data">Data</a>
+      <a href="#infrastructure">Infrastructure</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    </div>
+  </nav>
+
+  <div class="page-container">
+    <!-- Hero -->
+    <div class="hero hero-glow">
+      <div class="hero-glow-orb"></div>
+      <h1>Interactive <span class="accent">Pattern Library</span></h1>
+      <p class="desc">Bộ minh họa tương tác cho SOA & Microservices Textbook — KBLab LMS Case Study. Click vào mỗi pattern để trải nghiệm.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-bar animate-fadeIn">
+      <div class="stat-item"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Patterns</div></div>
+      <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Chapters</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Categories</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-filter="all">Tất cả</button>
+      <button class="filter-btn" data-filter="communication">🔗 Communication</button>
+      <button class="filter-btn" data-filter="data">💾 Data</button>
+      <button class="filter-btn" data-filter="infrastructure">🏗️ Infrastructure</button>
+    </div>
+
+    <!-- Pattern Grid -->
+    <div class="pattern-grid" id="pattern-grid"></div>
+
+    <footer class="page-footer" style="margin-top:48px;">
+      SOA & Microservices Textbook — KBLab LMS Case Study<br>
+      <a href="https://github.com/hungdn1701/ptit-microservice-textbook">GitHub Repository</a>
+    </footer>
+  </div>
+
+  <script>
+    const patterns = [
+      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'monolith-vs-microservices.html', cat: 'infrastructure', tags: ['architecture', 'overview'] },
+      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'context-map.html', cat: 'data', tags: ['DDD', 'bounded-context'] },
+      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'rest-api-explorer.html', cat: 'communication', tags: ['REST', 'API-design'] },
+      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'circuit-breaker.html', cat: 'communication', tags: ['resilience', 'fault-tolerance'] },
+      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'service-discovery.html', cat: 'communication', tags: ['eureka', 'registry'] },
+      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'message-broker.html', cat: 'communication', tags: ['kafka', 'async'] },
+      { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
+      { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
+      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'api-gateway-routing.html', cat: 'communication', tags: ['gateway', 'routing'] },
+      { ch: 8, icon: '⚙️', name: 'Config Server', desc: 'Central configuration — hot reload, environment profiles', file: 'config-server.html', cat: 'infrastructure', tags: ['config', 'spring-cloud'] },
+      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'oauth2-jwt-flow.html', cat: 'infrastructure', tags: ['security', 'JWT'] },
+      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'strangler-fig-migration.html', cat: 'infrastructure', tags: ['migration', 'strangler-fig'] },
+      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'distributed-tracing.html', cat: 'infrastructure', tags: ['tracing', 'observability'] },
+      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'deployment-strategies.html', cat: 'infrastructure', tags: ['deployment', 'CI-CD'] },
+    ];
+
+    function renderGrid(filter = 'all') {
+      const grid = document.getElementById('pattern-grid');
+      const filtered = filter === 'all' ? patterns : patterns.filter(p => p.cat === filter);
+      grid.innerHTML = filtered.map(p => `
+        <a href="${p.file}" class="pattern-card animate-fadeIn">
+          <div class="card-icon">${p.icon}</div>
+          <div class="card-chapter">Chương ${p.ch}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="card-tags">
+            ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+        </a>
+      `).join('');
+      document.getElementById('stat-total').textContent = filtered.length;
+    }
+
+    // Filter buttons
+    document.getElementById('filters').addEventListener('click', e => {
+      if (!e.target.classList.contains('filter-btn')) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      renderGrid(e.target.dataset.filter);
+    });
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      const btn = document.querySelector('.theme-toggle');
+      btn.textContent = document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    }
+
+    renderGrid();
+  </script>
+</body>
+</html>

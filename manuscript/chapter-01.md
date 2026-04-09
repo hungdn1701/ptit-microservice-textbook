@@ -302,7 +302,17 @@ graph TD
 
 **Team Topologies** (Tổ chức) — Cấu trúc tổ chức theo bốn kiểu team (stream-aligned, platform, enabling, complicated subsystem) với ba kiểu tương tác (X-aaS, collaboration, facilitating). Stream-aligned teams làm phần lớn công việc, các team khác hỗ trợ. Chi tiết ở §2.1.
 
-**Architecture** (Kiến trúc) — Mục đích của kiến trúc, ít nhất từ góc độ fast flow, là **enable** DevOps và Team Topologies. Kiến trúc cần hai thuộc tính: *loose design-time coupling* (thay đổi service A không yêu cầu thay đổi service B) và *fast deployment pipeline* (pipeline riêng cho mỗi service, lead time ngắn).
+**Architecture** (Kiến trúc) — Mục đích của kiến trúc, ít nhất từ góc độ fast flow, là **enable** DevOps và Team Topologies. Richardson trong [2b, Ch.5] xác định ba **architecture qualities** cần thiết:
+
+**Bảng 1.3b:** Fast Flow Architecture Qualities
+
+| Quality | Định nghĩa | Ví dụ KBLab |
+|---------|-----------|-------------|
+| **Deployability** | Mỗi service deploy độc lập, pipeline riêng, không cần coordinate với service khác | Judge Service deploy mà Core Service không cần biết |
+| **Testability** | Test service isolated, không cần spin up toàn bộ hệ thống | Test Judge logic mà không cần Gateway, Auth, Kafka |
+| **Developability** | Team thay đổi code dễ dàng, minimal conflicts, clear ownership | Team A sở hữu Judge, Team B sở hữu Assignment — không block nhau |
+
+Ba qualities này là *điều kiện cần* cho fast flow — thiếu bất kỳ quality nào sẽ tạo bottleneck. KBLab hiện tại vi phạm cả ba: shared library buộc rebuild tất cả (deployability ❌), shared database buộc integration test toàn bộ (testability ❌), và god classes 1000+ dòng tạo merge conflicts liên tục (developability ❌).
 
 > **💡 Tip — Ba chân của tam giác**
 >
@@ -480,15 +490,38 @@ flowchart TD
 
 ---
 
-## 1.7 Case Study: Hệ thống LMS cho trường đại học
+## 1.7 Case Study: Hệ thống KBLab LMS
 
-### Giới thiệu
+### Bài toán nghiệp vụ
 
-Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực tế: **hệ thống LMS** (Learning Management System) được phát triển và sử dụng tại một trường đại học kỹ thuật. Hệ thống phục vụ sinh viên thực hành SQL trực tuyến, quản lý bài tập và bài thi, chấm thi tự động, theo dõi tiến độ học tập, và các hoạt động giảng dạy liên quan.
+Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực tế: **KBLab** — nền tảng học tập trực tuyến (LMS) chuyên biệt cho các môn tin học thực hành, được phát triển và vận hành tại một trường đại học kỹ thuật.
 
-Điểm quan trọng: hệ thống LMS hiện tại **không phải là best practice** — và đó chính là lý do nó có giá trị làm case study. Đây là một hệ thống thực tế, phát triển nhanh dưới ràng buộc team nhỏ (2–3 developers), với nhiều quyết định kiến trúc cần cải thiện. Cuốn sách sẽ sử dụng LMS như **bài toán migration/upgrade thực tế**: ở mỗi chương, chúng ta sẽ phân tích hệ thống đang ở đâu, vấn đề kỹ thuật là gì, best practice yêu cầu gì, và đề xuất lộ trình migration cụ thể.
+**Vấn đề cần giải quyết.** Tại trường đại học, các môn học liên quan đến Cơ sở dữ liệu và Lập trình mạng là bắt buộc cho hàng nghìn sinh viên mỗi năm. Giảng viên không thể thực thi và kiểm tra hàng trăm bài SQL mỗi tuần bằng tay. Sinh viên nộp bài và chờ vài ngày mới biết đúng sai — mất cơ hội sửa lỗi ngay. Chương trình đào tạo yêu cầu thành thạo nhiều hệ CSDL (MySQL, PostgreSQL, SQL Server), mỗi hệ có cú pháp riêng. Và thi trực tuyến dễ gian lận, khó kiểm soát.
 
-Đây là cách tiếp cận thực tế nhất — giống như hầu hết dự án trong thế giới thực, developer hiếm khi được xây dựng hệ thống hoàn hảo từ đầu. Thay vào đó, chúng ta phải cải thiện hệ thống *đang chạy* để tiến gần hơn đến kiến trúc hướng dịch vụ. Để đối chiếu best practice, chúng ta sẽ tham khảo các nguồn chuyên ngành hàng đầu [2a], [4a], [5] và case study công nghệ thực tế (Netflix, Amazon, Uber).
+**Ba nhóm người dùng chính:**
+
+| Nhóm | Vai trò | Quy mô |
+|---|---|---|
+| **Sinh viên** | Luyện tập SQL, tham gia thi, nộp bài tập, làm đồ án | Hàng nghìn / học kỳ |
+| **Giảng viên** | Soạn đề, tổ chức thi/kiểm tra, chấm điểm, theo dõi tiến độ | Hàng chục |
+| **Quản trị viên** | Quản lý tài khoản, cấu hình hệ thống, giám sát vận hành | Vài người |
+
+**Ba chế độ hoạt động** — mỗi chế độ đặt ra yêu cầu kiến trúc khác nhau:
+
+- **Practice Mode** (luyện tập): Sinh viên viết SQL trên trình soạn thảo web, submit, và nhận kết quả **tức thì** (chấm đồng bộ). SQL được thực thi trên sandbox cô lập — mỗi submit có không gian bảng riêng. Nộp lại không giới hạn. Yêu cầu: latency thấp, response nhanh.
+
+- **Contest Mode** (thi đấu): Hàng trăm sinh viên submit đồng thời trong kỳ thi có thời gian giới hạn. Chấm **bất đồng bộ** qua hàng đợi message — đảm bảo công bằng. Kết quả đẩy về trình duyệt qua WebSocket ngay khi có. Bảng xếp hạng cập nhật thời gian thực. Yêu cầu: throughput cao, fault tolerance, eventual consistency.
+
+- **Assignment Mode** (bài tập/đồ án): Giảng viên tạo khóa học, giao bài tập (cá nhân hoặc nhóm), sinh viên nộp bài, giảng viên chấm điểm. Tích hợp GitHub Classroom, hỗ trợ quản lý đồ án tốt nghiệp với quy trình duyệt hai cấp. Yêu cầu: data integrity, cross-service querying.
+
+**Ràng buộc thực tế** — đây là điều làm cho case study có giá trị giảng dạy:
+
+- **Team nhỏ**: 2–3 developers, không có dedicated DevOps hay QA team
+- **Hạ tầng hạn chế**: On-premise server, Docker Compose trên single host, không có Kubernetes
+- **Phát triển nhanh dưới áp lực**: Hệ thống phải phục vụ sinh viên ngay, nhiều quyết định kiến trúc được chọn vì *nhanh*, không phải vì *đúng*
+- **Hệ thống đang chạy production**: Mọi cải thiện phải incremental — không thể dừng hoạt động để refactor toàn bộ
+
+Điểm quan trọng: KBLab hiện tại **không phải là best practice** — và đó chính là lý do nó có giá trị làm case study. Giống như hầu hết dự án thực tế, developer hiếm khi xây dựng hệ thống hoàn hảo từ đầu. Cuốn sách sẽ sử dụng KBLab như **bài toán migration thực tế**: ở mỗi chương, chúng ta phân tích hệ thống đang ở đâu, vấn đề kỹ thuật là gì, best practice yêu cầu gì, và đề xuất lộ trình cải thiện.
 
 ### Kiến trúc tổng quan
 
@@ -496,7 +529,7 @@ Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực t
 graph TB
     Client["🖥 Frontend<br/>(Next.js)"] --> GW
     
-    subgraph Cloud["LMS Backend"]
+    subgraph Cloud["KBLab Backend"]
         GW["🚪 API Gateway<br/>(Spring Cloud Gateway)"]
         EUR["📋 Eureka<br/>(Service Discovery)"]
         
@@ -538,30 +571,50 @@ graph TB
     style KAFKA fill:#FFCCBC
 ```
 
-*Hình 1.7: Kiến trúc tổng quan hệ thống LMS*
+*Hình 1.7: Kiến trúc tổng quan hệ thống KBLab LMS*
 
 ### Các bài toán kỹ thuật chính
 
-Mỗi chương sách sẽ quay lại hệ thống LMS ở góc nhìn khác nhau. **Bảng 1.7** ánh xạ các bài toán kỹ thuật — từ hiện trạng đến hướng migration:
+Mỗi chương sách sẽ quay lại KBLab ở góc nhìn khác nhau. **Bảng 1.7** ánh xạ các bài toán kỹ thuật — từ hiện trạng đến hướng migration:
 
-**Bảng 1.7:** Ánh xạ bài toán kỹ thuật LMS theo chương
+**Bảng 1.7:** Ánh xạ bài toán kỹ thuật KBLab LMS theo chương
 
-| Bài toán kỹ thuật | Hiện trạng LMS | Vấn đề cần giải quyết | Chương |
-|-------------------|---------------|----------------------|--------|
+| Bài toán kỹ thuật | Hiện trạng | Vấn đề cần giải quyết | Chương |
+|-------------------|-----------|----------------------|--------|
 | **Domain decomposition** | 4+ bounded contexts, shared library coupling | Domain logic lẫn vào shared lib | Ch.2 |
-| **API design** | REST controllers, nhưng naming không nhất quán | Thiếu versioning, error format không thống nhất | Ch.3 |
+| **API design** | REST controllers, naming không nhất quán | Thiếu versioning, error format không thống nhất | Ch.3 |
 | **Sync communication** | OpenFeign giữa services | Thiếu resilience patterns (circuit breaker, retry) | Ch.4 |
 | **Async communication** | Kafka cho submission pipeline | Thiếu error handling, dead letter queue | Ch.5 |
 | **Distributed data** | **Shared database** giữa Core và Assignment | Vi phạm database-per-service, coupling cao | Ch.6, Ch.7 |
 | **API Gateway** | Spring Cloud Gateway + Eureka | Thiếu rate limiting, centralized logging | Ch.8 |
 | **Security** | JWT HS256 (symmetric key shared) | Cần RS256, thiếu service-to-service auth | Ch.9 |
-| **Migration strategy** | Microservices từ đầu, shared DB, shared lib coupling | Strangler Fig, database decomposition, migration roadmap | Ch.10 |
+| **Migration strategy** | Shared DB + shared lib coupling | Strangler Fig, database decomposition | Ch.10 |
 | **Observability** | `@ControllerAdvice`, basic tracking | Thiếu distributed tracing, metrics, health checks | Ch.11 |
-| **Deployment** | Docker Compose | Thiếu CI/CD, health checks, zero-downtime deploy | Ch.12 |
+| **Deployment** | Docker Compose trên single host | Thiếu CI/CD, health checks, zero-downtime deploy | Ch.12 |
 
 > **🔍 Phân tích gap — Shared database**
 >
-> Hệ thống LMS sử dụng shared database giữa Core Service và Assignment Service — đây là **anti-pattern** theo nguyên tắc database-per-service [2a, Ch.2]. Hậu quả: thay đổi schema ảnh hưởng cả hai service, không thể scale/deploy độc lập, và hai team (nếu có) phải coordinate mọi migration. Lộ trình cải thiện: tách schema → API-based data access → database-per-service. Chi tiết sẽ phân tích tại Chương 6–7.
+> KBLab sử dụng shared database giữa Core Service và Assignment Service — đây là **anti-pattern** theo nguyên tắc database-per-service [2a, Ch.2]. Hậu quả: thay đổi schema ảnh hưởng cả hai service, không thể scale/deploy độc lập, và hai team (nếu có) phải coordinate mọi migration. Lộ trình cải thiện: tách schema → API-based data access → database-per-service. Chi tiết sẽ phân tích tại Chương 6–7.
+
+### Những quyết định chúng ta muốn làm lại — Cautionary Tale
+
+Richardson trong phiên bản 2 [2b, Ch.2] dành nguyên một chương kể câu chuyện FTGO migration thất bại — cho thấy *những sai lầm* trước khi dạy pattern đúng. KBLab cũng có những bài học tương tự — năm quyết định mà team sẽ chọn khác nếu làm lại:
+
+**Bảng 1.8:** Năm quyết định kiến trúc KBLab muốn làm lại
+
+| # | Quyết định | Tại sao chọn lúc đó | Hậu quả thực tế | Anti-pattern tương ứng |
+|---|-----------|---------------------|-----------------|----------------------|
+| ① | **Shared database** giữa Core và Assignment | Nhanh hơn, không cần API giữa hai service | Thay đổi bảng `classroom` ở Core phá vỡ query ở Assignment; deploy cùng nhau bắt buộc | Richardson [2b]: *Data Services anti-pattern* |
+| ② | **Shared library** chứa quá nhiều thứ (entity, security, SQL parser) | Tái sử dụng code, giảm duplication | Mỗi thay đổi nhỏ buộc tất cả service rebuild + redeploy → mất independent deployability | Richardson [2b]: *Lock-step deployment* |
+| ③ | **JWT HS256** (symmetric key chia sẻ giữa services) | Đơn giản, setup 5 phút | Tất cả service biết secret key → bất kỳ service nào bị compromise đều có thể tạo JWT giả | Chi tiết tại Ch.9 |
+| ④ | **Không có idempotency** cho submit endpoint | "Ai submit trùng đâu?" | Contest mode: client retry do mạng chập → duplicate submission → điểm sai | Chi tiết tại Ch.5, Ch.6 |
+| ⑤ | **`docker logs` thay cho observability** | "Team nhỏ, đọc log trực tiếp nhanh hơn" | Contest mode: 200 submissions, Judge chậm, không biết bottleneck ở đâu → debug mất hàng giờ | Chi tiết tại Ch.11 |
+
+Mỗi quyết định trên đều *hợp lý tại thời điểm đó* — team nhỏ, cần ship nhanh, ưu tiên feature hơn architecture. Nhưng khi hệ thống mở rộng (thêm Contest Mode, thêm Assignment, thêm Thesis Management), chi phí kỹ thuật (technical debt) tích lũy nhanh hơn tốc độ phát triển tính năng. Đây là bài học mà Richardson gọi là *"penny wise and pound foolish"* — tiết kiệm ở bước nhỏ, trả giá ở bước lớn.
+
+> **📐 Nguyên tắc — Imperfect Systems Are the Best Teachers**
+>
+> Nếu hệ thống hoàn hảo từ đầu, không có gì để học. Giá trị sư phạm của KBLab nằm ở chỗ: mỗi anti-pattern là cơ hội để hiểu *tại sao* best practice tồn tại — không phải vì sách giáo khoa nói vậy, mà vì *hậu quả thực tế* khi không tuân theo.
 
 ---
 
@@ -583,7 +636,7 @@ Từ bài học của Netflix, Amazon, và Uber, chúng ta học được rằng
 
 Modular monolith không phải bước lùi mà là **bước đệm thông minh**: hiểu rõ domain trước khi chia tách. Quyết định kiến trúc cũng không chỉ là kỹ thuật — ngân sách, team, timeline, và văn hóa tổ chức đều ảnh hưởng ngang bằng.
 
-Cuối cùng, chúng ta đã giới thiệu case study LMS — hệ thống thực tế mà chúng ta sẽ sử dụng xuyên suốt sách. Ở Chương 2, chúng ta sẽ đi sâu vào **Domain-Driven Design** — phương pháp để xác định ranh giới dịch vụ, và bắt đầu phân tích domain của LMS để tìm ra các bounded context tự nhiên.
+Cuối cùng, chúng ta đã giới thiệu case study KBLab — hệ thống LMS thực tế với ba chế độ hoạt động (Practice, Contest, Assignment), những ràng buộc rất quen thuộc với hầu hết dự án (team nhỏ, hạ tầng hạn chế, cần ship nhanh), và *năm quyết định kiến trúc team muốn làm lại* — bài học cautionary tale tương tự FTGO của Richardson. Ở Chương 2, chúng ta sẽ đi sâu vào **Domain-Driven Design** — phương pháp để xác định ranh giới dịch vụ, và bắt đầu phân tích domain của KBLab để tìm ra các bounded context tự nhiên.
 
 ---
 
