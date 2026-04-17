@@ -5,6 +5,10 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- **Quản lý dự án**: Refactor cấu trúc Git, tách thư mục `references/` thành Private Submodule (`ptit-microservice-textbook-internal`) để bảo vệ tài liệu tham khảo nội bộ và bản thảo cá nhân.
+  > **Lưu ý cho Co-authors:** Khi clone/pull dự án sang máy mới, hãy chạy `git clone --recurse-submodules` hoặc lệnh `git submodule update --init` để lấy đầy đủ thư mục `references/`.
+
 ### Added
 - **code/interactive/**: Hoàn thành 14 interactive pattern demos (Phase 9b), bao gồm Dashboard Hub (`index.html`) và 8 demos mới (Monolith vs MS, Context Map, REST API Explorer, Kafka Broker, Config Server, OAuth2/JWT, Distributed Tracing, Deployment Strategies).
 - **code/interactive/base-style.css**: Thiết kế lại toàn bộ hệ thống CSS theo phong cách 9router (Dark theme `#0a0a0a`, điểm nhấn màu cam `#ff7a00`, hiệu ứng glassmorphism, typography Inter/JetBrains Mono).

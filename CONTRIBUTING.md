@@ -36,8 +36,8 @@ Nếu bạn phát hiện lỗi hoặc có ý tưởng cải thiện, [tạo mộ
 #### Bước 1: Fork & Clone
 
 ```bash
-# Fork repo trên GitHub, sau đó clone
-git clone https://github.com/<your-username>/ptit-microservice-textbook.git
+# Fork repo trên GitHub, sau đó clone (Sử dụng --recurse-submodules nếu bạn là Co-author cần lấy internal references)
+git clone --recurse-submodules https://github.com/<your-username>/ptit-microservice-textbook.git
 cd ptit-microservice-textbook
 ```
 

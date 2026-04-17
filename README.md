@@ -105,8 +105,8 @@ Chúng tôi rất hoan nghênh mọi đóng góp! Xem [CONTRIBUTING.md](CONTRIBU
 
 ```bash
 # 1. Fork repo này
-# 2. Clone fork của bạn
-git clone https://github.com/<your-username>/ptit-microservice-textbook.git
+# 2. Clone fork của bạn (Sử dụng --recurse-submodules nếu bạn là Co-author cần lấy internal references)
+git clone --recurse-submodules https://github.com/<your-username>/ptit-microservice-textbook.git
 
 # 3. Tạo branch cho thay đổi
 git checkout -b fix/chapter-03-typo
