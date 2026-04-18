@@ -35,7 +35,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## Case Study: SubmitProducer — Chấm bài Contest Mode
 
-> 📋 Phân tích SubmitProducer trong dblab-app: khi sinh viên submit bài trong Contest mode, hệ thống đẩy message vào Kafka topic thay vì gọi đồng bộ. dblab-judge consume từ topic và xử lý bất đồng bộ, thông báo kết quả qua WebSocket.
+> 📋 Phân tích SubmitProducer trong kblab-app: khi sinh viên submit bài trong Contest mode, hệ thống đẩy message vào Kafka topic thay vì gọi đồng bộ. kblab-judge consume từ topic và xử lý bất đồng bộ, thông báo kết quả qua WebSocket.
 
 ## Tổng kết
 

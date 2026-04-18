@@ -29,7 +29,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 8.4.1 Spring Cloud Gateway
 ### 8.4.2 Kong, NGINX, Envoy — Tổng quan
 
-## Case Study: Phân tích dblab-gateway
+## Case Study: Phân tích kblab-gateway
 
 > 📋 Phân tích cấu hình và hoạt động của Spring Cloud Gateway trong hệ thống LMS. Cách gateway route requests đến đúng service, xử lý CORS, và tích hợp JWT authentication.
 

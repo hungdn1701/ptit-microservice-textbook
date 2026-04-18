@@ -7,11 +7,16 @@
 **Service-Oriented Architecture & Microservices: From Theory to Practice**
 
 > [!WARNING]
-> **Bản Beta** — Giáo trình đang trong quá trình hoàn thiện (`v1.0.0-beta`). Nội dung có thể thay đổi. Mọi phản hồi xin gửi qua [Issues](../../issues).
+> **Bản Beta** — Giáo trình đang trong quá trình hoàn thiện (`v1.0.0-beta`). Nội dung có thể thay đổi. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
 
 > *Giáo trình đi từ nền tảng kiến trúc SOA đến triển khai thực tế hệ thống Microservices, minh họa qua case study hệ thống LMS (Learning Management System).*
 
 ---
+
+## 📖 Hướng dẫn đọc sách nhanh
+
+- **Cách 1 (Khuyên dùng):** Tải trực tiếp bản dịch PDF mới nhất ở mục [Releases](https://github.com/hungdn1701/ptit-microservice-textbook/releases).
+- **Cách 2:** Đọc online trực tiếp bằng cách nhấn vào các file `.md` nằm trong thư mục `manuscript/` của repository này.
 
 ## 📖 Về giáo trình
 
@@ -23,10 +28,10 @@ Toàn bộ ví dụ minh họa xoay quanh một hệ thống **Learning Manageme
 
 | Bounded Context | Mô tả | Services |
 |---|---|---|
-| Identity & Access | Định danh & Phân quyền | `dblab-auth` (JWT) |
-| Academic Management | Quản lý Đào tạo | `dblab-assignment` (khóa học, điểm số) |
-| Practical Assessment | Thực hành & Đánh giá | `dblab-app`, `dblab-judge`, sandbox executors |
-| Communication | Giao tiếp & Thông báo | `dblab-notification` (Kafka + WebSocket) |
+| Identity & Access | Định danh & Phân quyền | `kblab-auth` (JWT) |
+| Academic Management | Quản lý Đào tạo | `kblab-assignment` (khóa học, điểm số) |
+| Practical Assessment | Thực hành & Đánh giá | `kblab-app`, `kblab-judge`, sandbox executors |
+| Communication | Giao tiếp & Thông báo | `kblab-notification` (Kafka + WebSocket) |
 
 ---
 
@@ -64,9 +69,18 @@ scripts/        🔧 Build scripts (PDF, HTML)
 templates/      🎨 Templates cho output
 ```
 
+### 👨‍💻 Thực hành Code
+
+Mã nguồn minh họa cho sách được đặt trong thư mục `code/` và được phát triển bằng **Spring Boot** cùng **Docker**. Dành riêng cho sinh viên học thực hành, máy tính của bạn cần cài đặt sẵn:
+- **Java 17+** (hoặc JDK 21)
+- **Docker Desktop** & **Docker Compose**
+- **Git** (để clone repository)
+
+Đọc file `code/README.md` (nếu có) trước khi chạy để biết chi tiết hướng dẫn khởi tạo hoặc chạy từng dịch vụ.
+
 ### 🎮 Interactive Pattern Demos
 
-Giáo trình đi kèm **16 interactive HTML demos** minh họa trực quan các pattern architecture. Mở `code/interactive/index.html` trong trình duyệt để trải nghiệm:
+Giáo trình đi kèm **16 interactive HTML demos** minh họa trực quan các pattern architecture. Bạn có thể mở trực tiếp file `code/interactive/index.html` trong trình duyệt bằng cách nhấp đúp để trải nghiệm ngay lập tức:
 
 | Demo | Pattern | Chương |
 |---|---|---|
@@ -169,8 +183,8 @@ Xem [LICENSE](LICENSE) để biết chi tiết.
 
 ## 📞 Liên hệ
 
-- **Issues**: [Tạo issue mới](../../issues/new/choose)
-- **Discussions**: [Thảo luận](../../discussions)
+- **Issues**: [Tạo issue mới](https://github.com/hungdn1701/ptit-microservice-textbook/issues/new/choose)
+- **Discussions**: [Thảo luận](https://github.com/hungdn1701/ptit-microservice-textbook/discussions)
 
 ---
 

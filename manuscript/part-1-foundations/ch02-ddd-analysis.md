@@ -29,10 +29,10 @@ Sau khi đọc xong chương này, bạn sẽ:
 ## Case Study: Khám phá 4 Bounded Contexts của LMS
 
 > 📋 Áp dụng DDD để phân tích hệ thống LMS, xác định:
-> - **Identity & Access**: Định danh, phân quyền (dblab-auth)
-> - **Academic Management**: Quản lý đào tạo (dblab-assignment)
-> - **Practical Assessment**: Thực hành & đánh giá (dblab-app, dblab-judge, sandbox executors)
-> - **Communication**: Giao tiếp & thông báo (dblab-notification)
+> - **Identity & Access**: Định danh, phân quyền (kblab-auth)
+> - **Academic Management**: Quản lý đào tạo (kblab-assignment)
+> - **Practical Assessment**: Thực hành & đánh giá (kblab-app, kblab-judge, sandbox executors)
+> - **Communication**: Giao tiếp & thông báo (kblab-notification)
 
 ## Tổng kết
 

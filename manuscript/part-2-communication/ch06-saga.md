@@ -34,9 +34,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 6.4.2 Dead Letter Queue
 ### 6.4.3 Manual intervention strategies
 
-## Case Study: Webhook Rollback khi dblab-judge lỗi
+## Case Study: Webhook Rollback khi kblab-judge lỗi
 
-> 📋 Phân tích saga flow khi dblab-judge gặp lỗi trong quá trình chấm bài: cách hệ thống rollback điểm số, thông báo lỗi, và retry mechanism qua webhook.
+> 📋 Phân tích saga flow khi kblab-judge gặp lỗi trong quá trình chấm bài: cách hệ thống rollback điểm số, thông báo lỗi, và retry mechanism qua webhook.
 
 ## Tổng kết
 

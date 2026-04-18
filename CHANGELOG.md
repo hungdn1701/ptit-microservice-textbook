@@ -33,7 +33,7 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 - **Ch.1 §1.7**: Thêm "Cautionary Tale" — Bảng 1.8, 5 quyết định kiến trúc KBLab muốn làm lại, mapping đến Richardson 2nd Ed anti-patterns (+20 dòng)
 - **Ch.1 §1.4**: Thêm Fast Flow Architecture Qualities (Bảng 1.3b) — deployability, testability, developability + phân tích KBLab vi phạm (+12 dòng)
 - **Ch.1**: Đổi tên LMS → KBLab nhất quán (tiêu đề, diagram, bảng, Tổng kết)
-- **references/case-study/README.md**: Cập nhật naming DBLAB → KBLab, thêm liên kết đến `business-domain.md`
+- **references/case-study/README.md**: Cập nhật naming KBLab → KBLab, thêm liên kết đến `business-domain.md`
 - **Ch.1**: Thêm Fast Flow Success Triangle framework (DevOps + Team Topologies + Architecture) và DORA Metrics table với elite/low performer comparison (+60 dòng) — từ Richardson 2nd Ed.
 - **Ch.1**: Thêm Quality Attribute Scenarios chuẩn SEI (Source → Stimulus → Response) kết nối với DORA metrics (+20 dòng) — từ Richardson 2nd Ed.
 - **Ch.2**: Thêm Dark Energy / Dark Matter Forces — 10 lực chi phối service decomposition, bảng phân tích chi tiết với ví dụ LMS (+32 dòng) — từ Richardson 2nd Ed.

@@ -18,7 +18,7 @@
 - [x] Example này sẽ được sử dụng làm hình ảnh trong sách, do đó cần đảm bảo tính thẩm mỹ, nhất quán và dễ hiểu. → Custom Mermaid theme đảm bảo nhất quán tự động cho mọi diagram.
 
 - [x] Là một nhà viết sách, người dùng AI assit chuyên nghiệp, hãy cân nhắc cho tôi một workflow phù hợp để xây dựng nhất quá các example code trong sách. → **Workflows chuẩn hóa** trong `references/.agents/` (submodule) với README hướng dẫn sync.
-- [x] Là người dùng AI assit chuyên nghiệp, hãy refactor hay improve các rule/prompt/workflow hiện tại để phù hợp với yêu cầu. → **Parameterized paths** (`${LMS_SOURCE_ROOT}`), cập nhật naming convention (DBLAB→LMS). Source of truth trong submodule.
+- [x] Là người dùng AI assit chuyên nghiệp, hãy refactor hay improve các rule/prompt/workflow hiện tại để phù hợp với yêu cầu. → **Parameterized paths** (`${LMS_SOURCE_ROOT}`), cập nhật naming convention (KBLab→LMS). Source of truth trong submodule.
 - [x] Chương liên quan tới DDD, nên có thêm cách tiếp cận step by step action (như trong học liệu số 1 của thomas erl) đây là cách tiếp cận dễ hiểu hơn so với cách tiếp cận DDD, và cũng là điểm khác biệt của chúng ta so với các sách khác. Cách tiếp cận này dễ dạy và học hơn với sinh viên, có thể thêm so sánh giữa 2 cách tiếp cận này để sinh viên hiểu rõ hơn. → **Đã bổ sung §2.4b: Phân rã hướng dịch vụ theo Erl** (Bảng 2.7, 2.8, Hình 2.6b)
 <!-- Ví dụ format:
 - [ ] **Ch.3** — Nên có ví dụ về contract-first vs code-first khi thiết kế API

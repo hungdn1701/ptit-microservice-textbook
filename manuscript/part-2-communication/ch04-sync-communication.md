@@ -32,7 +32,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## Case Study: SqlExecutorService — Chấm bài Practice Mode
 
-> 📋 Phân tích cách dblab-app gọi đồng bộ đến SqlExecutorService qua OpenFeign để thực thi SQL và trả kết quả cho sinh viên trong chế độ Practice (luyện tập). Bao gồm error handling và timeout configuration.
+> 📋 Phân tích cách kblab-app gọi đồng bộ đến SqlExecutorService qua OpenFeign để thực thi SQL và trả kết quả cho sinh viên trong chế độ Practice (luyện tập). Bao gồm error handling và timeout configuration.
 
 ## Tổng kết
 

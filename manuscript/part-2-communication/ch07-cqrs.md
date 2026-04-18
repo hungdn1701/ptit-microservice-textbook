@@ -35,7 +35,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## Case Study: Truy xuất dữ liệu chéo service trong LMS
 
-> 📋 Cách hệ thống LMS truy vấn dữ liệu tổng hợp khi thông tin nằm rải rác giữa dblab-assignment (điểm số), dblab-app (lịch sử bài nộp), và dblab-auth (thông tin sinh viên).
+> 📋 Cách hệ thống LMS truy vấn dữ liệu tổng hợp khi thông tin nằm rải rác giữa kblab-assignment (điểm số), kblab-app (lịch sử bài nộp), và kblab-auth (thông tin sinh viên).
 
 ## Tổng kết
 

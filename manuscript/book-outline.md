@@ -36,7 +36,7 @@
 | 1.4 | **Bài học từ các công ty công nghệ** (Netflix, Amazon, Uber) | Case studies chính thống |
 | 1.5 | Modular Monolith — lựa chọn hợp lệ | Rocha(5) §1.1.2, Richardson(2b) |
 | 1.6 | Decision Framework — khi nào nên/không nên dùng Microservices | Newman(4b) Ch.1 |
-| 1.7 | **Case Study:** DBLAB — hệ thống LMS, giới thiệu kiến trúc tổng quan | System overview |
+| 1.7 | **Case Study:** KBLab — hệ thống LMS, giới thiệu kiến trúc tổng quan | System overview |
 
 > **📐 Nguyên tắc — Fast Flow**
 >
@@ -52,14 +52,14 @@
 
 **Mục tiêu:** Xác định Bounded Contexts, Context Map, cấu trúc domain, và tổ chức team.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 2.1 | Conway's Law & Team Topologies — tổ chức ảnh hưởng kiến trúc | Team structure analysis | Richardson(2b), Mitra(3) Ch.2, Newman(4a) Ch.10 |
 | 2.2 | DDD cơ bản: Entity, Value Object, Aggregate, Repository | Lý thuyết | Evans(6) Ch.1–5 |
 | 2.3 | Strategic DDD: Bounded Context, Context Map | Lý thuyết + diagram | Evans(6) Ch.14, Richardson(2a) Ch.2 |
 | 2.4 | Xác định Bounded Context từ requirements | Process | Evans(6), Mitra(3) Ch.4 |
-| 2.5 | **Case Study:** 4+ Bounded Contexts của DBLAB | Entity packages, `dblab-shared` | source-registry.md |
-| 2.6 | Shared Kernel pattern — khi nào nên/không nên | `dblab-shared` (23 files) | Evans(6) |
+| 2.5 | **Case Study:** 4+ Bounded Contexts của KBLab | Entity packages, `kblab-shared` | source-registry.md |
+| 2.6 | Shared Kernel pattern — khi nào nên/không nên | `kblab-shared` (23 files) | Evans(6) |
 
 > **📐 Nguyên tắc — Ubiquitous Language**
 >
@@ -73,7 +73,7 @@
 >
 > *— Melvin Conway, 1968*
 
-**In Practice:** `dblab-shared` = Shared Kernel — tiện nhưng tạo coupling.
+**In Practice:** `kblab-shared` = Shared Kernel — tiện nhưng tạo coupling.
 
 **🆕 Thay đổi:** Thêm §2.1 Conway's Law & Team Topologies trước khi đi vào DDD. Đây là framing quan trọng: tổ chức team → kiến trúc hệ thống.
 
@@ -83,13 +83,13 @@
 
 **Mục tiêu:** Nguyên tắc thiết kế API RESTful, versioning, documentation, schema evolution.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 3.1 | REST API design principles | Lý thuyết | Erl(1), Richardson(2a) Ch.3 |
 | 3.2 | API versioning strategies & Schema evolution | Lý thuyết | Kleppmann(7) Ch.4, Erl(1) |
 | 3.3 | OpenAPI/Swagger documentation | SpringDoc config | Mitra(3) Ch.3 |
 | 3.4 | DTO pattern: Request/Response separation | `BaseRequest`, `BaseResponse`, MapStruct | Richardson(2a) |
-| 3.5 | **Case Study:** API design trong DBLAB — bài học từ inconsistency | Controllers, Feign clients | source-registry.md |
+| 3.5 | **Case Study:** API design trong KBLab — bài học từ inconsistency | Controllers, Feign clients | source-registry.md |
 
 > **📐 Nguyên tắc — Make the Implicit Explicit**
 >
@@ -99,7 +99,7 @@
 
 **In Practice:** Mix singular/plural paths, không nhất quán naming → bài học thực tế.
 
-**🆕 Thay đổi:** Thêm API versioning & schema evolution vào §3.2 (trước đây chỉ nói lý thuyết, chưa có depth). Case study phân tích cách DBLAB không xử lý API versioning → hậu quả.
+**🆕 Thay đổi:** Thêm API versioning & schema evolution vào §3.2 (trước đây chỉ nói lý thuyết, chưa có depth). Case study phân tích cách KBLab không xử lý API versioning → hậu quả.
 
 ---
 
@@ -109,7 +109,7 @@
 
 **Mục tiêu:** HTTP/REST inter-service calls, OpenFeign, error handling, resilience patterns.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 4.1 | Giao tiếp đồng bộ: ưu/nhược điểm | Lý thuyết | Richardson(2a) Ch.3, Rocha(5) §3.5 |
 | 4.2 | OpenFeign: declarative REST client | `feignClient/MysqlClient.java`, config | source-registry.md |
@@ -133,14 +133,14 @@
 
 **Mục tiêu:** Message brokers, Kafka, event-driven architecture, Event Storming, event schema.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 5.1 | Tại sao cần async? Limitations của sync | Motivating examples | Rocha(5) Ch.1, Richardson(2a) Ch.3 |
 | 5.2 | Apache Kafka fundamentals | Lý thuyết | Kleppmann(7) Ch.11 |
 | 5.3 | Producer/Consumer pattern | `BaseProducerService`, `SubmitProducer` | source-registry.md |
 | 5.4 | Event Storming — kỹ thuật khám phá domain qua events | Lý thuyết + workshop | Mitra(3) Ch.4, Rocha(5) Ch.8 §8.1 |
 | 5.5 | Event Schema Design: types, headers, evolution | Lý thuyết | Rocha(5) Ch.8, Kleppmann(7) Ch.4 |
-| 5.6 | WebSocket: real-time notifications | STOMP over SockJS, `dblab-notification` | source-registry.md |
+| 5.6 | WebSocket: real-time notifications | STOMP over SockJS, `kblab-notification` | source-registry.md |
 | 5.7 | **Case Study:** Contest mode — Kafka pipeline | 4 Kafka topics, producer/consumer flow | source-registry.md |
 
 > **📐 Nguyên tắc — Event Streams as Heart of Data Sharing**
@@ -159,13 +159,13 @@
 
 **Mục tiêu:** Distributed transactions, Saga types, compensation, consistency trade-offs.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 6.1 | Vấn đề: distributed transactions & 2PC limitations | Motivating problem | Kleppmann(7) Ch.7,9; Rocha(5) Ch.4 |
 | 6.2 | Saga pattern: Orchestration vs Choreography | Lý thuyết | Richardson(2a) Ch.4, Rocha(5) §4.2–4.4 |
 | 6.3 | Compensation/rollback strategies | Lý thuyết | Richardson(2a) Ch.4 |
 | 6.4 | Eventual consistency — quản lý và chấp nhận | Lý thuyết | Rocha(5) Ch.5, Kleppmann(7) Ch.9 |
-| 6.5 | **Case Study:** Submit flow rollback khi judge lỗi | `dblab-judge` error flow | source-registry.md |
+| 6.5 | **Case Study:** Submit flow rollback khi judge lỗi | `kblab-judge` error flow | source-registry.md |
 
 > **📐 Nguyên tắc — Saga = Local Transactions + Compensating Actions**
 >
@@ -173,7 +173,7 @@
 >
 > *— Chris Richardson, Microservices Patterns*
 
-**In Practice:** DBLAB dùng implicit saga (không explicit orchestrator) → tradeoff simplicity vs resilience.
+**In Practice:** KBLab dùng implicit saga (không explicit orchestrator) → tradeoff simplicity vs resilience.
 
 ---
 
@@ -181,7 +181,7 @@
 
 **Mục tiêu:** Database-per-service, data ownership, CQRS, cross-service querying, data duplication.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 7.1 | Database-per-Service: nguyên tắc data ownership | Lý thuyết | Newman(4b) Ch.4, Mitra(3) Ch.5 |
 | 7.2 | Chiến lược tách database từ monolith | DB decomposition patterns | Newman(4b), Kleppmann(7) Ch.5–6 |
@@ -206,13 +206,13 @@
 
 **Mục tiêu:** Gateway patterns, routing, rate limiting, authentication at edge.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 8.1 | API Gateway pattern: tại sao cần? | Lý thuyết | Richardson(2a) Ch.8, Erl(1) |
-| 8.2 | Spring Cloud Gateway (WebFlux) | `dblab-gateway` source | source-registry.md |
+| 8.2 | Spring Cloud Gateway (WebFlux) | `kblab-gateway` source | source-registry.md |
 | 8.3 | Route configuration với Eureka | `application-lb.yml`, `lb://` URIs | source-registry.md |
 | 8.4 | Cross-cutting concerns: CORS, JWT validation, rate limiting | Gateway filters | Newman(4a) |
-| 8.5 | **Case Study:** dblab-gateway configuration | Full config walkthrough | source-registry.md |
+| 8.5 | **Case Study:** kblab-gateway configuration | Full config walkthrough | source-registry.md |
 
 > **📐 Nguyên tắc — One Front Door**
 >
@@ -226,12 +226,12 @@
 
 **Mục tiêu:** Authentication, authorization, JWT, OAuth2.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 9.1 | Security challenges trong microservices | Lý thuyết | Newman(4a) Ch.9, Richardson(2a) |
 | 9.2 | JWT: structure, generation, validation | `JwtUtil.java`, auth flow diagram | source-registry.md |
 | 9.3 | Dual validation strategy | DB-based (auth) vs claims-only (services) | source-registry.md |
-| 9.4 | OAuth2 integration | Google OAuth2 trong `dblab-auth` | source-registry.md |
+| 9.4 | OAuth2 integration | Google OAuth2 trong `kblab-auth` | source-registry.md |
 | 9.5 | RBAC: Role-Based Access Control | `@PreAuthorize`, pipe-delimited roles | source-registry.md |
 
 > **📐 Nguyên tắc — Defense in Depth**
@@ -248,7 +248,7 @@
 
 **Mục tiêu:** Migration strategies, Strangler Fig, database decomposition, migration roadmap.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 10.1 | Khi nào (KHÔNG) nên chuyển sang microservices | Architecture decisions | Newman(4b) Ch.1, Richardson(2a) Ch.13 |
 | 10.2 | Strangler Fig Pattern — migration incremental | Gateway routing | Newman(4b) Ch.3, Fowler(W2) |
@@ -269,7 +269,7 @@
 
 **Mục tiêu:** Logging, monitoring, tracing, error handling.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 11.1 | Three pillars: logs, metrics, traces | Lý thuyết | Richardson(2a) Ch.11, Newman(4a) Ch.8 |
 | 11.2 | Centralized logging | Current approach | Richardson(2a) |
@@ -289,14 +289,14 @@
 
 **Mục tiêu:** Containerization, Docker Compose, CI/CD, deployment strategies.
 
-| Section | Nội dung | DBLAB Source | Ref |
+| Section | Nội dung | KBLab Source | Ref |
 |---|---|---|---|
 | 12.1 | Containerization với Docker | Dockerfiles across all services | Mitra(3) Ch.8, Richardson(2a) Ch.12 |
-| 12.2 | Docker Compose: multi-service orchestration | `dblab-deploy/` configs | source-registry.md |
+| 12.2 | Docker Compose: multi-service orchestration | `kblab-deploy/` configs | source-registry.md |
 | 12.3 | CI/CD pipeline | `.github/` workflows | Mitra(3) Ch.6,10 |
 | 12.4 | Deployment strategies: Blue/Green, Canary, Rolling | Lý thuyết | Mitra(3) Ch.11, Newman(4a) Ch.6 |
 | 12.5 | Infrastructure as Code (giới thiệu) | Kafka, DB Docker Compose | Mitra(3) Ch.6–7 |
-| 12.6 | **Case Study:** Dockerize full DBLAB system | Complete deployment walkthrough | source-registry.md |
+| 12.6 | **Case Study:** Dockerize full KBLab system | Complete deployment walkthrough | source-registry.md |
 
 > **📐 Nguyên tắc — If It Hurts, Do It More Often**
 >
@@ -334,5 +334,5 @@
 | 2026-03-12 | Ch.1–6 revised: +⚠️ Sai lầm thường gặp callout per chapter (3-4 items each), +problem-first framing strengthened in Ch.4 §4.2. Based on IDEAS.md review. Updated write-chapter.md workflow with new checklist items. | AI+Author |
 | 2026-03-12 | Ch.7 drafted: database-per-service, DB decomposition strategies (5 methods), data duplication vs coupling, CQRS with leaderboard example, Event Sourcing overview, LMS shared DB analysis + migration path. | AI+Author |
 | 2026-03-12 | Ch.8 drafted: API Gateway pattern + BFF, Spring Cloud Gateway (WebFlux), route config with Eureka lb://, cross-cutting concerns (JWT, CORS, rate limiting, correlation ID), LMS gateway analysis. | AI+Author |
-| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed DBLAB naming in CORS config (Ch.8). Ch.10 drafted (Testing — later replaced): test pyramid, unit testing, contract testing, testing in production. | AI+Author |\r\n| 2026-03-19 | Ch.10–11 rebalanced (Testing version — later replaced). Ch.12 drafted: deployment challenges, containerization, CI/CD, deployment strategies, IaC, LMS deployment architecture analysis. | AI+Author |\r\n| 2026-03-25 | **Ch.10 replaced**: Testing → "Chuyển đổi Thực tế — Từ Monolith đến Microservices". Old Testing content archived to `archive/chapter-10-testing.md`. New content: Monolith First, Strangler Fig, Database Decomposition (Outbox Pattern), Anti-Corruption Layer, LMS Migration Roadmap (4 phases), 6 common migration mistakes. Updated 14+ cross-references (Ch.1, Ch.9, Ch.12, introduction, storyline, book-outline, appendices A/B/C/D, bibliography, part-3 index). Renamed `part-3/ch10-testing.md` → `ch10-migration.md`. Setup `code/` directory (interactive/ + lms/). | AI+Author |
+| 2026-03-12 | Ch.9 drafted: security challenges, JWT (HS256 vs RS256), dual validation strategy, OAuth2 (Google), RBAC (@PreAuthorize), LMS security architecture analysis. Fixed terminology: style-guide ⛔ rule for titles + 7 new glossary terms. | AI+Author |\r\n| 2026-03-17 | Ch.8–9 revised: fixed KBLab naming in CORS config (Ch.8). Ch.10 drafted (Testing — later replaced): test pyramid, unit testing, contract testing, testing in production. | AI+Author |\r\n| 2026-03-19 | Ch.10–11 rebalanced (Testing version — later replaced). Ch.12 drafted: deployment challenges, containerization, CI/CD, deployment strategies, IaC, LMS deployment architecture analysis. | AI+Author |\r\n| 2026-03-25 | **Ch.10 replaced**: Testing → "Chuyển đổi Thực tế — Từ Monolith đến Microservices". Old Testing content archived to `archive/chapter-10-testing.md`. New content: Monolith First, Strangler Fig, Database Decomposition (Outbox Pattern), Anti-Corruption Layer, LMS Migration Roadmap (4 phases), 6 common migration mistakes. Updated 14+ cross-references (Ch.1, Ch.9, Ch.12, introduction, storyline, book-outline, appendices A/B/C/D, bibliography, part-3 index). Renamed `part-3/ch10-testing.md` → `ch10-migration.md`. Setup `code/` directory (interactive/ + lms/). | AI+Author |
 

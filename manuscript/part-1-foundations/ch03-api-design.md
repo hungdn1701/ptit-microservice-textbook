@@ -35,7 +35,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## Case Study: Thiết kế API cho hệ thống LMS
 
-> 📋 Thiết kế hợp đồng API cho các service trong LMS. Phân tích endpoint design của dblab-app và dblab-assignment.
+> 📋 Thiết kế hợp đồng API cho các service trong LMS. Phân tích endpoint design của kblab-app và kblab-assignment.
 
 ## Tổng kết
 

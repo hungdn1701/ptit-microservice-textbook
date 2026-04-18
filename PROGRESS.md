@@ -42,7 +42,7 @@
 - [x] Tạo `references/case-study/business-domain.md` — tài liệu nghiệp vụ KBLab đầy đủ (12 nghiệp vụ, 22 trade-offs)
 - [x] Ch.1 §1.7: Viết lại hoàn toàn — Business Narrative + Cautionary Tale (Bảng 1.8) (+65 dòng)
 - [x] Ch.1 §1.4: Fast Flow Architecture Qualities (Bảng 1.3b) (+12 dòng)
-- [x] Đổi tên DBLAB/LMS → KBLab nhất quán (Ch.1, references/case-study/README)
+- [x] Đổi tên KBLab/LMS → KBLab nhất quán (Ch.1, references/case-study/README)
 - [x] Verify: Ch.6 Saga, Ch.11 Observability, Iceberg Principle gaps đã đủ
 
 ## ✅ Phase 9: Interactive Design System & Pattern Demos (DONE)
@@ -53,7 +53,7 @@
 ## ✅ Phase 10: Content Gaps Audit & Numbering Consistency (DONE)
 - [x] Cập nhật `references/case_study_audit_2026_04.md` — xác nhận tất cả 6 gaps (P1-P6) đã giải quyết từ Phase 7-8
 - [x] Rà soát Figure/Table/Listing numbering — sửa 4 duplicates (Ch.1 Hình 1.5, Bảng 1.4; Ch.2 Bảng 2.3; Ch.7 Hình 7.12)
-- [x] Kiểm tra DBLAB naming — không vi phạm (0 kết quả)
+- [x] Kiểm tra KBLab naming — không vi phạm (0 kết quả)
 - [x] Rà soát `preface.md` — nội dung publication-ready (chỉ chờ Lời cảm ơn từ tác giả)
 
 ## ✅ Phase 11: Pre-publication — Editorial Review (DONE)

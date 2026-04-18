@@ -24,12 +24,12 @@ keywords:
 case_study:
   name: "LMS (Learning Management System)"
   components:
-    - dblab-auth
-    - dblab-assignment
-    - dblab-app
-    - dblab-judge
-    - dblab-notification
-    - dblab-gateway
+    - kblab-auth
+    - kblab-assignment
+    - kblab-app
+    - kblab-judge
+    - kblab-notification
+    - kblab-gateway
 
 chapters: 12
 parts: 3

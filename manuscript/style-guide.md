@@ -17,7 +17,7 @@
 - **Xưng hô:** Dùng "chúng ta" (inclusive) — tạo cảm giác đồng hành
 - **Tone:** Rõ ràng, thực tế, không hàn lâm quá nhưng vẫn nghiêm túc
 - **Ví dụ giọng văn:**
-  > ✅ "Chúng ta sẽ cùng xem xét cách DBLAB giải quyết vấn đề giao tiếp giữa các service..."
+  > ✅ "Chúng ta sẽ cùng xem xét cách KBLab giải quyết vấn đề giao tiếp giữa các service..."
   > ❌ "Phần này trình bày về cơ chế giao tiếp liên dịch vụ trong kiến trúc microservices..."
   > ❌ "Mình sẽ hướng dẫn các bạn cách làm..."
 
@@ -41,7 +41,7 @@
 - Callout box "Phân tích gap" phải dùng LMS context: **vấn đề trong LMS → best practice là gì (tham chiếu nguồn) → migration path cụ thể cho LMS**
 - Tránh dùng callout box để biện minh rằng thiếu sót là "hợp lý" — thay vào đó, nêu rõ *trade-off của việc thiếu* và *khi nào bắt buộc phải sửa*
 
-- **KHÔNG dùng tên nội bộ "DBLAB"** trong nội dung chương — dùng "hệ thống LMS" hoặc "LMS"
+- **KHÔNG dùng tên nội bộ "KBLab"** trong nội dung chương — dùng "hệ thống LMS" hoặc "LMS"
 
 ## 2. Quy tắc thuật ngữ
 
@@ -197,11 +197,11 @@ public class SqlExecutorService {
 | Loại | Icon | Khi nào dùng |
 |---|---|---|
 | **Nguyên tắc** | 📐 | Tuyên bố triết lý, best practice, hoặc nguyên tắc nền tảng — mỗi section quan trọng nên có 1 |
-| **Thực tế vs Lý thuyết** | 🔧 | DBLAB khác với best practice lý thuyết |
+| **Thực tế vs Lý thuyết** | 🔧 | KBLab khác với best practice lý thuyết |
 | **Lưu ý** | 📌 | Thông tin quan trọng cần nhớ |
 | **Cảnh báo** | ⚠️ | Anti-pattern, gotcha, rủi ro |
 | **Mẹo** | 💡 | Best practice, optimization |
-| **Case Study** | 🏗️ | Kết nối trực tiếp tới DBLAB |
+| **Case Study** | 🏗️ | Kết nối trực tiếp tới KBLab |
 
 ### Format Markdown
 
@@ -227,7 +227,7 @@ Nguyên tắc sử dụng:
 > **🔧 Thực tế vs Lý thuyết — JWT HS256 trong Microservices**
 >
 > Lý thuyết khuyến nghị sử dụng RS256 (asymmetric) để mỗi service có thể verify
-> token mà không cần share secret key. Tuy nhiên, DBLAB chọn HS256 vì tất cả
+> token mà không cần share secret key. Tuy nhiên, KBLab chọn HS256 vì tất cả
 > service đều nằm trong cùng trust boundary và deploy internal.
 ```
 
