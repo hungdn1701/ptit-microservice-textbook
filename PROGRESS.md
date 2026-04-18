@@ -39,10 +39,10 @@
 
 ## ✅ Phase 8: Business Narrative & Audit (DONE)
 - [x] Audit toàn diện Case Study LMS + so sánh Richardson 2nd Ed → `references/case_study_audit_2026_04.md`
-- [x] Tạo `case-study/business-domain.md` — tài liệu nghiệp vụ KBLab đầy đủ (12 nghiệp vụ, 22 trade-offs)
+- [x] Tạo `references/case-study/business-domain.md` — tài liệu nghiệp vụ KBLab đầy đủ (12 nghiệp vụ, 22 trade-offs)
 - [x] Ch.1 §1.7: Viết lại hoàn toàn — Business Narrative + Cautionary Tale (Bảng 1.8) (+65 dòng)
 - [x] Ch.1 §1.4: Fast Flow Architecture Qualities (Bảng 1.3b) (+12 dòng)
-- [x] Đổi tên DBLAB/LMS → KBLab nhất quán (Ch.1, case-study/README)
+- [x] Đổi tên DBLAB/LMS → KBLab nhất quán (Ch.1, references/case-study/README)
 - [x] Verify: Ch.6 Saga, Ch.11 Observability, Iceberg Principle gaps đã đủ
 
 ## ✅ Phase 9: Interactive Design System & Pattern Demos (DONE)
@@ -87,7 +87,7 @@
 | **Depth score ước tính** | ~9.2/10 |
 | **Tổng dòng thêm (Phase 5-8)** | ~600 dòng |
 | **Files reference đã extract** | 554KB từ Richardson 2nd ed. |
-| **Business domain doc** | case-study/business-domain.md (reusable) |
+| **Business domain doc** | references/case-study/business-domain.md (reusable) |
 | **Git commits** | Đang cập nhật |
 
 ---

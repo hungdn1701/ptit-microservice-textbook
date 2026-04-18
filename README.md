@@ -60,7 +60,6 @@ Giáo trình chia thành **3 phần**, **12 chương**:
 manuscript/     📖 Nội dung giáo trình (Markdown)
 figures/        🖼️ Hình ảnh & sơ đồ minh họa
 code/           💻 Code examples theo chương
-case-study/     📋 Case study hệ thống LMS
 scripts/        🔧 Build scripts (PDF, HTML)
 templates/      🎨 Templates cho output
 ```
