@@ -29,7 +29,7 @@ description: How to write a new chapter for the SOA/Microservices textbook
 
 ### 2. LMS Source Research
 1. Look up the chapter in `source-registry.md` Section 4 to identify relevant source files
-2. Read the relevant source files from `C:\Users\mam\IdeaProjects\dblab-*` (READ-ONLY)
+2. Read the relevant source files from `${LMS_SOURCE_ROOT}/dblab-*` (READ-ONLY)
 3. Check Section 3 of `source-registry.md` for theory-vs-practice gaps relevant to this chapter
 4. Identify **specific gaps/anti-patterns** for the "Phân tích gap" callout boxes
 
@@ -91,12 +91,12 @@ N. [code] Author, *Title* — Topic
 ```
 
 ### 4. Code Examples
-1. Extract relevant source from `C:\Users\mam\IdeaProjects\dblab-*` (READ-ONLY)
+1. Extract relevant source from `${LMS_SOURCE_ROOT}/dblab-*` (READ-ONLY)
 2. Simplify for readability
 3. Embed directly in chapter markdown (inline code blocks)
 4. Always show ❌ (anti-pattern) and ✅ (best practice) comparisons when applicable
 5. **ALL examples must use LMS case study** — NEVER use FTGO/Farfetch/Netflix examples standalone
-6. Reference FTGO/Farfetch only as **comparison points**: "Richardson’s FTGO uses X. In LMS, the problem is Y..."
+6. Reference FTGO/Farfetch only as **comparison points**: "Richardson's FTGO uses X. In LMS, the problem is Y..."
 
 ### 5. "Phân tích gap" Callout Boxes
 When LMS deviates from best practice, use this format:

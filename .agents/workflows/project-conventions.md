@@ -9,37 +9,37 @@ description: Project conventions and authoring principles for the SOA/Microservi
 ## Authoring Principles
 1. **Vietnamese language** for all chapter content
 2. **Manning/O'Reilly style** — professional technical book format
-3. **Case-study driven** — every chapter connects to DBLAB LMS
+3. **Case-study driven** — every chapter connects to LMS
 4. **Theory + Practice** — present theory first, then show real-world application
-5. **Honest about trade-offs** — when DBLAB deviates from theory, explain WHY
+5. **Honest about trade-offs** — when LMS deviates from theory, explain WHY
 
 ## Key Context: This is a REAL project
-- DBLAB is a **production system** used at PTIT (Posts and Telecommunications Institute of Technology)
+- LMS (KBLab) is a **production system** used at PTIT (Posts and Telecommunications Institute of Technology)
 - Production URL: `https://dbapi.ptit.edu.vn`
 - Decisions were made under real constraints (time, team size, legacy)
 - Some patterns are "imperfect" by theory → this is GOOD for teaching
 
 ## Writing Format
 - **Author in:** Markdown (`.md`)
-- **Final output:** PDF via Pandoc + LaTeX template
-- Build command: `pandoc` (setup in `scripts/`)
+- **Final output:** PDF via Pandoc + Edge headless
+- Build command: `.\scripts\build-pdf.ps1` (see `/build-book` workflow)
 
 ## Key Documents (MUST read before writing)
 1. **Style Guide:** `manuscript/style-guide.md` — voice, terminology, formatting rules
 2. **Book Outline:** `manuscript/book-outline.md` — living document, chapter structure
-3. **Source Registry:** `case-study/source-registry.md` — all DBLAB source paths
-4. **System Context:** `C:\Users\mam\IdeaProjects\SYSTEM_CONTEXT.md` — full system reference
+3. **Source Registry:** `case-study/source-registry.md` — all LMS source paths
+4. **System Context:** `${LMS_SOURCE_ROOT}/SYSTEM_CONTEXT.md` — full system reference
 
 ## File Organization
 - `manuscript/` — chapter content (source of truth) + style guide + outline
 - `code/chXX/` — code examples per chapter
 - `figures/chXX/` — diagrams per chapter
-- `case-study/` — DBLAB analysis and source registry
-- `references/` — bibliography + extracted PDF content
+- `case-study/` — LMS analysis and source registry
+- `references/` — bibliography + extracted PDF content (private submodule)
 - `scripts/` — build scripts, PDF converter
 
 ## Source Code Rules
-- **Source at:** `C:\Users\mam\IdeaProjects\dblab-*`
+- **Source at:** `${LMS_SOURCE_ROOT}/dblab-*` (configure env var per machine)
 - **NEVER modify** source repos
 - **Extract and simplify** code into `code/chXX/`
 - **Use `source-registry.md`** as index
@@ -107,4 +107,3 @@ Before marking any chapter as production-ready, verify:
 - [ ] Cross-reference format thống nhất: "Chương N", "**Hình N.M**", "**Bảng N.M**"
 - [ ] Phần "Đọc thêm" format thống nhất (numbered list)
 - [ ] Callout boxes đúng format (📐 🔧 📌 ⚠️ 💡 🏗️)
-

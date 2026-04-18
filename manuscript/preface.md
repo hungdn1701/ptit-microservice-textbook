@@ -48,6 +48,10 @@ Yêu cầu kiến thức nền:
 
 ## Lời cảm ơn
 
-*(Sẽ bổ sung)*
+Cuốn sách này không thể hoàn thành nếu chỉ có lý thuyết. Cảm ơn các sinh viên PTIT đã sử dụng hệ thống KBLab hàng ngày — chính những lần submit lỗi, những bug report lúc nửa đêm trước kỳ thi, và những câu hỏi "tại sao hệ thống chậm?" đã tạo ra case study xuyên suốt cuốn sách này.
+
+Cảm ơn Chris Richardson, Sam Newman, Martin Kleppmann, và Thomas Erl — những tác giả mà tôi đã đọc đi đọc lại. Cuốn sách này đứng trên vai những người khổng lồ đó, cố gắng mang kiến thức của họ đến gần hơn với developer Việt Nam.
+
+Cảm ơn đội ngũ phát triển KBLab — những người đã cùng xây dựng, vận hành, và chịu đựng technical debt để hệ thống phục vụ sinh viên mỗi ngày. Những quyết định kiến trúc "muốn làm lại" trong Bảng 1.8 là bài học thật, không phải bài tập giả định.
 
 ---

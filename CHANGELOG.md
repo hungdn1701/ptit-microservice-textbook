@@ -8,6 +8,15 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 ### Changed
 - **Quản lý dự án**: Refactor cấu trúc Git, tách thư mục `references/` thành Private Submodule (`ptit-microservice-textbook-internal`) để bảo vệ tài liệu tham khảo nội bộ và bản thảo cá nhân.
   > **Lưu ý cho Co-authors:** Khi clone/pull dự án sang máy mới, hãy chạy `git clone --recurse-submodules` hoặc lệnh `git submodule update --init` để lấy đầy đủ thư mục `references/`.
+- **Ch.1**: Sửa duplicate Hình 1.5 → Hình 1.5b (Modular Monolith diagram); Bảng 1.4 → Bảng 1.4b (Monolith comparison)
+- **Ch.2**: Sửa duplicate Bảng 2.3 → Bảng 2.3b (Database-first vs Domain-first)
+- **Ch.7**: Sửa duplicate Hình 7.12 → Hình 7.12b (Snapshot pattern)
+- **references/case_study_audit_2026_04.md**: Cập nhật trạng thái — tất cả 6 audit gaps (P1-P6) đã giải quyết, bảng gap Richardson 2nd Ed. → 13/13 ✅
+- **preface.md**: Viết draft Lời cảm ơn (sinh viên PTIT, tác giả tham khảo, đội ngũ KBLab)
+- **Editorial review**: Xác nhận 12/12 chương có cấu trúc nhất quán, 0 TODOs/placeholders
+- **Ch.2**: Bổ sung §2.4b — Phân rã hướng dịch vụ theo Erl (Service-Oriented Analysis): 5 bước step-by-step, Bảng 2.7 (service layers), Bảng 2.8 (so sánh Erl vs DDD), Hình 2.6b (LMS example). Cập nhật Tổng kết và Đọc thêm.
+- **references/.agents/**: Di chuyển 5 workflows vào private submodule làm source of truth. Parameterize paths (`${LMS_SOURCE_ROOT}`). Thêm README hướng dẫn sync.
+- **templates/book.html**: Cấu hình Mermaid custom theme (`theme: "base"` + 30+ themeVariables) khớp design system sách — nhất quán tự động cho mọi diagram.
 
 ### Added
 - **code/interactive/**: Hoàn thành 14 interactive pattern demos (Phase 9b), bao gồm Dashboard Hub (`index.html`) và 8 demos mới (Monolith vs MS, Context Map, REST API Explorer, Kafka Broker, Config Server, OAuth2/JWT, Distributed Tracing, Deployment Strategies).

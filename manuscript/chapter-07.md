@@ -525,7 +525,7 @@ graph LR
     style SNAP fill:#FFE082
 ```
 
-*Hình 7.12: Snapshot pattern — replay từ snapshot thay vì từ đầu*
+*Hình 7.12b: Snapshot pattern — replay từ snapshot thay vì từ đầu*
 
 **Bảng 7.12:** Chiến lược snapshot
 

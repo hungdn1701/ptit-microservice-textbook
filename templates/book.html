@@ -36,7 +36,51 @@
                 }
             });
         });
-        mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+        mermaid.initialize({
+            startOnLoad: true,
+            securityLevel: "loose",
+            theme: "base",
+            themeVariables: {
+                // ── Book Design System Colors ──
+                // Primary: navy blue (matches book headings & borders)
+                primaryColor: "#E3F2FD",
+                primaryBorderColor: "#1B2A4A",
+                primaryTextColor: "#1B2A4A",
+                // Secondary: soft green (for alternate/positive nodes)
+                secondaryColor: "#E8F5E9",
+                secondaryBorderColor: "#2E7D32",
+                secondaryTextColor: "#1B4332",
+                // Tertiary: warm orange (for warning/highlight nodes)
+                tertiaryColor: "#FFF3E0",
+                tertiaryBorderColor: "#E65100",
+                tertiaryTextColor: "#BF360C",
+                // Lines & edges
+                lineColor: "#2C5282",
+                // Notes
+                noteBkgColor: "#FFF9C4",
+                noteTextColor: "#1B2A4A",
+                noteBorderColor: "#F9A825",
+                // Fonts — match book body text
+                fontFamily: "'Source Sans 3', 'Segoe UI', sans-serif",
+                fontSize: "14px",
+                // Flowchart specifics
+                edgeLabelBackground: "#FFFFFF",
+                clusterBkg: "#F7FAFC",
+                clusterBorder: "#CBD5E0",
+                // Sequence diagram
+                actorBkg: "#E3F2FD",
+                actorBorder: "#1B2A4A",
+                actorTextColor: "#1B2A4A",
+                signalColor: "#2C5282",
+                labelBoxBkgColor: "#E3F2FD",
+                labelBoxBorderColor: "#1B2A4A",
+                labelTextColor: "#1B2A4A",
+                loopTextColor: "#2C5282",
+                activationBkgColor: "#BBDEFB",
+                activationBorderColor: "#1B2A4A",
+                sequenceNumberColor: "#FFFFFF"
+            }
+        });
     });
     </script>
     

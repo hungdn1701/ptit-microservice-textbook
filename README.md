@@ -6,6 +6,9 @@
 
 **Service-Oriented Architecture & Microservices: From Theory to Practice**
 
+> [!WARNING]
+> **Bản Beta** — Giáo trình đang trong quá trình hoàn thiện (`v1.0.0-beta`). Nội dung có thể thay đổi. Mọi phản hồi xin gửi qua [Issues](../../issues).
+
 > *Giáo trình đi từ nền tảng kiến trúc SOA đến triển khai thực tế hệ thống Microservices, minh họa qua case study hệ thống LMS (Learning Management System).*
 
 ---
@@ -61,6 +64,27 @@ case-study/     📋 Case study hệ thống LMS
 scripts/        🔧 Build scripts (PDF, HTML)
 templates/      🎨 Templates cho output
 ```
+
+### 🎮 Interactive Pattern Demos
+
+Giáo trình đi kèm **16 interactive HTML demos** minh họa trực quan các pattern architecture. Mở `code/interactive/index.html` trong trình duyệt để trải nghiệm:
+
+| Demo | Pattern | Chương |
+|---|---|---|
+| Monolith vs Microservices | So sánh kiến trúc | Ch.1 |
+| Context Map Explorer | Bounded Context & DDD | Ch.2 |
+| REST API Explorer | API Design & Testing | Ch.3 |
+| Service Discovery | Client-side vs Server-side | Ch.4 |
+| Circuit Breaker | Fault Tolerance | Ch.4 |
+| Message Broker (Kafka) | Event-Driven Architecture | Ch.5 |
+| Saga Orchestration | Distributed Transactions | Ch.6 |
+| CQRS & Event Sourcing | Read/Write Separation | Ch.7 |
+| API Gateway Routing | Request Routing & Filters | Ch.8 |
+| OAuth2 / JWT Flow | Authentication & Authorization | Ch.9 |
+| Strangler Fig Migration | Monolith Decomposition | Ch.10 |
+| Distributed Tracing | Observability | Ch.11 |
+| Config Server | Centralized Configuration | Ch.11 |
+| Deployment Strategies | Blue/Green, Canary | Ch.12 |
 
 ---
 

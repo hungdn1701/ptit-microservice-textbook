@@ -1,8 +1,8 @@
 # Tiến trình xây dựng sách — SOA & Microservices
 
-> **Last updated**: 2026-04-09
-> **Current version**: v0.9.5 (pre-release)
-> **Depth score**: ~8.9/10
+> **Last updated**: 2026-04-18
+> **Current version**: v0.9.8 (pre-release)
+> **Depth score**: ~9.2/10
 
 ---
 
@@ -49,6 +49,30 @@
 - [x] Tuỳ chỉnh `base-style.css` tạo thiết kế premium tối màu (Dark mode, giống 9router.com)
 - [x] Xây dựng trang Hub (Dashboard) kết nối tất cả các Pattern
 - [x] Hoàn thiện 14 interactive demos theo từng chương và tích hợp giao diện dark theme đồng nhất
+
+## ✅ Phase 10: Content Gaps Audit & Numbering Consistency (DONE)
+- [x] Cập nhật `references/case_study_audit_2026_04.md` — xác nhận tất cả 6 gaps (P1-P6) đã giải quyết từ Phase 7-8
+- [x] Rà soát Figure/Table/Listing numbering — sửa 4 duplicates (Ch.1 Hình 1.5, Bảng 1.4; Ch.2 Bảng 2.3; Ch.7 Hình 7.12)
+- [x] Kiểm tra DBLAB naming — không vi phạm (0 kết quả)
+- [x] Rà soát `preface.md` — nội dung publication-ready (chỉ chờ Lời cảm ơn từ tác giả)
+
+## ✅ Phase 11: Pre-publication — Editorial Review (DONE)
+- [x] Viết draft Lời cảm ơn trong `preface.md` (tác giả sẽ sửa)
+- [x] Final editorial review 12 chương:
+  - 12/12 cấu trúc nhất quán (Bạn sẽ học → sections → Sai lầm → Tổng kết → Đọc thêm)
+  - 12/12 reference format nhất quán (Sách tham khảo chính + Nguồn trực tuyến)
+  - 0 TODOs/placeholders còn sót
+  - 12/12 callout format nhất quán (📐 🔍 ⚠️ 💡)
+
+## ✅ IDEAS Backlog Processing (DONE)
+- [x] **Ch.2**: Bổ sung §2.4b — Phân rã hướng dịch vụ theo Erl (5 bước, Bảng 2.7/2.8, Hình 2.6b, so sánh Erl vs DDD)
+- [x] Cập nhật `IDEAS.md` — đánh dấu item 3 hoàn thành
+
+## ✅ IDEAS Backlog: Workflow + Visual Consistency (DONE)
+- [x] Di chuyển 5 workflows vào `references/.agents/` (submodule) — parameterize paths với `${LMS_SOURCE_ROOT}`
+- [x] Tạo `references/.agents/README.md` — hướng dẫn setup môi trường mới + sync workflows
+- [x] Cấu hình Mermaid custom theme trong `templates/book.html` — 30+ themeVariables khớp design system sách
+- [x] Cập nhật `IDEAS.md` — đánh dấu 4 items còn lại hoàn thành
 
 ---
 
