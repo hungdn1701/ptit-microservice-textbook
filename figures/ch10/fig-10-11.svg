@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .gateway { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .danger { fill: #FFCDD2; stroke: #dc2626; stroke-width: 1.5; }
+    .legacy { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; }
+    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+    .interface { fill: #fefce8; stroke: #ca8a04; stroke-width: 1.5; rx: 8; }
+  </style>
+  <text x="480" y="50" text-anchor="middle" class="title">Decision Matrix — Ưu tiên Migration</text>
+  <rect x="120" y="80" width="350" height="200" rx="16" class="cluster" />
+  <rect x="120" y="80" width="350" height="200" rx="16" fill="#E8F5E9" opacity="0.6" />
+  <text x="295.0" y="120" text-anchor="middle" class="title">🌟 High Impact, Low Effort</text>
+  <text x="295.0" y="140" text-anchor="middle" class="title">(LÀM NGAY)</text>
+  <rect x="160" y="170" width="270" height="35" rx="8" class="note" />
+  <text x="295.0" y="192" text-anchor="middle" class="">CORS restrict</text>
+  <rect x="160" y="215" width="270" height="35" rx="8" class="note" />
+  <text x="295.0" y="237" text-anchor="middle" class="">JWT unify</text>
+  <rect x="160" y="260" width="270" height="35" rx="8" class="note" />
+  <text x="295.0" y="282" text-anchor="middle" class="">Structured logs</text>
+  <rect x="490" y="80" width="350" height="200" rx="16" class="cluster" />
+  <rect x="490" y="80" width="350" height="200" rx="16" fill="#FFF9C4" opacity="0.6" />
+  <text x="665.0" y="120" text-anchor="middle" class="title">⚡ High Impact, High Effort</text>
+  <text x="665.0" y="140" text-anchor="middle" class="title">(LÊN KẾ HOẠCH)</text>
+  <rect x="530" y="170" width="270" height="35" rx="8" class="note" />
+  <text x="665.0" y="192" text-anchor="middle" class="">DB separation</text>
+  <rect x="530" y="215" width="270" height="35" rx="8" class="note" />
+  <text x="665.0" y="237" text-anchor="middle" class="">CI/CD pipeline</text>
+  <rect x="530" y="260" width="270" height="35" rx="8" class="note" />
+  <text x="665.0" y="282" text-anchor="middle" class="">Outbox pattern</text>
+  <rect x="120" y="300" width="350" height="180" rx="16" class="cluster" />
+  <rect x="120" y="300" width="350" height="180" rx="16" fill="#E3F2FD" opacity="0.6" />
+  <text x="295.0" y="340" text-anchor="middle" class="title">✅ Low Impact, Low Effort</text>
+  <text x="295.0" y="360" text-anchor="middle" class="title">(LÀM KHI RẢNH)</text>
+  <rect x="160" y="390" width="270" height="35" rx="8" class="note" />
+  <text x="295.0" y="412" text-anchor="middle" class="">API naming cleanup</text>
+  <rect x="160" y="435" width="270" height="35" rx="8" class="note" />
+  <text x="295.0" y="457" text-anchor="middle" class="">DTO standardization</text>
+  <rect x="490" y="300" width="350" height="180" rx="16" class="cluster" />
+  <rect x="490" y="300" width="350" height="180" rx="16" fill="#FFCDD2" opacity="0.6" />
+  <text x="665.0" y="340" text-anchor="middle" class="title">❌ Low Impact, High Effort</text>
+  <text x="665.0" y="360" text-anchor="middle" class="title">(SKIP/DEFER)</text>
+  <rect x="530" y="390" width="270" height="35" rx="8" class="note" />
+  <text x="665.0" y="412" text-anchor="middle" class="">Full saga orchestrator</text>
+  <rect x="530" y="435" width="270" height="35" rx="8" class="note" />
+  <text x="665.0" y="457" text-anchor="middle" class="">mTLS everywhere</text>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <rect x="80" y="40" width="800" height="140" rx="16" class="cluster" />
+  <text x="480" y="70" text-anchor="middle" class="title">Application Services</text>
+  <rect x="120" y="90" width="150" height="60" rx="12" class="service" />
+  <text x="195" y="125" text-anchor="middle" class="title">Core Service</text>
+  <path d="M 195 150 L 480 260" class="arrow" />
+  <rect x="300" y="90" width="150" height="60" rx="12" class="service" />
+  <text x="375" y="125" text-anchor="middle" class="title">Judge Service</text>
+  <path d="M 375 150 L 480 260" class="arrow" />
+  <rect x="480" y="90" width="150" height="60" rx="12" class="service" />
+  <text x="555" y="125" text-anchor="middle" class="title">Auth Service</text>
+  <path d="M 555 150 L 480 260" class="arrow" />
+  <rect x="660" y="90" width="150" height="60" rx="12" class="service" />
+  <text x="735" y="125" text-anchor="middle" class="title">Gateway</text>
+  <path d="M 735 150 L 480 260" class="arrow" />
+  <rect x="320" y="220" width="320" height="140" rx="16" class="cluster" />
+  <text x="480" y="250" text-anchor="middle" class="title">Log Pipeline</text>
+  <rect x="360" y="270" width="240" height="60" rx="12" class="pipeline" />
+  <text x="480" y="295" text-anchor="middle" class="title">Log Agent</text>
+  <text x="480" y="315" text-anchor="middle" class="subtitle">(Fluentd / Filebeat)</text>
+  <rect x="320" y="400" width="320" height="120" rx="16" class="cluster" />
+  <text x="480" y="430" text-anchor="middle" class="title">Central Storage + UI</text>
+  <rect x="360" y="450" width="240" height="50" rx="12" class="storage" />
+  <text x="480" y="480" text-anchor="middle" class="">Elasticsearch/Kibana | Loki/Grafana</text>
+  <path d="M 480 330 L 480 450" class="arrow" />
+</svg>

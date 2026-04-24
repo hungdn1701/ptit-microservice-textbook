@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .gateway { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .danger { fill: #FFCDD2; stroke: #dc2626; stroke-width: 1.5; }
+    .legacy { fill: #f3f4f6; stroke: #9ca3af; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; }
+    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+    .interface { fill: #fefce8; stroke: #ca8a04; stroke-width: 1.5; rx: 8; }
+  </style>
+  <rect x="50" y="40" width="260" height="420" rx="16" class="cluster" />
+  <text x="180" y="70" text-anchor="middle" class="title">Phase 1: 90% Monolith</text>
+  <rect x="130" y="100" width="100" height="40" rx="8" class="note" />
+  <text x="180" y="125" text-anchor="middle" class="title">Gateway</text>
+  <rect x="90" y="200" width="180" height="100" rx="8" class="danger" />
+  <text x="180" y="255.0" text-anchor="middle" class="title">Monolith</text>
+  <path d="M 180 140 L 180 200" class="arrow" />
+  <rect x="140.0" y="158.0" width="80" height="24" class="arrow-bg" />
+  <text x="180.0" y="174.0" class="arrow-label">90%</text>
+  <rect x="90" y="330" width="180" height="40" rx="8" class="service" />
+  <text x="180" y="355.0" text-anchor="middle" class="">New Service A</text>
+  <path d="M 180 140 L 180 330" class="arrow" />
+  <rect x="140.0" y="223.0" width="80" height="24" class="arrow-bg" />
+  <text x="180.0" y="239.0" class="arrow-label">10%</text>
+  <rect x="350" y="40" width="260" height="420" rx="16" class="cluster" />
+  <text x="480" y="70" text-anchor="middle" class="title">Phase 2: 50/50</text>
+  <rect x="430" y="100" width="100" height="40" rx="8" class="note" />
+  <text x="480" y="125" text-anchor="middle" class="title">Gateway</text>
+  <rect x="390" y="200" width="180" height="60" rx="8" class="gateway" />
+  <text x="480" y="235.0" text-anchor="middle" class="title">Monolith</text>
+  <path d="M 480 140 L 480 200" class="arrow" />
+  <rect x="440.0" y="158.0" width="80" height="24" class="arrow-bg" />
+  <text x="480.0" y="174.0" class="arrow-label">50%</text>
+  <rect x="390" y="290" width="180" height="40" rx="8" class="service" />
+  <text x="480" y="315.0" text-anchor="middle" class="">Service A</text>
+  <path d="M 480 140 L 480 290" class="arrow" />
+  <rect x="440.0" y="203.0" width="80" height="24" class="arrow-bg" />
+  <text x="480.0" y="219.0" class="arrow-label">30%</text>
+  <rect x="390" y="360" width="180" height="40" rx="8" class="service" />
+  <text x="480" y="385.0" text-anchor="middle" class="">Service B</text>
+  <path d="M 480 140 L 480 360" class="arrow" />
+  <rect x="440.0" y="238.0" width="80" height="24" class="arrow-bg" />
+  <text x="480.0" y="254.0" class="arrow-label">20%</text>
+  <rect x="650" y="40" width="260" height="420" rx="16" class="cluster" />
+  <text x="780" y="70" text-anchor="middle" class="title">Phase 3: 10% Monolith</text>
+  <rect x="730" y="100" width="100" height="40" rx="8" class="note" />
+  <text x="780" y="125" text-anchor="middle" class="title">Gateway</text>
+  <rect x="690" y="200" width="180" height="30" rx="8" class="service" />
+  <text x="780" y="220.0" text-anchor="middle" class="">Monolith</text>
+  <path d="M 780 140 L 780 200" class="arrow" />
+  <rect x="740.0" y="158.0" width="80" height="24" class="arrow-bg" />
+  <text x="780.0" y="174.0" class="arrow-label">10%</text>
+  <rect x="690" y="260" width="180" height="40" rx="8" class="service" />
+  <text x="780" y="285.0" text-anchor="middle" class="">Service A</text>
+  <path d="M 780 140 L 780 260" class="arrow" />
+  <rect x="740.0" y="188.0" width="80" height="24" class="arrow-bg" />
+  <text x="780.0" y="204.0" class="arrow-label">routes</text>
+  <rect x="690" y="330" width="180" height="40" rx="8" class="service" />
+  <text x="780" y="355.0" text-anchor="middle" class="">Service B</text>
+  <path d="M 780 140 L 780 330" class="arrow" />
+  <rect x="740.0" y="223.0" width="80" height="24" class="arrow-bg" />
+  <text x="780.0" y="239.0" class="arrow-label">routes</text>
+  <rect x="690" y="400" width="180" height="40" rx="8" class="service" />
+  <text x="780" y="425.0" text-anchor="middle" class="">Service C</text>
+  <path d="M 780 140 L 780 400" class="arrow" />
+  <rect x="740.0" y="258.0" width="80" height="24" class="arrow-bg" />
+  <text x="780.0" y="274.0" class="arrow-label">routes</text>
+  <path d="M 310 250 L 350 250" class="arrow" />
+  <path d="M 610 250 L 650 250" class="arrow" />
+</svg>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; background: white; }
+    .arrow-bg { fill: #ffffff; }
+  </style>
+  <rect x="40" y="40" width="480" height="440" rx="16" class="cluster" />
+  <text x="60" y="75" class="title">Service-Oriented Enterprise Architecture</text>
+  <rect x="60" y="110" width="440" height="350" rx="16" class="cluster" />
+  <text x="80" y="145" class="title">Service Inventory Architecture</text>
+  <rect x="80" y="180" width="400" height="260" rx="16" class="cluster" />
+  <text x="100" y="215" class="title">Service Composition Architecture</text>
+  <rect x="100" y="250" width="360" height="170" rx="12" class="service" />
+  <text x="120" y="285" class="title">Service Architecture</text>
+  <text x="120" y="315" class="">(Tập trung vào 1 dịch vụ duy nhất)</text>
+  <rect x="630" y="260" width="270" height="60" rx="8" class="note" />
+  <text x="645" y="285" text-anchor="start" class="title">Microservices tập trung</text>
+  <text x="645" y="305" text-anchor="start" class="title">thiết kế ở cấp độ này</text>
+  <rect x="630" y="185" width="270" height="50" rx="8" class="note" />
+  <text x="645" y="215" class="title">Saga Pattern, API Gateway</text>
+  <rect x="630" y="115" width="270" height="50" rx="8" class="note" />
+  <text x="645" y="145" class="title">Service Registry, Discovery</text>
+  <rect x="630" y="45" width="270" height="50" rx="8" class="note" />
+  <text x="645" y="75" class="title">SOA truyền thống hướng tới cấp này</text>
+  <path d="M 460 290 L 625 290" class="arrow" />
+  <rect x="482.5" y="280.0" width="120" height="20" class="arrow-bg" />
+  <text x="542.5" y="294.0" class="arrow-label">Một dịch vụ đơn lẻ</text>
+  <path d="M 480 210 L 625 210" class="arrow" />
+  <rect x="492.5" y="200.0" width="120" height="20" class="arrow-bg" />
+  <text x="552.5" y="214.0" class="arrow-label">Tổ hợp nhiều dịch vụ</text>
+  <path d="M 500 140 L 625 140" class="arrow" />
+  <rect x="502.5" y="130.0" width="120" height="20" class="arrow-bg" />
+  <text x="562.5" y="144.0" class="arrow-label">Danh mục toàn bộ</text>
+  <path d="M 520 70 L 625 70" class="arrow" />
+  <rect x="512.5" y="60.0" width="120" height="20" class="arrow-bg" />
+  <text x="572.5" y="74.0" class="arrow-label">Toàn doanh nghiệp</text>
+</svg>

@@ -22,30 +22,7 @@
 
 Trong monolith, bảo mật tập trung tại một điểm: một ứng dụng, một database, một authentication layer. Khi chuyển sang microservices, attack surface mở rộng theo số lượng services:
 
-```mermaid
-graph TB
-    subgraph Monolith["Monolith — 1 điểm bảo vệ"]
-        FW1["Firewall"] --> APP["Application\n(auth + business + data)"]
-        APP --> DB1["Database"]
-    end
-    
-    subgraph MS["Microservices — N điểm bảo vệ"]
-        FW2["Firewall"] --> GW["Gateway"]
-        GW --> S1["Service A"]
-        GW --> S2["Service B"]
-        GW --> S3["Service C"]
-        S1 --> DB2["DB A"]
-        S2 --> DB3["DB B"]
-        S1 -.->|"service-to-service\ncalls"| S2
-        S2 -.-> S3
-    end
-    
-    style APP fill:#C8E6C9
-    style GW fill:#FFF9C4
-    style S1 fill:#FFCDD2
-    style S2 fill:#FFCDD2
-    style S3 fill:#FFCDD2
-```
+![Hình 9.1: Monolith (1 điểm bảo vệ) vs Microservices (N điểm bảo vệ)](../figures/ch09/fig-9-1.svg)
 
 *Hình 9.1: Monolith (1 điểm bảo vệ) vs Microservices (N điểm bảo vệ)*
 
@@ -65,22 +42,7 @@ Newman trong [4a, Ch.9] liệt kê năm thách thức bảo mật đặc thù:
 
 Bảo mật microservices dựa trên nguyên tắc **defense in depth** — không dựa vào một lớp bảo vệ duy nhất:
 
-```mermaid
-graph LR
-    subgraph Layers["Defense in Depth"]
-        L1["Layer 1:\nNetwork\n(TLS, firewall)"]
-        L2["Layer 2:\nGateway\n(JWT validation,\nrate limiting)"]
-        L3["Layer 3:\nService\n(authorization,\ninput validation)"]
-        L4["Layer 4:\nData\n(encryption at rest,\naccess control)"]
-    end
-    
-    L1 --> L2 --> L3 --> L4
-    
-    style L1 fill:#E3F2FD
-    style L2 fill:#FFF9C4
-    style L3 fill:#E8F5E9
-    style L4 fill:#F3E5F5
-```
+![Hình 9.2: Defense in Depth — bảo vệ nhiều lớp từ network đến data](../figures/ch09/fig-9-2.svg)
 
 *Hình 9.2: Defense in Depth — bảo vệ nhiều lớp từ network đến data*
 
@@ -143,20 +105,7 @@ SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c      ← Signature
 
 Ba phần của JWT:
 
-```mermaid
-graph LR
-    subgraph JWT["JSON Web Token"]
-        H["Header\n(algorithm, type)"]
-        P["Payload\n(claims: userId,\nroles, exp)"]
-        S["Signature\n(HMAC or RSA)"]
-    end
-    
-    H --- P --- S
-    
-    style H fill:#E3F2FD
-    style P fill:#E8F5E9
-    style S fill:#FFF9C4
-```
+![Hình 9.3: Cấu trúc JWT — Header, Payload, Signature](../figures/ch09/fig-9-3.svg)
 
 *Hình 9.3: Cấu trúc JWT — Header, Payload, Signature*
 
@@ -183,27 +132,7 @@ graph LR
 
 ### JWT Flow trong LMS
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant GW as Gateway
-    participant AUTH as Auth Service
-    participant CS as Core Service
-    
-    U->>GW: POST /api/auth/login\n{username, password}
-    GW->>AUTH: Forward login request
-    AUTH->>AUTH: Validate credentials (DB lookup)
-    AUTH->>AUTH: Generate JWT\n(sign with HS256 secret)
-    AUTH-->>GW: {accessToken: "eyJhb...", refreshToken: "..."}
-    GW-->>U: JWT tokens
-    
-    Note over U,CS: Subsequent requests
-    U->>GW: GET /api/core/questions\nAuthorization: Bearer eyJhb...
-    GW->>GW: Validate JWT\n(verify signature with same secret)
-    GW->>CS: Forward + X-User-Id: user-123\nX-User-Roles: STUDENT
-    CS-->>GW: 200 OK [questions]
-    GW-->>U: Response
-```
+![Hình 9.4: JWT Flow trong LMS — login, token generation, và subsequent requests](../figures/ch09/fig-9-4.svg)
 
 *Hình 9.4: JWT Flow trong LMS — login, token generation, và subsequent requests*
 
@@ -215,28 +144,7 @@ sequenceDiagram
 
 JWT có thời hạn (`exp`). Khi access token hết hạn, user phải **re-authenticate** — kém trải nghiệm nếu session dài (giảng viên dùng suốt buổi giảng). **Refresh token** giải quyết: access token ngắn (15-60 phút), refresh token dài (7-30 ngày). Khi access token hết hạn, client dùng refresh token để nhận access token mới — không cần login lại.
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant GW as Gateway
-    participant AUTH as Auth Service
-    
-    Note over C,AUTH: Access token hết hạn
-    C->>GW: GET /api/core/questions<br/>Authorization: Bearer eyJ...(expired)
-    GW-->>C: 401 Unauthorized (token expired)
-    
-    Note over C,AUTH: Refresh flow
-    C->>GW: POST /api/auth/refresh<br/>{refreshToken: "rft_abc123"}
-    GW->>AUTH: Forward refresh request
-    AUTH->>AUTH: Validate refresh token (DB lookup)
-    AUTH->>AUTH: Generate new access token
-    AUTH->>AUTH: Rotate: invalidate old refresh token,<br/>generate new refresh token
-    AUTH-->>C: {accessToken: "eyJ...(new)", refreshToken: "rft_xyz789"}
-    
-    Note over C,AUTH: Tiếp tục với token mới
-    C->>GW: GET /api/core/questions<br/>Authorization: Bearer eyJ...(new)
-    GW-->>C: 200 OK
-```
+![Hình 9.5b: Token Refresh & Rotation flow — access token mới + refresh token mới](../figures/ch09/fig-9-5b.svg)
 
 *Hình 9.5b: Token Refresh & Rotation flow — access token mới + refresh token mới*
 
@@ -301,27 +209,7 @@ Hai cách tiếp cận trái ngược:
 
 LMS implement giải pháp **hybrid** — validation khác nhau tùy service:
 
-```mermaid
-graph TB
-    subgraph AuthSvc["Auth Service — Full Validation"]
-        V1["1. Verify JWT signature"]
-        V2["2. Check expiry"]
-        V3["3. Query DB: user exists?"]
-        V4["4. Query DB: token revoked?"]
-        V5["5. Query DB: user active?"]
-        V1 --> V2 --> V3 --> V4 --> V5
-    end
-    
-    subgraph OtherSvc["Core/Judge Services — Claims-Only"]
-        C1["1. Read X-User-Id header"]
-        C2["2. Read X-User-Roles header"]
-        C3["3. Authorize based on roles"]
-        C1 --> C2 --> C3
-    end
-    
-    style AuthSvc fill:#FFECB3
-    style OtherSvc fill:#E8F5E9
-```
+![Hình 9.5: Dual Validation — full validation (Auth) vs claims-only (internal services)](../figures/ch09/fig-9-5.svg)
 
 *Hình 9.5: Dual Validation — full validation (Auth) vs claims-only (internal services)*
 
@@ -410,19 +298,7 @@ public void delete(@PathVariable UUID id) { ... }
 
 ### Role Hierarchy
 
-```mermaid
-graph TB
-    ADMIN["ADMIN\n(mọi quyền)"]
-    LECTURER["LECTURER\n(tạo/sửa content)"]
-    STUDENT["STUDENT\n(xem/submit)"]
-    
-    ADMIN -->|"inherits"| LECTURER
-    LECTURER -->|"inherits"| STUDENT
-    
-    style ADMIN fill:#F3E5F5
-    style LECTURER fill:#E3F2FD
-    style STUDENT fill:#E8F5E9
-```
+![Hình 9.6: Role Hierarchy — ADMIN inherits LECTURER inherits STUDENT](../figures/ch09/fig-9-6.svg)
 
 *Hình 9.6: Role Hierarchy — ADMIN inherits LECTURER inherits STUDENT*
 
@@ -444,38 +320,7 @@ LMS frontend sử dụng pattern khác biệt: **route permissions được fetc
 
 ### Tổng quan
 
-```mermaid
-graph TB
-    subgraph External["Internet"]
-        WEB["Student App"]
-        CMS["Admin CMS"]
-    end
-    
-    subgraph Edge["Edge Layer"]
-        GW["Gateway :9001\n\n✅ JWT validation\n✅ CORS\n❌ Rate limiting\n❌ Correlation ID"]
-    end
-    
-    subgraph Auth["Auth Bounded Context"]
-        AS["Auth Service :9005\n\n✅ Login (3 methods)\n✅ JWT generation (HS256)\n✅ Full token validation\n✅ User management"]
-    end
-    
-    subgraph Internal["Internal Services"]
-        CORE["Core Service\n\n⚠️ Claims-only auth\n✅ @PreAuthorize"]
-        ASN["Assignment Service\n\n⚠️ Claims-only auth\n✅ @PreAuthorize"]
-        JUDGE["Judge Service\n\n⚠️ No auth check"]
-    end
-    
-    WEB --> GW
-    CMS --> GW
-    GW --> AS
-    GW --> CORE
-    GW --> ASN
-    GW -.-> JUDGE
-    
-    style GW fill:#FFF9C4
-    style AS fill:#E8F5E9
-    style JUDGE fill:#FFCDD2
-```
+![Hình 9.7: Kiến trúc bảo mật tổng thể của LMS](../figures/ch09/fig-9-7.svg)
 
 *Hình 9.7: Kiến trúc bảo mật tổng thể của LMS*
 
@@ -557,20 +402,7 @@ services:
 
 Vault cung cấp **dynamic secrets** — database credentials được tạo tự động, có thời hạn, và auto-rotate. Không ai biết password database thực sự — kể cả developer.
 
-```mermaid
-sequenceDiagram
-    participant App as Auth Service
-    participant V as Vault
-    participant DB as Database
-    
-    App->>V: Authenticate (AppRole/K8s auth)
-    V-->>App: Vault Token (TTL: 1h)
-    App->>V: GET /v1/database/creds/auth-service
-    V->>DB: CREATE ROLE auth_temp_xyz
-    V-->>App: {username, password, TTL: 30min}
-    App->>DB: Connect (auth_temp_xyz / auto-password)
-    Note over V: After 30min: revoke credentials
-```
+![Hình 9.8: Vault Dynamic Secrets — credentials tạm thời, tự động xoay vòng](../figures/ch09/fig-9-8.svg)
 
 *Hình 9.8: Vault Dynamic Secrets — credentials tạm thời, tự động xoay vòng*
 
@@ -589,6 +421,13 @@ sequenceDiagram
 > 5. **Confused Deputy Problem** — Service A gọi Service B thay mặt user, nhưng B không biết A đang "đại diện" cho user hay hành động với quyền riêng của A. Newman trong [4a, Ch.9] gọi đây là *confused deputy attack*. Hậu quả: Service A có thể vô tình escalate privileges — user chỉ có quyền STUDENT nhưng Service A gọi B với full service credentials. *Phòng tránh*: luôn truyền user identity (JWT hoặc headers `X-User-Id`, `X-User-Roles`) trong service-to-service calls — B authorize dựa trên *user* chứ không phải *service gọi*.
 
 ---
+
+
+> **🌐 Trực quan hóa tương tác (Interactive Demo)**
+>
+> Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/oauth2-jwt-flow.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về **Luồng xác thực OAuth2 & JWT**.
+
+> Ngoài ra, bạn cũng có thể xem minh họa về **Circuit Breaker Pattern** tại file `code/interactive/circuit-breaker.html`.
 
 ## Tổng kết
 

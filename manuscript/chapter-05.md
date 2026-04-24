@@ -1,4 +1,4 @@
-# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
+﻿# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
 
 > *"Event streams become the heart of data sharing throughout the company. Data no longer sits solely on a database accessible only through synchronous interfaces."*
 > — Hugo Rocha, *Practical Event-Driven Microservices Architecture* [5]
@@ -24,23 +24,7 @@
 
 Chương 4 đã phân tích ba vấn đề cốt lõi của giao tiếp đồng bộ: temporal coupling, cascading failures, và latency accumulation. Giao tiếp bất đồng bộ (*asynchronous messaging*) giải quyết cả ba bằng cách **tách rời** (*decouple*) producer và consumer qua một trung gian — message broker.
 
-```mermaid
-graph LR
-    subgraph Sync["Sync: Coupled"]
-        A1["Service A"] -->|"HTTP (blocked)"| B1["Service B"]
-    end
-    
-    subgraph Async["Async: Decoupled"]
-        A2["Service A"] -->|"publish"| MQ["Message Broker<br/><i>(Kafka, RabbitMQ)</i>"]
-        MQ -->|"consume"| B2["Service B"]
-    end
-    
-    style A1 fill:#FFCDD2
-    style B1 fill:#FFCDD2
-    style A2 fill:#C8E6C9
-    style MQ fill:#FFF9C4
-    style B2 fill:#C8E6C9
-```
+![Hình 5.1: So sánh giao tiếp đồng bộ (coupled) và bất đồng bộ (decoupled)](../figures/ch05/fig-5-1.svg)
 
 *Hình 5.1: So sánh giao tiếp đồng bộ (coupled) và bất đồng bộ (decoupled)*
 
@@ -64,29 +48,7 @@ Có ba messaging patterns cơ bản [2a, Ch.3]:
 
 **3. Request/Async Response** — Gửi request qua messaging, nhận response qua message khác (có correlation ID). Kết hợp lợi ích của cả hai.
 
-```mermaid
-graph TB
-    subgraph P2P["Point-to-Point"]
-        PA["Producer"] --> QA["Queue"]
-        QA --> CA["Consumer"]
-    end
-    
-    subgraph PubSub["Publish/Subscribe"]
-        PB["Producer"] --> TB["Topic"]
-        TB --> CB1["Consumer 1"]
-        TB --> CB2["Consumer 2"]
-        TB --> CB3["Consumer 3"]
-    end
-    
-    style PA fill:#E3F2FD
-    style QA fill:#FFF9C4
-    style CA fill:#E8F5E9
-    style PB fill:#E3F2FD
-    style TB fill:#FFF9C4
-    style CB1 fill:#E8F5E9
-    style CB2 fill:#E8F5E9
-    style CB3 fill:#E8F5E9
-```
+![Hình 5.2: Point-to-Point (Queue) vs Publish/Subscribe (Topic)](../figures/ch05/fig-5-2.svg)
 
 *Hình 5.2: Point-to-Point (Queue) vs Publish/Subscribe (Topic)*
 
@@ -106,24 +68,7 @@ Rocha trong [5, §3.1.3] phân loại message brokers thành hai trường phái
 
 **Durable (bền vững)** — Message được lưu trữ trên disk và vẫn available sau khi consume. Đại diện: **Apache Kafka**, Apache Pulsar, Amazon Kinesis.
 
-```mermaid
-graph TB
-    subgraph Ephemeral["Ephemeral Broker (RabbitMQ)"]
-        P1["Producer"] -->|"publish"| Q1["Queue"]
-        Q1 -->|"consume + ack"| C1["Consumer"]
-        Q1 -.->|"❌ Message XÓA<br/>sau khi ack"| DEL["Deleted"]
-    end
-    
-    subgraph Durable["Durable Broker (Kafka)"]
-        P2["Producer"] -->|"append"| LOG["Event Log<br/>(append-only)"]
-        LOG -->|"read offset 42"| C2["Consumer A"]
-        LOG -->|"read offset 42"| C3["Consumer B"]
-        LOG -.->|"✅ Message VẪN CÒN<br/>replay bất kỳ lúc nào"| KEEP["Retained"]
-    end
-    
-    style DEL fill:#EF5350,color:white
-    style KEEP fill:#66BB6A,color:white
-```
+![Hình 5.3: Ephemeral broker (message xóa sau ack) vs Durable broker (message vẫn còn)](../figures/ch05/fig-5-3.svg)
 
 *Hình 5.3: Ephemeral broker (message xóa sau ack) vs Durable broker (message vẫn còn)*
 
@@ -133,23 +78,7 @@ Sự khác biệt này **không chỉ là kỹ thuật** — nó ảnh hưởng 
 
 RabbitMQ dựa trên **AMQP** (Advanced Message Queuing Protocol), với kiến trúc phong phú hơn Kafka về routing:
 
-```mermaid
-graph LR
-    P["Producer"] -->|"publish"| EX["Exchange"]
-    
-    EX -->|"routing key:<br/>judge.*"| Q1["Queue: judge-mysql"]
-    EX -->|"routing key:<br/>judge.*"| Q2["Queue: judge-mssql"]
-    EX -->|"routing key:<br/>notify.*"| Q3["Queue: notifications"]
-    
-    Q1 --> C1["Consumer 1"]
-    Q2 --> C2["Consumer 2"]
-    Q3 --> C3["Consumer 3"]
-    
-    style EX fill:#FFF9C4
-    style Q1 fill:#E8F5E9
-    style Q2 fill:#E8F5E9
-    style Q3 fill:#E8F5E9
-```
+![Hình 5.4: Kiến trúc RabbitMQ — Exchange routing messages đến queues](../figures/ch05/fig-5-4.svg)
 
 *Hình 5.4: Kiến trúc RabbitMQ — Exchange routing messages đến queues*
 
@@ -300,30 +229,7 @@ public void processSubmission(SubmitMessage message) {
 
 ### Flow hoàn chỉnh
 
-```mermaid
-sequenceDiagram
-    participant U as Student
-    participant FE as Frontend
-    participant CS as Core Service
-    participant K as Kafka
-    participant JS as Judge Service
-    participant WS as WebSocket
-    
-    U->>FE: Submit SQL
-    FE->>CS: POST /submissions
-    CS->>K: Publish to "submissions"
-    CS-->>FE: 202 Accepted (async!)
-    
-    K->>JS: Consume message
-    JS->>JS: Execute SQL on sandbox
-    JS->>K: Publish to "judge-results"
-    
-    K->>CS: Consume result
-    CS->>CS: Update submission status
-    CS->>WS: Push notification
-    WS-->>FE: "Bài đã được chấm: Correct ✅"
-    FE-->>U: Show result
-```
+![Hình 5.6: Luồng hoàn chỉnh — từ submit qua Kafka đến kết quả qua WebSocket](../figures/ch05/fig-5-6.svg)
 
 *Hình 5.6: Luồng hoàn chỉnh — từ submit qua Kafka đến kết quả qua WebSocket*
 
@@ -512,25 +418,7 @@ Trong Contest mode, 100+ sinh viên đồng thời nộp bài trong thời gian 
 
 ### Kiến trúc 4-topic pipeline
 
-```mermaid
-graph LR
-    FE["Frontend"] -->|"POST"| CS["Core Service"]
-    
-    CS -->|"1. submissions"| K1["Kafka"]
-    K1 -->|"consume"| JS["Judge Service"]
-    
-    JS -->|"2. judge-results"| K2["Kafka"]
-    K2 -->|"consume"| CS
-    
-    CS -->|"3. score-updates"| K3["Kafka"]
-    K3 -->|"consume"| LB["Leaderboard<br/>Aggregator"]
-    
-    CS -->|"4. WebSocket"| FE
-    
-    style K1 fill:#FFF9C4
-    style K2 fill:#FFF9C4
-    style K3 fill:#FFF9C4
-```
+![Hình 5.7: Kiến trúc 4-topic pipeline chấm bài trong Contest mode](../figures/ch05/fig-5-7.svg)
 
 *Hình 5.7: Kiến trúc 4-topic pipeline chấm bài trong Contest mode*
 
@@ -579,6 +467,11 @@ graph LR
 > 4. **Chọn broker vì quen thuộc, không vì use case** — Dùng RabbitMQ cho event streaming chỉ vì team đã biết RabbitMQ. Hậu quả: khi load tăng, broker không phù hợp → phải migrate đau đớn. *Phòng tránh*: đánh giá use case trước (§5.2) — durable log (Kafka) cho event streaming, smart routing (RabbitMQ) cho task queues.
 
 ---
+
+
+> **🌐 Trực quan hóa tương tác (Interactive Demo)**
+>
+> Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/message-broker.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về **Cơ chế hoạt động của Message Broker**.
 
 ## Tổng kết
 

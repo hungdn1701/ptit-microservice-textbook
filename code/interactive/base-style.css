@@ -50,6 +50,14 @@
   /* Font */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+
+  /* Aliases — backward compat for component-specific usage */
+  --bg-alt: #1a2332;                           /* lighter surface, alt bg */
+  --surface: #111827;                          /* = --bg-card */
+  --surface-hover: #1a2332;                    /* = --bg-card-hover */
+  --primary-light: rgba(255, 122, 0, 0.1);     /* subtle primary tint */
+  --shadow-warm: 0 0 16px rgba(255, 122, 0, 0.2); /* warm orange glow */
+  --text-muted: #6b7280;                       /* = --text-dim */
 }
 
 /* ── Light Mode Override ── */
@@ -66,6 +74,14 @@
   --shadow-soft: 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.04);
   --shadow-medium: 0 4px 20px rgba(0,0,0,0.08);
   --shadow-glow: 0 0 20px rgba(255, 122, 0, 0.1);
+
+  /* Aliases — light mode overrides */
+  --bg-alt: #f1f5f9;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --primary-light: rgba(255, 122, 0, 0.08);
+  --shadow-warm: 0 0 16px rgba(255, 122, 0, 0.12);
+  --text-muted: #94a3b8;
 }
 
 /* ── Base Reset & Body ── */

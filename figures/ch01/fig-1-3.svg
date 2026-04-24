@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; background: white; }
+    .arrow-bg { fill: #ffffff; }
+  </style>
+  <path d="M 150 420 L 450 420" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="470" y="425" class="title">X-axis: Horizontal Cloning</text>
+  <text x="470" y="445" class="subtitle">(Nhân bản Instance)</text>
+  <path d="M 150 420 L 150 120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="140" y="105" class="title">Y-axis: Functional Decomposition</text>
+  <text x="140" y="125" class="subtitle">(Chia tách theo Microservices)</text>
+  <path d="M 150 420 L 350 220" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="360" y="210" class="title">Z-axis: Data Partitioning</text>
+  <text x="360" y="230" class="subtitle">(Phân mảnh Database/Sharding)</text>
+  <rect x="195" y="400" width="70" height="40" rx="6" class="service" />
+  <text x="230" y="425" text-anchor="middle" class="">Instance 1</text>
+  <rect x="285" y="400" width="70" height="40" rx="6" class="service" />
+  <text x="320" y="425" text-anchor="middle" class="">Instance 2</text>
+  <rect x="375" y="400" width="70" height="40" rx="6" class="service" />
+  <text x="410" y="425" text-anchor="middle" class="">Instance N</text>
+  <rect x="110" y="320" width="80" height="40" rx="6" class="service" />
+  <text x="150" y="345" text-anchor="middle" class="">Auth</text>
+  <rect x="110" y="240" width="80" height="40" rx="6" class="service" />
+  <text x="150" y="265" text-anchor="middle" class="">Order</text>
+  <rect x="110" y="160" width="80" height="40" rx="6" class="service" />
+  <text x="150" y="185" text-anchor="middle" class="">Payment</text>
+  <rect x="170" y="340" width="80" height="40" rx="6" class="service" />
+  <text x="210" y="365" text-anchor="middle" class="">Users A-M</text>
+  <rect x="240" y="270" width="80" height="40" rx="6" class="service" />
+  <text x="280" y="295" text-anchor="middle" class="">Users N-Z</text>
+</svg>

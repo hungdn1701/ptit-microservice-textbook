@@ -49,23 +49,7 @@ Mitra trong [3, Ch.6] mô tả ba nguyên tắc DevOps nền tảng cho microser
 | **Infrastructure as Code** | Mọi hạ tầng (server, network, database) định nghĩa trong code | Version control, review, rollback |
 | **Continuous Delivery** | Code luôn ở trạng thái sẵn sàng deploy — chỉ cần ấn nút | Giảm risk per deployment, feedback nhanh |
 
-```mermaid
-graph LR
-    subgraph Manual["❌ Manual Deployment"]
-        DEV1["Developer"] -->|"build locally"| JAR["JAR file"]
-        JAR -->|"SCP to server"| SRV1["Server"]
-        SRV1 -->|"restart manual"| RUN1["Running"]
-    end
-    
-    subgraph Auto["✅ Automated Pipeline"]
-        PUSH["Git Push"] -->|"trigger"| CI["CI: Build + Test"]
-        CI -->|"push image"| REG["Container Registry"]
-        REG -->|"deploy"| SRV2["Orchestrator"]
-    end
-    
-    style Manual fill:#FFCDD2
-    style Auto fill:#E8F5E9
-```
+![Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)](../figures/ch12/fig-12-1.svg)
 
 *Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)*
 
@@ -87,34 +71,7 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
 
 **Container** (Docker) đóng gói ứng dụng + dependencies + runtime thành một **image** — chạy giống nhau trên mọi môi trường. Khác với Virtual Machine: container chia sẻ kernel với host OS → nhẹ hơn, khởi động trong giây thay vì phút.
 
-```mermaid
-graph TB
-    subgraph VM["Virtual Machines"]
-        VM1["App A\n+ Guest OS\n+ Libraries"]
-        VM2["App B\n+ Guest OS\n+ Libraries"]
-        HYP["Hypervisor"]
-        HOST_VM["Host OS + Hardware"]
-    end
-    
-    subgraph Container["Containers"]
-        C1["App A\n+ Libraries"]
-        C2["App B\n+ Libraries"]
-        DOCKER["Container Runtime (Docker)"]
-        HOST_C["Host OS + Hardware"]
-    end
-    
-    VM1 --> HYP
-    VM2 --> HYP
-    HYP --> HOST_VM
-    C1 --> DOCKER
-    C2 --> DOCKER
-    DOCKER --> HOST_C
-    
-    style VM1 fill:#FFCDD2
-    style VM2 fill:#FFCDD2
-    style C1 fill:#E8F5E9
-    style C2 fill:#E8F5E9
-```
+![Hình 12.2: So sánh kiến trúc Virtual Machines và Containers](../figures/ch12/fig-12-2.svg)
 
 *Hình 12.2: So sánh kiến trúc Virtual Machines và Containers*
 
@@ -276,26 +233,7 @@ Trong monolith: 1 pipeline — build → test → deploy. Trong microservices: m
 
 ### CI/CD Architecture cho Microservices
 
-```mermaid
-graph LR
-    subgraph CI["Continuous Integration"]
-        PUSH["Git Push"] --> BUILD["Build\n(Maven/Gradle)"]
-        BUILD --> UNIT["Unit Tests"]
-        UNIT --> INT["Integration Tests\n(Testcontainers)"]
-        INT --> SCAN["Security Scan\n(SAST/dependency)"]
-    end
-    
-    subgraph CD["Continuous Delivery"]
-        SCAN --> IMG["Build Docker Image"]
-        IMG --> REG["Push to Registry"]
-        REG --> STAGE["Deploy to Staging"]
-        STAGE --> SMOKE["Smoke Tests"]
-        SMOKE --> PROD["Deploy to Production"]
-    end
-    
-    style CI fill:#E3F2FD
-    style CD fill:#E8F5E9
-```
+![Hình 12.3: CI/CD Pipeline chuẩn cho Microservices](../figures/ch12/fig-12-3.svg)
 
 *Hình 12.3: CI/CD Pipeline chuẩn cho Microservices*
 
@@ -345,31 +283,7 @@ Khi deploy version mới của một service, làm sao đảm bảo users không
 
 Thay thế **từng instance một** — dần dần chuyển từ version cũ sang version mới. Không cần gấp đôi infrastructure.
 
-```mermaid
-graph TB
-    subgraph T0["Trạng thái ban đầu"]
-        I1A["Instance 1\nv1.0"]
-        I2A["Instance 2\nv1.0"]
-        I3A["Instance 3\nv1.0"]
-    end
-    
-    subgraph T1["Đang update"]
-        I1B["Instance 1\n✅ v2.0"]
-        I2B["Instance 2\n🔄 updating..."]
-        I3B["Instance 3\nv1.0"]
-    end
-    
-    subgraph T2["Hoàn thành"]
-        I1C["Instance 1\nv2.0"]
-        I2C["Instance 2\nv2.0"]
-        I3C["Instance 3\nv2.0"]
-    end
-    
-    T0 --> T1 --> T2
-    
-    style I1B fill:#E8F5E9
-    style I2B fill:#FFF9C4
-```
+![Hình 12.4: Quá trình diễn ra Rolling Update](../figures/ch12/fig-12-4.svg)
 
 *Hình 12.4: Quá trình diễn ra Rolling Update*
 
@@ -377,14 +291,7 @@ graph TB
 
 Chạy **hai bản hoàn chỉnh** song song — "Blue" (current) và "Green" (new). Router chuyển traffic một lần. Rollback = chuyển router ngược lại.
 
-```mermaid
-graph LR
-    ROUTER["Load Balancer"] -->|"traffic"| BLUE["Blue (v1.0)\nĐang serve users"]
-    ROUTER -.->|"standby"| GREEN["Green (v2.0)\nĐã deploy, đang test"]
-    
-    style BLUE fill:#E3F2FD
-    style GREEN fill:#E8F5E9
-```
+![Hình 12.5: Kiến trúc Blue/Green Deployment](../figures/ch12/fig-12-5.svg)
 
 *Hình 12.5: Kiến trúc Blue/Green Deployment*
 
@@ -458,34 +365,7 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
 
 #### Kiến trúc Kubernetes
 
-```mermaid
-graph TB
-    subgraph CP["Control Plane"]
-        API["API Server\n(kubectl, dashboard)"]
-        ETCD["etcd\n(cluster state store)"]
-        SCHED["Scheduler\n(pod → node assignment)"]
-        CM["Controller Manager\n(desired state reconciliation)"]
-    end
-    
-    subgraph N1["Worker Node 1"]
-        KL1["Kubelet"] --> P1["Pod: Core Service"]
-        KL1 --> P2["Pod: Auth Service"]
-        KP1["Kube-proxy\n(networking)"]
-    end
-    
-    subgraph N2["Worker Node 2"]
-        KL2["Kubelet"] --> P3["Pod: Judge Service"]
-        KL2 --> P4["Pod: Gateway"]
-        KP2["Kube-proxy"]
-    end
-    
-    API --> KL1
-    API --> KL2
-    
-    style CP fill:#E3F2FD
-    style N1 fill:#E8F5E9
-    style N2 fill:#FFF9C4
-```
+![Hình 12.6: Kiến trúc Kubernetes — Control Plane và Worker Nodes](../figures/ch12/fig-12-6.svg)
 
 *Hình 12.6: Kiến trúc Kubernetes — Control Plane và Worker Nodes*
 
@@ -623,47 +503,7 @@ Với LMS (7 services, single host), service mesh hiện **over-engineering**. S
 
 Hệ thống LMS triển khai production trên **Docker Compose** — đây là kiến trúc deployment phổ biến cho hệ thống microservices quy mô nhỏ-trung:
 
-```mermaid
-graph TB
-    subgraph Production["Production Server"]
-        subgraph Infra["Infrastructure Layer"]
-            PG["PostgreSQL"]
-            MY["MySQL"]
-            SS["SQL Server"]
-            ZK["Zookeeper"]
-            KF["Kafka"]
-        end
-        
-        subgraph Platform["Platform Layer"]
-            REG["Eureka Registry\n:9000"]
-            GW["Gateway\n:9001"]
-        end
-        
-        subgraph App["Application Layer"]
-            CORE["Core Service\n:8080"]
-            JUDGE["Judge Service\n:8082"]
-            JM["Judge MySQL\n:8081"]
-            JS["Judge SQLServer\n:8083"]
-            AUTH["Auth Service\n:9005"]
-            ASSIGN["Assignment\n:8088"]
-            NOTIF["Notification\n:8084"]
-        end
-        
-        subgraph FE["Frontend Layer"]
-            WEB["Student Web\n(React)"]
-            CMS["Admin CMS\n(React)"]
-        end
-    end
-    
-    GW --> REG
-    CORE --> REG
-    JUDGE --> REG
-    
-    style Infra fill:#E3F2FD
-    style Platform fill:#FFF9C4
-    style App fill:#E8F5E9
-    style FE fill:#F3E5F5
-```
+![Hình 12.8: Deployment Architecture LMS hiện tại trên single host](../figures/ch12/fig-12-8.svg)
 
 *Hình 12.8: Deployment Architecture LMS hiện tại trên single host*
 
@@ -730,6 +570,11 @@ LMS phục vụ sinh viên → **deployment windows** quan trọng:
 > 5. **Shared database giữa services** — Chương 7 đã phân tích. Nhưng khi deploy: nếu Service A và B chia sẻ database, database migration của A có thể break B. *Phòng tránh*: mỗi service own database schema riêng — migration independent.
 
 ---
+
+
+> **🌐 Trực quan hóa tương tác (Interactive Demo)**
+>
+> Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/deployment-strategies.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về **Các chiến lược Deployment (Blue/Green, Canary)**.
 
 ## Tổng kết
 

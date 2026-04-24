@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+    <marker id="arrowhead-dash" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#be185d" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .entity { fill: #fef3e2; stroke: #b45309; stroke-width: 1.5; }
+    .highlight { fill: #fdf2f8; stroke: #be185d; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-dash { stroke: #be185d; stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; marker-end: url(#arrowhead-dash); }
+    .line-dash { stroke: #be185d; stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; }
+    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+    .chapter-bg { fill: rgba(37, 99, 235, 0.1); stroke: #2563eb; stroke-width: 1.5; stroke-dasharray: 4 4; rx: 8; }
+  </style>
+  <rect x="50" y="40" width="360" height="180" rx="16" class="cluster" />
+  <rect x="50" y="40" width="360" height="180" rx="16" fill="#E8F5E9" opacity="0.5" />
+  <text x="230.0" y="75" text-anchor="middle" class="title">Identity BC (Auth)</text>
+  <rect x="70.0" y="100" width="150.0" height="40" rx="8" class="note" />
+  <text x="145.0" y="125" text-anchor="middle" class="">User</text>
+  <rect x="240.0" y="100" width="150.0" height="40" rx="8" class="note" />
+  <text x="315.0" y="125" text-anchor="middle" class="">Role</text>
+  <rect x="70.0" y="155" width="150.0" height="40" rx="8" class="note" />
+  <text x="145.0" y="180" text-anchor="middle" class="">Token</text>
+  <rect x="50" y="280" width="360" height="230" rx="16" class="cluster" />
+  <rect x="50" y="280" width="360" height="230" rx="16" fill="#FFF3E0" opacity="0.5" />
+  <text x="230.0" y="315" text-anchor="middle" class="title">Academic Management BC</text>
+  <rect x="70.0" y="340" width="150.0" height="40" rx="8" class="note" />
+  <text x="145.0" y="365" text-anchor="middle" class="">Course</text>
+  <rect x="240.0" y="340" width="150.0" height="40" rx="8" class="note" />
+  <text x="315.0" y="365" text-anchor="middle" class="">Assignment</text>
+  <rect x="70.0" y="395" width="150.0" height="40" rx="8" class="note" />
+  <text x="145.0" y="420" text-anchor="middle" class="">Enrollment</text>
+  <rect x="240.0" y="395" width="150.0" height="40" rx="8" class="note" />
+  <text x="315.0" y="420" text-anchor="middle" class="">Grade</text>
+  <rect x="70.0" y="450" width="150.0" height="40" rx="8" class="note" />
+  <text x="145.0" y="475" text-anchor="middle" class="">Thesis</text>
+  <rect x="550" y="280" width="360" height="230" rx="16" class="cluster" />
+  <rect x="550" y="280" width="360" height="230" rx="16" fill="#E3F2FD" opacity="0.5" />
+  <text x="730.0" y="315" text-anchor="middle" class="title">SQL Practice BC (Core)</text>
+  <rect x="570.0" y="340" width="150.0" height="40" rx="8" class="note" />
+  <text x="645.0" y="365" text-anchor="middle" class="">Question</text>
+  <rect x="740.0" y="340" width="150.0" height="40" rx="8" class="note" />
+  <text x="815.0" y="365" text-anchor="middle" class="">Submission</text>
+  <rect x="570.0" y="395" width="150.0" height="40" rx="8" class="note" />
+  <text x="645.0" y="420" text-anchor="middle" class="">Contest</text>
+  <rect x="740.0" y="395" width="150.0" height="40" rx="8" class="note" />
+  <text x="815.0" y="420" text-anchor="middle" class="">Statistic</text>
+  <rect x="550" y="40" width="360" height="180" rx="16" class="cluster" />
+  <rect x="550" y="40" width="360" height="180" rx="16" fill="#FCE4EC" opacity="0.5" />
+  <text x="730.0" y="75" text-anchor="middle" class="title">Evaluation BC (Judge)</text>
+  <rect x="570.0" y="100" width="150.0" height="40" rx="8" class="note" />
+  <text x="645.0" y="125" text-anchor="middle" class="">JudgeRequest</text>
+  <rect x="740.0" y="100" width="150.0" height="40" rx="8" class="note" />
+  <text x="815.0" y="125" text-anchor="middle" class="">JudgeResult</text>
+  <rect x="570.0" y="155" width="150.0" height="40" rx="8" class="note" />
+  <text x="645.0" y="180" text-anchor="middle" class="">Sandbox</text>
+  <rect x="740.0" y="155" width="150.0" height="40" rx="8" class="note" />
+  <text x="815.0" y="180" text-anchor="middle" class="">AIFeedback</text>
+  <path d="M 410 130 L 550 330" class="arrow" />
+  <rect x="410.0" y="218.0" width="140" height="24" class="arrow-bg" />
+  <text x="480.0" y="234.0" class="arrow-label">JWT Token</text>
+  <path d="M 230 220 L 230 280" class="arrow" />
+  <rect x="160.0" y="238.0" width="140" height="24" class="arrow-bg" />
+  <text x="230.0" y="254.0" class="arrow-label">JWT Token</text>
+  <path d="M 730 280 L 730 220" class="arrow" />
+  <rect x="660.0" y="238.0" width="140" height="24" class="arrow-bg" />
+  <text x="730.0" y="254.0" class="arrow-label">Kafka Message</text>
+  <path d="M 410 395 L 550 395" stroke="#64748b" stroke-width="1.5" />
+  <text x="480" y="380" text-anchor="middle" class="arrow-label">Shared DB (coupling!)</text>
+</svg>

@@ -29,6 +29,8 @@ Trong microservices, một request từ user có thể đi qua **5-7 services**,
 - Lỗi xảy ra ở bước nào trong chuỗi gọi?
 - Latency 5 giây — do network, do database query, hay do Kafka consumer lag?
 
+![Hình 11.1: Request flow qua 5+ services — lỗi xảy ra ở đâu?](../figures/ch11/fig-11-1.svg)
+
 *Hình 11.1: Request flow qua 5+ services — lỗi xảy ra ở đâu?*
 
 Newman trong [4a, Ch.8] gọi đây là thách thức lớn nhất khi vận hành microservices: **sự phức tạp không nằm ở code, mà nằm ở tương tác giữa các services**. Trong monolith, lỗi thường có stack trace rõ ràng — một file, một method. Trong microservices, lỗi có thể xuất hiện ở service B vì service A gửi data sai, hoặc vì Kafka message bị delay — không stack trace nào bắt được.
@@ -145,32 +147,7 @@ Với structured logs, có thể query: *"Tất cả errors trong 24h qua có `e
 Sau khi có structured logs, bước tiếp theo là **centralized log aggregation** — gom logs từ tất cả services về một nơi. Newman trong [4a, Ch.8] nhấn mạnh: *centralized logging là yêu cầu bắt buộc* cho microservices, không phải optional.
 
 *Hình 11.4: Pipeline gom logs tập trung — từ service đến storage*
-```mermaid
-graph TB
-    subgraph Services["Application Services"]
-        S1["Core Service"]
-        S2["Judge Service"]
-        S3["Auth Service"]
-        S4["Gateway"]
-    end
-    
-    subgraph Pipeline["Log Pipeline"]
-        AGENT["Log Agent\n(Fluentd / Filebeat)"]
-    end
-    
-    subgraph Storage["Central Storage + UI"]
-        ES["Elasticsearch + Kibana\nhoặc Loki + Grafana"]
-    end
-    
-    S1 --> AGENT
-    S2 --> AGENT
-    S3 --> AGENT
-    S4 --> AGENT
-    AGENT --> ES
-    
-    style AGENT fill:#FFF9C4
-    style ES fill:#E3F2FD
-```
+![Hình 11.4: Pipeline gom logs tập trung — từ service đến storage](../figures/ch11/fig-11-4.svg)
 
 Hai stack phổ biến nhất:
 
@@ -542,26 +519,7 @@ Chaos Monkey phát triển thành **Simian Army** — tập hợp tools chuyên 
 
 ### Hiện trạng — Đánh giá theo Maturity Model
 
-```mermaid
-graph TB
-    subgraph Current["LMS Observability — Hiện trạng"]
-        LOG["📋 Logging\n\n✅ Spring Boot default\n(console output)\n❌ Không centralized\n❌ Không structured"]
-        
-        MET["📊 Metrics\n\n⚠️ Actuator basic\n(health, info)\n❌ Không Prometheus\n❌ Không business metrics"]
-        
-        TRC["🔗 Tracing\n\n❌ Không có\n❌ Không correlation ID\n❌ Không trace propagation"]
-        
-        ERR["🚨 Error Handling\n\n✅ Centralized handler\n✅ ErrorCode enum\n⚠️ Gateway inconsistent"]
-        
-        USR["👤 User Tracking\n\n✅ Kafka-based async\n✅ Non-blocking\n⚠️ Chỉ basic events"]
-    end
-    
-    style LOG fill:#FFF9C4
-    style MET fill:#FFF9C4
-    style TRC fill:#FFCDD2
-    style ERR fill:#E8F5E9
-    style USR fill:#E8F5E9
-```
+![Hình 11.9: Đánh giá hiện trạng Observability của LMS](../figures/ch11/fig-11-9.svg)
 
 *Hình 11.9: Đánh giá hiện trạng Observability của LMS*
 
@@ -630,6 +588,13 @@ Trong contest mode, **không có observability = bay mù**:
 > 5. **Bỏ qua observability vì "team nhỏ"** — Team 2-3 người, "docker logs đủ rồi". Hậu quả: khi scale lên hoặc có incident lúc 2AM, đọc logs thủ công từ 7 containers là nightmare. *Phòng tránh*: bắt đầu nhỏ — structured logging + correlation ID là bước đầu tiên, gần như zero effort.
 
 ---
+
+
+> **🌐 Trực quan hóa tương tác (Interactive Demo)**
+>
+> Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/distributed-tracing.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về **Truy vết phân tán (Distributed Tracing)**.
+
+> Ngoài ra, bạn cũng có thể xem minh họa về **Tập trung hóa cấu hình (Config Server)** tại file `code/interactive/config-server.html`.
 
 ## Tổng kết
 

@@ -171,7 +171,7 @@
     p {
         margin: 0.8em 0;
         text-align: justify;
-        hyphens: auto;
+        hyphens: none; /* tiếng Việt không dùng auto-hyphenation */
     }
 
     /* ── LISTS ── */
@@ -272,7 +272,7 @@
     a { color: var(--color-accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ── MERMAID DIAGRAMS ── */
+    /* ── MERMAID DIAGRAMS (HTML preview only) ── */
     .mermaid {
         text-align: center;
         margin: 2em 0;
@@ -280,6 +280,24 @@
         background: var(--color-bg-alt);
         border-radius: 8px;
         border: 1px solid var(--color-border);
+    }
+
+    /* SVG FIGURES (book diagrams - crisp at all DPI) */
+    img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5em auto;
+    }
+
+    /* Figure caption: italic em paragraph */
+    p > em:only-child {
+        display: block;
+        text-align: center;
+        font-size: 0.88em;
+        color: var(--color-text-light);
+        margin-top: 0.4em;
+        margin-bottom: 1.5em;
     }
 
     /* ── TABLE OF CONTENTS (book-style) ── */
@@ -354,17 +372,41 @@
 
     /* ══════════════════════════════════════════════════════════
        PRINT STYLES — Production-grade book layout
-       Designed for A4 output via Edge headless --no-pdf-header-footer
+       A4 via Edge headless; CSS Paged Media for page numbers
        ══════════════════════════════════════════════════════════ */
 
     @page {
         size: A4;
-        margin: 2.5cm 2.5cm 3cm 3cm; /* top right bottom left (left=gutter for binding) */
+        margin: 2.5cm 2.5cm 3cm 3cm; /* top right bottom left (gutter for binding) */
+
+        /* Page number — bottom center */
+        @bottom-center {
+            content: counter(page);
+            font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+            font-size: 9pt;
+            color: #888888;
+        }
+
+        /* Book title — bottom left */
+        @bottom-left {
+            content: "SOA & Microservices Architecture";
+            font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+            font-size: 8pt;
+            color: #aaaaaa;
+        }
     }
 
-    /* First page: extra top margin for title */
+    /* First page (title page): no page number */
     @page :first {
         margin-top: 4cm;
+        @bottom-center { content: none; }
+        @bottom-left   { content: none; }
+    }
+
+    /* Blank verso pages */
+    @page :blank {
+        @bottom-center { content: none; }
+        @bottom-left   { content: none; }
     }
 
     @media print {
@@ -373,7 +415,7 @@
             max-width: none;
             font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
             font-size: 11pt;
-            line-height: 1.55;
+            line-height: 1.65; /* tăng từ 1.55 — thoáng hơn cho tiếng Việt */
             padding: 0;
             margin: 0;
             color: #1a1a1a;
@@ -417,10 +459,11 @@
 
         /* ── PARAGRAPHS & LISTS ── */
         p {
-            orphans: 3;
-            widows: 3;
+            orphans: 4;           /* tăng từ 3 — ít widow/orphan hơn */
+            widows: 4;
             text-align: justify;
-            hyphens: auto;
+            hyphens: none;        /* tiếng Việt: KHÔNG auto-hyphenate */
+            word-break: break-word; /* vẫn wrap inline code dài */
         }
 
         li {
@@ -497,9 +540,18 @@
             font-size: 10pt;
         }
 
-        /* ── IMAGES & FIGURES ── */
+        /* ── IMAGES & FIGURES (SVG + raster) ── */
         img {
             max-width: 100%;
+            height: auto;
+            page-break-inside: avoid;
+        }
+
+        /* SVG diagrams: crisp vector at any DPI */
+        img {
+            display: block;
+            margin: 1em auto;
+            max-width: 95%;
             height: auto;
             page-break-inside: avoid;
         }
@@ -509,7 +561,18 @@
             margin: 1em 0;
         }
 
-        /* ── MERMAID DIAGRAMS ── */
+        /* Figure caption */
+        p > em:only-child {
+            display: block;
+            text-align: center;
+            font-size: 9pt;
+            color: #555;
+            margin-top: 0.2em;
+            margin-bottom: 1em;
+            page-break-before: avoid;
+        }
+
+        /* ── MERMAID DIAGRAMS (HTML fallback only) ── */
         .mermaid {
             page-break-inside: avoid;
             border: 0.5pt solid #ccc;

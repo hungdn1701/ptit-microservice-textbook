@@ -22,21 +22,7 @@
 
 Giao tiếp đồng bộ (*synchronous communication*) là mô hình quen thuộc nhất với hầu hết developer: service A gửi request đến service B, **chờ** response, rồi xử lý tiếp. HTTP/REST là protocol phổ biến nhất cho mô hình này.
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant GW as API Gateway
-    participant CS as Core Service
-    participant JS as Judge Service
-    
-    C->>GW: POST /submissions
-    GW->>CS: Forward request
-    CS->>JS: GET /judge/execute (sync)
-    Note over CS,JS: Core Service BLOCKED<br/>chờ Judge response
-    JS-->>CS: 200 OK (result)
-    CS-->>GW: 201 Created
-    GW-->>C: Response
-```
+![Hình 4.1: Giao tiếp đồng bộ — Core Service blocked trong khi chờ Judge response](../figures/ch04/fig-4-1.svg)
 
 *Hình 4.1: Giao tiếp đồng bộ — Core Service blocked trong khi chờ Judge response*
 
@@ -210,21 +196,7 @@ public interface MysqlClient {
 
 ### Cách hoạt động
 
-```mermaid
-graph LR
-    SVC["Service Code"] -->|"Gọi method"| FEIGN["Feign Interface<br/><i>(khai báo)</i>"]
-    FEIGN -->|"Proxy generates"| HTTP["HTTP Request<br/><i>(tự động)</i>"]
-    HTTP -->|"Network"| TARGET["Target Service"]
-    
-    FEIGN -.->|"Interceptor"| AUTH["JWT Header<br/><i>(tự động)</i>"]
-    FEIGN -.->|"Decoder"| ERR["Error Handling<br/><i>(tự động)</i>"]
-    FEIGN -.->|"Load Balancer"| LB["Eureka Lookup<br/><i>(tự động)</i>"]
-    
-    style SVC fill:#E3F2FD
-    style FEIGN fill:#FFF9C4
-    style HTTP fill:#E8F5E9
-    style TARGET fill:#F3E5F5
-```
+![Hình 4.2: Cách Feign proxy tự động xử lý HTTP request, JWT, load balancing](../figures/ch04/fig-4-2.svg)
 
 *Hình 4.2: Cách Feign proxy tự động xử lý HTTP request, JWT, load balancing*
 
@@ -246,34 +218,13 @@ Có hai pattern chính [2a, Ch.3]:
 
 **Client-side discovery** — Client (service gọi) tự query service registry để tìm danh sách instances, rồi tự load balance:
 
-```mermaid
-sequenceDiagram
-    participant CS as Core Service
-    participant EUR as Eureka Registry
-    participant J1 as Judge Instance 1
-    participant J2 as Judge Instance 2
-    
-    CS->>EUR: Hỏi: "judge-service" ở đâu?
-    EUR-->>CS: [192.168.1.10:8082, 192.168.1.11:8082]
-    CS->>J1: Round-robin → gọi Instance 1
-    J1-->>CS: Response
-```
+![Hình 4.3: Client-side discovery — service tự query Eureka và load balance](../figures/ch04/fig-4-3.svg)
 
 *Hình 4.3: Client-side discovery — service tự query Eureka và load balance*
 
 **Server-side discovery** — Load balancer (hoặc API Gateway) đứng giữa, client chỉ cần biết URL của load balancer:
 
-```mermaid
-sequenceDiagram
-    participant CS as Core Service
-    participant LB as Load Balancer
-    participant J1 as Judge Instance 1
-    
-    CS->>LB: Gọi "judge-service"
-    LB->>J1: Route tới instance khả dụng
-    J1-->>LB: Response
-    LB-->>CS: Forward response
-```
+![Hình 4.4: Server-side discovery — load balancer điều hướng request](../figures/ch04/fig-4-4.svg)
 
 *Hình 4.4: Server-side discovery — load balancer điều hướng request*
 
@@ -305,20 +256,7 @@ Trong monolith, nếu database chậm, *toàn bộ* ứng dụng chậm — như
 
 Hugo Rocha trong [5] nhấn mạnh: trong distributed system, *lỗi không phải ngoại lệ — lỗi là trạng thái bình thường*. Network sẽ timeout, services sẽ crash, databases sẽ chậm. Câu hỏi không phải "nếu lỗi xảy ra" mà là "khi lỗi xảy ra".
 
-```mermaid
-graph LR
-    subgraph Cascade["Cascading Failure"]
-        C["Client"] --> A["Service A<br/><i>threads block</i>"]
-        A -->|"timeout 30s"| B["Service B<br/><i>database chậm</i>"]
-        D["Service D"] --> A
-        E["Service E"] --> A
-    end
-    
-    style B fill:#EF5350,color:white
-    style A fill:#FFA726,color:white
-    style D fill:#FFCDD2
-    style E fill:#FFCDD2
-```
+![Hình 4.5: Cascading failure — Service B chậm làm A, D, E đều bị ảnh hưởng](../figures/ch04/fig-4-5.svg)
 
 *Hình 4.5: Cascading failure — Service B chậm làm A, D, E đều bị ảnh hưởng*
 
@@ -335,16 +273,7 @@ graph LR
 
 #### Circuit Breaker — Chi tiết state machine
 
-```mermaid
-stateDiagram-v2
-    [*] --> Closed: Hoạt động bình thường
-    Closed --> Open: Lỗi vượt ngưỡng<br/>(ví dụ: 50% requests lỗi)
-    Open --> HalfOpen: Sau timeout<br/>(ví dụ: 30 giây)
-    HalfOpen --> Closed: Thử thành công<br/>→ khôi phục
-    HalfOpen --> Open: Thử thất bại<br/>→ ngắt tiếp
-    
-    Open --> Open: Reject ngay mọi request<br/>(không gọi downstream)
-```
+![Hình 4.6: Circuit Breaker state machine — Closed, Open, Half-Open](../figures/ch04/fig-4-6.svg)
 
 *Hình 4.6: Circuit Breaker state machine — Closed, Open, Half-Open*
 
@@ -352,22 +281,7 @@ Khi circuit ở trạng thái **Open**, mọi request được reject *ngay lậ
 
 #### Bulkhead — Cách ly resources
 
-```mermaid
-graph TB
-    subgraph Core["Core Service"]
-        TP1["Thread Pool: Judge<br/><i>10 threads (đầy!)</i>"]
-        TP2["Thread Pool: Question<br/><i>20 threads (bình thường)</i>"]
-        TP3["Thread Pool: Contest<br/><i>15 threads (bình thường)</i>"]
-    end
-    
-    REQ1["Requests → Judge"] --> TP1
-    REQ2["Requests → Questions"] --> TP2
-    REQ3["Requests → Contests"] --> TP3
-    
-    style TP1 fill:#EF5350,color:white
-    style TP2 fill:#66BB6A,color:white
-    style TP3 fill:#66BB6A,color:white
-```
+![Hình 4.7: Bulkhead pattern — thread pool cách ly theo function](../figures/ch04/fig-4-7.svg)
 
 *Hình 4.7: Bulkhead pattern — thread pool cách ly theo function*
 
@@ -496,21 +410,7 @@ Hệ thống LMS hỗ trợ sinh viên thực hành SQL trên 4 loại database:
 
 LMS implement bài toán này bằng **Strategy Pattern** kết hợp OpenFeign:
 
-```mermaid
-graph LR
-    CORE["Core Service<br/>(SqlExecutorService)"] 
-    
-    CORE -->|"FeignClient"| MYSQL["Judge-MySQL<br/>:8081"]
-    CORE -->|"FeignClient"| MSSQL["Judge-SqlServer<br/>:8083"]
-    CORE -->|"FeignClient"| PG["PostgreSQL<br/>(local)"]
-    CORE -->|"FeignClient"| ORA["Oracle<br/>(local)"]
-    
-    style CORE fill:#E3F2FD
-    style MYSQL fill:#E8F5E9
-    style MSSQL fill:#E8F5E9
-    style PG fill:#FFF3E0
-    style ORA fill:#FFF3E0
-```
+![Hình 4.8: Strategy Pattern — SqlExecutorService dispatch SQL đến 4 DBMS qua Feign](../figures/ch04/fig-4-8.svg)
 
 *Hình 4.8: Strategy Pattern — SqlExecutorService dispatch SQL đến 4 DBMS qua Feign*
 
@@ -530,26 +430,7 @@ Core Service chứa `SqlExecutorService` — nhận database type (dưới dạn
 
 ### Đề xuất migration
 
-```mermaid
-graph LR
-    subgraph P1["Phase 1: Resilience<br/>(effort thấp)"]
-        R1["+ Circuit Breaker<br/>+ Retry + Timeout<br/>+ Fallback message"]
-    end
-    
-    subgraph P2["Phase 2: Ownership<br/>(effort TB)"]
-        R2["Hợp nhất SQL executor<br/>về Judge Service<br/>(single ownership)"]
-    end
-    
-    subgraph P3["Phase 3: Async<br/>(effort cao)"]
-        R3["Submit → Kafka<br/>→ Judge → Result event<br/>(non-blocking)"]
-    end
-    
-    P1 --> P2 --> P3
-    
-    style P1 fill:#E8F5E9
-    style P2 fill:#FFF9C4
-    style P3 fill:#E3F2FD
-```
+![Hình 4.9: Lộ trình migration cho SqlExecutorService — từ resilience đến async](../figures/ch04/fig-4-9.svg)
 
 *Hình 4.9: Lộ trình migration cho SqlExecutorService — từ resilience đến async*
 

@@ -17,6 +17,9 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 - **Ch.2**: Bổ sung §2.4b — Phân rã hướng dịch vụ theo Erl (Service-Oriented Analysis): 5 bước step-by-step, Bảng 2.7 (service layers), Bảng 2.8 (so sánh Erl vs DDD), Hình 2.6b (LMS example). Cập nhật Tổng kết và Đọc thêm.
 - **references/.agents/**: Di chuyển 5 workflows vào private submodule làm source of truth. Parameterize paths (`${LMS_SOURCE_ROOT}`). Thêm README hướng dẫn sync.
 - **templates/book.html**: Cấu hình Mermaid custom theme (`theme: "base"` + 30+ themeVariables) khớp design system sách — nhất quán tự động cho mọi diagram.
+- **Phase 6 (AI-SVG Generation)**: Thay thế 16 biểu đồ Mermaid phức tạp bằng file SVG chất lượng cao (tạo bởi Python scripts) ở các chương 4, 8, 9, 10, 11, 12, đảm bảo chuẩn thẩm mỹ in ấn.
+- **Phase 7 (Final PDF Build)**: Hoàn tất build phiên bản PDF xuất bản (`output/SOA-Microservices-Book.pdf`).
+- **README.md**: Cập nhật tài liệu hướng dẫn quy trình sinh SVG bằng Python scripts.
 
 ### Added
 - **code/interactive/**: Hoàn thành 14 interactive pattern demos (Phase 9b), bao gồm Dashboard Hub (`index.html`) và 8 demos mới (Monolith vs MS, Context Map, REST API Explorer, Kafka Broker, Config Server, OAuth2/JWT, Distributed Tracing, Deployment Strategies).

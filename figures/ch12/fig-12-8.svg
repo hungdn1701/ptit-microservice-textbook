@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .v1 { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; }
+    .v2 { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+    .updating { fill: #fef08a; stroke: #ca8a04; stroke-width: 1.5; stroke-dasharray: 4 2; }
+    
+    .cp { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .node1 { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .node2 { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    
+    .infra { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .platform { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .app { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .fe { fill: #F3E5F5; stroke: #9c27b0; stroke-width: 1.5; }
+    
+    .service { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+    
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <rect x="40" y="20" width="880" height="500" rx="16" class="cluster" />
+  <text x="480" y="50" text-anchor="middle" class="title">Production Server</text>
+  <rect x="60" y="70" width="840" height="100" rx="12" class="infra" />
+  <text x="150" y="120" text-anchor="middle" class="title">Infrastructure Layer</text>
+  <rect x="260" y="90" width="100" height="60" rx="8" class="service" />
+  <text x="310" y="125" text-anchor="middle" class="">PostgreSQL</text>
+  <rect x="370" y="90" width="100" height="60" rx="8" class="service" />
+  <text x="420" y="125" text-anchor="middle" class="">MySQL</text>
+  <rect x="480" y="90" width="100" height="60" rx="8" class="service" />
+  <text x="530" y="125" text-anchor="middle" class="">SQL Server</text>
+  <rect x="590" y="90" width="100" height="60" rx="8" class="service" />
+  <text x="640" y="125" text-anchor="middle" class="">Zookeeper</text>
+  <rect x="700" y="90" width="100" height="60" rx="8" class="service" />
+  <text x="750" y="125" text-anchor="middle" class="">Kafka</text>
+  <rect x="60" y="180" width="840" height="100" rx="12" class="platform" />
+  <text x="150" y="230" text-anchor="middle" class="title">Platform Layer</text>
+  <rect x="300" y="200" width="160" height="60" rx="8" class="service" />
+  <text x="380" y="225" text-anchor="middle" class="">Eureka Registry :9000</text>
+  <rect x="500" y="200" width="160" height="60" rx="8" class="service" />
+  <text x="580" y="225" text-anchor="middle" class="">Gateway :9001</text>
+  <rect x="60" y="290" width="840" height="110" rx="12" class="app" />
+  <text x="150" y="345" text-anchor="middle" class="title">Application Layer</text>
+  <rect x="260" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="297.5" y="345" text-anchor="middle" class="">Core</text>
+  <rect x="342" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="379.5" y="345" text-anchor="middle" class="">Judge</text>
+  <rect x="424" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="461.5" y="345" text-anchor="middle" class="">J-MySQL</text>
+  <rect x="506" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="543.5" y="345" text-anchor="middle" class="">J-SQLServer</text>
+  <rect x="588" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="625.5" y="345" text-anchor="middle" class="">Auth</text>
+  <rect x="670" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="707.5" y="345" text-anchor="middle" class="">Assign</text>
+  <rect x="752" y="315" width="75" height="60" rx="8" class="service" />
+  <text x="789.5" y="345" text-anchor="middle" class="">Notif</text>
+  <rect x="60" y="410" width="840" height="90" rx="12" class="fe" />
+  <text x="150" y="455" text-anchor="middle" class="title">Frontend Layer</text>
+  <rect x="300" y="425" width="160" height="60" rx="8" class="service" />
+  <text x="380" y="455" text-anchor="middle" class="">Student Web</text>
+  <rect x="500" y="425" width="160" height="60" rx="8" class="service" />
+  <text x="580" y="455" text-anchor="middle" class="">Admin CMS</text>
+</svg>

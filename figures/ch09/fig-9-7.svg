@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .gateway { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .auth { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .danger { fill: #FFCDD2; stroke: #dc2626; stroke-width: 1.5; }
+    .client { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-dash { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; marker-end: url(#arrowhead); }
+  </style>
+  <rect x="280" y="20" width="400" height="90" rx="16" class="cluster" />
+  <text x="480" y="45" text-anchor="middle" class="title">Internet</text>
+  <rect x="320" y="55" width="140" height="40" rx="8" class="client" />
+  <text x="390" y="80" text-anchor="middle" class="">Student App</text>
+  <rect x="500" y="55" width="140" height="40" rx="8" class="client" />
+  <text x="570" y="80" text-anchor="middle" class="">Admin CMS</text>
+  <rect x="280" y="140" width="400" height="150" rx="16" class="cluster" />
+  <text x="480" y="165" text-anchor="middle" class="title">Edge Layer</text>
+  <rect x="320" y="175" width="320" height="100" rx="12" class="gateway" />
+  <text x="480" y="195" text-anchor="middle" class="title">Gateway :9001</text>
+  <text x="340" y="220" class="">✅ JWT validation</text>
+  <text x="340" y="240" class="">✅ CORS</text>
+  <text x="480" y="220" class="">❌ Rate limiting</text>
+  <text x="480" y="240" class="">❌ Correlation ID</text>
+  <path d="M 390 95 L 480 175" class="arrow" />
+  <path d="M 570 95 L 480 175" class="arrow" />
+  <rect x="40" y="320" width="320" height="180" rx="16" class="cluster" />
+  <text x="200" y="345" text-anchor="middle" class="title">Auth Bounded Context</text>
+  <rect x="60" y="355" width="280" height="130" rx="12" class="auth" />
+  <text x="200" y="375" text-anchor="middle" class="title">Auth Service :9005</text>
+  <text x="80" y="400" class="">✅ Login (3 methods)</text>
+  <text x="80" y="420" class="">✅ JWT generation (HS256)</text>
+  <text x="80" y="440" class="">✅ Full token validation</text>
+  <text x="80" y="460" class="">✅ User management</text>
+  <rect x="380" y="320" width="540" height="180" rx="16" class="cluster" />
+  <text x="650" y="345" text-anchor="middle" class="title">Internal Services</text>
+  <rect x="400" y="355" width="230" height="60" rx="8" class="service" />
+  <text x="515" y="375" text-anchor="middle" class="title">Core Service</text>
+  <text x="515" y="395" text-anchor="middle" class="subtitle">⚠️ Claims-only | ✅ @PreAuthorize</text>
+  <rect x="400" y="425" width="230" height="60" rx="8" class="service" />
+  <text x="515" y="445" text-anchor="middle" class="title">Assignment Service</text>
+  <text x="515" y="465" text-anchor="middle" class="subtitle">⚠️ Claims-only | ✅ @PreAuthorize</text>
+  <rect x="650" y="355" width="250" height="130" rx="8" class="danger" />
+  <text x="775" y="400" text-anchor="middle" class="title">Judge Service</text>
+  <text x="775" y="425" text-anchor="middle" class="subtitle">⚠️ No auth check</text>
+  <path d="M 480 275 L 200 355" class="arrow" />
+  <path d="M 480 275 L 515 355" class="arrow" />
+  <path d="M 480 275 L 515 425" class="arrow" />
+  <path d="M 480 275 L 775 355" class="arrow-dash" />
+</svg>

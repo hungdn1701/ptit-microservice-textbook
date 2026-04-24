@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+    <marker id="arrowhead-both" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
+      <polygon points="10 0, 0 3.5, 10 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .gateway { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .eureka { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .client { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+    .note { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-both { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); marker-start: url(#arrowhead-both); }
+    .arrow-label { font-size: 12px; fill: #475569; text-anchor: middle; }
+    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+  </style>
+  <rect x="50" y="150" width="260" height="200" rx="16" class="cluster" />
+  <rect x="50" y="150" width="260" height="200" rx="16" fill="#E8F5E9" opacity="0.4" />
+  <text x="180" y="185" text-anchor="middle" class="title">Phase 1: Resilience</text>
+  <text x="180" y="205" text-anchor="middle" class="subtitle">(effort thấp)</text>
+  <rect x="70" y="230" width="220" height="100" rx="8" class="note" />
+  <text x="180" y="260" text-anchor="middle" class="">+ Circuit Breaker</text>
+  <text x="180" y="285" text-anchor="middle" class="">+ Retry + Timeout</text>
+  <text x="180" y="310" text-anchor="middle" class="">+ Fallback message</text>
+  <rect x="350" y="150" width="260" height="200" rx="16" class="cluster" />
+  <rect x="350" y="150" width="260" height="200" rx="16" fill="#FFF9C4" opacity="0.4" />
+  <text x="480" y="185" text-anchor="middle" class="title">Phase 2: Ownership</text>
+  <text x="480" y="205" text-anchor="middle" class="subtitle">(effort TB)</text>
+  <rect x="370" y="230" width="220" height="100" rx="8" class="note" />
+  <text x="480" y="260" text-anchor="middle" class="">Hợp nhất SQL executor</text>
+  <text x="480" y="285" text-anchor="middle" class="">về Judge Service</text>
+  <text x="480" y="310" text-anchor="middle" class="">(single ownership)</text>
+  <rect x="650" y="150" width="260" height="200" rx="16" class="cluster" />
+  <rect x="650" y="150" width="260" height="200" rx="16" fill="#E3F2FD" opacity="0.4" />
+  <text x="780" y="185" text-anchor="middle" class="title">Phase 3: Async</text>
+  <text x="780" y="205" text-anchor="middle" class="subtitle">(effort cao)</text>
+  <rect x="670" y="230" width="220" height="100" rx="8" class="note" />
+  <text x="780" y="260" text-anchor="middle" class="">Submit → Kafka</text>
+  <text x="780" y="285" text-anchor="middle" class="">→ Judge → Result event</text>
+  <text x="780" y="310" text-anchor="middle" class="">(non-blocking)</text>
+  <path d="M 310 250 L 350 250" class="arrow" />
+  <path d="M 610 250 L 650 250" class="arrow" />
+</svg>

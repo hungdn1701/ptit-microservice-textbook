@@ -122,6 +122,13 @@ pandoc manuscript/chapter-01.md -o output/chapter-01.html --template=templates/b
 ./scripts/build-pdf.ps1
 ```
 
+### Build Sơ đồ (SVGs)
+Giáo trình sử dụng các Python script để tự động sinh sơ đồ kiến trúc (SVG) nhằm đảm bảo chất lượng hiển thị chuyên nghiệp.
+```powershell
+# Ví dụ tạo SVG cho chương 1
+python scripts/gen_svg_ch01.py
+```
+
 ---
 
 ## 🤝 Đóng góp

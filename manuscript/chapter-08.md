@@ -22,18 +22,7 @@
 
 Khi không có gateway, client (web, mobile) phải biết địa chỉ của *từng* microservice và gọi trực tiếp. Với hệ thống LMS gồm 7+ services, mỗi trang web có thể cần gọi 3-4 services khác nhau:
 
-```mermaid
-graph LR
-    subgraph NoGW["❌ Không có Gateway"]
-        FE["Frontend"] -->|":8080"| CORE["Core Service"]
-        FE -->|":8088"| ASN["Assignment Service"]
-        FE -->|":9005"| AUTH["Auth Service"]
-        FE -->|":8082"| JUDGE["Judge Service"]
-        FE -->|":8084"| NOTIF["Notification"]
-    end
-    
-    style FE fill:#FFCDD2
-```
+![Hình 8.1: Không có Gateway — client phải biết địa chỉ của từng service](../figures/ch08/fig-8-1.svg)
 
 *Hình 8.1: Không có Gateway — client phải biết địa chỉ của từng service*
 
@@ -53,18 +42,7 @@ Richardson trong [2a, Ch.8] liệt kê năm vấn đề khi client gọi trực 
 
 API Gateway là **single entry point** — tất cả requests từ client đi qua gateway, gateway route đến đúng service:
 
-```mermaid
-graph LR
-    FE["Frontend\n(React)"] -->|"HTTPS\n:443"| GW["API Gateway\n(Spring Cloud Gateway)\n:9001"]
-    
-    GW -->|"route: /api/core/**"| CORE["Core Service\n:8080"]
-    GW -->|"route: /api/assignment/**"| ASN["Assignment\n:8088"]
-    GW -->|"route: /api/auth/**"| AUTH["Auth Service\n:9005"]
-    GW -->|"route: /api/judge/**"| JUDGE["Judge Service\n:8082"]
-    GW -->|"ws: /ws/**"| NOTIF["Notification\n:8084"]
-    
-    style GW fill:#FFF9C4
-```
+![Hình 8.2: API Gateway — single entry point route đến từng service](../figures/ch08/fig-8-2.svg)
 
 *Hình 8.2: API Gateway — single entry point route đến từng service*
 
@@ -76,25 +54,7 @@ Newman trong [4a, Ch.4] mô tả gateway là "smart pipe" duy nhất được ph
 
 Richardson trong [2a, Ch.8] phân biệt hai biến thể:
 
-```mermaid
-graph TB
-    subgraph SingleGW["API Gateway (Single)"]
-        W1["Web"] --> GW1["Gateway"]
-        M1["Mobile"] --> GW1
-        GW1 --> S1["Services"]
-    end
-    
-    subgraph BFF["Backend for Frontend"]
-        W2["Web"] --> GW2["Web BFF"]
-        M2["Mobile"] --> GW3["Mobile BFF"]
-        GW2 --> S2["Services"]
-        GW3 --> S2
-    end
-    
-    style GW1 fill:#FFF9C4
-    style GW2 fill:#C8E6C9
-    style GW3 fill:#BBDEFB
-```
+![Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)](../figures/ch08/fig-8-3.svg)
 
 *Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)*
 
@@ -143,19 +103,7 @@ LMS chọn **Spring Cloud Gateway** — lựa chọn đúng vì cần WebSocket 
 
 ### Kiến trúc Spring Cloud Gateway
 
-```mermaid
-graph LR
-    REQ["HTTP Request"] --> PRED["Route Predicates\n(Path, Host, Header)"]
-    PRED --> PRE["Pre-Filters\n(JWT validation,\nCORS, logging)"]
-    PRE --> ROUTE["Route to Service\n(lb://service-name)"]
-    ROUTE --> POST["Post-Filters\n(Response headers,\nmetrics)"]
-    POST --> RES["HTTP Response"]
-    
-    style PRED fill:#E3F2FD
-    style PRE fill:#FFF9C4
-    style ROUTE fill:#E8F5E9
-    style POST fill:#FFF9C4
-```
+![Hình 8.4: Kiến trúc Spring Cloud Gateway — Predicates, Filters, Routes](../figures/ch08/fig-8-4.svg)
 
 *Hình 8.4: Kiến trúc Spring Cloud Gateway — Predicates, Filters, Routes*
 
@@ -224,23 +172,7 @@ spring:
 
 ### Cách `lb://` hoạt động
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant GW as Gateway
-    participant EUR as Eureka Registry
-    participant S1 as Core Instance 1
-    participant S2 as Core Instance 2
-    
-    C->>GW: GET /api/core/questions
-    GW->>GW: Match predicate: Path=/api/core/**
-    GW->>EUR: Resolve "core-service"
-    EUR-->>GW: [192.168.1.10:8080, 192.168.1.11:8080]
-    GW->>GW: Load balance (round-robin)
-    GW->>S1: GET /questions (StripPrefix=2)
-    S1-->>GW: 200 OK [questions]
-    GW-->>C: 200 OK [questions]
-```
+![Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route](../figures/ch08/fig-8-5.svg)
 
 *Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route*
 
@@ -307,25 +239,7 @@ public class JwtRequestFilter implements GatewayFilterFactory<JwtRequestFilter.C
 
 Luồng xử lý:
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant GW as Gateway
-    participant CS as Core Service
-    
-    C->>GW: GET /api/core/questions\nAuthorization: Bearer eyJhb...
-    GW->>GW: JWT Filter: validate token
-    
-    alt Token valid
-        GW->>GW: Extract: userId, roles
-        GW->>CS: GET /questions\nX-User-Id: user-123\nX-User-Roles: STUDENT
-        CS-->>GW: 200 OK
-        GW-->>C: 200 OK
-    else Token invalid/expired
-        GW-->>C: 401 Unauthorized
-        Note over GW: Request KHÔNG đến\nCore Service
-    end
-```
+![Hình 8.6: Luồng JWT validation tại Gateway — claims propagation qua trusted headers](../figures/ch08/fig-8-6.svg)
 
 *Hình 8.6: Luồng JWT validation tại Gateway — claims propagation qua trusted headers*
 
@@ -424,38 +338,7 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 
 ### Kiến trúc tổng thể
 
-```mermaid
-graph TB
-    subgraph External["Internet"]
-        WEB["Student Frontend\n(React + Vite)"]
-        CMS["Admin Frontend\n(React + Ant Design)"]
-    end
-    
-    subgraph Gateway["API Gateway Layer"]
-        GW["Spring Cloud Gateway\n:9001\n\nJWT Filter\nCORS\nRouting"]
-    end
-    
-    subgraph Internal["Internal Network"]
-        EUR["Eureka Registry\n:9000"]
-        CORE["Core Service\n:8080"]
-        ASN["Assignment\n:8088"]
-        AUTH["Auth Service\n:9005"]
-        JUDGE["Judge Service\n:8082"]
-        NOTIF["Notification\n:8084"]
-    end
-    
-    WEB --> GW
-    CMS --> GW
-    GW <-->|"register/discover"| EUR
-    GW --> CORE
-    GW --> ASN
-    GW --> AUTH
-    GW --> JUDGE
-    GW --> NOTIF
-    
-    style GW fill:#FFF9C4
-    style EUR fill:#E8F5E9
-```
+![Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point](../figures/ch08/fig-8-7.svg)
 
 *Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point*
 
@@ -507,6 +390,13 @@ Một vấn đề đáng chú ý trong LMS: gateway sử dụng **JJWT 0.11.5** 
 > 4. **CORS `allowAll` trong production** — Cho phép mọi origin gọi API bằng user credentials. Hậu quả: rủi ro CSRF, bất kỳ website nào đều có thể thao tác API thay mặt user. *Phòng tránh*: liệt kê rõ origins hợp lệ, test kỹ interaction giữa allowed origins và credentials.
 
 ---
+
+
+> **🌐 Trực quan hóa tương tác (Interactive Demo)**
+>
+> Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/api-gateway-routing.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về **Cơ chế định tuyến của API Gateway**.
+
+> Ngoài ra, bạn cũng có thể xem minh họa về **Service Discovery & Registry** tại file `code/interactive/service-discovery.html`.
 
 ## Tổng kết
 
