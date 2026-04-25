@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .logs { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .metrics { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .traces { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .bad { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .good { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .sli { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .slo { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .sla { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+  </style>
+  <text x="480" y="30" text-anchor="middle" class="title">Trace: Submit SQL Request (traceId: abc-123)</text>
+  <line x1="200" y1="50" x2="900" y2="50" stroke="#94a3b8" stroke-width="1" />
+  <line x1="200.0" y1="45" x2="200.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="200.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">0ms</text>
+  <line x1="285.0" y1="45" x2="285.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="285.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">100ms</text>
+  <line x1="370.0" y1="45" x2="370.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="370.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">200ms</text>
+  <line x1="455.0" y1="45" x2="455.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="455.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">300ms</text>
+  <line x1="540.0" y1="45" x2="540.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="540.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">400ms</text>
+  <line x1="625.0" y1="45" x2="625.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="625.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">500ms</text>
+  <line x1="710.0" y1="45" x2="710.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="710.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">600ms</text>
+  <line x1="795.0" y1="45" x2="795.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="795.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">700ms</text>
+  <line x1="880.0" y1="45" x2="880.0" y2="55" stroke="#94a3b8" stroke-width="1" />
+  <text x="880.0" y="68" text-anchor="middle" font-size="10" fill="#64748b">800ms</text>
+  <text x="10" y="105" font-size="12" fill="#64748b">Gateway</text>
+  <rect x="200.0" y="90" width="42.5" height="25" rx="4" class="service" />
+  <text x="247.5" y="107" font-size="10" fill="#64748b">JWT validation + routing</text>
+  <text x="10" y="155" font-size="12" fill="#64748b">Core Service</text>
+  <rect x="242.5" y="140" width="25.5" height="25" rx="4" class="logs" />
+  <text x="273.0" y="157" font-size="10" fill="#64748b">Parse + validate</text>
+  <text x="10" y="205" font-size="12" fill="#64748b">Core Service</text>
+  <rect x="268.0" y="190" width="34.0" height="25" rx="4" class="logs" />
+  <text x="307.0" y="207" font-size="10" fill="#64748b">Save to DB</text>
+  <text x="10" y="255" font-size="12" fill="#64748b">Core Service</text>
+  <rect x="302.0" y="240" width="25.5" height="25" rx="4" class="logs" />
+  <text x="332.5" y="257" font-size="10" fill="#64748b">Send Kafka message</text>
+  <text x="10" y="305" font-size="12" fill="#64748b">Judge Service</text>
+  <rect x="327.5" y="290" width="25.5" height="25" rx="4" class="traces" />
+  <text x="358.0" y="307" font-size="10" fill="#64748b">Receive Kafka</text>
+  <text x="10" y="355" font-size="12" fill="#64748b">Judge Service</text>
+  <rect x="353.0" y="340" width="484.5" height="25" rx="4" class="sla" />
+  <text x="595.25" y="357" text-anchor="middle" font-size="11" fill="#1a202c">Execute SQL on sandbox</text>
+  <text x="10" y="405" font-size="12" fill="#64748b">Judge Service</text>
+  <rect x="837.5" y="390" width="17.0" height="25" rx="4" class="traces" />
+  <text x="859.5" y="407" font-size="10" fill="#64748b">Compare results (SHA-256)</text>
+  <text x="10" y="455" font-size="12" fill="#64748b">Core Service</text>
+  <rect x="854.5" y="440" width="34.0" height="25" rx="4" class="logs" />
+  <text x="893.5" y="457" font-size="10" fill="#64748b">Receive + update score</text>
+  <line x1="353.0" y1="370" x2="837.5" y2="370" stroke="#c62828" stroke-width="2" />
+  <text x="595.25" y="388" text-anchor="middle" font-size="13" fill="#c62828" font-weight="bold">⬆ Bottleneck: 570ms (70%)</text>
+</svg>

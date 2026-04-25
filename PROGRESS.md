@@ -1,7 +1,7 @@
 # Tiến trình xây dựng sách — SOA & Microservices
 
-> **Last updated**: 2026-04-18
-> **Current version**: v0.9.8 (pre-release)
+> **Last updated**: 2026-04-25
+> **Current version**: v1.0.0 (Release)
 > **Depth score**: ~9.2/10
 
 ---
@@ -74,6 +74,14 @@
 - [x] Cấu hình Mermaid custom theme trong `templates/book.html` — 30+ themeVariables khớp design system sách
 - [x] Cập nhật `IDEAS.md` — đánh dấu 4 items còn lại hoàn thành
 
+## ✅ Phase 12: SVG Migration & PDF Build (DONE)
+- [x] Chuyển đổi 110 Mermaid diagrams → AI-generated SVG (Python scripts)
+- [x] Tạo scripts: `gen_svg_ch05.py`, `gen_svg_ch07.py` (mới); mở rộng `gen_svg_ch11.py` (7 hàm), `gen_svg_ch12.py` (+Sidecar)
+- [x] Hoàn tất 9 Mermaid blocks còn lại: Ch.5 (1), Ch.7 (1), Ch.11 (6), Ch.12 (1)
+- [x] 0 Mermaid blocks còn lại trong 12 chương chính
+- [x] Cập nhật `templates/book.html` — CSS cho SVG rendering crisp (mọi DPI)
+- [x] Build PDF thành công: 12 chương riêng lẻ + full book (6.7MB)
+
 ---
 
 ## 📊 Tổng quan tiến độ
@@ -84,17 +92,20 @@
 | **Exercises** | 25 bài tập |
 | **Interactive Demos** | 14 patterns (HTML/CSS/JS) |
 | **Anti-pattern catalog** | 42 patterns |
+| **SVG diagrams** | 110 files (vector, production-ready) |
 | **Depth score ước tính** | ~9.2/10 |
 | **Tổng dòng thêm (Phase 5-8)** | ~600 dòng |
 | **Files reference đã extract** | 554KB từ Richardson 2nd ed. |
 | **Business domain doc** | references/case-study/business-domain.md (reusable) |
-| **Git commits** | Đang cập nhật |
+| **PDF output** | output/SOA-Microservices-Book.pdf (7.7MB) |
 
 ---
 
 ## 📋 Backlog (chưa lên kế hoạch cụ thể)
 
-- [ ] Build PDF bản chính thức (pandoc + LaTeX template)
-- [ ] Rà soát tổng thể consistency (Figure/Table numbering, cross-references)
-- [ ] Viết Lời nói đầu và Phụ lục tổng hợp
-- [ ] Final editorial review
+- [x] Build PDF bản chính thức (Edge Headless Paged Media fallback)
+- [x] Rà soát tổng thể consistency (Figure/Table numbering, cross-references)
+- [x] Rà soát Lời nói đầu và Phụ lục tổng hợp (Đã có đủ 4 phục lục + exercises + preface)
+- [x] Final editorial review (Đã fix author, TOC diacritics, CSS, Assembly Order, duplicate appendicies)
+
+> **🎉 Milestone đạt được**: Phiên bản 1.0.0 chính thức hoàn thiện! Sẵn sàng cho Public Release.

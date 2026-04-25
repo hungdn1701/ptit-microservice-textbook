@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .logs { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .metrics { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .traces { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .bad { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .good { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .sli { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .slo { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .sla { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+  </style>
+  <rect x="55" y="20" width="130" height="40" rx="8" class="service" />
+  <text x="120" y="45" text-anchor="middle" class="title">Student</text>
+  <line x1="120" y1="60" x2="120" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
+  <rect x="265" y="20" width="130" height="40" rx="8" class="service" />
+  <text x="330" y="45" text-anchor="middle" class="title">Core Service</text>
+  <line x1="330" y1="60" x2="330" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
+  <rect x="475" y="20" width="130" height="40" rx="8" class="service" />
+  <text x="540" y="45" text-anchor="middle" class="title">Kafka</text>
+  <line x1="540" y1="60" x2="540" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
+  <rect x="685" y="20" width="130" height="40" rx="8" class="service" />
+  <text x="750" y="45" text-anchor="middle" class="title">Tracker Consumer</text>
+  <line x1="750" y1="60" x2="750" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
+  <path d="M 120 100 L 330 100" class="arrow" />
+  <text x="225" y="92" text-anchor="middle" font-size="12" fill="#475569">Submit bài</text>
+  <rect x="290" y="130" width="80" height="30" rx="6" class="logs" />
+  <text x="330" y="150" text-anchor="middle" class="subtitle">Xử lý logic</text>
+  <path d="M 330 190 L 120 190" class="arrow" stroke-dasharray="6 3" />
+  <text x="225" y="182" text-anchor="middle" font-size="12" fill="#475569">Response (nhanh!)</text>
+  <path d="M 330 260 L 540 260" class="arrow" />
+  <text x="435" y="252" text-anchor="middle" font-size="12" fill="#475569">UserTracker event</text>
+  <text x="435" y="275" text-anchor="middle" font-size="11" fill="#16a34a">(async — không block response)</text>
+  <path d="M 540 340 L 750 340" class="arrow" />
+  <text x="645" y="332" text-anchor="middle" font-size="12" fill="#475569">Consume + save to DB</text>
+  <rect x="80" y="400" width="800" height="55" rx="8" class="pipeline" />
+  <text x="480" y="425" text-anchor="middle" class="title">Tracking hoàn toàn async — không ảnh hưởng response time của student</text>
+  <text x="480" y="445" text-anchor="middle" class="subtitle">Data dùng cho: learning analytics, peak hour detection, content recommendation</text>
+</svg>

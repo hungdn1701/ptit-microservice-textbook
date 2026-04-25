@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .topic { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .producer { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .consumer-group { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .partition { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+    .consumer { fill: #ffffff; stroke: #16a34a; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <rect x="200" y="20" width="560" height="250" rx="16" class="cluster" />
+  <text x="480" y="50" text-anchor="middle" class="title">Kafka Cluster</text>
+  <rect x="240" y="65" width="480" height="185" rx="12" class="topic" />
+  <text x="480" y="90" text-anchor="middle" class="title">Topic: "submissions"</text>
+  <rect x="280" y="110" width="140" height="120" rx="8" class="partition" />
+  <text x="350" y="140" text-anchor="middle" class="title">Partition 0</text>
+  <text x="350" y="165" text-anchor="middle" class="subtitle">msg1, msg4, msg7…</text>
+  <text x="350" y="210" text-anchor="middle" class="subtitle">offset →</text>
+  <rect x="435" y="110" width="140" height="120" rx="8" class="partition" />
+  <text x="505" y="140" text-anchor="middle" class="title">Partition 1</text>
+  <text x="505" y="165" text-anchor="middle" class="subtitle">msg2, msg5, msg8…</text>
+  <text x="505" y="210" text-anchor="middle" class="subtitle">offset →</text>
+  <rect x="590" y="110" width="140" height="120" rx="8" class="partition" />
+  <text x="660" y="140" text-anchor="middle" class="title">Partition 2</text>
+  <text x="660" y="165" text-anchor="middle" class="subtitle">msg3, msg6, msg9…</text>
+  <text x="660" y="210" text-anchor="middle" class="subtitle">offset →</text>
+  <rect x="20" y="120" width="140" height="70" rx="12" class="producer" />
+  <text x="90" y="150" text-anchor="middle" class="title">Producer</text>
+  <text x="90" y="170" text-anchor="middle" class="subtitle">(Core Service)</text>
+  <path d="M 160 155 L 235 155" class="arrow" />
+  <text x="197" y="145" text-anchor="middle" font-size="11" fill="#64748b">key: userId</text>
+  <rect x="200" y="310" width="560" height="210" rx="16" class="consumer-group" />
+  <text x="480" y="340" text-anchor="middle" class="title">Consumer Group: "judge-group"</text>
+  <rect x="260" y="360" width="150" height="70" rx="8" class="consumer" />
+  <text x="335" y="390" text-anchor="middle" class="title">Consumer 1</text>
+  <text x="335" y="410" text-anchor="middle" class="subtitle">(Judge Instance 1)</text>
+  <rect x="435" y="360" width="150" height="70" rx="8" class="consumer" />
+  <text x="510" y="390" text-anchor="middle" class="title">Consumer 2</text>
+  <text x="510" y="410" text-anchor="middle" class="subtitle">(Judge Instance 2)</text>
+  <rect x="610" y="360" width="150" height="70" rx="8" class="consumer" />
+  <text x="685" y="390" text-anchor="middle" class="title">Consumer 3</text>
+  <text x="685" y="410" text-anchor="middle" class="subtitle">(Judge Instance 3)</text>
+  <path d="M 350 230 L 335 355" class="arrow" />
+  <path d="M 505 230 L 510 355" class="arrow" />
+  <path d="M 660 230 L 685 355" class="arrow" />
+</svg>

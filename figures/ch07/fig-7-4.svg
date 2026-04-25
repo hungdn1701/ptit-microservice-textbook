@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cache-aside { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .read-through { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .write-behind { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .label { font-size: 12px; fill: #475569; }
+  </style>
+  <rect x="20" y="20" width="290" height="490" rx="16" class="cache-aside" />
+  <text x="165" y="50" text-anchor="middle" class="title">1. Cache-Aside</text>
+  <text x="165" y="70" text-anchor="middle" class="subtitle">(Lazy Loading)</text>
+  <rect x="105" y="90" width="120" height="40" rx="8" class="step" />
+  <text x="165" y="115" text-anchor="middle" class="">App đọc Cache</text>
+  <rect x="20" y="190" width="120" height="40" rx="8" class="step" />
+  <text x="80" y="215" text-anchor="middle" class="">Cache HIT</text>
+  <rect x="190" y="190" width="120" height="40" rx="8" class="step" />
+  <text x="250" y="215" text-anchor="middle" class="">Cache MISS</text>
+  <rect x="190" y="290" width="120" height="40" rx="8" class="step" />
+  <text x="250" y="315" text-anchor="middle" class="">Đọc DB</text>
+  <rect x="190" y="380" width="120" height="40" rx="8" class="step" />
+  <text x="250" y="405" text-anchor="middle" class="">Ghi vào Cache</text>
+  <path d="M 120 130 L 80 190" class="arrow" />
+  <text x="85" y="165" class="label">hit</text>
+  <path d="M 210 130 L 250 190" class="arrow" />
+  <text x="240" y="165" class="label">miss</text>
+  <path d="M 250 230 L 250 290" class="arrow" />
+  <path d="M 250 330 L 250 380" class="arrow" />
+  <text x="80" y="270" text-anchor="middle" class="label">→ Trả về</text>
+  <rect x="335" y="20" width="290" height="490" rx="16" class="read-through" />
+  <text x="480" y="50" text-anchor="middle" class="title">2. Read-Through</text>
+  <text x="480" y="70" text-anchor="middle" class="subtitle">(Cache tự đọc DB)</text>
+  <rect x="410" y="110" width="140" height="40" rx="8" class="step" />
+  <text x="480" y="135" text-anchor="middle" class="">App đọc Cache</text>
+  <rect x="410" y="220" width="140" height="40" rx="8" class="step" />
+  <text x="480" y="245" text-anchor="middle" class="">Cache tự đọc DB</text>
+  <rect x="410" y="330" width="140" height="40" rx="8" class="step" />
+  <text x="480" y="355" text-anchor="middle" class="">Cache lưu + trả về</text>
+  <path d="M 480 150 L 480 220" class="arrow" />
+  <text x="500" y="190" class="label">miss</text>
+  <path d="M 480 260 L 480 330" class="arrow" />
+  <rect x="650" y="20" width="290" height="490" rx="16" class="write-behind" />
+  <text x="795" y="50" text-anchor="middle" class="title">3. Write-Behind</text>
+  <text x="795" y="70" text-anchor="middle" class="subtitle">(Async Write)</text>
+  <rect x="725" y="110" width="140" height="40" rx="8" class="step" />
+  <text x="795" y="135" text-anchor="middle" class="">App ghi Cache</text>
+  <rect x="725" y="220" width="140" height="40" rx="8" class="step" />
+  <text x="795" y="245" text-anchor="middle" class="">Cache ghi DB async</text>
+  <rect x="725" y="330" width="140" height="40" rx="8" class="step" />
+  <text x="795" y="355" text-anchor="middle" class="">Batch / Delayed</text>
+  <path d="M 795 150 L 795 220" class="arrow" />
+  <path d="M 795 260 L 795 330" class="arrow" />
+  <text x="795" y="290" text-anchor="middle" class="label">async</text>
+</svg>

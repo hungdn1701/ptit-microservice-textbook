@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .v1 { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; }
+    .v2 { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+    .updating { fill: #fef08a; stroke: #ca8a04; stroke-width: 1.5; stroke-dasharray: 4 2; }
+    
+    .cp { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .node1 { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .node2 { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    
+    .infra { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .platform { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .app { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .fe { fill: #F3E5F5; stroke: #9c27b0; stroke-width: 1.5; }
+    
+    .service { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+    .sidecar { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .pod { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <rect x="40" y="100" width="380" height="300" rx="16" class="pod" />
+  <text x="230" y="130" text-anchor="middle" class="title">Service Instance (Pod)</text>
+  <rect x="70" y="160" width="150" height="90" rx="12" class="infra" />
+  <text x="145" y="195" text-anchor="middle" class="title">Core Service</text>
+  <text x="145" y="220" text-anchor="middle" class="subtitle">(Java)</text>
+  <rect x="240" y="160" width="150" height="90" rx="12" class="sidecar" />
+  <text x="315" y="195" text-anchor="middle" class="title">Sidecar Proxy</text>
+  <text x="315" y="220" text-anchor="middle" class="subtitle">(Envoy)</text>
+  <path d="M 220 200 L 236 200" class="arrow" />
+  <path d="M 240 210 L 224 210" class="arrow" />
+  <text x="230" y="240" text-anchor="middle" class="subtitle">localhost</text>
+  <text x="240" y="300" font-size="12" fill="#64748b">✓ mTLS</text>
+  <text x="240" y="325" font-size="12" fill="#64748b">✓ Tracing</text>
+  <text x="240" y="350" font-size="12" fill="#64748b">✓ Circuit Breaker</text>
+  <text x="240" y="375" font-size="12" fill="#64748b">✓ Rate Limiting</text>
+  <rect x="540" y="100" width="380" height="300" rx="16" class="pod" />
+  <text x="730" y="130" text-anchor="middle" class="title">Service Instance (Pod)</text>
+  <rect x="570" y="160" width="150" height="90" rx="12" class="infra" />
+  <text x="645" y="195" text-anchor="middle" class="title">Judge Service</text>
+  <text x="645" y="220" text-anchor="middle" class="subtitle">(Java)</text>
+  <rect x="740" y="160" width="150" height="90" rx="12" class="sidecar" />
+  <text x="815" y="195" text-anchor="middle" class="title">Sidecar Proxy</text>
+  <text x="815" y="220" text-anchor="middle" class="subtitle">(Envoy)</text>
+  <path d="M 720 200 L 736 200" class="arrow" />
+  <path d="M 740 210 L 724 210" class="arrow" />
+  <text x="730" y="240" text-anchor="middle" class="subtitle">localhost</text>
+  <path d="M 390 200 L 536 200" class="arrow" />
+  <text x="463" y="190" text-anchor="middle" font-size="13" fill="#ca8a04" font-weight="bold">mTLS</text>
+  <text x="480" y="460" text-anchor="middle" class="title">Service Mesh: Sidecar proxies xử lý infrastructure concerns</text>
+  <text x="480" y="485" text-anchor="middle" class="subtitle">Services chỉ focus business logic — không cần thay đổi code</text>
+</svg>

@@ -188,8 +188,70 @@ def gen_fig_12_8():
     write_svg("figures/ch12/fig-12-8.svg", out)
 
 
+# ==========================================
+# Generate Fig 12.7: Sidecar Pattern
+# ==========================================
+def gen_fig_12_7():
+    out = SVG_START.replace(
+        "    .service { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }",
+        "    .service { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }\n"
+        "    .sidecar { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }\n"
+        "    .pod { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; stroke-dasharray: 6 3; }"
+    )
+
+    # Pod 1
+    out += rect(40, 100, 380, 300, 16, "pod")
+    out += text_centered(230, 130, "Service Instance (Pod)", "title")
+
+    out += rect(70, 160, 150, 90, 12, "infra")
+    out += text_centered(145, 195, "Core Service", "title")
+    out += text_centered(145, 220, "(Java)", "subtitle")
+
+    out += rect(240, 160, 150, 90, 12, "sidecar")
+    out += text_centered(315, 195, "Sidecar Proxy", "title")
+    out += text_centered(315, 220, "(Envoy)", "subtitle")
+
+    # Bidirectional arrow inside pod
+    out += f'  <path d="M 220 200 L 236 200" class="arrow" />\n'
+    out += f'  <path d="M 240 210 L 224 210" class="arrow" />\n'
+    out += text_centered(230, 240, "localhost", "subtitle")
+
+    # Sidecar features
+    features = ["✓ mTLS", "✓ Tracing", "✓ Circuit Breaker", "✓ Rate Limiting"]
+    for i, f in enumerate(features):
+        out += f'  <text x="240" y="{300 + i*25}" font-size="12" fill="#64748b">{f}</text>\n'
+
+    # Pod 2
+    out += rect(540, 100, 380, 300, 16, "pod")
+    out += text_centered(730, 130, "Service Instance (Pod)", "title")
+
+    out += rect(570, 160, 150, 90, 12, "infra")
+    out += text_centered(645, 195, "Judge Service", "title")
+    out += text_centered(645, 220, "(Java)", "subtitle")
+
+    out += rect(740, 160, 150, 90, 12, "sidecar")
+    out += text_centered(815, 195, "Sidecar Proxy", "title")
+    out += text_centered(815, 220, "(Envoy)", "subtitle")
+
+    out += f'  <path d="M 720 200 L 736 200" class="arrow" />\n'
+    out += f'  <path d="M 740 210 L 724 210" class="arrow" />\n'
+    out += text_centered(730, 240, "localhost", "subtitle")
+
+    # Network arrow between sidecars (mTLS)
+    out += line_arrow(390, 200, 536, 200)
+    out += f'  <text x="463" y="190" text-anchor="middle" font-size="13" fill="#ca8a04" font-weight="bold">mTLS</text>\n'
+
+    # Title
+    out += text_centered(480, 460, "Service Mesh: Sidecar proxies xử lý infrastructure concerns", "title")
+    out += text_centered(480, 485, "Services chỉ focus business logic — không cần thay đổi code", "subtitle")
+
+    out += SVG_END
+    write_svg("figures/ch12/fig-12-7.svg", out)
+
+
 if __name__ == '__main__':
     gen_fig_12_4()
     gen_fig_12_6()
+    gen_fig_12_7()
     gen_fig_12_8()
     print("Generated SVG files for Chapter 12.")

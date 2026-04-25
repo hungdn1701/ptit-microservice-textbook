@@ -1,4 +1,4 @@
-﻿# Chương 7: Quản lý Dữ liệu trong Microservices
+# Chương 7: Quản lý Dữ liệu trong Microservices
 
 > *"Duplication is far better than coupling. Each service should own its data and make independent decisions about what to store."*
 > — Sam Newman, *Monolith to Microservices* [4b]
@@ -117,28 +117,7 @@ Khi database đã tách, cross-service queries chậm hơn (network call). **Cac
 
 Ba patterns chính (Newman [4a, Ch.11]):
 
-```mermaid
-graph TB
-    subgraph CacheAside["1. Cache-Aside (Lazy Loading)"]
-        A1["App đọc cache"] -->|"miss"| A2["Đọc DB"]
-        A2 --> A3["Ghi vào cache"]
-        A1 -->|"hit"| A4["Trả về"]
-    end
-    
-    subgraph ReadThrough["2. Read-Through"]
-        B1["App đọc cache"] -->|"miss"| B2["Cache tự đọc DB"]
-        B2 --> B3["Cache lưu + trả về"]
-    end
-    
-    subgraph WriteThrough["3. Write-Behind (Async)"]
-        C1["App ghi cache"] --> C2["Cache ghi DB async"]
-        C2 --> C3["Batch/delayed write"]
-    end
-    
-    style CacheAside fill:#E3F2FD
-    style ReadThrough fill:#E8F5E9
-    style WriteThrough fill:#FFF9C4
-```
+![Hình 7.4: Ba caching patterns — Cache-Aside, Read-Through, Write-Behind](../figures/ch07/fig-7-4.svg)
 
 *Hình 7.4: Ba caching patterns — Cache-Aside, Read-Through, Write-Behind*
 

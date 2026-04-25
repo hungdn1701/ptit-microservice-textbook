@@ -5,6 +5,21 @@ Format theo [Keep a Changelog](https://keepachangelog.com/vi/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-04-25
+
+### Added
+- **Final PDF Build**: Hoàn tất biên dịch bản in đầy đủ (`output/SOA-Microservices-Book.pdf`, 7.7MB).
+- Tích hợp page numbering (`page-footer` CSS) tương thích với Edge Chromium (headless).
+
+### Changed
+- **Editorial Polish**:
+  - Bổ sung tên tác giả ("Đặng Ngọc Hùng") vào metadata cover page.
+  - Sửa lỗi tiếng Việt ở mục lục: `MUC LUC` → `MỤC LỤC`.
+  - Loại bỏ các luật CSS thừa cho thẻ `img` trong chế độ `@media print`.
+  - Fix build script: Cập nhật thứ tự chèn các Part indices (Part I trước Ch.1, Part II trước Ch.4, Part III trước Ch.8).
+  - Khắc phục lỗi in sai Table of Contents do conflict biến template `toc: true`.
+  - Xóa duplicate các file phụ lục A & B khỏi bản dịch cuối cùng.
+  - Sách đã đạt độ hoàn thiện 100%, kết thúc phase pre-publication.
 ### Changed
 - **Quản lý dự án**: Refactor cấu trúc Git, tách thư mục `references/` thành Private Submodule (`ptit-microservice-textbook-internal`) để bảo vệ tài liệu tham khảo nội bộ và bản thảo cá nhân.
   > **Lưu ý cho Co-authors:** Khi clone/pull dự án sang máy mới, hãy chạy `git clone --recurse-submodules` hoặc lệnh `git submodule update --init` để lấy đầy đủ thư mục `references/`.

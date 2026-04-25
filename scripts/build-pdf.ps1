@@ -68,31 +68,37 @@ function Get-BookFiles {
         if (Test-Path $path) { $files += $path }
     }
 
-    # Part I
-    $p1idx = Join-Path $m "part-1-foundations\_index.md"
-    if (Test-Path $p1idx) { $files += $p1idx }
-
-    # Chapters (in order)
-    $chapters = Get-ChildItem -Path $m -Filter "chapter-*.md" | Sort-Object Name
-    $files += $chapters | ForEach-Object { $_.FullName }
-
-    # Part II, III index files (when they have content)
-    foreach ($part in @("part-2-communication", "part-3-infrastructure")) {
-        $pidx = Join-Path $m "$part\_index.md"
-        if (Test-Path $pidx) { $files += $pidx }
+    # Part-to-chapter mapping: insert Part index BEFORE its first chapter
+    $partMap = @{
+        "01" = "part-1-foundations"      # Part I before Ch.1
+        "04" = "part-2-communication"    # Part II before Ch.4
+        "08" = "part-3-infrastructure"   # Part III before Ch.8
     }
 
-    # Appendices (both manuscript/appendix-*.md and manuscript/appendices/*.md)
+    # Chapters (in order), with Part indices interleaved
+    $chapters = Get-ChildItem -Path $m -Filter "chapter-*.md" | Sort-Object Name
+    foreach ($chap in $chapters) {
+        $chapterNum = $chap.Name -replace "chapter-(.+)\.md", "`$1"
+        
+        # Insert Part index before this chapter if applicable
+        if ($partMap.ContainsKey($chapterNum)) {
+            $partDir = $partMap[$chapterNum]
+            $pidx = Join-Path $m "$partDir\_index.md"
+            if (Test-Path $pidx) { $files += $pidx }
+        }
+        
+        $files += $chap.FullName
+    }
+
+    # Appendices (root level only — manuscript/appendix-*.md)
     $rootAppendices = Get-ChildItem -Path $m -Filter "appendix-*.md" -ErrorAction SilentlyContinue | Sort-Object Name
     if ($rootAppendices) {
         $files += $rootAppendices | ForEach-Object { $_.FullName }
     }
-    $appDir = Join-Path $m "appendices"
-    if (Test-Path $appDir) {
-        Get-ChildItem -Path $appDir -Filter "*.md" | Sort-Object Name | ForEach-Object {
-            $files += $_.FullName
-        }
-    }
+
+    # Exercises
+    $exercises = Join-Path $m "exercises.md"
+    if (Test-Path $exercises) { $files += $exercises }
 
     # Bibliography
     $bib = Join-Path $m "bibliography.md"

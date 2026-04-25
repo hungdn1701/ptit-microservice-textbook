@@ -12,7 +12,16 @@
     .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
     .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
     .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .logs { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .metrics { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .traces { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .bad { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .good { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .sli { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .slo { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .sla { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
     .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
   </style>
   <rect x="80" y="40" width="800" height="140" rx="16" class="cluster" />
   <text x="480" y="70" text-anchor="middle" class="title">Application Services</text>

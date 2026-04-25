@@ -461,23 +461,7 @@ Trong LMS, **Notification Service** là candidate tốt nhất cho serverless: e
 
 Khi hệ thống microservices lớn (20+ services), mỗi service cần implement cùng cross-cutting concerns: mTLS, logging, tracing, circuit breaker, rate limiting. **Sidecar pattern** giải quyết bằng cách đặt một **proxy process bên cạnh mỗi service instance** — proxy xử lý infrastructure concerns, service chỉ focus business logic.
 
-```mermaid
-graph LR
-    subgraph Pod["Service Instance"]
-        SVC["Core Service<br/>(Java)"] <-->|"localhost"| SIDE["Sidecar Proxy<br/>(Envoy)"]
-    end
-    
-    SIDE <-->|"mTLS"| SIDE2["Sidecar Proxy<br/>(Envoy)"]
-    
-    subgraph Pod2["Service Instance"]
-        SIDE2 <-->|"localhost"| SVC2["Judge Service<br/>(Java)"]
-    end
-    
-    style SIDE fill:#FFF9C4
-    style SIDE2 fill:#FFF9C4
-```
-
-```
+![Hình 12.7: Sidecar Pattern — Proxy xử lý infrastructure concerns (mTLS, tracing)](../figures/ch12/fig-12-7.svg)
 
 *Hình 12.7: Sidecar Pattern — Proxy xử lý infrastructure concerns (mTLS, tracing)*
 

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
+    .title { font-weight: bold; font-size: 16px; }
+    .subtitle { font-size: 13px; fill: #64748b; }
+    .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .logs { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .metrics { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
+    .traces { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .bad { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .good { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .sli { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
+    .slo { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
+    .sla { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+  </style>
+  <rect x="60" y="120" width="240" height="300" rx="16" class="sli" />
+  <text x="180" y="160" text-anchor="middle" class="title">SLI</text>
+  <text x="180" y="185" text-anchor="middle" class="subtitle">(đo gì?)</text>
+  <rect x="90" y="210" width="180" height="50" rx="8" class="step" />
+  <text x="180" y="230" text-anchor="middle" class="">submission_</text>
+  <text x="180" y="248" text-anchor="middle" class="subtitle">latency_p99</text>
+  <rect x="90" y="280" width="180" height="50" rx="8" class="step" />
+  <text x="180" y="305" text-anchor="middle" class="">error_rate</text>
+  <rect x="90" y="350" width="180" height="50" rx="8" class="step" />
+  <text x="180" y="375" text-anchor="middle" class="">availability</text>
+  <path d="M 300 270 L 350 270" class="arrow" />
+  <rect x="360" y="120" width="240" height="300" rx="16" class="slo" />
+  <text x="480" y="160" text-anchor="middle" class="title">SLO</text>
+  <text x="480" y="185" text-anchor="middle" class="subtitle">(mục tiêu bao nhiêu?)</text>
+  <rect x="390" y="210" width="180" height="50" rx="8" class="step" />
+  <text x="480" y="235" text-anchor="middle" class="">99% < 5 giây</text>
+  <rect x="390" y="280" width="180" height="50" rx="8" class="step" />
+  <text x="480" y="305" text-anchor="middle" class="">Error < 1%</text>
+  <rect x="390" y="350" width="180" height="50" rx="8" class="step" />
+  <text x="480" y="375" text-anchor="middle" class="">Uptime 99.9%</text>
+  <path d="M 600 270 L 650 270" class="arrow" />
+  <rect x="660" y="120" width="240" height="300" rx="16" class="sla" />
+  <text x="780" y="160" text-anchor="middle" class="title">SLA</text>
+  <text x="780" y="185" text-anchor="middle" class="subtitle">(cam kết gì?)</text>
+  <rect x="690" y="210" width="180" height="80" rx="8" class="step" />
+  <text x="780" y="240" text-anchor="middle" class="">Uptime 99.5%</text>
+  <text x="780" y="262" text-anchor="middle" class="subtitle">(~44h downtime/năm)</text>
+  <rect x="690" y="310" width="180" height="80" rx="8" class="step" />
+  <text x="780" y="340" text-anchor="middle" class="">Nếu vi phạm:</text>
+  <text x="780" y="362" text-anchor="middle" class="subtitle">→ hậu quả hợp đồng</text>
+</svg>

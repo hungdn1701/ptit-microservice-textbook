@@ -1,4 +1,4 @@
-﻿# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
+# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
 
 > *"Event streams become the heart of data sharing throughout the company. Data no longer sits solely on a database accessible only through synchronous interfaces."*
 > — Hugo Rocha, *Practical Event-Driven Microservices Architecture* [5]
@@ -135,28 +135,7 @@ LMS chọn Kafka vì cần **replay** (chấm lại bài khi Judge đổi logic)
 
 ## 5.3 Apache Kafka — Kiến trúc chi tiết
 
-```mermaid
-graph TB
-    subgraph Cluster["Kafka Cluster"]
-        subgraph Topic["Topic: submissions"]
-            P0["Partition 0<br/>msg1, msg4, msg7..."]
-            P1["Partition 1<br/>msg2, msg5, msg8..."]
-            P2["Partition 2<br/>msg3, msg6, msg9..."]
-        end
-    end
-    
-    PROD1["Producer<br/>(Core Service)"] -->|"key: userId"| Topic
-    
-    subgraph CG["Consumer Group: judge-group"]
-        C1["Consumer 1<br/>(Judge Instance 1)"] --> P0
-        C2["Consumer 2<br/>(Judge Instance 2)"] --> P1
-        C3["Consumer 3<br/>(Judge Instance 3)"] --> P2
-    end
-    
-    style Topic fill:#FFF9C4
-    style PROD1 fill:#E3F2FD
-    style CG fill:#E8F5E9
-```
+![Hình 5.5: Kiến trúc Kafka — Topic, Partitions và Consumer Group](../figures/ch05/fig-5-5.svg)
 
 *Hình 5.5: Kiến trúc Kafka — Topic, Partitions và Consumer Group*
 
