@@ -1,6 +1,0 @@
-﻿graph LR
-    U["Student"] -->|"HTTP POST /submit"| GW["API Gateway\n:8080"]
-    GW -->|"JWT validated"| CORE["Core Service\n:8082"]
-    CORE -->|"Kafka publish"| KAFKA["Kafka Broker"]
-    KAFKA -->|"consume"| JUDGE["Judge Service\n:8084"]
-    JUDGE -->|"SQL execute"| DB["PostgreSQL"]

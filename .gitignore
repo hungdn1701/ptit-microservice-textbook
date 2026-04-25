@@ -11,6 +11,27 @@ references/extracted/
 .agents/
 .gemini/
 
+# ----- Internal authoring docs (private submodule) -----
+IDEAS.md
+PROGRESS.md
+CHANGELOG.md
+manuscript/storyline-analysis.md
+manuscript/style-guide.md
+manuscript/book-outline.md
+manuscript/archive/
+manuscript/appendices/
+
+# ----- Gen scripts & build tools (private submodule) -----
+scripts/gen_svg_*.py
+scripts/pdf_to_md.py
+scripts/render-diagrams.ps1
+scripts/audit-interactive-css.ps1
+scripts/build-pdf.ps1
+scripts/mmdc-*.json
+
+# ----- Test/temporary figures -----
+figures/shared/test*
+
 # ----- Build outputs -----
 output/
 _build/
