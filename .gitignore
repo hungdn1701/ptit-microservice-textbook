@@ -83,3 +83,10 @@ docker-compose.override.yml
 *.log
 *.local.md
 tracked_files.txt
+
+# Typst auto-generated (from Pandoc conversion — source is .typ files after migration)
+typst/chapters/_pandoc-raw/
+
+# Test/temp files
+_test-*.typ
+typst/_test-*.typ
