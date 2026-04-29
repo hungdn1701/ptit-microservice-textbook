@@ -2,14 +2,14 @@
 
 [![License: CC BY 4.0](https://img.shields.io/badge/Content-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![License: MIT](https://img.shields.io/badge/Code-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 **Service-Oriented Architecture & Microservices: From Theory to Practice**
 
 > [!WARNING]
 > **Bản Beta** — Giáo trình đang trong quá trình hoàn thiện (`v1.0.0-beta`). Nội dung có thể thay đổi. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
 
-Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ nền tảng SOA đến triển khai Microservices, minh họa qua case study hệ thống **LMS (Learning Management System)** thực tế.
+Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ nền tảng SOA đến triển khai Microservices, minh họa xuyên suốt qua case study hệ thống **KBLab LMS** thực tế.
 
 ---
 
@@ -19,6 +19,7 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 |---|---|
 | **PDF** (khuyên dùng) | Tải bản mới nhất tại [Releases](https://github.com/hungdn1701/ptit-microservice-textbook/releases) |
 | **Online** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
+| **Tự build** | Xem mục [🏗️ Build](#️-build) bên dưới *(cần Pandoc + MS Edge)* |
 
 ---
 
@@ -42,7 +43,7 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 | 11 | [Observability](manuscript/chapter-11.md) | Logging, Tracing, Monitoring |
 | 12 | [Triển khai & Tự động hóa](manuscript/chapter-12.md) | Docker, Kubernetes, CI/CD |
 
-Kèm theo: [Bài tập](manuscript/exercises.md) · [Glossary](manuscript/appendix-a-glossary.md) · [Pattern Catalog](manuscript/appendix-c-pattern-catalog.md) · [Anti-patterns](manuscript/appendix-d-anti-patterns.md)
+Kèm theo: [Bài tập](manuscript/exercises.md) · [Pattern Catalog](manuscript/appendix-c-pattern-catalog.md) · [Anti-patterns](manuscript/appendix-d-anti-patterns.md)
 
 ---
 
@@ -52,9 +53,34 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 
 ---
 
+## 🏗️ Build
+
+> [!NOTE]
+> Phần này dành cho **core author** có quyền truy cập submodule `references/`. Xem [AGENTS.md](AGENTS.md) để biết thêm.
+
+**Yêu cầu:** [Pandoc](https://pandoc.org/installing.html) + Microsoft Edge (để xuất PDF).
+
+```powershell
+# Clone đầy đủ (bao gồm cả submodule)
+git clone --recurse-submodules https://github.com/hungdn1701/ptit-microservice-textbook.git
+
+# Build toàn bộ sách (HTML + PDF)
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 all
+
+# Build một chương cụ thể (ví dụ: chương 3)
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 03
+```
+
+Output được ghi vào thư mục `output/` (gitignored):
+- `output/chapter-XX.html` — HTML từng chương
+- `output/chapter-XX.pdf` — PDF từng chương
+- `output/SOA-Microservices-Book.pdf` — Toàn bộ sách
+
+---
+
 ## 🤝 Đóng góp
 
-Mọi đóng góp đều được hoan nghênh! Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết chi tiết.
+Mọi đóng góp đều được hoan nghênh! Xem [CONTRIBUTING.md](.github/CONTRIBUTING.md) để biết chi tiết.
 
 ```bash
 # Fork → Clone → Branch → Commit → Pull Request
@@ -70,10 +96,6 @@ git checkout -b fix/chapter-03-typo
 - **💻 Code** (`code/`): [MIT License](https://opensource.org/licenses/MIT)
 
 ---
-
-## 📞 Liên hệ
-
-- [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues/new/choose) · [Discussions](https://github.com/hungdn1701/ptit-microservice-textbook/discussions)
 
 <p align="center">
   <em>PTIT — Posts and Telecommunications Institute of Technology</em>

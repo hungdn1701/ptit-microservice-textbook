@@ -17,7 +17,7 @@ Cảm ơn bạn đã quan tâm đến việc đóng góp cho giáo trình! Mọi
 
 ## 🤝 Quy tắc ứng xử
 
-Dự án tuân theo [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). Bằng việc tham gia, bạn đồng ý tuân thủ các quy tắc này.
+Dự án tuân theo [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html). Bằng việc tham gia, bạn đồng ý tuân thủ các quy tắc này.
 
 ---
 
