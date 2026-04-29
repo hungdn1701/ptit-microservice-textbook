@@ -106,6 +106,12 @@ Fowler2014:
   date: 2014
   url: "https://martinfowler.com/articles/microservices.html"
 
+RichardsonWeb:
+  type: Web
+  author: "Richardson, Chris"
+  title: "Microservices.io"
+  url: "https://microservices.io"
+
 GarciaMolina1987:
   type: Article
   author: "Garcia-Molina, Hector and Salem, Kenneth"
