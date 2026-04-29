@@ -111,3 +111,6 @@
 
 = Bài tập & Case Studies
 #include "chapters/exercises.typ"
+
+= Tài liệu tham khảo
+#bibliography("bibliography.yml", title: none, style: "ieee")
