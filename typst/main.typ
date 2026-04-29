@@ -1,120 +1,70 @@
-// =============================================================
-// main.typ — SOA & Microservices Architecture
-//            Book entry point — assembles all chapters
-// =============================================================
+// ============================================================
+// main.typ — SOA & Microservices Architecture (Tiếng Việt)
+// Stack: bookly:3.1.0, theme: obook
+// Compile: typst compile --root . typst/main.typ output/book.pdf
+// ============================================================
 
-#import "theme/book.typ": apply-book-styles, font-sans, font-body, color-navy, color-accent
+#import "@preview/bookly:3.1.0": *
+#import "components/compat.typ": *   // Callout bridge layer
 
-// ── APPLY GLOBAL STYLES ───────────────────────────────────────
-#apply-book-styles()
-
-// ── DOCUMENT METADATA ─────────────────────────────────────────
-#set document(
-  title: "SOA & Microservices Architecture",
+// ── BOOK METADATA & THEME ────────────────────────────────────
+#show: bookly.with(
+  title: "Kiến Trúc SOA & Microservices",
   author: "Đặng Ngọc Hùng",
-  date: datetime(year: 2026, month: 4, day: 29),
+  theme: obook,
+  lang: "en",          // bookly UI strings; text lang overridden below
+  fonts: (
+    // New Computer Modern: Typst built-in, full Unicode support for Vietnamese
+    body: "New Computer Modern",
+    math: "New Computer Modern Math",
+    raw:  "DejaVu Sans Mono",
+  ),
+  colors: (
+    primary:   rgb("#1B2A4A"),   // Deep navy — formal technical book
+    secondary: rgb("#2C5282"),   // Blue accent
+    header:    rgb("#1B2A4A"),
+  ),
+  title-page: book-title-page(
+    subtitle:    "Thiết kế hệ thống phân tán hiện đại",
+    edition:     "Phiên bản 1.0",
+    institution: "Học viện Công nghệ Bưu chính Viễn thông (PTIT)",
+    series:      "Giáo trình Kỹ thuật Phần mềm",
+    year:        "2026",
+  ),
 )
 
-// ── COVER PAGE ────────────────────────────────────────────────
-#page(
-  margin: (all: 0pt),
-  header: none,
-  footer: none,
-  numbering: none,
-)[
-  // Full-page cover background
-  #rect(
-    width: 100%,
-    height: 100%,
-    fill: color-navy,
-  )
-  // Content overlay
-  #place(
-    left + bottom,
-    dx: 3cm,
-    dy: -4cm,
-  )[
-    #set text(fill: white, font: font-sans)
-    #text(size: 9pt, tracking: 4pt)[SOA & MICROSERVICES ARCHITECTURE]
-    #v(0.6em)
-    #text(size: 36pt, weight: 700)[Từ lý thuyết\nđến thực hành]
-    #v(0.4em)
-    #text(size: 14pt, weight: 300, fill: rgb("#93C5FD"))[với case study LMS]
-    #v(1.5cm)
-    #line(length: 5cm, stroke: 1pt + color-accent)
-    #v(0.8em)
-    #text(size: 12pt, weight: 400)[Đặng Ngọc Hùng]
-    #v(0.3em)
-    #text(size: 9pt, fill: rgb("#93C5FD"))[Học viện Công nghệ Bưu chính Viễn thông — PTIT]
-    #v(0.5em)
-    #text(size: 9pt, fill: rgb("#6B7280"))[v1.0 · 2026]
-  ]
-]
+// Override language to Vietnamese for correct hyphenation/typography
+#set text(lang: "vi", region: "VN", hyphenate: false)
 
-// ── FRONT MATTER (Roman numerals) ────────────────────────────
-#set page(numbering: "i")
-#counter(page).update(1)
+// ── FRONT MATTER (roman numerals, unnumbered chapters) ────────
+#show: front-matter
 
-// Table of Contents
-#page(header: none, footer: none)[
-  #set text(font: font-sans)
-  #heading(level: 1, outlined: false, numbering: none)[Mục lục]
-  #outline(
-    title: none,
-    indent: auto,
-    depth: 3,
-  )
-]
-
-// Front matter chapters
 #include "chapters/preface.typ"
-#include "chapters/introduction.typ"
 
-// ── MAIN MATTER (Arabic numerals) ─────────────────────────────
-#set page(numbering: "1")
-#counter(page).update(1)
+// ── MAIN MATTER ───────────────────────────────────────────────
+#show: main-matter
 
-// Part I — Foundations
-#page(header: none, footer: none)[
-  #set align(center + horizon)
-  #set text(font: font-sans)
-  #text(size: 9pt, tracking: 4pt, fill: color-accent)[PHẦN I]
-  #v(0.5em)
-  #text(size: 28pt, weight: 700, fill: color-navy)[Nền tảng]
-  #v(0.5em)
-  #text(size: 12pt, fill: rgb("#6B7280"))[Chương 1–3]
-]
+#tableofcontents
+#listoffigures
+#listoftables
+
+// ── PART I — Foundations ──────────────────────────────────────
+#part("Phần I — Nền tảng")
 
 #include "chapters/chapter-01.typ"
 #include "chapters/chapter-02.typ"
 #include "chapters/chapter-03.typ"
 
-// Part II — Communication & Data
-#page(header: none, footer: none)[
-  #set align(center + horizon)
-  #set text(font: font-sans)
-  #text(size: 9pt, tracking: 4pt, fill: color-accent)[PHẦN II]
-  #v(0.5em)
-  #text(size: 28pt, weight: 700, fill: color-navy)[Giao tiếp & Dữ liệu]
-  #v(0.5em)
-  #text(size: 12pt, fill: rgb("#6B7280"))[Chương 4–7]
-]
+// ── PART II — Communication & Data ───────────────────────────
+#part("Phần II — Giao tiếp & Dữ liệu")
 
 #include "chapters/chapter-04.typ"
 #include "chapters/chapter-05.typ"
 #include "chapters/chapter-06.typ"
 #include "chapters/chapter-07.typ"
 
-// Part III — Infrastructure & Operations
-#page(header: none, footer: none)[
-  #set align(center + horizon)
-  #set text(font: font-sans)
-  #text(size: 9pt, tracking: 4pt, fill: color-accent)[PHẦN III]
-  #v(0.5em)
-  #text(size: 28pt, weight: 700, fill: color-navy)[Hạ tầng & Vận hành]
-  #v(0.5em)
-  #text(size: 12pt, fill: rgb("#6B7280"))[Chương 8–12]
-]
+// ── PART III — Infrastructure & Operations ───────────────────
+#part("Phần III — Hạ tầng & Vận hành")
 
 #include "chapters/chapter-08.typ"
 #include "chapters/chapter-09.typ"
@@ -123,9 +73,10 @@
 #include "chapters/chapter-12.typ"
 
 // ── BACK MATTER ───────────────────────────────────────────────
-#include "chapters/exercises.typ"
+#show: appendix
+
+#part("Phụ lục")
+
 #include "chapters/appendix-a-glossary.typ"
-#include "chapters/appendix-b-tools.typ"
 #include "chapters/appendix-c-pattern-catalog.typ"
-#include "chapters/appendix-d-anti-patterns.typ"
-#include "chapters/bibliography.typ"
+#include "chapters/appendix-d-antipatterns.typ"

@@ -4,9 +4,7 @@
 // Last converted: 2026-04-29
 // ============================================================
 
-#import "../components/callouts.typ": *
-#import "../components/figures.typ": *
-#import "../theme/book.typ": *
+#import "../components/compat.typ": *
 = Chương 1: Tổng quan SOA & Microservices
 #quote(block: true)[
 #emph["Microservices are not the goal; sustainable fast flow of change is."] --- Chris Richardson, #emph[Microservices Patterns], 2nd Edition
