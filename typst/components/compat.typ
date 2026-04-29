@@ -1,138 +1,125 @@
-// ============================================================
-// compat.typ — Callout compatibility bridge
+﻿// ============================================================
+// compat.typ — Callout compatibility bridge v2
 //
-// Maps our style-guide callout functions to bookly's box system.
-// Chapter files use #principle(), #warning(), etc. unchanged.
-// This layer translates them to bookly's #custom-box().
+// Maps style-guide callout functions to bookly's box system.
+// Chapter files call #principle(), #warning(), etc. unchanged.
 //
-// Usage: #import "../components/compat.typ": *
+// Fix v2:
+//   - All functions accept (body) or (title, body) via args spread
+//   - No string concatenation with content (Typst type-safe)
+//   - note() uses custom-box instead of info-box for title support
 // ============================================================
 
 #import "@preview/bookly:3.1.0": custom-box, tip-box, info-box, warning-box, important-box
 
-// ── COLOR PALETTE (consistent with book design) ──────────────
+// ── COLOR PALETTE ─────────────────────────────────────────────
 #let _c-principle = rgb("#1B2A4A")   // Deep navy
 #let _c-warning   = rgb("#92400E")   // Amber-brown
 #let _c-tip       = rgb("#065F46")   // Forest green
 #let _c-analysis  = rgb("#3730A3")   // Indigo
-#let _c-note      = rgb("#374151")   // Gray
+#let _c-note      = rgb("#4B5563")   // Cool gray
+#let _c-case      = rgb("#0C4A6E")   // Deep sky blue
 
 // ── CALLOUT BRIDGE FUNCTIONS ─────────────────────────────────
 
 /// 📐 Nguyên tắc — Architectural principle or design rule
-/// Usage: #principle("Title")[Body text]
-#let principle(title, body) = custom-box(
-  title: "📐 Nguyên tắc — " + title,
-  icon: "report",
-  color: _c-principle,
-  body,
-)
-
-/// ⚠️ Cảnh báo — Common mistake or anti-pattern warning
-/// Usage: #warning("Title")[Body text]  OR  #warning[Body text]
-#let warning(title-or-body, body-opt) = {
-  if body-opt == none {
-    // Called as: #warning[body]
-    custom-box(
-      title: "⚠️ Lưu ý quan trọng",
-      icon: "alert",
-      color: _c-warning,
-      title-or-body,
-    )
+/// Usage: #principle("Title")[Body]  OR  #principle[Body]
+#let principle(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "📐 Nguyên tắc", icon: "report", color: _c-principle, pos.at(0))
   } else {
-    // Called as: #warning("Title")[body]
-    custom-box(
-      title: "⚠️ Lưu ý — " + title-or-body,
-      icon: "alert",
-      color: _c-warning,
-      body-opt,
-    )
+    custom-box(title: "📐 Nguyên tắc — " + pos.at(0), icon: "report", color: _c-principle, pos.at(1))
   }
 }
 
-/// 💡 Gợi ý — Practical tip or best practice
-/// Usage: #tip("Title")[Body text]  OR  #tip[Body text]
-#let tip(title-or-body, body-opt) = {
-  if body-opt == none {
-    tip-box(title-or-body)
+/// ⚠️ Cảnh báo — Common mistake or anti-pattern
+/// Usage: #warning("Title")[Body]  OR  #warning[Body]
+#let warning(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "⚠️ Lưu ý quan trọng", icon: "alert", color: _c-warning, pos.at(0))
   } else {
-    custom-box(
-      title: "💡 Tip — " + title-or-body,
-      icon: "tip",
-      color: _c-tip,
-      body-opt,
-    )
+    custom-box(title: "⚠️ Lưu ý — " + pos.at(0), icon: "alert", color: _c-warning, pos.at(1))
+  }
+}
+
+/// 💡 Tip — Practical tip or best practice
+/// Usage: #tip("Title")[Body]  OR  #tip[Body]
+#let tip(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "💡 Tip", icon: "tip", color: _c-tip, pos.at(0))
+  } else {
+    custom-box(title: "💡 Tip — " + pos.at(0), icon: "tip", color: _c-tip, pos.at(1))
   }
 }
 
 /// 🔍 Phân tích — Case study analysis or deep-dive
-/// Usage: #analysis("Title")[Body text]
-#let analysis(title, body) = custom-box(
-  title: "🔍 Phân tích — " + title,
-  icon: "info",
-  color: _c-analysis,
-  body,
-)
-
-/// 📝 Lưu ý — General note or supplementary info
-/// Usage: #note("Title")[Body text]  OR  #note[Body text]
-#let note(title-or-body, body-opt) = {
-  if body-opt == none {
-    info-box(title-or-body)
+/// Usage: #analysis("Title")[Body]  OR  #analysis[Body]
+#let analysis(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "🔍 Phân tích", icon: "info", color: _c-analysis, pos.at(0))
   } else {
-    info-box(title-or-body + ": " + body-opt)
+    custom-box(title: "🔍 Phân tích — " + pos.at(0), icon: "info", color: _c-analysis, pos.at(1))
   }
 }
 
-/// 📖 Case study — KBLab LMS case study block
-/// Usage: #casestudy("Title")[Body text]
-#let casestudy(title, body) = custom-box(
-  title: "📖 Case Study KBLab — " + title,
-  icon: "question",
-  color: rgb("#0C4A6E"),   // Deep sky blue
-  body,
-)
+/// 📝 Lưu ý — General note or supplementary info
+/// Usage: #note("Title")[Body]  OR  #note[Body]
+#let note(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "📝 Lưu ý", icon: "info", color: _c-note, pos.at(0))
+  } else {
+    custom-box(title: "📝 Lưu ý — " + pos.at(0), icon: "info", color: _c-note, pos.at(1))
+  }
+}
 
-// ── FIGURE HELPERS ─────────────────────────────────────────--
+/// 📖 Case Study — KBLab LMS analysis block
+/// Usage: #casestudy("Title")[Body]  OR  #casestudy[Body]
+#let casestudy(..args) = {
+  let pos = args.pos()
+  if pos.len() == 1 {
+    custom-box(title: "📖 Case Study KBLab", icon: "question", color: _c-case, pos.at(0))
+  } else {
+    custom-box(title: "📖 Case Study KBLab — " + pos.at(0), icon: "question", color: _c-case, pos.at(1))
+  }
+}
 
-/// Numbered figure with caption below
-/// Usage: #fig("/figures/ch01/fig-1-1.svg", "Hình 1.1: Caption text")
+// ── FIGURE HELPERS ────────────────────────────────────────────
+
+/// Figure with caption: #fig("/figures/ch01/fig-1-1.svg", "Caption")
 #let fig(path, caption-text, width: 90%) = figure(
   image(path, width: width),
   caption: [#caption-text],
   kind: image,
 )
 
-/// Numbered table caption label (place ABOVE the table)
-/// Usage: #table-label("Bảng 1.1: Title")
+/// Table caption label above table: #table-label("Bảng 1.1: Title")
 #let table-label(caption-text) = {
-  v(0.5em)
+  v(0.4em)
   text(weight: "bold", size: 9.5pt)[#caption-text]
-  v(0.2em)
+  v(0.15em)
 }
 
-/// Code listing label (place ABOVE the code block)
-/// Usage: #listing-label("Listing 1.1: Title")
+/// Listing caption above code block: #listing-label("Listing 1.1: Title")
 #let listing-label(caption-text) = {
-  v(0.5em)
+  v(0.4em)
   text(weight: "bold", size: 9.5pt, fill: rgb("#374151"))[#caption-text]
-  v(0.2em)
+  v(0.15em)
 }
 
-// ── EPIGRAPH ─────────────────────────────────────────────────
-/// Opening quote for a chapter
-/// Usage: #epigraph("Quote text")[— Author, *Work*]
-#let epigraph(quote-text, attribution) = {
-  block(
-    width: 75%,
-    above: 1.5em,
-    below: 2em,
-  )[
+// ── EPIGRAPH ──────────────────────────────────────────────────
+/// Opening chapter quote: #epigraph[Quote][— Author, _Work_]
+#let epigraph(quote-content, attribution) = {
+  block(width: 78%, above: 1.2em, below: 2em)[
     #set text(style: "italic", size: 10pt, fill: rgb("#6B7280"))
     #set par(justify: false)
-    "#quote-text"
+    #quote-content
     #linebreak()
-    #set text(style: "normal", size: 9pt)
+    #set text(style: "normal", size: 9pt, fill: rgb("#9CA3AF"))
     #attribution
   ]
 }

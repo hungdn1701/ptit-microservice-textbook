@@ -1,0 +1,544 @@
+﻿// Auto-converted: manuscript/chapter-02.md â†’ Typst
+// Converted: 2026-04-29
+// REVIEW: Verify callout box titles and table captions.
+#import "../components/compat.typ": *
+= Chương 2: Phân tích hướng Domain --- DDD & Bounded Contexts
+#quote(block: true)[
+#emph["Use the model as the backbone of a language. Commit the team to exercising that language relentlessly in all communication within the team and in the code."] --- Eric Evans, #emph[Domain-Driven Design]
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Bạn sẽ học được gì
+- Hiểu Conway's Law và tác động của cấu trúc tổ chức lên kiến trúc phần mềm
+- Nắm vững các khái niệm DDD cốt lõi: Entity, Value Object, Aggregate, Repository
+- Áp dụng Strategic DDD: Bounded Context, Context Map, Ubiquitous Language
+- Thực hành xác định ranh giới dịch vụ từ domain --- kỹ năng quan trọng nhất khi thiết kế microservices
+- So sánh hai phương pháp phân tách: DDD (heuristic-based) vs Erl Service-Oriented Analysis (step-by-step)
+- Phân tích case study LMS: 4+ bounded contexts và quyết định Shared Kernel
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Conway's Law --- Tổ chức quyết định kiến trúc
+Trước khi đi vào Domain-Driven Design, chúng ta cần hiểu một quy luật nền tảng ảnh hưởng đến mọi quyết định kiến trúc: #strong[kiến trúc phần mềm phản ánh cấu trúc tổ chức phát triển nó].
+
+=== Quy luật Conway
+Năm 1968, Melvin Conway quan sát rằng:
+
+#principle("Nguyên tắc — Conway’s Law")[
+"Any organization that designs a system will produce a design whose
+structure is a copy of the organization's communication structure."
+
+#emph[--- Melvin Conway, 1968]
+
+]
+Nói cách khác: nếu tổ chức có 3 team, hệ thống sẽ có 3 service (hoặc 3 module lớn). Nếu 2 team giao tiếp nhiều, 2 service tương ứng sẽ coupling chặt. Đây không phải lý thuyết suông --- nghiên cứu của MacCormack, Rusnak & Baldwin tại Harvard Business School (2008) đã cung cấp bằng chứng thực nghiệm hỗ trợ quy luật này trên các dự án mã nguồn mở.
+
+Đối với developer và kiến trúc sư phần mềm, điều này có ý nghĩa thực tiễn rõ ràng: #strong[không thể thiết kế microservices tốt nếu cấu trúc team không phù hợp]. Đây là lý do Amazon tái cấu trúc thành "two-pizza teams" #emph[trước] khi tách monolith (đã thảo luận ở Chương 1).
+
+=== Inverse Conway Maneuver
+Thay vì chấp nhận thụ động, nhiều tổ chức chủ động tận dụng Conway's Law theo hướng ngược lại: #strong[thiết kế cấu trúc team để đạt được kiến trúc phần mềm mong muốn]. Chiến lược này gọi là #emph[Inverse Conway Maneuver].
+
+#box(image("/figures/ch02/fig-2-1.svg"))
+
+#emph[Hình 2.1: Conway's Law (thụ động) vs Inverse Conway Maneuver (chủ động)]
+
+Một team sở hữu một hoặc vài service liên quan, chịu trách nhiệm toàn bộ lifecycle --- từ code đến production. Đây là mô hình "you build it, you run it" mà Amazon và Netflix đã chứng minh hiệu quả.
+
+=== Team Topologies --- Bốn kiểu team
+Matthew Skelton và Manuel Pais đề xuất bốn kiểu team cơ bản cho tổ chức phần mềm hiện đại:
+
+#strong[Bảng 2.1:] Bốn kiểu team theo Team Topologies
+
+#figure(
+  align(center)[#table(
+    columns: (29.73%, 24.32%, 45.95%),
+    align: (auto,auto,auto,),
+    table.header([Kiểu team], [Vai trò], [Ví dụ trong LMS],),
+    table.hline(),
+    [#strong[Stream-aligned]], [Phát triển theo luồng nghiệp vụ, sở hữu end-to-end], [Team "Bài tập & Chấm thi", Team "Quản lý người dùng"],
+    [#strong[Platform]], [Cung cấp nền tảng nội bộ giúp stream-aligned teams phát triển nhanh hơn], [Team DevOps (CI/CD, Docker, monitoring)],
+    [#strong[Enabling]], [Hỗ trợ các team khác nâng cao kỹ năng], [Team kiến trúc (DDD coaching, code review)],
+    [#strong[Complicated subsystem]], [Sở hữu thành phần phức tạp đòi hỏi chuyên môn sâu], [Team "SQL Judge" (sandbox isolation, multi-DBMS)],
+  )]
+  , kind: table
+  )
+
+Với LMS --- một dự án nhỏ (2--3 developers) --- không thể áp dụng đầy đủ 4 kiểu team. Nhưng #emph[tư duy] vẫn áp dụng: developer nào hiểu sâu domain nào sẽ tự nhiên sở hữu service tương ứng. Khi team mở rộng, cấu trúc này sẽ trở nên tường minh hơn.
+
+=== Industry Case Study: Spotify Squad Model
+Spotify (2012) là case study nổi tiếng nhất về tổ chức team cho microservices. Henrik Kniberg và Anders Ivarsson mô tả mô hình gồm bốn cấp:
+
+#box(image("/figures/ch02/fig-2-2.svg"))
+
+#emph[Hình 2.2: Mô hình Squad/Tribe/Chapter/Guild của Spotify]
+
+#strong[Bảng 2.2:] Cấu trúc tổ chức Spotify --- ý nghĩa cho microservices
+
+#figure(
+  align(center)[#table(
+    columns: (24.44%, 17.78%, 57.78%),
+    align: (auto,auto,auto,),
+    table.header([Cấu trúc], [Mô tả], [Ý nghĩa cho microservices],),
+    table.hline(),
+    [#strong[Squad] (6-12 người)], [Đơn vị tự trị, sở hữu features end-to-end], [= Stream-aligned team = sở hữu 1+ microservices],
+    [#strong[Tribe] (max 150 --- Dunbar's number)], [Nhóm squads cùng mission], [Alignment mà không mất autonomy],
+    [#strong[Chapter]], [Nhóm người cùng competency xuyên squads], [Chia sẻ best practices (ví dụ: all backend devs)],
+    [#strong[Guild]], [Cộng đồng quan tâm xuyên tribes], [Knowledge sharing (ví dụ: Web Performance Guild)],
+  )]
+  , kind: table
+  )
+
+#strong[Bài học cho hệ thống nhỏ]: Spotify có 2,000+ engineers khi áp dụng mô hình này --- LMS chỉ có 2-3 (không cần squads/tribes). Nhưng nguyên tắc cốt lõi vẫn đúng: #strong[mỗi service nên có owner rõ ràng], và khi team mở rộng, tổ chức team theo bounded context (Ch.2) thay vì theo technical layer.
+
+#emph[Nguồn: Henrik Kniberg, Anders Ivarsson, "Scaling Agile \@ Spotify," 2012. Kniberg cũng trình bày tại nhiều hội nghị (youtube.com). Lưu ý: Spotify đã evolve mô hình này đáng kể từ 2012 --- mô hình gốc là điểm khởi đầu, không phải template cứng.]
+
+#analysis("Phân tích gap — Team nhỏ và Conway’s Law")[
+Trong LMS, cùng một developer phát triển cả Auth Service và Core
+Service. Điều này dẫn đến ranh giới giữa các service không rõ ràng ---
+ví dụ: `spring.application.name` trùng nhau giữa Core và Assignment (cả
+hai đều là `app`), shared database vẫn được duy trì vì tiện lợi.
+Richardson trong \[2a\] cho thấy việc định nghĩa rõ service ownership từ
+đầu giúp tránh coupling ngầm. #strong[Migration path]: tách rõ naming,
+định nghĩa API contract giữa services, và chuẩn bị cho việc mở rộng
+team.
+
+]
+=== Dark Energy & Dark Matter --- 10 lực chi phối việc phân tách service
+Richardson trong phiên bản thứ hai (2025) giới thiệu một framework phân tích trade-off cho việc service decomposition, mượn ẩn dụ từ vật lý thiên văn:
+
+- #strong[Dark Energy] --- lực #strong[đẩy] (repulsive): kéo các components ra xa nhau → nên tách thành service riêng
+- #strong[Dark Matter] --- lực #strong[hút] (attractive): kéo các components lại gần nhau → nên giữ cùng service
+
+#strong[Bảng 2.3:] Mười lực Dark Energy / Dark Matter
+
+#figure(
+  align(center)[#table(
+    columns: (17.24%, 20.69%, 24.14%, 37.93%),
+    align: (auto,auto,auto,auto,),
+    table.header([Lực], [Loại], [Mô tả], [Ví dụ LMS],),
+    table.hline(),
+    [#strong[Simple interactions]], [🌑 Matter (hút)], [Components tương tác phức tạp → giữ cùng service], [`ContestQuestion` ↔ `Contest` luôn query chung → hợp lý ở cùng Core Service],
+    [#strong[Efficient interactions]], [🌑 Matter (hút)], [Cần latency thấp → in-process call nhanh hơn network], [Submission → Score update cần nhanh → hiện cùng service],
+    [#strong[Prefer ACID]], [🌑 Matter (hút)], [Cần ACID transaction → cùng DB dễ hơn saga], [Create contest + add questions = 1 transaction → cùng service],
+    [#strong[Minimize runtime coupling]], [🌑 Matter (hút)], [Giảm dependency lúc runtime → ít network calls], [Judge Service xử lý độc lập (receive message → run → return)],
+    [#strong[Simple components]], [⚡ Energy (đẩy)], [Mỗi service nhỏ, dễ hiểu], [Core Service (24 files) vs nếu gộp tất cả (\~50+ files)],
+    [#strong[Team autonomy]], [⚡ Energy (đẩy)], [Team deploy độc lập, không coordination], [Auth team vs Core team deploy riêng],
+    [#strong[Fast deployment pipeline]], [⚡ Energy (đẩy)], [Service nhỏ → build + test nhanh], [Auth Service build 30s vs monolith build 5 phút],
+    [#strong[Support multiple tech stacks]], [⚡ Energy (đẩy)], [Service khác có thể dùng tech khác], [Judge Service có thể viết bằng Go (performance)],
+    [#strong[Independent scalability]], [⚡ Energy (đẩy)], [Scale riêng từng service theo nhu cầu], [Judge Service cần scale khi contest, Auth thì không],
+    [#strong[Independent data ownership]], [⚡ Energy (đẩy)], [Mỗi service own data riêng → encapsulation], [Users ở Auth, Questions ở Core (lý tưởng)],
+  )]
+  , kind: table
+  )
+
+#strong[Cách sử dụng]: Khi phân vân "có nên tách component X thành service riêng?", liệt kê các lực tác động. Nếu Dark Energy (đẩy) chiếm ưu thế → tách. Nếu Dark Matter (hút) mạnh hơn → giữ chung. Đây không phải công thức chính xác mà là #strong[framework tư duy] giúp cấu trúc cuộc thảo luận.
+
+#analysis("Phân tích — Dark Energy/Matter cho quyết định tách Core & Assignment")[
+LMS hiện có Core Service và Assignment Service dùng chung database. Phân
+tích: - #strong[Dark Matter (giữ chung)]: shared database (ACID dễ),
+`assignment_questions` reference `questions.id` (simple interactions),
+team rất nhỏ (2-3 người) - #strong[Dark Energy (tách)]: domain logic
+khác biệt (bài tập vs cuộc thi), data ownership rõ ràng, potential for
+independent deployment
+
+#strong[Kết luận]: Dark Matter hiện mạnh hơn (do team nhỏ, shared DB).
+Khi team grow \> 5 người, cân bằng sẽ shift → lúc đó tách DB và service
+hợp lý hơn. Đây chính là nguyên tắc #emph["Don't decompose prematurely"]
+(Richardson \[2b, Ch.7\]).
+
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== DDD cơ bản --- Ngôn ngữ chung và các building blocks
+Domain-Driven Design (DDD) là phương pháp thiết kế phần mềm đặt #strong[domain] (miền nghiệp vụ) làm trung tâm. Eric Evans giới thiệu DDD năm 2003 trong cuốn sách cùng tên, và nó trở thành nền tảng cho việc phân tách microservices.
+
+Đối với developer, DDD trả lời câu hỏi quan trọng nhất khi thiết kế microservices: #strong[tách ở đâu?] Không phải tách theo layer kỹ thuật (UI team, DB team, API team) mà tách theo #strong[ranh giới nghiệp vụ] --- nơi mà sự thay đổi trong một domain không ảnh hưởng đến domain khác.
+
+=== Ubiquitous Language --- Ngôn ngữ chung
+Bước đầu tiên và quan trọng nhất trong DDD không phải vẽ diagram hay viết code --- mà là #strong[xây dựng ngôn ngữ chung] (#emph[Ubiquitous Language]) giữa developer và domain expert.
+
+Ubiquitous Language là tập hợp thuật ngữ mà #emph[cả team] --- developer, tester, product owner --- sử dụng nhất quán trong mọi giao tiếp: email, meeting, code, tài liệu. Nếu domain expert nói "bài nộp" (#emph[submission]), code phải có class `Submission`, database có bảng `submission`, API có endpoint `/submissions`. Không được có sự khác biệt.
+
+Tại sao điều này quan trọng cho microservices? Vì khi hai team bắt đầu dùng cùng một thuật ngữ nhưng với #strong[ý nghĩa khác nhau], đó chính là tín hiệu rằng họ đang ở hai bounded context khác nhau --- và service nên được tách.
+
+=== Các building blocks
+DDD định nghĩa một bộ building blocks để mô hình hóa domain:
+
+#box(image("/figures/ch02/fig-2-3.svg"))
+
+#emph[Hình 2.3: Các building blocks trong DDD --- Aggregate, Entity, Value Object, Repository]
+
+#strong[Entity] --- Đối tượng có danh tính (#emph[identity]) duy nhất xuyên suốt vòng đời. Hai entity có cùng thuộc tính nhưng khác ID vẫn là hai entity khác nhau. Ví dụ trong LMS: `Student(id=1, name="Nguyen Van A")` và `Student(id=2, name="Nguyen Van A")` là hai sinh viên khác nhau dù trùng tên.
+
+#strong[Value Object] --- Đối tượng được xác định bởi #emph[giá trị], không có identity riêng. Hai value object cùng giá trị là tương đương. Ví dụ: `Score(value=85, maxValue=100)` --- không quan trọng "đây là điểm nào", chỉ quan trọng giá trị 85/100.
+
+#strong[Aggregate] --- Cụm entity và value object được quản lý như một đơn vị nhất quán (#emph[consistency boundary]). Mỗi aggregate có một #strong[Aggregate Root] --- entity duy nhất mà bên ngoài có thể tham chiếu. Trong LMS, `Contest` có thể là aggregate root bao gồm `ContestQuestion`, `ContestParticipant` --- không ai truy cập `ContestQuestion` mà không đi qua `Contest`.
+
+#tip("Tip — Aggregate = Transaction boundary")[
+Trong microservices, aggregate chính là đơn vị transaction. Một
+transaction chỉ nên thao tác trên #strong[một aggregate] duy nhất. Nếu
+cần transaction trên nhiều aggregate, đó là tín hiệu cần Saga pattern
+(Chương 6) --- không phải distributed transaction.
+
+]
+#strong[Repository] --- Interface cung cấp ảo tưởng về collection cho aggregate. Developer tương tác với repository thay vì database trực tiếp. Trong Spring Boot: `@Repository interface ContestRepository extends JpaRepository<Contest, UUID>`.
+
+#strong[Domain Service] --- Logic nghiệp vụ không thuộc về một entity hay value object cụ thể nào. Ví dụ: `SqlEvaluationService` so sánh kết quả SQL của sinh viên với đáp án --- logic này không thuộc về `Submission` hay `Question` riêng lẻ.
+
+=== DDD cho developer: nghĩ bằng domain, không bằng database
+Sai lầm phổ biến nhất khi bắt đầu với DDD là #strong[thiết kế entity từ bảng database]. DDD yêu cầu ngược lại: mô hình hóa domain trước, database sau.
+
+#strong[Bảng 2.3b:] Database-first vs Domain-first
+
+#figure(
+  align(center)[#table(
+    columns: (42.86%, 31.43%, 25.71%),
+    align: (auto,auto,auto,),
+    table.header([Cách tiếp cận], [Bắt đầu từ], [Kết quả],),
+    table.hline(),
+    [#strong[Database-first] ❌], [Bảng, cột, foreign key], [Entity = bảng, service = CRUD wrapper, ranh giới mờ nhạt],
+    [#strong[Domain-first] ✅], [Quy trình nghiệp vụ, ngôn ngữ domain], [Entity phản ánh business concepts, ranh giới tự nhiên],
+  )]
+  , kind: table
+  )
+
+Trong thực tế, nhiều dự án (kể cả LMS) bắt đầu database-first --- và đó không phải là thảm họa. Nhưng khi cần tách microservices, bước đầu tiên phải là #emph[nghĩ lại] mô hình từ góc nhìn domain.
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Strategic DDD --- Bounded Context & Context Map
+Nếu tactical DDD (Entity, Aggregate) giúp mô hình hóa #emph[bên trong] một service, thì strategic DDD giúp trả lời câu hỏi lớn hơn: #strong[hệ thống cần bao nhiêu service, và ranh giới ở đâu?]
+
+=== Bounded Context --- Ranh giới ngôn ngữ
+#strong[Bounded Context] là khái niệm quan trọng nhất trong DDD cho microservices. Một bounded context là phạm vi trong đó một mô hình domain cụ thể có hiệu lực --- và #strong[ngôn ngữ có ý nghĩa nhất quán].
+
+Ví dụ thực tế: trong LMS, thuật ngữ "bài nộp" (#emph[submission]) có ý nghĩa khác nhau tùy ngữ cảnh:
+
+- Trong context #strong[Thực hành SQL]: submission = câu trả lời SQL của sinh viên, cần chấm đúng/sai
+- Trong context #strong[Bài tập]: submission = file/nội dung nộp bài, cần chấm điểm theo rubric
+- Trong context #strong[Thi]: submission = bài thi với giới hạn thời gian, cần kiểm tra gian lận
+
+Cùng một từ, ba ý nghĩa khác nhau → ba bounded context tiềm năng. Đây là heuristic mạnh mẽ nhất để xác định ranh giới: #strong[khi cùng một thuật ngữ mang ý nghĩa khác nhau, chúng ta đang ở ranh giới giữa hai context].
+
+#box(image("/figures/ch02/fig-2-4.svg"))
+
+#emph[Hình 2.4: Cùng thuật ngữ "Submission" mang ý nghĩa khác nhau trong ba bounded context]
+
+=== Context Map --- Bản đồ quan hệ giữa các context
+Khi đã xác định bounded contexts, bước tiếp theo là vẽ #strong[Context Map] --- sơ đồ quan hệ giữa chúng. Context Map không chỉ cho thấy context nào giao tiếp với nhau, mà còn cho thấy #strong[kiểu quan hệ].
+
+Các kiểu quan hệ phổ biến:
+
+#strong[Bảng 2.4:] Các kiểu quan hệ giữa bounded contexts
+
+#figure(
+  align(center)[#table(
+    columns: (27.27%, 21.21%, 51.52%),
+    align: (auto,auto,auto,),
+    table.header([Quan hệ], [Mô tả], [Ví dụ trong LMS],),
+    table.hline(),
+    [#strong[Shared Kernel]], [Hai context chia sẻ một phần mô hình], [Shared library (base entities, JWT, exceptions)],
+    [#strong[Customer-Supplier]], [Upstream context cung cấp, downstream tiêu thụ], [Auth (upstream) → Core (downstream)],
+    [#strong[Conformist]], [Downstream chấp nhận hoàn toàn mô hình upstream], [Core phải tuân theo model của Auth cho user data],
+    [#strong[Anti-Corruption Layer]], [Downstream dịch mô hình upstream thành mô hình riêng], [Judge Service dịch Submission thành JudgeRequest nội bộ],
+    [#strong[Open Host Service]], [Context cung cấp API chuẩn cho nhiều consumer], [Core API cung cấp question data cho Judge + Assignment],
+    [#strong[Published Language]], [Ngôn ngữ trao đổi được chuẩn hóa (JSON, Protobuf)], [Kafka messages với schema chuẩn],
+  )]
+  , kind: table
+  )
+
+#box(image("/figures/ch02/fig-2-5.svg"))
+
+#emph[Hình 2.5: Context Map của hệ thống LMS --- quan hệ giữa các bounded contexts]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Xác định Bounded Context từ requirements
+=== Các heuristic thực tế
+Làm thế nào để "tìm" bounded context trong một hệ thống? Không có công thức chính xác --- đây là kỹ năng cần luyện tập. Tuy nhiên, có một số heuristic hữu ích:
+
+#strong[\1. Heuristic ngôn ngữ] --- Khi cùng một thuật ngữ mang ý nghĩa khác nhau cho các nhóm người khác nhau, đó là ranh giới context. Ngược lại, khi hai thuật ngữ khác nhau chỉ cùng một thứ (ví dụ: "ref-des" và "component instance" trong câu chuyện PCB của Eric Evans), chúng thuộc cùng context.
+
+#strong[\2. Heuristic thay đổi] --- Tự hỏi: "Khi requirement X thay đổi, code nào cần sửa?" Nếu thay đổi luôn ảnh hưởng đến cùng nhóm files, chúng thuộc cùng context. Nếu thay đổi lan sang nhóm khác, đó là tín hiệu coupling cần xem xét.
+
+#strong[\3. Heuristic team] --- Ai sẽ phát triển và bảo trì phần này? Nếu cùng team, chúng #emph[có thể] cùng context. Nếu khác team, #emph[cân nhắc] tách context (Conway's Law).
+
+#strong[\4. Heuristic data] --- Dữ liệu nào "thuộc về" nhau? Entity nào #emph[luôn] được truy vấn cùng nhau? Đó là aggregate trong cùng context. Entity nào chỉ được tham chiếu qua ID? Đó có thể thuộc context khác.
+
+=== Event Storming --- Phương pháp khám phá domain
+#strong[Event Storming] là workshop technique do Alberto Brandolini phát triển, giúp cả team cùng khám phá domain thông qua #emph[domain events] --- những sự kiện đã xảy ra trong hệ thống.
+
+#box(image("/figures/ch02/fig-2-6.svg"))
+
+#emph[Hình 2.6: Event Storming --- luồng từ Command đến Domain Event]
+
+Quy trình cơ bản: 1. #strong[Liệt kê domain events] --- post-it cam: "Submission Created", "SQL Executed", "Score Calculated" 2. #strong[Tìm commands] --- post-it xanh: "Submit Answer", "Start Exam", "Create Assignment" 3. #strong[Nhóm events theo aggregate] --- post-it vàng: events nào cùng xảy ra trên cùng entity? 4. #strong[Vẽ ranh giới] --- nhóm aggregates có liên quan chặt chẽ → bounded context
+
+Kết quả Event Storming tự nhiên dẫn đến bounded contexts. Nhóm events/aggregates nào tương tác nhiều nội bộ nhưng ít tương tác với nhóm khác → đó là context.
+
+=== Phân rã hướng dịch vụ theo Erl --- Cách tiếp cận step-by-step
+DDD và Event Storming là phương pháp #emph[khám phá] --- bắt đầu từ ngôn ngữ domain, dần dần tìm ra ranh giới. Cách tiếp cận này mạnh nhưng đòi hỏi kinh nghiệm: developer mới thường khó biết "đủ chưa" hoặc "đúng chưa".
+
+Thomas Erl trong #emph[SOA: Analysis and Design for Services and Microservices] \[1, Ch.8--10\] đề xuất một phương pháp bổ trợ: #strong[Service-Oriented Analysis] --- quy trình #emph[prescriptive], gồm các bước cụ thể từ yêu cầu nghiệp vụ đến danh mục dịch vụ. Đây là cách tiếp cận dễ dạy và dễ học hơn cho sinh viên, vì mỗi bước có input và output rõ ràng.
+
+#strong[Năm bước phân rã dịch vụ theo Erl:]
+
+#strong[Bước 1: Xác định automation candidates] --- Phân tích quy trình nghiệp vụ (business process) và xác định những bước nào #emph[nên] được tự động hóa bằng phần mềm. Erl gọi đây là #emph[service candidates] --- chưa phải services, mà là ứng viên.
+
+Ví dụ LMS: quy trình "Sinh viên nộp bài SQL" có các bước: (1) xác thực người dùng, (2) nhận câu trả lời, (3) thực thi SQL trên sandbox, (4) so sánh kết quả, (5) ghi điểm, (6) thông báo. Mỗi bước là một automation candidate.
+
+#strong[Bước 2: Phân loại service layers] --- Erl định nghĩa ba loại service:
+
+#strong[Bảng 2.7:] Ba loại service theo Erl
+
+#figure(
+  align(center)[#table(
+    columns: (33.33%, 33.33%, 33.33%),
+    align: (auto,auto,auto,),
+    table.header([Loại service], [Vai trò], [Ví dụ LMS],),
+    table.hline(),
+    [#strong[Task Service]], [Điều phối quy trình nghiệp vụ (workflow), gọi các service khác], [Submission orchestrator: nhận bài → gọi Judge → ghi điểm → thông báo],
+    [#strong[Entity Service]], [Quản lý dữ liệu nghiệp vụ (CRUD + business rules)], [Question Service, User Service, Contest Service],
+    [#strong[Utility Service]], [Cung cấp chức năng kỹ thuật dùng chung], [JWT validation, notification, logging],
+  )]
+  , kind: table
+  )
+
+Phân loại này giúp tránh sai lầm phổ biến: tạo service chỉ là CRUD wrapper (entity service không có business logic) hoặc nhồi tất cả vào một "god service" (thiếu task/utility decomposition).
+
+#strong[Bước 3: Tạo service inventory blueprint] --- Vẽ bản đồ toàn bộ services dự kiến, mỗi service với operations chính. Tương tự Context Map trong DDD, nhưng focused hơn vào #emph[capabilities] (khả năng) thay vì #emph[language boundaries] (ranh giới ngôn ngữ).
+
+#strong[Bước 4: Xác định service boundaries + composition] --- Kiểm tra từng service candidate: nó có thể hoạt động #strong[độc lập] không? Nếu service A #emph[luôn] cần gọi service B trước khi xử lý bất kỳ request nào → cân nhắc gộp. Nếu service A có thể hoạt động ngay cả khi B down → ranh giới tốt.
+
+#strong[Bước 5: Verify qua 8 nguyên lý SOA] --- Mỗi service phải thỏa mãn 8 nguyên lý hướng dịch vụ đã thảo luận ở Bảng 1.2 (Chương 1): Standardized Contract, Loose Coupling, Abstraction, Reusability, Autonomy, Statelessness, Discoverability, Composability. Đây là "checklist kiểm tra chất lượng" cho service design.
+
+==== Áp dụng Erl cho LMS
+Áp dụng 5 bước trên cho hệ thống LMS:
+
+#box(image("/figures/ch02/fig-2-6b.svg"))
+
+#emph[Hình 2.6b: Áp dụng Erl's Service-Oriented Analysis cho LMS --- từ automation candidates đến service layers]
+
+Kết quả: 4 nhóm dịch vụ --- gần như trùng khớp với 4 bounded contexts từ phân tích DDD (§2.5): Identity & Access ≈ Utility Auth, SQL Practice ≈ Entity Question + Task Orchestrator, Evaluation ≈ Complicated Subsystem Judge, Academic ≈ Entity Course.
+
+==== So sánh: Erl vs DDD
+#strong[Bảng 2.8:] Hai phương pháp phân tách service --- Erl Service-Oriented Analysis vs DDD
+
+#figure(
+  align(center)[#table(
+    columns: (33.33%, 33.33%, 33.33%),
+    align: (auto,auto,auto,),
+    table.header([Tiêu chí], [Erl Service-Oriented Analysis], [DDD Bounded Context],),
+    table.hline(),
+    [#strong[Điểm bắt đầu]], [Quy trình nghiệp vụ (business process)], [Ngôn ngữ domain (Ubiquitous Language)],
+    [#strong[Phong cách]], [Prescriptive --- 5 bước rõ ràng, input/output mỗi bước], [Explorative --- heuristics, Event Storming workshop],
+    [#strong[Tiêu chí tách]], [Service layers (task/entity/utility) + 8 nguyên lý SOA], [Ranh giới ngôn ngữ + aggregate consistency],
+    [#strong[Output]], [Service inventory blueprint], [Context Map + Bounded Context diagram],
+    [#strong[Thế mạnh]], [Systematic, dễ dạy, phù hợp team mới], [Sâu về domain, phát hiện ranh giới ẩn],
+    [#strong[Hạn chế]], [Có thể tạo ranh giới quá kỹ thuật (thiếu domain insight)], [Cần kinh nghiệm, kết quả phụ thuộc người phân tích],
+    [#strong[Phù hợp khi]], [Team ít kinh nghiệm DDD, cần quy trình chuẩn], [Team hiểu domain sâu, cần phát hiện complexity ẩn],
+  )]
+  , kind: table
+  )
+
+#principle("Nguyên tắc — Hai phương pháp bổ trợ, không thay thế")[
+Erl cho bạn #emph[quy trình] (process) --- đặc biệt hữu ích khi bạn chưa
+biết bắt đầu từ đâu. DDD cho bạn #emph[insight] --- phát hiện những ranh
+giới mà quy trình cơ học bỏ sót. Trong thực tế: dùng Erl để tạo bản phác
+thảo ban đầu (service inventory), sau đó dùng DDD (Event Storming, ngôn
+ngữ chung) để #emph[tinh chỉnh] ranh giới. Richardson's Assemblage
+Process (§2.7) kết hợp cả hai hướng.
+
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Case Study: Bounded Contexts trong hệ thống LMS
+=== Phân tích domain
+Hệ thống LMS phục vụ các hoạt động giảng dạy, thực hành, và đánh giá. Từ góc nhìn DDD, chúng ta xác định 4+ bounded contexts chính:
+
+#box(image("/figures/ch02/fig-2-7.svg"))
+
+#emph[Hình 2.7: Bốn bounded contexts chính trong hệ thống LMS]
+
+=== Bốn bounded contexts
+#strong[\1. Identity & Access] (`Auth Service`)
+
+Domain rõ ràng nhất --- quản lý danh tính người dùng, xác thực, phân quyền. Entities: `User`, `Role`, `Token`. Đây là context upstream --- mọi context khác đều phụ thuộc vào kết quả authentication.
+
+Trong LMS, context này được tách thành service riêng sớm nhất (`auth-service`), vì ranh giới rất rõ: thay đổi cơ chế xác thực (thêm OAuth2 Google, tích hợp đăng nhập PTIT) không ảnh hưởng logic bài tập hay chấm thi.
+
+#strong[\2. SQL Practice] (`Core Service` --- #emph[Core Domain])
+
+Đây là #strong[core domain] --- phần tạo ra giá trị chính cho hệ thống. Entities: `Question`, `Submission`, `Contest`, `UserContest`, `Statistic`. Toàn bộ quy trình từ "sinh viên xem câu hỏi → viết SQL → nộp bài → nhận kết quả" nằm trong context này.
+
+Đây là context lớn nhất và phức tạp nhất --- và trong tương lai, khi hệ thống mở rộng, nó có thể cần được tách nhỏ hơn (ví dụ: tách Contest thành subdomain riêng).
+
+#strong[\3. Evaluation] (`Judge Service`)
+
+Domain chuyên biệt --- thực thi SQL trên sandbox databases, so sánh kết quả, tính điểm, và (gần đây) tích hợp AI feedback. Đây là ví dụ điển hình của #strong[complicated subsystem] trong Team Topologies: logic phức tạp (multi-DBMS execution, sandbox isolation, SHA-256 result comparison) đòi hỏi chuyên môn sâu.
+
+Context này giao tiếp với SQL Practice qua #strong[Kafka messages] --- một anti-corruption layer tự nhiên: Practice gửi `SubmitMessage`, Judge nhận và dịch thành `JudgeRequest` nội bộ.
+
+#strong[\4. Academic Management] (`Assignment Service`)
+
+Quản lý khóa học, bài tập dạng rubric (không phải SQL tự động), đăng ký môn, điểm số, luận văn. Entities: `Course`, `Assignment`, `Enrollment`, `Grade`, `Thesis`.
+
+Context này tách ra từ Core Service --- nhưng #emph[vẫn chia sẻ database] (`app_db`). Đây là trade-off quan trọng mà chúng ta sẽ phân tích trong phần tiếp theo.
+
+=== Từ bounded context đến service
+#strong[Bảng 2.5:] Ánh xạ bounded context → service trong LMS
+
+#figure(
+  align(center)[#table(
+    columns: (44.44%, 25%, 30.56%),
+    align: (auto,auto,auto,),
+    table.header([Bounded Context], [Service], [Lý do tách],),
+    table.hline(),
+    [Identity & Access], [Auth Service], [Ranh giới rõ ràng, thay đổi auth ≠ thay đổi logic],
+    [SQL Practice], [Core Service], [Core domain, phức tạp nhất],
+    [Evaluation], [Judge Service + Sandbox Services], [Complicated subsystem, cần isolation],
+    [Academic Management], [Assignment Service], [Domain khác, requirements khác],
+  )]
+  , kind: table
+  )
+
+#tip("Tip — Một bounded context ≠ một service")[
+Bounded context là ranh giới logic. Một context có thể được implement
+bởi nhiều service (như Evaluation = Judge + Judge-MySQL +
+Judge-SqlServer). Ngược lại, trong giai đoạn đầu, nhiều context có thể
+nằm trong cùng một service (monolith) --- miễn là ranh giới logic rõ
+ràng trong code.
+
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Shared Kernel Pattern --- Chia sẻ hay không chia sẻ?
+=== Vấn đề thực tế
+Trong LMS, tồn tại một #strong[shared library] chứa 23 Java files: base entities, DTOs, JWT utilities, exception handling, validation utilities. Mọi service đều phụ thuộc vào library này.
+
+Đây là pattern #strong[Shared Kernel] trong DDD: hai hoặc nhiều bounded contexts đồng ý chia sẻ một phần mô hình chung. Shared Kernel giảm duplication nhưng tạo coupling --- mọi thay đổi trong shared library đều #emph[có thể] ảnh hưởng tất cả service.
+
+```
+shared-library/
+├── common/         BaseMapper, BaseRequest, BaseResponse, BaseService
+├── config/         AuditConfig, CorsConfig, TimeZoneConfig
+├── enumerate/      AnswerStatus, ErrorCode, TypeQuestion
+├── exception/      GlobalExceptionHandler
+├── securityConfig/ JwtConfig, UserDetailCustom
+└── utils/          CompareUtil, JwtUtil, SqlUtil, TableDependencyResolver
+```
+
+=== Phân tích: cái gì nên shared, cái gì không?
+#strong[Bảng 2.6:] Phân tích shared library --- cái gì nên shared, cái gì không
+
+#figure(
+  align(center)[#table(
+    columns: (18.18%, 21.21%, 39.39%, 21.21%),
+    align: (auto,auto,auto,auto,),
+    table.header([Loại], [Ví dụ], [Nên shared?], [Lý do],),
+    table.hline(),
+    [#strong[Cross-cutting concerns]], [JWT validation, exception handling, CORS config], [✅ Có], [Nhất quán hành vi xuyên service, ít thay đổi],
+    [#strong[Base abstractions]], [BaseEntity, BaseMapper, BaseResponse], [⚠️ Cân nhắc], [Tiện nhưng tạo coupling vào convention],
+    [#strong[Domain-specific logic]], [`CompareUtil` (SQL comparison), `SqlUtil`], [❌ Không], [Chỉ Judge context cần --- không phải shared concern],
+    [#strong[Domain enums]], [`TypeQuestion`, `AnswerStatus`], [❌ Không], [Thuộc về SQL Practice context, không universal],
+  )]
+  , kind: table
+  )
+
+=== Hướng cải thiện
+Nếu team phát triển lớn hơn và cần giảm coupling, shared library có thể được tách thành:
+
++ #strong[`lms-security`] --- JWT, auth config (mọi service cần)
++ #strong[`lms-common`] --- Base entities, response format (convention)
++ #strong[Domain-specific code] → chuyển vào service tương ứng (Judge, Core)
+
+#box(image("/figures/ch02/fig-2-8.svg"))
+
+#emph[Hình 2.8: Hướng tách shared library --- từ monolithic sang modular]
+
+#principle("Nguyên tắc — Shared Kernel Trade-off")[
+Shared Kernel là #emph[thỏa thuận có chủ đích], không phải sự tiện lợi.
+Mỗi file trong shared library phải trả lời: "Nếu thay đổi file này, tất
+cả service #emph[phải] thay đổi cùng nhau --- và điều đó #emph[hợp lý]."
+Nếu câu trả lời là không, file đó không nên nằm trong shared kernel.
+
+]
+#analysis("Phân tích gap — Shared Kernel cần tách")[
+Với 23 files trong shared library, LMS đang gây coupling không cần
+thiết: domain-specific code như `CompareUtil` (so sánh SQL) nằm chung
+với cross-cutting concerns như JWT. Richardson trong \[2a\] khuyến nghị
+chỉ share những gì thực sự cross-cutting (event definitions, API
+contracts). #strong[Migration path]: (1) tách domain code về service
+riêng, (2) giữ shared chỉ security + base response, (3) đưa domain enums
+(`TypeQuestion`, `AnswerStatus`) về context sở hữu.
+
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+#warning("Sai lầm thường gặp")[
++ #strong[Thiết kế entity từ bảng database] --- Nhìn ERD rồi tạo 1
+  entity = 1 bảng, 1 service = 1 nhóm bảng. Hậu quả: ranh giới service
+  không phản ánh domain mà phản ánh schema --- khi nghiệp vụ thay đổi,
+  phải refactor cả service lẫn database. #emph[Phòng tránh]: bắt đầu từ
+  domain process (Event Storming §2.4), không từ schema.
++ #strong[Chia quá nhỏ (nano-services)] --- Tách mỗi entity thành 1
+  service riêng (UserService, RoleService, TokenService) khi chúng luôn
+  thay đổi cùng nhau. Hậu quả: mỗi request cần gọi 3-4 services, latency
+  tăng, debugging trở thành cơn ác mộng. #emph[Phòng tránh]: tách theo
+  bounded context, không theo entity. Nếu hai entity luôn thay đổi cùng
+  nhau, chúng thuộc cùng service.
++ #strong[Dùng Shared Kernel vì tiện, không vì thiết kế] --- Cho tất cả
+  code "chung" vào shared library mà không phân biệt cross-cutting
+  concern và domain logic. Hậu quả: mỗi thay đổi shared lib ảnh hưởng
+  tất cả services, deploy coupling ngầm. #emph[Phòng tránh]: mỗi file
+  trong shared kernel phải trả lời "tất cả service #emph[phải] thay đổi
+  cùng khi file này thay đổi?" (§2.6).
+
+]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Assemblage Process --- Quy trình thiết kế service architecture
+Làm thế nào để tổng hợp tất cả các kỹ thuật trên --- Bounded Context, Context Map, Dark Energy/Matter --- thành một quy trình thiết kế mang tính thực hành? Richardson trong \[2b, Ch.20\] trình bày #strong[Assemblage Process]: quy trình step-by-step để đi từ yêu cầu nghiệp vụ đến kiến trúc microservices cụ thể.
+
++ #strong[Định nghĩa System Operations] --- Liệt kê các thao tác chính mà hệ thống phải hỗ trợ (ví dụ: `submitAnswer()`, `createContest()`, `gradeSubmission()`).
++ #strong[Xác định Subdomains] --- Dùng Bounded Contexts (§2.3) để phân vùng nghiệp vụ: SQL Practice, Evaluation, Identity, Academic.
++ #strong[Gán Operations → Subdomains] --- Quyết định logic nghiệp vụ của mỗi operation thuộc subdomain nào.
++ #strong[Áp dụng Dark Energy & Dark Matter] --- Với mỗi cặp subdomains, phân tích 10 lực đã thảo luận ở §2.5: lực đẩy (Dark Energy) khuyến khích tách thành service độc lập; lực hút (Dark Matter) giữ các phần chặt chẽ lại cùng nhau.
++ #strong[Thiết kế IPC] --- Chọn mô hình giao tiếp giữa các service: đồng bộ REST/gRPC (Ch.4) hay bất đồng bộ Kafka (Ch.5).
++ #strong[Lặp lại] --- Quy trình không chạy một lần. Khi kiến thức domain sâu hơn, ranh giới service cần được đánh giá lại.
+
+Assemblage process biến quá trình thiết kế kiến trúc --- vốn mang tính nghệ thuật và chủ quan --- thành chuỗi các quyết định kỹ thuật có thể giải thích được. Thay vì nói "tách Judge Service vì nó cảm thấy đúng", chúng ta có thể lập luận: #emph["Judge Service được tách vì Dark Energy force \#1 (simple components) và \#3 (fast deployment pipeline) vượt trội so với Dark Matter force \#2 (efficient interaction) trong context này."]
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+#quote(block: true)[
+#strong[🌐 Trực quan hóa tương tác (Interactive Demo)]
+
+Để hiểu rõ hơn về nội dung chương này, hãy mở file `code/interactive/context-map.html` trong mã nguồn đi kèm sách bằng trình duyệt web để trải nghiệm minh họa động về #strong[Bản đồ Bounded Context (Context Map)].
+]
+
+== Tổng kết
+Chương này đã trang bị cho chúng ta bộ công cụ tư duy để phân tích và phân tách hệ thống --- từ quy luật vĩ mô (Conway's Law) đến kỹ thuật vi mô (Entity, Aggregate, Repository), và quy trình tổng hợp (Assemblage Process).
+
+Conway's Law nhắc nhở rằng kiến trúc phần mềm không tồn tại trong chân không --- nó phản ánh và bị ràng buộc bởi cấu trúc tổ chức. Inverse Conway Maneuver cho phép chúng ta chủ động thiết kế team để đạt kiến trúc mong muốn.
+
+Chúng ta có hai phương pháp bổ trợ để xác định ranh giới service. #strong[DDD] cung cấp ngôn ngữ và heuristics --- Bounded Context, Context Map, Event Storming --- phù hợp khi team hiểu domain sâu. #strong[Erl's Service-Oriented Analysis] cung cấp quy trình step-by-step --- từ automation candidates đến service layers --- phù hợp khi team cần một framework có cấu trúc. Cả hai đều dẫn đến kết quả tương tự (như minh họa với LMS: cùng \~4 service groups), nhưng từ góc nhìn khác nhau. Dark Energy/Dark Matter forces lượng hóa các yếu tố ảnh hưởng đến quyết định tách/gộp, và Assemblage Process (§2.7) tổng hợp tất cả thành quy trình thiết kế có hệ thống.
+
+Phân tích LMS cho thấy 4 bounded contexts rõ ràng, mỗi context tương ứng với một nhóm service. Shared Kernel --- dù tiện lợi cho team nhỏ --- cần được quản lý có chủ đích, phân biệt rõ giữa cross-cutting concerns (nên share) và domain logic (không nên share).
+
+Ở Chương 3, chúng ta sẽ đi sâu vào #strong[thiết kế API]: khi đã xác định được ranh giới service, câu hỏi tiếp theo là #emph[các service giao tiếp với nhau như thế nào?] REST API design, contract-first approach, schema evolution, và documentation sẽ là trọng tâm.
+
+#line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))
+
+== Đọc thêm
+#strong[Sách tham khảo chính:] 1. \[1\] Thomas Erl, #emph[SOA: Analysis and Design for Services and Microservices], 2nd Ed. --- Ch.8--10: Service-Oriented Analysis, Service Layers (task/entity/utility), Service Inventory Blueprint 2. \[6\] Eric Evans, #emph[Domain-Driven Design] --- Ch.1--5: Knowledge Crunching, Ubiquitous Language, Building Blocks; Ch.14: Bounded Context, Context Map 3. \[2a\] Chris Richardson, #emph[Microservices Patterns], 1st Ed. --- Ch.2: Decomposition Strategies 4. \[2b\] Chris Richardson, #emph[Microservices Patterns], 2nd Ed. --- Ch.4: Loose Coupling, Dark Energy/Dark Matter Forces; Ch.7: Microservice Architecture; Ch.20: Assemblage Process 5. \[4a\] Sam Newman, #emph[Building Microservices] --- Ch.3: How to Model Services; Ch.10: Conway's Law 6. \[4b\] Sam Newman, #emph[Monolith to Microservices] --- Ch.2: Planning a Migration, Decomposition by Domain 7. \[5\] Hugo Rocha, #emph[Practical Event-Driven MS Architecture] --- Ch.3: Service Boundaries, DDD/Bounded Context
+
+#strong[Sách bổ trợ:] 8. \[9\] Vaughn Vernon, #emph[Implementing Domain-Driven Design] --- Ch.2: Strategic Design with Bounded Contexts 9. \[8\] Matthew Skelton & Manuel Pais, #emph[Team Topologies] --- Four Team Types, Cognitive Load, Conway's Law 10. \[10\] Alberto Brandolini, #emph[Introducing EventStorming] --- Domain discovery workshops
+
+#strong[Nguồn trực tuyến:] - MacCormack, Rusnak & Baldwin, #emph["Exploring the Duality between Product and Organizational Architectures"] (2008) --- Harvard Business School Working Paper
