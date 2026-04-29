@@ -1,4 +1,4 @@
-# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
+﻿# Chương 5: Giao tiếp Bất đồng bộ — Kafka, Events & Messaging
 
 > *"Event streams become the heart of data sharing throughout the company. Data no longer sits solely on a database accessible only through synchronous interfaces."*
 > — Hugo Rocha, *Practical Event-Driven Microservices Architecture* [5]
@@ -24,7 +24,7 @@
 
 Chương 4 đã phân tích ba vấn đề cốt lõi của giao tiếp đồng bộ: temporal coupling, cascading failures, và latency accumulation. Giao tiếp bất đồng bộ (*asynchronous messaging*) giải quyết cả ba bằng cách **tách rời** (*decouple*) producer và consumer qua một trung gian — message broker.
 
-![Hình 5.1: So sánh giao tiếp đồng bộ (coupled) và bất đồng bộ (decoupled)](../figures/ch05/fig-5-1.svg)
+![](../figures/ch05/fig-5-1.svg)
 
 *Hình 5.1: So sánh giao tiếp đồng bộ (coupled) và bất đồng bộ (decoupled)*
 
@@ -48,7 +48,7 @@ Có ba messaging patterns cơ bản [2a, Ch.3]:
 
 **3. Request/Async Response** — Gửi request qua messaging, nhận response qua message khác (có correlation ID). Kết hợp lợi ích của cả hai.
 
-![Hình 5.2: Point-to-Point (Queue) vs Publish/Subscribe (Topic)](../figures/ch05/fig-5-2.svg)
+![](../figures/ch05/fig-5-2.svg)
 
 *Hình 5.2: Point-to-Point (Queue) vs Publish/Subscribe (Topic)*
 
@@ -68,7 +68,7 @@ Rocha trong [5, §3.1.3] phân loại message brokers thành hai trường phái
 
 **Durable (bền vững)** — Message được lưu trữ trên disk và vẫn available sau khi consume. Đại diện: **Apache Kafka**, Apache Pulsar, Amazon Kinesis.
 
-![Hình 5.3: Ephemeral broker (message xóa sau ack) vs Durable broker (message vẫn còn)](../figures/ch05/fig-5-3.svg)
+![](../figures/ch05/fig-5-3.svg)
 
 *Hình 5.3: Ephemeral broker (message xóa sau ack) vs Durable broker (message vẫn còn)*
 
@@ -78,7 +78,7 @@ Sự khác biệt này **không chỉ là kỹ thuật** — nó ảnh hưởng 
 
 RabbitMQ dựa trên **AMQP** (Advanced Message Queuing Protocol), với kiến trúc phong phú hơn Kafka về routing:
 
-![Hình 5.4: Kiến trúc RabbitMQ — Exchange routing messages đến queues](../figures/ch05/fig-5-4.svg)
+![](../figures/ch05/fig-5-4.svg)
 
 *Hình 5.4: Kiến trúc RabbitMQ — Exchange routing messages đến queues*
 
@@ -135,7 +135,7 @@ LMS chọn Kafka vì cần **replay** (chấm lại bài khi Judge đổi logic)
 
 ## 5.3 Apache Kafka — Kiến trúc chi tiết
 
-![Hình 5.5: Kiến trúc Kafka — Topic, Partitions và Consumer Group](../figures/ch05/fig-5-5.svg)
+![](../figures/ch05/fig-5-5.svg)
 
 *Hình 5.5: Kiến trúc Kafka — Topic, Partitions và Consumer Group*
 
@@ -208,7 +208,7 @@ public void processSubmission(SubmitMessage message) {
 
 ### Flow hoàn chỉnh
 
-![Hình 5.6: Luồng hoàn chỉnh — từ submit qua Kafka đến kết quả qua WebSocket](../figures/ch05/fig-5-6.svg)
+![](../figures/ch05/fig-5-6.svg)
 
 *Hình 5.6: Luồng hoàn chỉnh — từ submit qua Kafka đến kết quả qua WebSocket*
 
@@ -397,7 +397,7 @@ Trong Contest mode, 100+ sinh viên đồng thời nộp bài trong thời gian 
 
 ### Kiến trúc 4-topic pipeline
 
-![Hình 5.7: Kiến trúc 4-topic pipeline chấm bài trong Contest mode](../figures/ch05/fig-5-7.svg)
+![](../figures/ch05/fig-5-7.svg)
 
 *Hình 5.7: Kiến trúc 4-topic pipeline chấm bài trong Contest mode*
 

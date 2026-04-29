@@ -1,4 +1,4 @@
-# Chương 12: Triển khai và DevOps
+﻿# Chương 12: Triển khai và DevOps
 
 > *"If deploying is painful, deploy more frequently. Automation turns a dreaded chore into a non-event."*
 > — Martin Fowler, *Continuous Delivery* (nguyên tắc DevOps)
@@ -49,7 +49,7 @@ Mitra trong [3, Ch.6] mô tả ba nguyên tắc DevOps nền tảng cho microser
 | **Infrastructure as Code** | Mọi hạ tầng (server, network, database) định nghĩa trong code | Version control, review, rollback |
 | **Continuous Delivery** | Code luôn ở trạng thái sẵn sàng deploy — chỉ cần ấn nút | Giảm risk per deployment, feedback nhanh |
 
-![Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)](../figures/ch12/fig-12-1.svg)
+![](../figures/ch12/fig-12-1.svg)
 
 *Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)*
 
@@ -71,7 +71,7 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
 
 **Container** (Docker) đóng gói ứng dụng + dependencies + runtime thành một **image** — chạy giống nhau trên mọi môi trường. Khác với Virtual Machine: container chia sẻ kernel với host OS → nhẹ hơn, khởi động trong giây thay vì phút.
 
-![Hình 12.2: So sánh kiến trúc Virtual Machines và Containers](../figures/ch12/fig-12-2.svg)
+![](../figures/ch12/fig-12-2.svg)
 
 *Hình 12.2: So sánh kiến trúc Virtual Machines và Containers*
 
@@ -233,7 +233,7 @@ Trong monolith: 1 pipeline — build → test → deploy. Trong microservices: m
 
 ### CI/CD Architecture cho Microservices
 
-![Hình 12.3: CI/CD Pipeline chuẩn cho Microservices](../figures/ch12/fig-12-3.svg)
+![](../figures/ch12/fig-12-3.svg)
 
 *Hình 12.3: CI/CD Pipeline chuẩn cho Microservices*
 
@@ -283,7 +283,7 @@ Khi deploy version mới của một service, làm sao đảm bảo users không
 
 Thay thế **từng instance một** — dần dần chuyển từ version cũ sang version mới. Không cần gấp đôi infrastructure.
 
-![Hình 12.4: Quá trình diễn ra Rolling Update](../figures/ch12/fig-12-4.svg)
+![](../figures/ch12/fig-12-4.svg)
 
 *Hình 12.4: Quá trình diễn ra Rolling Update*
 
@@ -291,7 +291,7 @@ Thay thế **từng instance một** — dần dần chuyển từ version cũ s
 
 Chạy **hai bản hoàn chỉnh** song song — "Blue" (current) và "Green" (new). Router chuyển traffic một lần. Rollback = chuyển router ngược lại.
 
-![Hình 12.5: Kiến trúc Blue/Green Deployment](../figures/ch12/fig-12-5.svg)
+![](../figures/ch12/fig-12-5.svg)
 
 *Hình 12.5: Kiến trúc Blue/Green Deployment*
 
@@ -365,7 +365,7 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
 
 #### Kiến trúc Kubernetes
 
-![Hình 12.6: Kiến trúc Kubernetes — Control Plane và Worker Nodes](../figures/ch12/fig-12-6.svg)
+![](../figures/ch12/fig-12-6.svg)
 
 *Hình 12.6: Kiến trúc Kubernetes — Control Plane và Worker Nodes*
 
@@ -461,7 +461,7 @@ Trong LMS, **Notification Service** là candidate tốt nhất cho serverless: e
 
 Khi hệ thống microservices lớn (20+ services), mỗi service cần implement cùng cross-cutting concerns: mTLS, logging, tracing, circuit breaker, rate limiting. **Sidecar pattern** giải quyết bằng cách đặt một **proxy process bên cạnh mỗi service instance** — proxy xử lý infrastructure concerns, service chỉ focus business logic.
 
-![Hình 12.7: Sidecar Pattern — Proxy xử lý infrastructure concerns (mTLS, tracing)](../figures/ch12/fig-12-7.svg)
+![](../figures/ch12/fig-12-7.svg)
 
 *Hình 12.7: Sidecar Pattern — Proxy xử lý infrastructure concerns (mTLS, tracing)*
 
@@ -487,7 +487,7 @@ Với LMS (7 services, single host), service mesh hiện **over-engineering**. S
 
 Hệ thống LMS triển khai production trên **Docker Compose** — đây là kiến trúc deployment phổ biến cho hệ thống microservices quy mô nhỏ-trung:
 
-![Hình 12.8: Deployment Architecture LMS hiện tại trên single host](../figures/ch12/fig-12-8.svg)
+![](../figures/ch12/fig-12-8.svg)
 
 *Hình 12.8: Deployment Architecture LMS hiện tại trên single host*
 

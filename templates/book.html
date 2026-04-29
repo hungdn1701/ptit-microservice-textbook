@@ -8,7 +8,7 @@
     <!-- Google Fonts: professional tech book typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <!-- Mermaid.js for diagrams -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
@@ -290,14 +290,44 @@
         margin: 1.5em auto;
     }
 
-    /* Figure caption: italic em paragraph */
+    /* Hide img alt-text from being rendered visually
+       (alt text is preserved for accessibility/screen readers)
+       Prevents duplication when author also writes an italic caption below */
+    img::after {
+        display: none;
+    }
+
+    /* ── FIGURE CAPTION: italic em paragraph immediately after img ── */
+    /* Matches pattern: ![](path)\n\n*Caption text* */
     p > em:only-child {
         display: block;
         text-align: center;
-        font-size: 0.88em;
+        font-size: 0.85em;
         color: var(--color-text-light);
-        margin-top: 0.4em;
-        margin-bottom: 1.5em;
+        font-style: italic;
+        margin-top: -0.8em;  /* pull up closer to image */
+        margin-bottom: 1.8em;
+        padding: 0.3em 2em;
+    }
+
+    /* ── TABLE CAPTION (label above table: **Bảng X.X:** Title) ── */
+    /* Pandoc renders **Bảng...** as a &lt;strong&gt; inside &lt;p&gt; before the table */
+    p:has(> strong:first-child) + table,
+    p:has(> strong:first-child) {
+        /* Label paragraphs directly before a table get caption styling */
+    }
+    /* Target table labels specifically */
+    p > strong:first-child:is([id]) ~ * { }
+
+    /* Simple approach: any standalone strong-only paragraph = table/figure label */
+    p:has(> strong:only-child) {
+        font-family: var(--font-sans);
+        font-size: 0.88em;
+        font-weight: 600;
+        color: var(--color-text-light);
+        margin-bottom: 0.3em;
+        margin-top: 1.8em;
+        text-transform: none;
     }
 
     /* ── TABLE OF CONTENTS (book-style) ── */
@@ -327,7 +357,16 @@
 
     /* ── EMPHASIS & STRONG ── */
     em { font-style: italic; }
-    strong { font-weight: 700; color: var(--color-primary); }
+    /* Bold: use ONLY for first-introduction of technical terms or UI labels.
+       Do NOT bold for general emphasis in running prose. */
+    strong {
+        font-weight: 700;
+        color: inherit;  /* no color change in screen — use sparingly */
+    }
+    /* Exception: table/figure label paragraphs (standalone **Bảng X.X:** lines) */
+    p > strong:first-child {
+        color: var(--color-primary);
+    }
 
     /* ── ORDERED LISTS (numbered with style) ── */
     ol { counter-reset: item; list-style: none; padding-left: 1.2em; }
@@ -372,17 +411,16 @@
 
     /* ══════════════════════════════════════════════════════════
        PRINT STYLES — Production-grade book layout
-       A4 via Edge headless (Chromium)
-       Note: Chromium does NOT support @page margin boxes,
-       so page numbers are rendered via a fixed-position footer.
+       A4 via Edge headless (Chromium) + PagedJS polyfill
+       PagedJS enables real CSS paged-media (@page margin boxes),
+       allowing proper page numbers via counter(page).
        ══════════════════════════════════════════════════════════ */
 
     @page {
         size: A4;
-        margin: 2.5cm 2.5cm 3cm 3cm; /* top right bottom left (gutter for binding) */
+        margin: 2.5cm 2.2cm 3cm 3cm; /* top right bottom left (gutter) */
     }
 
-    /* First page (title page): extra top margin */
     @page :first {
         margin-top: 4cm;
     }
@@ -522,7 +560,7 @@
         img {
             display: block;
             margin: 1em auto;
-            max-width: 95%;
+            max-width: 90%;   /* slight padding from page edge */
             height: auto;
             page-break-inside: avoid;
         }
@@ -532,15 +570,26 @@
             margin: 1em 0;
         }
 
-        /* Figure caption */
+        /* ── FIGURE CAPTION (italic em paragraph after image) ── */
         p > em:only-child {
             display: block;
             text-align: center;
-            font-size: 9pt;
+            font-size: 8.5pt;
+            font-style: italic;
             color: #555;
-            margin-top: 0.2em;
-            margin-bottom: 1em;
+            margin-top: -0.2em;
+            margin-bottom: 1.2em;
             page-break-before: avoid;
+        }
+
+        /* ── TABLE CAPTION (label above table: **Bảng X.X:** ...) ── */
+        p:has(> strong:only-child) {
+            font-size: 8.5pt;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.2em;
+            margin-top: 1.4em;
+            page-break-after: avoid;  /* keep label with table */
         }
 
         /* ── MERMAID DIAGRAMS (HTML fallback only) ── */
@@ -619,9 +668,18 @@
             page-break-before: avoid;
         }
 
-        /* ── STRONG / EMPHASIS ── */
+        /* ── STRONG / EMPHASIS (print) ── */
+        /* Restore strong to dark color for print — no primary blue color needed */
         strong {
             color: #1a1a1a;
+            font-weight: 700;
+        }
+        /* Table/figure label paragraphs */
+        p > strong:only-child {
+            color: #333;
+        }
+        em {
+            font-style: italic;
         }
 
         /* ── FOOTNOTES ── */
@@ -632,15 +690,16 @@
             padding-top: 0.5em;
         }
 
-        /* ── PAGE FOOTER (Chromium-compatible page numbering) ── */
-        /* Chromium doesn't support @page margin boxes, so we use
-           a fixed-position footer that repeats on every page. */
+        /* ── PAGE FOOTER (fixed position, repeats on every printed page) ── */
+        /* Chromium headless doesn't support @page margin boxes;
+           we use a fixed footer. Page numbers are NOT dynamic per-page
+           in pure headless print — use the footer for book title only. */
         .page-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 1.5cm;
+            height: 1.2cm;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -649,13 +708,7 @@
             font-size: 8pt;
             color: #aaaaaa;
             border-top: 0.5pt solid #e0e0e0;
-        }
-        .page-footer .book-title {
-            color: #aaaaaa;
-        }
-        .page-footer .page-number {
-            color: #888888;
-            font-size: 9pt;
+            background: white;
         }
     }
     </style>

@@ -1,4 +1,4 @@
-# Chương 8: API Gateway
+﻿# Chương 8: API Gateway
 
 > *"The API Gateway is the single entry point for all clients. It handles cross-cutting concerns so that individual services don't have to."*
 > — Chris Richardson, *Microservices Patterns* [2a]
@@ -22,7 +22,7 @@
 
 Khi không có gateway, client (web, mobile) phải biết địa chỉ của *từng* microservice và gọi trực tiếp. Với hệ thống LMS gồm 7+ services, mỗi trang web có thể cần gọi 3-4 services khác nhau:
 
-![Hình 8.1: Không có Gateway — client phải biết địa chỉ của từng service](../figures/ch08/fig-8-1.svg)
+![](../figures/ch08/fig-8-1.svg)
 
 *Hình 8.1: Không có Gateway — client phải biết địa chỉ của từng service*
 
@@ -42,7 +42,7 @@ Richardson trong [2a, Ch.8] liệt kê năm vấn đề khi client gọi trực 
 
 API Gateway là **single entry point** — tất cả requests từ client đi qua gateway, gateway route đến đúng service:
 
-![Hình 8.2: API Gateway — single entry point route đến từng service](../figures/ch08/fig-8-2.svg)
+![](../figures/ch08/fig-8-2.svg)
 
 *Hình 8.2: API Gateway — single entry point route đến từng service*
 
@@ -54,7 +54,7 @@ Newman trong [4a, Ch.4] mô tả gateway là "smart pipe" duy nhất được ph
 
 Richardson trong [2a, Ch.8] phân biệt hai biến thể:
 
-![Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)](../figures/ch08/fig-8-3.svg)
+![](../figures/ch08/fig-8-3.svg)
 
 *Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)*
 
@@ -103,7 +103,7 @@ LMS chọn **Spring Cloud Gateway** — lựa chọn đúng vì cần WebSocket 
 
 ### Kiến trúc Spring Cloud Gateway
 
-![Hình 8.4: Kiến trúc Spring Cloud Gateway — Predicates, Filters, Routes](../figures/ch08/fig-8-4.svg)
+![](../figures/ch08/fig-8-4.svg)
 
 *Hình 8.4: Kiến trúc Spring Cloud Gateway — Predicates, Filters, Routes*
 
@@ -172,7 +172,7 @@ spring:
 
 ### Cách `lb://` hoạt động
 
-![Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route](../figures/ch08/fig-8-5.svg)
+![](../figures/ch08/fig-8-5.svg)
 
 *Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route*
 
@@ -239,7 +239,7 @@ public class JwtRequestFilter implements GatewayFilterFactory<JwtRequestFilter.C
 
 Luồng xử lý:
 
-![Hình 8.6: Luồng JWT validation tại Gateway — claims propagation qua trusted headers](../figures/ch08/fig-8-6.svg)
+![](../figures/ch08/fig-8-6.svg)
 
 *Hình 8.6: Luồng JWT validation tại Gateway — claims propagation qua trusted headers*
 
@@ -338,7 +338,7 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 
 ### Kiến trúc tổng thể
 
-![Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point](../figures/ch08/fig-8-7.svg)
+![](../figures/ch08/fig-8-7.svg)
 
 *Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point*
 
