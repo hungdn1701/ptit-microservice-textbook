@@ -107,7 +107,8 @@ Before editing any chapter or file:
 
 1. Check `ONBOARDING.md` → Is anyone else currently working on the same chapter?
 2. If the chapter is free, note your intent in the `ONBOARDING.md` **Active Work** section.
-3. After finishing a session, update `ONBOARDING.md` with what was done and what's next.
+3. After finishing a session, update `ONBOARDING.md` with what was done and what’s next.
+4. Update `CHANGELOG.md` with a **What / Why / Decision** entry — see the template at the top of that file.
 
 This is the **single source of truth** for who is doing what at any moment.
 
@@ -135,6 +136,36 @@ powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf
 ```
 
 Output is written to `output/` (gitignored). If a `scripts/` directory exists at the repo root, it is a **temporary local convenience copy** — do not commit it to the public repo.
+
+---
+
+## 📝 Documentation Convention: Change = Context (Bắt buộc)
+
+> [!IMPORTANT]
+> **Không commit bất kỳ thay đổi nào mà thiếu giải thích ngữ cảnh.**
+> Quy tắc này áp dụng cho cả người và AI.
+
+Mỗi khi có thay đổi, phải cập nhật đồng thời các file sau:
+
+| File | Cập nhật khi nào | Nội dung cần ghi |
+|---|---|---|
+| `CHANGELOG.md` `[Unreleased]` | Mọi thay đổi nội dung/infra | **What** + **Why** + **Decision** |
+| `ONBOARDING.md` Active Work | Bắt đầu và kết thúc session | Chapter đang chỉnh sửa, file liên quan |
+| `ONBOARDING.md` Session log | Cuối mỗi session | Tóm tắt 1–2 dòng đã làm gì |
+| `PROGRESS.md` | Khi phase hoàn thành | Đánh dấu `[x]` + cập nhật metric |
+| `IDEAS.md` | Khi idea được thực hiện/từ chối | Đổi Status + ghi Outcome + CHANGELOG ref |
+
+### Template CHANGELOG entry (cần học thuộc lòng)
+
+```markdown
+- **[Loại] Tiêu đề ngắn** (`file/chapter liên quan`)
+  - **What**: Thêm/sửa/xóa cái gì cụ thể
+  - **Why**: Vấn đề đang giải quyết / lý do quyết định
+  - **Decision**: Phương án chọn và tại sao (nếu có lựa chọn khác)
+  - **Ref**: IDEAS.md / PROGRESS.md Phase X *(nếu có)*
+```
+
+**[Loại]**: `Added` · `Changed` · `Fixed` · `Removed` · `Infra` · `Editorial`
 
 ---
 
