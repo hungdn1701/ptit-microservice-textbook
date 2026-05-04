@@ -55,7 +55,7 @@ desktop.ini
 .vscode/
 .idea/
 *.sublime-*
-
+*.code-workspace
 # ----- Node (if using build tools) -----
 node_modules/
 package-lock.json
