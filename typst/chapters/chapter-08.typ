@@ -23,13 +23,15 @@
 === Vấn đề: client giao tiếp trực tiếp với nhiều services
 Khi không có gateway, client (web, mobile) phải biết địa chỉ của #emph[từng] microservice và gọi trực tiếp. Với hệ thống LMS gồm 7+ services, mỗi trang web có thể cần gọi 3-4 services khác nhau:
 
-#box(image("/figures/ch08/fig-8-1.svg"))
-
-#emph[Hình 8.1: Không có Gateway --- client phải biết địa chỉ của từng service]
+#figure(
+  image("/figures/ch08/fig-8-1.svg"),
+  caption: [Hình 8.1: Không có Gateway --- client phải biết địa chỉ của từng service],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Richardson trong \[2a, Ch.8\] liệt kê năm vấn đề khi client gọi trực tiếp:
-
-#strong[Bảng 8.1:] Vấn đề khi client gọi trực tiếp microservices
 
 #figure(
   align(center)[#table(
@@ -42,16 +44,23 @@ Richardson trong \[2a, Ch.8\] liệt kê năm vấn đề khi client gọi trự
     [3], [#strong[Cross-cutting concerns phân tán]], [Mỗi service tự implement authentication, CORS, rate limiting --- duplicate, inconsistent],
     [4], [#strong[Network không an toàn]], [Internal services bị expose ra Internet --- attack surface lớn],
     [5], [#strong[API không phù hợp]], [Internal API thiết kế cho service-to-service, không tối ưu cho mobile (quá nhiều calls, payload lớn)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.1: Vấn đề khi client gọi trực tiếp microservices],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === API Gateway pattern
 API Gateway là #strong[single entry point] --- tất cả requests từ client đi qua gateway, gateway route đến đúng service:
 
-#box(image("/figures/ch08/fig-8-2.svg"))
-
-#emph[Hình 8.2: API Gateway --- single entry point route đến từng service]
+#figure(
+  image("/figures/ch08/fig-8-2.svg"),
+  caption: [Hình 8.2: API Gateway --- single entry point route đến từng service],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Gateway xử lý #strong[cross-cutting concerns tập trung]: authentication, CORS, rate limiting, logging, SSL termination. Services phía sau chỉ tập trung vào business logic --- không cần biết CORS là gì.
 
@@ -60,11 +69,13 @@ Newman trong \[4a, Ch.4\] mô tả gateway là "smart pipe" duy nhất được 
 === API Gateway vs BFF (Backend for Frontend)
 Richardson trong \[2a, Ch.8\] phân biệt hai biến thể:
 
-#box(image("/figures/ch08/fig-8-3.svg"))
-
-#emph[Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)]
-
-#strong[Bảng 8.2:] API Gateway vs BFF --- khi nào dùng gì
+#figure(
+  image("/figures/ch08/fig-8-3.svg"),
+  caption: [Hình 8.3: API Gateway (một gateway chung) vs BFF (gateway riêng cho từng client)],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #figure(
   align(center)[#table(
@@ -74,15 +85,16 @@ Richardson trong \[2a, Ch.8\] phân biệt hai biến thể:
     table.hline(),
     [#strong[API Gateway]], [Một gateway cho tất cả clients], [Team nhỏ, clients cần API tương tự],
     [#strong[BFF]], [Gateway riêng cho mỗi loại client], [Mobile cần API khác web (ít data, batched calls)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.2: API Gateway vs BFF --- khi nào dùng gì],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 LMS sử dụng #strong[single API Gateway] --- phù hợp vì chỉ có 2 web frontends (student + admin) với API requirements tương tự.
 
 #strong[Khi nào cần BFF?] BFF trở nên cần thiết khi different clients có #strong[fundamentally different API needs] --- không chỉ "filter bớt fields":
-
-#strong[Bảng 8.3:] Kịch bản chọn Single Gateway vs BFF
 
 #figure(
   align(center)[#table(
@@ -93,9 +105,12 @@ LMS sử dụng #strong[single API Gateway] --- phù hợp vì chỉ có 2 web f
     [Web + Web admin (API tương tự)], [✅ Đủ], [Over-engineering],
     [Web + Mobile (API khác nhau)], [❌ Mobile phải nhiều calls], [✅ Mobile BFF aggregate],
     [Web + IoT + Partner API], [❌ Gateway quá phức tạp], [✅ BFF per client type],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.3: Kịch bản chọn Single Gateway vs BFF],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Ví dụ: nếu LMS thêm #strong[mobile app] cho sinh viên, mobile cần: (1) #strong[batched API] --- màn hình "Dashboard" cần gọi 1 API trả về cả profile, recent submissions, leaderboard rank (thay vì 3 calls --- mobile network chậm hơn), (2) #strong[reduced payload] --- mobile không cần HTML-ready data, chỉ cần raw data nhẹ, (3) #strong[push notification integration] --- gateway riêng cho mobile xử lý device tokens.
 
@@ -106,8 +121,6 @@ Newman trong \[4a, Ch.4\] khuyến nghị: BFF nên #strong[owned by frontend te
 == Spring Cloud Gateway --- Reactive Gateway
 === Vấn đề: chọn gateway technology
 Hai lựa chọn phổ biến nhất trong Spring ecosystem:
-
-#strong[Bảng 8.4:] Spring Cloud Gateway vs Netflix Zuul
 
 #figure(
   align(center)[#table(
@@ -120,18 +133,23 @@ Hai lựa chọn phổ biến nhất trong Spring ecosystem:
     [#strong[Status]], [Active, recommended], [Deprecated (Netflix không maintain)],
     [#strong[WebSocket]], [Native support], [Không hỗ trợ],
     [#strong[Ecosystem]], [Spring Cloud tích hợp sẵn], [Legacy],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.4: Spring Cloud Gateway vs Netflix Zuul],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 LMS chọn #strong[Spring Cloud Gateway] --- lựa chọn đúng vì cần WebSocket support (cho notification push) và reactive performance.
 
 === Kiến trúc Spring Cloud Gateway
-#box(image("/figures/ch08/fig-8-4.svg"))
-
-#emph[Hình 8.4: Kiến trúc Spring Cloud Gateway --- Predicates, Filters, Routes]
-
-#strong[Bảng 8.5:] Ba khái niệm cốt lõi của Spring Cloud Gateway
+#figure(
+  image("/figures/ch08/fig-8-4.svg"),
+  caption: [Hình 8.4: Kiến trúc Spring Cloud Gateway --- Predicates, Filters, Routes],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #figure(
   align(center)[#table(
@@ -142,9 +160,12 @@ LMS chọn #strong[Spring Cloud Gateway] --- lựa chọn đúng vì cần WebSo
     [#strong[Route]], [Mapping: predicate → URI đích], [`/api/core/**` → `lb://core-service`],
     [#strong[Predicate]], [Điều kiện match request], [`Path=/api/core/**`, `Method=GET,POST`],
     [#strong[Filter]], [Xử lý request/response trước/sau routing], [`JwtRequestFilter`, `AddRequestHeader`],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.5: Ba khái niệm cốt lõi của Spring Cloud Gateway],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Dependency
 Gateway sử dụng `spring-cloud-starter-gateway` (WebFlux) + `spring-cloud-starter-netflix-eureka-client`. #strong[Lưu ý]: Gateway dựa trên WebFlux (reactive, non-blocking) --- #emph[không thể] dùng chung với `spring-boot-starter-web` (servlet, blocking). Thêm `spring-boot-starter-web` vào Gateway project → conflict, gateway không khởi động.
@@ -198,9 +219,13 @@ spring:
 ```
 
 === Cách `lb://` hoạt động
-#box(image("/figures/ch08/fig-8-5.svg"))
-
-#emph[Hình 8.5: Luồng `lb://` --- Eureka lookup + load balance + route]
+#figure(
+  image("/figures/ch08/fig-8-5.svg"),
+  caption: [Hình 8.5: Luồng `lb://` --- Eureka lookup + load balance + route],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 `lb://core-service` thực hiện ba bước tự động: 1. #strong[Lookup]: query Eureka tìm tất cả instances có tên `core-service` 2. #strong[Load balance]: chọn instance bằng Spring Cloud LoadBalancer (round-robin mặc định) 3. #strong[Forward]: gửi request đến instance được chọn
 
@@ -265,9 +290,13 @@ public class JwtRequestFilter implements GatewayFilterFactory<JwtRequestFilter.C
 
 Luồng xử lý:
 
-#box(image("/figures/ch08/fig-8-6.svg"))
-
-#emph[Hình 8.6: Luồng JWT validation tại Gateway --- claims propagation qua trusted headers]
+#figure(
+  image("/figures/ch08/fig-8-6.svg"),
+  caption: [Hình 8.6: Luồng JWT validation tại Gateway --- claims propagation qua trusted headers],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Services phía sau nhận user info qua #strong[custom headers] (`X-User-Id`, `X-User-Roles`) --- không cần validate JWT lại. Đây là pattern #strong[claims-based identity propagation]: gateway validate token, services tin tưởng gateway (vì traffic internal).
 
@@ -287,8 +316,6 @@ auth, (3) test kỹ với mobile app nếu có.
 === Rate Limiting
 Rate limiting ngăn một client gửi quá nhiều requests --- bảo vệ services khỏi abuse hoặc DDoS. Spring Cloud Gateway hỗ trợ sẵn `RequestRateLimiter` filter kết hợp Redis: cấu hình `replenishRate` (requests/giây), `burstCapacity` (burst tối đa), và `KeyResolver` (rate limit theo user, IP, hoặc route).
 
-#strong[Bảng 8.6:] Chiến lược rate limiting
-
 #figure(
   align(center)[#table(
     columns: (56.41%, 17.95%, 25.64%),
@@ -299,9 +326,12 @@ Rate limiting ngăn một client gửi quá nhiều requests --- bảo vệ serv
     [#strong[Per IP]], [Mỗi IP address N requests/giây], [Ngăn anonymous abuse],
     [#strong[Per route]], [Mỗi endpoint N requests/giây], [Bảo vệ heavy endpoints],
     [#strong[Global]], [Tổng requests hệ thống], [Bảo vệ infrastructure],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.6: Chiến lược rate limiting],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 ==== Rate Limiting Implementation với Redis
 Spring Cloud Gateway sử dụng #strong[Token Bucket algorithm] (Redis-backed) --- mỗi user có một "bucket" chứa tokens, mỗi request tiêu thụ 1 token, tokens được bổ sung theo `replenishRate`:
@@ -375,13 +405,15 @@ Gateway là điểm lý tưởng để gắn #strong[correlation ID] --- unique 
 
 == Case Study: Gateway trong hệ thống LMS
 === Kiến trúc tổng thể
-#box(image("/figures/ch08/fig-8-7.svg"))
-
-#emph[Hình 8.7: Kiến trúc tổng thể LMS --- Gateway là single entry point]
+#figure(
+  image("/figures/ch08/fig-8-7.svg"),
+  caption: [Hình 8.7: Kiến trúc tổng thể LMS --- Gateway là single entry point],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Phân tích configuration
-#strong[Bảng 8.7:] Phân tích configuration Gateway trong LMS
-
 #figure(
   align(center)[#table(
     columns: (18.6%, 34.88%, 34.88%, 11.63%),
@@ -397,9 +429,12 @@ Gateway là điểm lý tưởng để gắn #strong[correlation ID] --- unique 
     [#strong[Path Rewriting]], [`StripPrefix` filters], [✅ Đúng], [---],
     [#strong[WebSocket]], [Route tới notification service], [✅ Đúng], [---],
     [#strong[Health Check]], [Actuator endpoints], [✅ Đúng], [---],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 8.7: Phân tích configuration Gateway trong LMS],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Vấn đề JWT Version Inconsistency
 Một vấn đề đáng chú ý trong LMS: gateway sử dụng #strong[JJWT 0.11.5] (API mới: `parserBuilder()`) trong khi các services khác sử dụng #strong[JJWT 0.9.1] (API cũ: `parser()`). Với HS256 đơn giản, hai versions tương thích ở happy path. Tuy nhiên, khi upgrade hoặc thêm RS256, version mismatch có thể gây inconsistent validation --- gateway accept nhưng service reject, hoặc ngược lại.

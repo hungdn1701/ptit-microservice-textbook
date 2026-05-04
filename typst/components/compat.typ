@@ -22,47 +22,47 @@
 
 // ── CALLOUT BRIDGE FUNCTIONS ─────────────────────────────────
 
-/// 📐 Nguyên tắc — Architectural principle or design rule
+/// Nguyên tắc — Architectural principle or design rule
 /// Usage: #principle("Title")[Body]  OR  #principle[Body]
 #let principle(..args) = {
   let pos = args.pos()
   if pos.len() == 1 {
-    custom-box(title: "📐 Nguyên tắc", icon: "report", color: _c-principle, pos.at(0))
+    custom-box(title: "Nguyên tắc", icon: "report", color: _c-principle, pos.at(0))
   } else {
-    custom-box(title: "📐 Nguyên tắc — " + pos.at(0), icon: "report", color: _c-principle, pos.at(1))
+    custom-box(title: "Nguyên tắc — " + pos.at(0), icon: "report", color: _c-principle, pos.at(1))
   }
 }
 
-/// ⚠️ Cảnh báo — Common mistake or anti-pattern
+/// Cảnh báo — Common mistake or anti-pattern
 /// Usage: #warning("Title")[Body]  OR  #warning[Body]
 #let warning(..args) = {
   let pos = args.pos()
   if pos.len() == 1 {
-    custom-box(title: "⚠️ Lưu ý quan trọng", icon: "alert", color: _c-warning, pos.at(0))
+    custom-box(title: "Lưu ý quan trọng", icon: "alert", color: _c-warning, pos.at(0))
   } else {
-    custom-box(title: "⚠️ Lưu ý — " + pos.at(0), icon: "alert", color: _c-warning, pos.at(1))
+    custom-box(title: "Lưu ý — " + pos.at(0), icon: "alert", color: _c-warning, pos.at(1))
   }
 }
 
-/// 💡 Tip — Practical tip or best practice
+/// Tip — Practical tip or best practice
 /// Usage: #tip("Title")[Body]  OR  #tip[Body]
 #let tip(..args) = {
   let pos = args.pos()
   if pos.len() == 1 {
-    custom-box(title: "💡 Tip", icon: "tip", color: _c-tip, pos.at(0))
+    custom-box(title: "Tip", icon: "tip", color: _c-tip, pos.at(0))
   } else {
-    custom-box(title: "💡 Tip — " + pos.at(0), icon: "tip", color: _c-tip, pos.at(1))
+    custom-box(title: "Tip — " + pos.at(0), icon: "tip", color: _c-tip, pos.at(1))
   }
 }
 
-/// 🔍 Phân tích — Case study analysis or deep-dive
+/// Phân tích — Case study analysis or deep-dive
 /// Usage: #analysis("Title")[Body]  OR  #analysis[Body]
 #let analysis(..args) = {
   let pos = args.pos()
   if pos.len() == 1 {
-    custom-box(title: "🔍 Phân tích", icon: "info", color: _c-analysis, pos.at(0))
+    custom-box(title: "Phân tích", icon: "info", color: _c-analysis, pos.at(0))
   } else {
-    custom-box(title: "🔍 Phân tích — " + pos.at(0), icon: "info", color: _c-analysis, pos.at(1))
+    custom-box(title: "Phân tích — " + pos.at(0), icon: "info", color: _c-analysis, pos.at(1))
   }
 }
 

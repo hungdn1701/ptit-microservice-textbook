@@ -47,7 +47,7 @@ Yêu cầu kiến thức nền: - Lập trình Java cơ bản (Spring Boot là l
     [💡 #strong[Tip]], [Mẹo thực hành],
     [`[2a, Ch.3]`], [Tham chiếu đến sách (mã trong Đọc thêm)],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Lời cảm ơn

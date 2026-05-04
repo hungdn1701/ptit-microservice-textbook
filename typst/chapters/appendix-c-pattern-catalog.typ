@@ -22,7 +22,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[API Composition]], [Gọi nhiều services, tổng hợp response], [Ch.7 §7.3], [\[2a\] Ch.7],
     [#strong[Backend for Frontend (BFF)]], [Gateway riêng cho từng loại client], [Ch.8 §8.1], [\[2a\] Ch.8],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Resilience Patterns
@@ -37,7 +37,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Timeout]], [Giới hạn thời gian chờ response], [Ch.4 §4.4], [\[5\] Ch.7],
     [#strong[Bulkhead]], [Cách ly resources theo function/service], [Ch.4 §4.4], [\[5\] Ch.7],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Data Patterns
@@ -55,7 +55,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Data Duplication]], [Copy reference data qua events], [Ch.7 §7.3], [\[4b\] Ch.4],
     [#strong[Shared Kernel]], [Bounded Contexts chia sẻ common model], [Ch.2 §2.6], [\[6\]],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Infrastructure Patterns
@@ -72,7 +72,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Sidecar]], [Process phụ đi kèm mỗi service instance], [Ch.12 §12.6], [\[3\] Ch.8],
     [#strong[Strangler Fig]], [Migration incremental từ monolith], [Ch.10 §10.2], [\[4b\] Ch.3],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Security Patterns
@@ -87,7 +87,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Claims-based Identity Propagation]], [Gateway validate, services trust headers], [Ch.9 §9.3], [\[2a\] Ch.11],
     [#strong[RBAC]], [Permissions based on user roles], [Ch.9 §9.5], [\[4a\] Ch.9],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Observability Patterns
@@ -103,7 +103,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Correlation ID]], [Unique ID theo dõi request chain], [Ch.8 §8.4, Ch.11 §11.2], [\[4a\] Ch.8],
     [#strong[SLI/SLO/SLA]], [Quantitative service quality targets], [Ch.11 §11.3], [\[2a\] Ch.11],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Deployment Patterns
@@ -119,7 +119,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Infrastructure as Code]], [Declare infra bằng code (Docker Compose, K8s)], [Ch.12 §12.6], [\[3\] Ch.6],
     [#strong[CI/CD Pipeline]], [Automate build → test → deploy], [Ch.12 §12.4], [\[3\] Ch.10],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Migration Patterns
@@ -135,7 +135,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Outbox Pattern]], [Reliable messaging khi tách database], [Ch.10 §10.3], [\[2a\] Ch.4],
     [#strong[Parallel Run]], [Chạy old + new, so sánh output], [Ch.10 §10.4], [\[4b\] Ch.3],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == DDD Patterns
@@ -151,7 +151,7 @@ Bảng tổng hợp tất cả patterns được đề cập trong sách, sắp 
     [#strong[Ubiquitous Language]], [Ngôn ngữ thống nhất team-code-domain], [Ch.2 §2.2], [\[6\] Ch.2],
     [#strong[Event Storming]], [Workshop khám phá domain qua events], [Ch.5 §5.4], [\[3\] Ch.4],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))

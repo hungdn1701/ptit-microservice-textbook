@@ -24,7 +24,7 @@ Mỗi bài tập/case study được phân loại:
     [🐛], [#strong[Debugging Scenario]], [Tìm root cause từ symptoms --- dạng on-call incident],
     [⚖️], [#strong[Architecture Decision Record]], [Viết ADR cho một quyết định thiết kế],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Mức độ:] ⭐ Cơ bản | ⭐⭐ Trung bình | ⭐⭐⭐ Nâng cao (interview-level)
@@ -45,7 +45,7 @@ Mỗi bài tập/case study được phân loại:
     [#strong[B]], [E-commerce 5 năm, monolith 500K lines, deploy mất 4 giờ], [25 devs, 4 teams], [50K orders/ngày], [Mỗi team deploy phải coordinate, release cycle 2 tuần],
     [#strong[C]], [Hệ thống ERP nội bộ ngân hàng, Java 8, Oracle DB], [10 devs, 2 teams], [500 users nội bộ], [Muốn "hiện đại hóa" vì vendor nói microservices tốt hơn],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -104,7 +104,7 @@ Mỗi bài tập/case study được phân loại:
     [#strong[API Call]], [Tạo `Validation Service` riêng, gọi qua REST], [Loose coupling, deploy độc lập],
     [#strong[Duplicate Code]], [Copy validation logic vào mỗi service], [Zero coupling, nhưng maintenance?],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -182,7 +182,7 @@ Mỗi bài tập/case study được phân loại:
     [#strong[C]: Admin Dashboard ↔ Product Service], [Cần query nested data (product + reviews + inventory)],
     [#strong[D]: Public API cho third-party merchants], [Stability, documentation, versioning],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -209,7 +209,7 @@ Mỗi bài tập/case study được phân loại:
     [#strong[C]: IoT sensor data], [100K sensors gửi data mỗi giây], [Throughput cực cao, loss vài messages OK],
     [#strong[D]: Task queue], [Image resize: upload → queue → process], [Round-robin distribution, consumer acknowledgment],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -291,7 +291,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
     [#strong[C]: Insurance claim], [Submit claim → Fraud detection → Adjuster review → Payout → Notify], [5 steps, human-in-the-loop, days-long process],
     [#strong[D]: Flight booking (multi-leg)], [Book leg 1 → Book leg 2 → Book hotel → Book car → Payment], [5 steps, external APIs, partial failure common],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -327,7 +327,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
     [MongoDB (replica set)], [?], [?],
     [Redis Cluster], [?], [?],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #block[
@@ -439,7 +439,7 @@ Cross-reference: assignment_questions.question_id → questions.id
     [#strong[C]: Judge Service (server-to-server)], [No user, backend processing], [Machine-to-machine],
     [#strong[D]: Mobile app (React Native)], [Native app, custom login screen], [User login, biometric],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -478,7 +478,7 @@ Cross-reference: assignment_questions.question_id → questions.id
     [#strong[Event Sourcing]], [Events LÀ source of truth, derive state từ events], [Axon Framework, EventStoreDB],
     [#strong[CDC (Change Data Capture)]], [Đọc DB transaction log → auto-publish changes], [Debezium + Kafka Connect],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -527,7 +527,7 @@ Cross-reference: assignment_questions.question_id → questions.id
     [#strong[C]: Commercial], [Datadog / New Relic / Dynatrace], [\$500-2000], [1 ngày (agent install)],
     [#strong[D]: Cloud-native], [AWS CloudWatch + X-Ray / GCP Cloud Monitoring], [\$100-400], [1-2 ngày],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:
@@ -556,7 +556,7 @@ Cross-reference: assignment_questions.question_id → questions.id
     [#strong[B]: University LMS], [7 services], [10K req/ngày, burst khi contest], [3 devs], [Reliability, easy ops],
     [#strong[C]: E-commerce platform], [25 services], [1M req/ngày], [15 devs, 4 teams], [Auto-scaling, zero downtime, multi-region],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #strong[Câu hỏi phân tích]:

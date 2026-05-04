@@ -26,7 +26,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[JJWT]], [JWT generation & validation], [Ch.9], [github.com/jwtk/jjwt],
     [#strong[MapStruct]], [DTO mapping code generator], [Ch.3], [mapstruct.org],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Messaging & Data
@@ -40,7 +40,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[PostgreSQL]], [Relational database], [Ch.7], [postgresql.org],
     [#strong[Redis]], [In-memory cache & rate limiting], [Ch.8], [redis.io],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Infrastructure & DevOps
@@ -55,7 +55,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[Kubernetes]], [Container orchestration (overview)], [Ch.12], [kubernetes.io],
     [#strong[Jenkins / GitHub Actions]], [CI/CD automation], [Ch.12], [---],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Testing
@@ -69,7 +69,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[Flyway]], [Database migration versioning], [Ch.10], [flywaydb.org],
     [#strong[LaunchDarkly / Unleash]], [Feature flags management], [Ch.10], [launchdarkly.com / unleash.io],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Observability
@@ -84,7 +84,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[ELK Stack]], [Elasticsearch + Logstash + Kibana], [Ch.11], [elastic.co],
     [#strong[Prometheus + Grafana]], [Metrics collection + visualization], [Ch.11], [prometheus.io, grafana.com],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Development Tools
@@ -98,7 +98,7 @@ Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề 
     [#strong[Postman]], [API testing & documentation], [postman.com],
     [#strong[Swagger UI]], [Interactive API documentation], [swagger.io],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))

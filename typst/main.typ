@@ -12,7 +12,7 @@
   title: "Kiến Trúc SOA & Microservices",
   author: "Đặng Ngọc Hùng",
   theme: obook,
-  lang: "en",
+  lang: "vi",
   fonts: (
     body: "New Computer Modern",
     math: "New Computer Modern Math",
@@ -37,14 +37,15 @@
 // ── FRONT MATTER ──────────────────────────────────────────────
 #show: front-matter
 
-= Lời nói đầu
+#heading(outlined: false)[Lời nói đầu]
 #include "chapters/preface.typ"
 
-= Giới thiệu
+#heading(outlined: false)[Giới thiệu]
 #include "chapters/introduction.typ"
 
 // ── MAIN MATTER ───────────────────────────────────────────────
 #show: main-matter
+#show figure: set figure(supplement: none, numbering: none)
 
 #tableofcontents
 #listoffigures

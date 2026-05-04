@@ -23,7 +23,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [5], [#strong[Nano-services] --- Tách mỗi entity thành 1 service riêng khi chúng luôn thay đổi cùng nhau], [Latency tăng, debugging ác mộng (request cần 3-4 calls)], [Tách theo bounded context, không theo entity], [2],
     [6], [#strong[Shared lib lạm dụng] --- Dùng Shared Kernel vì tiện, trộn cross-cutting concern và domain logic], [Deploy coupling ngầm, thay đổi shared lib ảnh hưởng tất cả], [Phân biệt rõ: cross-cutting (nên share) vs domain logic (không share)], [2],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == API Design
@@ -37,7 +37,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [8], [#strong[Naming convention không nhất quán] --- Mix singular/plural, kebab/camelCase], [3+ consumers → sửa naming = breaking changes hàng loạt], [Chọn convention (plural + kebab-case) và enforce từ PR đầu tiên], [3],
     [9], [#strong[Bỏ qua error format chuẩn] --- Mỗi service trả lỗi format riêng], [Consumer phải handle N formats, debugging khó], [`GlobalExceptionHandler` + error response format thống nhất], [3],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Communication
@@ -55,7 +55,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [15], [#strong[Consumer không idempotent] --- Giả định mỗi message chỉ đến 1 lần], [Message trùng → dữ liệu sai khi Kafka rebalance/retry], [Kiểm tra trạng thái trước khi xử lý --- nếu đã xử lý thì skip], [5],
     [16], [#strong[Chọn broker vì quen, không vì use case] --- RabbitMQ cho event streaming chỉ vì team biết], [Broker không phù hợp khi scale → migrate đau đớn], [Đánh giá use case: durable log (Kafka) vs smart routing (RabbitMQ)], [5],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Transactions & Data
@@ -74,7 +74,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [23], [#strong[Duplicate data không có source of truth] --- Copy data mà không rõ ai sở hữu], [Conflict khi hai services cùng sửa, không biết bản nào đúng], [Mỗi data entity chỉ có 1 owner --- copies là read-only replicas], [7],
     [24], [#strong[Quên replication lag] --- Write → read ngay → thấy data cũ], [User confused: nộp bài OK nhưng leaderboard chưa cập nhật], [UI "optimistic update" --- hiển thị dự kiến ngay, cập nhật khi event đến], [7],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Security & Gateway
@@ -91,7 +91,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [29], [#strong[Lưu JWT trong localStorage] --- Frontend lưu token ở localStorage], [XSS attack → đọc token dễ dàng], [Lưu trong httpOnly cookie (không truy cập qua JS)], [9],
     [30], [#strong[Hard-code roles trong code] --- `if role == "ADMIN"` khắp service], [Thêm role mới → sửa code nhiều nơi, dễ sót], [RBAC centralized --- permissions mapping, không check role trực tiếp], [9],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Migration & Observability
@@ -110,7 +110,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [37], [#strong[Metric quá nhiều hoặc quá ít] --- 500 metrics hoặc chỉ CPU/RAM], [Quá nhiều: noise, alert fatigue. Quá ít: blind spots], [Focus SLI/SLO: latency, error rate, throughput], [11],
     [38], [#strong[Alert mọi thứ] --- Mỗi exception → SNS → email/Slack], [Alert fatigue: team ignore alerts, miss real incidents], [Alert trên #emph[symptoms] (SLO breach), không trên #emph[causes]], [11],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 == Deployment & DevOps
@@ -125,7 +125,7 @@ Tổng hợp tất cả anti-patterns (⚠️ Sai lầm thường gặp) từ 12
     [41], [#strong[Build image khác per environment] --- Dev/staging/prod build riêng], ["Works on staging" fail production vì image khác], [Build once, deploy everywhere --- externalize config qua env vars], [12],
     [42], [#strong[Không có rollback plan] --- Deploy mới, có bug, không biết quay], [Panic, fix production trực tiếp, thêm bug], [Mọi deployment phải có rollback procedure documented], [12],
   )]
-  , kind: table
+  , kind: "inline-table", supplement: none, numbering: none
   )
 
 #line(length: 100%, stroke: 0.5pt + rgb("#E5E7EB"))

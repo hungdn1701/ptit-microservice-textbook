@@ -23,13 +23,15 @@
 === Request-Response: mô hình quen thuộc
 Giao tiếp đồng bộ (#emph[synchronous communication]) là mô hình quen thuộc nhất với hầu hết developer: service A gửi request đến service B, #strong[chờ] response, rồi xử lý tiếp. HTTP/REST là protocol phổ biến nhất cho mô hình này.
 
-#box(image("/figures/ch04/fig-4-1.svg"))
-
-#emph[Hình 4.1: Giao tiếp đồng bộ --- Core Service blocked trong khi chờ Judge response]
+#figure(
+  image("/figures/ch04/fig-4-1.svg"),
+  caption: [Hình 4.1: Giao tiếp đồng bộ --- Core Service blocked trong khi chờ Judge response],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Ưu và nhược điểm
-#strong[Bảng 4.1:] Ưu và nhược điểm của giao tiếp đồng bộ
-
 #figure(
   align(center)[#table(
     columns: (13.04%, 39.13%, 47.83%),
@@ -40,9 +42,12 @@ Giao tiếp đồng bộ (#emph[synchronous communication]) là mô hình quen t
     [#strong[Nhất quán]], [Biết ngay kết quả (thành công/thất bại)], [#strong[Temporal coupling]: cả hai service phải online cùng lúc],
     [#strong[Tooling]], [HTTP tooling phong phú (Postman, curl, browser)], [#strong[Cascading failures]: service B down → A cũng down],
     [#strong[Tracing]], [Request ID dễ trace qua chuỗi calls], [#strong[Latency accumulation]: A→B→C = tổng latency],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.1: Ưu và nhược điểm của giao tiếp đồng bộ],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Richardson phân tích rõ trong \[2a, Ch.3\]: giao tiếp đồng bộ tạo #strong[temporal coupling] (cả hai service phải sẵn sàng cùng lúc) và #strong[runtime dependency] (service gọi không thể hoạt động nếu service được gọi down). Đây là lý do microservices thường ưu tiên async cho các flow không cần response ngay lập tức.
 
@@ -111,8 +116,6 @@ bài chấm dùng async (Kafka) --- hai nhu cầu khác nhau.
 === Interaction Styles --- Phân loại kiểu tương tác
 Richardson phân loại interaction styles theo hai chiều \[2a, Ch.3\]:
 
-#strong[Bảng 4.2:] Interaction styles trong microservices theo Richardson \[2a, Ch.3\]
-
 #figure(
   align(center)[#table(
     columns: (33.33%, 33.33%, 33.33%),
@@ -121,16 +124,17 @@ Richardson phân loại interaction styles theo hai chiều \[2a, Ch.3\]:
     table.hline(),
     [#strong[Synchronous]], [Request/Response], [---],
     [#strong[Asynchronous]], [Async request/response, One-way notification], [Publish/Subscribe, Publish/Async responses],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.2: Interaction styles trong microservices theo Richardson \[2a, Ch.3\]],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Hầu hết service dùng kết hợp nhiều kiểu. Ví dụ: LMS Core Service dùng #emph[request/response] (Feign) để query Judge, #emph[publish/subscribe] (Kafka) để gửi submissions, và #emph[one-way notification] (WebSocket) để push kết quả.
 
 === REST vs gRPC --- Hai lựa chọn cho sync
 REST (HTTP/JSON) là lựa chọn phổ biến nhất, nhưng không phải duy nhất. #strong[gRPC] --- framework RPC mã nguồn mở của Google --- là lựa chọn phổ biến thứ hai cho giao tiếp đồng bộ giữa microservices \[2a, Ch.3\].
-
-#strong[Bảng 4.3:] REST vs gRPC --- so sánh chi tiết
 
 #figure(
   align(center)[#table(
@@ -145,9 +149,12 @@ REST (HTTP/JSON) là lựa chọn phổ biến nhất, nhưng không phải duy 
     [#strong[Browser support]], [Native], [Cần gRPC-Web proxy],
     [#strong[Streaming]], [Không native (phải dùng SSE/WebSocket)], [Bi-directional streaming native],
     [#strong[Debugging]], [Dễ (curl, Postman, browser)], [Khó (cần gRPC tools)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.3: REST vs gRPC --- so sánh chi tiết],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #strong[gRPC Architecture --- Tại sao nhanh hơn?] gRPC nhanh hơn REST không chỉ nhờ binary encoding. Ba yếu tố kiến trúc quan trọng:
 
@@ -171,8 +178,6 @@ buộc]. Ưu tiên thấp hơn so với thêm resilience patterns.
 === Resilience Metrics --- Đo lường độ tin cậy
 Trước khi áp dụng resilience patterns (§4.4), cần hiểu cách #strong[đo lường] resilience. Bốn metrics cốt lõi:
 
-#strong[Bảng 4.4:] Resilience metrics cốt lõi
-
 #figure(
   align(center)[#table(
     columns: (26.67%, 36.67%, 36.67%),
@@ -183,13 +188,14 @@ Trước khi áp dụng resilience patterns (§4.4), cần hiểu cách #strong[
     [#strong[MTTR] (Mean Time To Recovery)], [Thời gian trung bình để khôi phục], [Trung bình 15 phút để phát hiện + restart → MTTR = 15min],
     [#strong[MTTF] (Mean Time To Failure)], [Thời gian trung bình từ recovery đến failure tiếp theo], [MTTF = MTBF - MTTR],
     [#strong[Availability]], [% thời gian system hoạt động], [= MTTF / (MTTF + MTTR)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.4: Resilience metrics cốt lõi],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #strong[Availability "nines":]
-
-#strong[Bảng 4.5:] Availability "nines" --- downtime cho phép theo target
 
 #figure(
   align(center)[#table(
@@ -201,9 +207,12 @@ Trước khi áp dụng resilience patterns (§4.4), cần hiểu cách #strong[
     [#strong[99.9%] (three nines)], [8.76 giờ], [43.8 phút], [#strong[LMS production] (phù hợp)],
     [#strong[99.99%] (four nines)], [52.6 phút], [4.38 phút], [E-commerce, banking],
     [#strong[99.999%] (five nines)], [5.26 phút], [26.3 giây], [Critical infrastructure],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.5: Availability "nines" --- downtime cho phép theo target],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #principle("Nguyên tắc — Error Budgets")[
 Google SRE (Site Reliability Engineering) đề xuất: nếu target
@@ -244,9 +253,13 @@ public interface MysqlClient {
 ```
 
 === Cách hoạt động
-#box(image("/figures/ch04/fig-4-2.svg"))
-
-#emph[Hình 4.2: Cách Feign proxy tự động xử lý HTTP request, JWT, load balancing]
+#figure(
+  image("/figures/ch04/fig-4-2.svg"),
+  caption: [Hình 4.2: Cách Feign proxy tự động xử lý HTTP request, JWT, load balancing],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Feign tự động xử lý: serialization/deserialization (JSON ↔ Java), header injection (JWT token qua `RequestInterceptor`), service discovery (Eureka lookup thay vì URL hardcoded), và error decoding (response code → exception).
 
@@ -263,20 +276,26 @@ Có hai pattern chính \[2a, Ch.3\]:
 
 #strong[Client-side discovery] --- Client (service gọi) tự query service registry để tìm danh sách instances, rồi tự load balance:
 
-#box(image("/figures/ch04/fig-4-3.svg"))
-
-#emph[Hình 4.3: Client-side discovery --- service tự query Eureka và load balance]
+#figure(
+  image("/figures/ch04/fig-4-3.svg"),
+  caption: [Hình 4.3: Client-side discovery --- service tự query Eureka và load balance],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #strong[Server-side discovery] --- Load balancer (hoặc API Gateway) đứng giữa, client chỉ cần biết URL của load balancer:
 
-#box(image("/figures/ch04/fig-4-4.svg"))
-
-#emph[Hình 4.4: Server-side discovery --- load balancer điều hướng request]
+#figure(
+  image("/figures/ch04/fig-4-4.svg"),
+  caption: [Hình 4.4: Server-side discovery --- load balancer điều hướng request],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Netflix Eureka trong LMS
 Hệ thống LMS sử dụng #strong[Netflix Eureka] --- client-side discovery pattern:
-
-#strong[Bảng 4.6:] Thành phần Eureka trong LMS
 
 #figure(
   align(center)[#table(
@@ -287,9 +306,12 @@ Hệ thống LMS sử dụng #strong[Netflix Eureka] --- client-side discovery p
     [`eureka-registry`], [Service registry server], [9000],
     [Mỗi service], [Eureka client (tự đăng ký)], [---],
     [Spring Cloud LoadBalancer], [Client-side load balancing], [---],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.6: Thành phần Eureka trong LMS],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Khi microservice khởi động, nó đăng ký tại Eureka server với tên (`spring.application.name`) và địa chỉ. Gateway và các service khác query Eureka để tìm instances. Trong config Gateway: `uri: lb://core-service` nghĩa là tra cứu Eureka tìm tất cả instances có tên `core-service`, rồi load balance giữa chúng.
 
@@ -312,13 +334,15 @@ Trong monolith, nếu database chậm, #emph[toàn bộ] ứng dụng chậm ---
 
 Hugo Rocha trong \[5\] nhấn mạnh: trong distributed system, #emph[lỗi không phải ngoại lệ --- lỗi là trạng thái bình thường]. Network sẽ timeout, services sẽ crash, databases sẽ chậm. Câu hỏi không phải "nếu lỗi xảy ra" mà là "khi lỗi xảy ra".
 
-#box(image("/figures/ch04/fig-4-5.svg"))
-
-#emph[Hình 4.5: Cascading failure --- Service B chậm làm A, D, E đều bị ảnh hưởng]
+#figure(
+  image("/figures/ch04/fig-4-5.svg"),
+  caption: [Hình 4.5: Cascading failure --- Service B chậm làm A, D, E đều bị ảnh hưởng],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Bốn resilience patterns cốt lõi
-#strong[Bảng 4.7:] Bốn resilience patterns cốt lõi
-
 #figure(
   align(center)[#table(
     columns: (21.95%, 26.83%, 24.39%, 26.83%),
@@ -329,21 +353,32 @@ Hugo Rocha trong \[5\] nhấn mạnh: trong distributed system, #emph[lỗi khô
     [#strong[Retry]], [Tự động thử lại khi gặp lỗi tạm thời], [Gọi điện lại khi tín hiệu kém], [Retry 3 lần với exponential backoff],
     [#strong[Circuit Breaker]], [Ngắt mạch khi service downstream liên tục lỗi], [Cầu dao điện --- ngắt khi quá tải], [Judge down → trả fallback message],
     [#strong[Bulkhead]], [Cách ly resources theo service/function], [Khoang tàu thủy --- 1 khoang ngập, tàu không chìm], [Thread pool riêng cho Judge vs Question],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.7: Bốn resilience patterns cốt lõi],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 ==== Circuit Breaker --- Chi tiết state machine
-#box(image("/figures/ch04/fig-4-6.svg"))
-
-#emph[Hình 4.6: Circuit Breaker state machine --- Closed, Open, Half-Open]
+#figure(
+  image("/figures/ch04/fig-4-6.svg"),
+  caption: [Hình 4.6: Circuit Breaker state machine --- Closed, Open, Half-Open],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Khi circuit ở trạng thái #strong[Open], mọi request được reject #emph[ngay lập tức] --- không gửi tới service downstream. Điều này bảo vệ cả caller (không block threads) và callee (không bị overwhelm khi đang recovery).
 
 ==== Bulkhead --- Cách ly resources
-#box(image("/figures/ch04/fig-4-7.svg"))
-
-#emph[Hình 4.7: Bulkhead pattern --- thread pool cách ly theo function]
+#figure(
+  image("/figures/ch04/fig-4-7.svg"),
+  caption: [Hình 4.7: Bulkhead pattern --- thread pool cách ly theo function],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Tên "Bulkhead" lấy từ thiết kế tàu thủy: khoang tàu bị nước tràn vào, các khoang khác vẫn khô --- tàu không chìm. Michael Nygard giới thiệu pattern này trong #emph[Release It!] (2007) \[5, Ch.7\].
 
@@ -430,8 +465,6 @@ resilience4j:
         maxWaitDuration: 500ms            # Chờ tối đa 500ms nếu bulkhead đầy
 ```
 
-#strong[Bảng 4.9:] Giá trị recommend cho từng environment
-
 #figure(
   align(center)[#table(
     columns: 4,
@@ -444,9 +477,12 @@ resilience4j:
     [`retry.maxAttempts`], [1], [3], [3],
     [`timelimiter.timeoutDuration`], [10s], [5s], [3s],
     [`bulkhead.maxConcurrentCalls`], [5], [10], [25],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.9: Giá trị recommend cho từng environment],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #tip("Tip — Thứ tự áp dụng annotations")[
 Resilience4j xử lý annotations theo thứ tự #strong[ngoài vào trong]:
@@ -478,15 +514,17 @@ Hệ thống LMS hỗ trợ sinh viên thực hành SQL trên 4 loại database:
 === Hiện trạng: Strategy Pattern + OpenFeign
 LMS implement bài toán này bằng #strong[Strategy Pattern] kết hợp OpenFeign:
 
-#box(image("/figures/ch04/fig-4-8.svg"))
-
-#emph[Hình 4.8: Strategy Pattern --- SqlExecutorService dispatch SQL đến 4 DBMS qua Feign]
+#figure(
+  image("/figures/ch04/fig-4-8.svg"),
+  caption: [Hình 4.8: Strategy Pattern --- SqlExecutorService dispatch SQL đến 4 DBMS qua Feign],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 Core Service chứa `SqlExecutorService` --- nhận database type (dưới dạng UUID) và route request đến đúng sandbox qua Feign client. Logic dispatch đơn giản: `if-else` theo database type ID.
 
 === Phân tích các vấn đề
-#strong[Bảng 4.8:] Phân tích vấn đề SqlExecutorService
-
 #figure(
   align(center)[#table(
     columns: (9.09%, 24.24%, 21.21%, 45.45%),
@@ -498,14 +536,21 @@ Core Service chứa `SqlExecutorService` --- nhận database type (dưới dạn
     [3], [#strong[Không có resilience]], [Không Circuit Breaker, không Retry, không Timeout config], [Resilience4j stack],
     [4], [#strong[Không có fallback]], [Nếu MySQL sandbox down → lỗi trả về user ngay, không graceful degradation], [Fallback message hoặc queue retry],
     [5], [#strong[Mixed execution]], [PostgreSQL/Oracle chạy local, MySQL/MSSQL gọi remote → inconsistent model], [Tất cả qua Feign hoặc tất cả local],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 4.8: Phân tích vấn đề SqlExecutorService],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Đề xuất migration
-#box(image("/figures/ch04/fig-4-9.svg"))
-
-#emph[Hình 4.9: Lộ trình migration cho SqlExecutorService --- từ resilience đến async]
+#figure(
+  image("/figures/ch04/fig-4-9.svg"),
+  caption: [Hình 4.9: Lộ trình migration cho SqlExecutorService --- từ resilience đến async],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 - #strong[Phase 1 --- Thêm resilience] (ưu tiên cao, effort thấp): Thêm `@CircuitBreaker`, `@Retry`, `@TimeLimiter` cho Feign calls. Khi Judge sandbox down → trả fallback: "Sandbox đang bận, bài sẽ được chấm khi sẵn sàng"
 - #strong[Phase 2 --- Hợp nhất SqlExecutorService] (effort trung bình): Chuyển toàn bộ execution logic sang Judge Service (single ownership). Core Service chỉ gửi request, không biết database type nào xử lý

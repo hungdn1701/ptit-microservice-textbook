@@ -26,8 +26,6 @@ Trong monolith, triển khai nghĩa là: build một artifact (JAR/WAR), copy l�
 
 Trong microservices, "deploy" có nghĩa khác hoàn toàn:
 
-#strong[Bảng 12.1:] Thách thức triển khai Monolith vs Microservices
-
 #figure(
   align(center)[#table(
     columns: (41.67%, 58.33%),
@@ -39,16 +37,17 @@ Trong microservices, "deploy" có nghĩa khác hoàn toàn:
     [Restart 1 process], [Restart N processes --- #strong[thứ tự quan trọng]],
     [Rollback: quay về version cũ], [Rollback: quay N services về versions tương thích],
     [Test trước deploy: 1 environment], [Test trước deploy: cần N services chạy cùng],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.1: Thách thức triển khai Monolith vs Microservices],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Newman trong \[4a, Ch.6\] nhấn mạnh: khả năng #strong[independent deployment] là lợi ích quan trọng nhất của microservices --- nhưng cũng là thách thức lớn nhất. Nếu không tự động hóa, deploy 7+ services thủ công trở thành "dreaded Friday afternoon deployment".
 
 === Từ Manual đến Automation --- DevOps Mindset
 Mitra trong \[3, Ch.6\] mô tả ba nguyên tắc DevOps nền tảng cho microservices deployment:
-
-#strong[Bảng 12.2:] Ba nguyên tắc DevOps nền tảng
 
 #figure(
   align(center)[#table(
@@ -59,13 +58,20 @@ Mitra trong \[3, Ch.6\] mô tả ba nguyên tắc DevOps nền tảng cho micros
     [#strong[Immutable Infrastructure]], [Không patch server đang chạy --- tạo mới, deploy mới, xóa cũ], [Reproducible, no configuration drift],
     [#strong[Infrastructure as Code]], [Mọi hạ tầng (server, network, database) định nghĩa trong code], [Version control, review, rollback],
     [#strong[Continuous Delivery]], [Code luôn ở trạng thái sẵn sàng deploy --- chỉ cần ấn nút], [Giảm risk per deployment, feedback nhanh],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.2: Ba nguyên tắc DevOps nền tảng],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
-#box(image("/figures/ch12/fig-12-1.svg"))
-
-#emph[Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)]
+#figure(
+  image("/figures/ch12/fig-12-1.svg"),
+  caption: [Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #principle("Nguyên tắc — If It Hurts, Do It More Often")[
 "If deploying is painful, deploy more frequently. The pain is
@@ -85,11 +91,13 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
 === Container --- Lightweight Isolation
 #strong[Container] (Docker) đóng gói ứng dụng + dependencies + runtime thành một #strong[image] --- chạy giống nhau trên mọi môi trường. Khác với Virtual Machine: container chia sẻ kernel với host OS → nhẹ hơn, khởi động trong giây thay vì phút.
 
-#box(image("/figures/ch12/fig-12-2.svg"))
-
-#emph[Hình 12.2: So sánh kiến trúc Virtual Machines và Containers]
-
-#strong[Bảng 12.3:] So sánh chi tiết VM và Container
+#figure(
+  image("/figures/ch12/fig-12-2.svg"),
+  caption: [Hình 12.2: So sánh kiến trúc Virtual Machines và Containers],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #figure(
   align(center)[#table(
@@ -102,16 +110,17 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
     [#strong[Isolation]], [Mạnh (hardware-level)], [Trung bình (OS-level --- share kernel)],
     [#strong[Density]], [5-10 VMs/host], [50-100+ containers/host],
     [#strong[Phù hợp]], [Multi-tenant, security-critical], [Microservices, CI/CD, dev environments],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.3: So sánh chi tiết VM và Container],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Richardson trong \[2a, Ch.12\] mô tả 5 deployment patterns, trong đó #strong[Service as Container] là phổ biến nhất cho microservices --- cân bằng giữa isolation, tốc độ, và resource efficiency.
 
 === Deployment Patterns --- Từ Language-Specific đến Serverless
 Richardson trong \[2a, Ch.12\] phân loại:
-
-#strong[Bảng 12.4:] Năm mô hình triển khai (Deployment Patterns)
 
 #figure(
   align(center)[#table(
@@ -124,9 +133,12 @@ Richardson trong \[2a, Ch.12\] phân loại:
     [#strong[Service per Container]], [Mỗi service = 1 Docker container], [Lightweight, fast, portable], [Cần orchestration cho production],
     [#strong[Serverless]], [Deploy functions, cloud quản lý infrastructure], [Zero ops, auto-scale], [Vendor lock-in, cold start, stateless only],
     [#strong[Kubernetes]], [Container orchestration: scheduling, scaling, self-healing], [Production-grade, declarative], [Phức tạp, learning curve cao],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.4: Năm mô hình triển khai (Deployment Patterns)],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Dockerfile --- Định nghĩa Container Image
 Dockerfile mô tả cách build container image cho một service. Mẫu phổ biến cho Spring Boot microservice:
@@ -232,8 +244,6 @@ volumes:
 ```
 
 === Docker Compose --- Điểm mạnh và giới hạn
-#strong[Bảng 12.5:] Điểm mạnh và giới hạn của Docker Compose
-
 #figure(
   align(center)[#table(
     columns: (55%, 45%),
@@ -244,9 +254,12 @@ volumes:
     [#strong[Reproducible]: `docker compose up` = same result], [#strong[Không có self-healing]: container crash → không auto-restart],
     [#strong[Dependencies]: `depends_on` đảm bảo thứ tự khởi động], [#strong[Không có load balancing]: cần reverse proxy thêm],
     [#strong[Isolated networking]: services giao tiếp qua service name], [#strong[Không production-grade]: thiếu health checks, rolling updates],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.5: Điểm mạnh và giới hạn của Docker Compose],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Docker Compose #strong[phù hợp cho]: development environment, staging, CI/CD test environments, và #strong[hệ thống nhỏ-trung production] (như LMS). Khi cần scale ra nhiều hosts, auto-healing, rolling updates → cần #strong[Kubernetes] hoặc container orchestration platform.
 
@@ -257,13 +270,15 @@ Docker Compose #strong[phù hợp cho]: development environment, staging, CI/CD 
 Trong monolith: 1 pipeline --- build → test → deploy. Trong microservices: mỗi service có pipeline riêng, và cần đảm bảo: - Service A deploy version mới → #strong[không break] Service B (API versioning --- Ch.3) - Database migration chạy #strong[trước] service deploy - Rollback service → database migration cũng phải rollback
 
 === CI/CD Architecture cho Microservices
-#box(image("/figures/ch12/fig-12-3.svg"))
-
-#emph[Hình 12.3: CI/CD Pipeline chuẩn cho Microservices]
+#figure(
+  image("/figures/ch12/fig-12-3.svg"),
+  caption: [Hình 12.3: CI/CD Pipeline chuẩn cho Microservices],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Mono-repo vs Poly-repo --- Ảnh hưởng đến CI/CD
-#strong[Bảng 12.6:] Mono-repo vs Poly-repo
-
 #figure(
   align(center)[#table(
     columns: (33.33%, 33.33%, 33.33%),
@@ -275,15 +290,16 @@ Trong monolith: 1 pipeline --- build → test → deploy. Trong microservices: m
     [#strong[Shared code]], [Dễ --- cùng repo, import trực tiếp], [Cần publish shared library (Maven Central/internal)],
     [#strong[Atomic changes]], [1 commit thay đổi nhiều services], [Cần coordinate commits across repos],
     [#strong[Ví dụ]], [Google, Meta (monorepo tools: Bazel, Buck)], [Netflix, Amazon (mỗi team own repo)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.6: Mono-repo vs Poly-repo],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Mitra trong \[3, Ch.6\] khuyến nghị: đối với team nhỏ-trung, #strong[mono-repo đơn giản hơn] --- tránh overhead quản lý N repos + N pipelines. Khi team lớn (\>20 devs), poly-repo cho phép team autonomy tốt hơn.
 
 === Pipeline Best Practices
-#strong[Bảng 12.7:] Các best practices thiết kế CI/CD Pipeline
-
 #figure(
   align(center)[#table(
     columns: (40%, 32%, 28%),
@@ -295,9 +311,12 @@ Mitra trong \[3, Ch.6\] khuyến nghị: đối với team nhỏ-trung, #strong[
     [#strong[Parallel pipelines]], [Mỗi service build/test/deploy độc lập], [Deploy Service A không block Service B],
     [#strong[Database migration as separate step]], [Chạy Flyway/Liquibase trước deploy service], [Tách schema change khỏi code change --- rollback dễ hơn],
     [#strong[Contract test gate]], [Chỉ deploy khi contract tests pass], [Ngăn breaking changes vào production],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.7: Các best practices thiết kế CI/CD Pipeline],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #principle("Nguyên tắc — Build Once, Deploy Everywhere")[
 "Build artifact một lần duy nhất. Promote cùng artifact qua các
@@ -318,23 +337,29 @@ Khi deploy version mới của một service, làm sao đảm bảo users không
 ==== Rolling Update
 Thay thế #strong[từng instance một] --- dần dần chuyển từ version cũ sang version mới. Không cần gấp đôi infrastructure.
 
-#box(image("/figures/ch12/fig-12-4.svg"))
-
-#emph[Hình 12.4: Quá trình diễn ra Rolling Update]
+#figure(
+  image("/figures/ch12/fig-12-4.svg"),
+  caption: [Hình 12.4: Quá trình diễn ra Rolling Update],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 ==== Blue/Green Deployment
 Chạy #strong[hai bản hoàn chỉnh] song song --- "Blue" (current) và "Green" (new). Router chuyển traffic một lần. Rollback = chuyển router ngược lại.
 
-#box(image("/figures/ch12/fig-12-5.svg"))
-
-#emph[Hình 12.5: Kiến trúc Blue/Green Deployment]
+#figure(
+  image("/figures/ch12/fig-12-5.svg"),
+  caption: [Hình 12.5: Kiến trúc Blue/Green Deployment],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 ==== Canary Release
 Deploy version mới cho #strong[một phần nhỏ traffic] --- monitor metrics --- tăng dần nếu ổn.
 
 === So sánh
-#strong[Bảng 12.8:] So sánh các Deployment Strategies
-
 #figure(
   align(center)[#table(
     columns: (18.52%, 18.52%, 18.52%, 27.78%, 16.67%),
@@ -344,9 +369,12 @@ Deploy version mới cho #strong[một phần nhỏ traffic] --- monitor metrics
     [#strong[Rolling]], [Zero (nếu ≥2 instances)], [Chậm (phải roll ngược)], [Thấp (N+1 instances)], [Default cho Kubernetes],
     [#strong[Blue/Green]], [Zero], [Nhanh (switch router)], [Cao (2× infrastructure)], [Database migrations, major changes],
     [#strong[Canary]], [Zero], [Nhanh (route 100% về old)], [Thấp-trung bình (N+1)], [Risky changes, A/B testing],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.8: So sánh các Deployment Strategies],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Newman trong \[4a, Ch.6\] khuyến nghị: chọn strategy dựa trên #strong[mức độ rủi ro] của thay đổi. Bug fix nhỏ → rolling update. Thay đổi lớn ảnh hưởng nhiều services → blue/green. Tính năng mới chưa chắc chắn → canary.
 
@@ -361,8 +389,6 @@ Khi hệ thống microservices chạy trên nhiều servers/containers, cấu h�
 
 Mitra trong \[3, Ch.6-7\] mô tả IaC là nền tảng cho microservices deployment:
 
-#strong[Bảng 12.9:] Các công cụ Infrastructure as Code phổ biến
-
 #figure(
   align(center)[#table(
     columns: (28.21%, 43.59%, 28.21%),
@@ -373,14 +399,15 @@ Mitra trong \[3, Ch.6-7\] mô tả IaC là nền tảng cho microservices deploy
     [#strong[Container orchestration]], [Kubernetes manifests, Helm charts], [Deploy services, scaling rules],
     [#strong[Configuration management]], [Ansible, Chef, Puppet], [Cấu hình OS, install packages],
     [#strong[Service deployment]], [Docker Compose, Kubernetes, ArgoCD], [Deploy microservices stack],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.9: Các công cụ Infrastructure as Code phổ biến],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Docker Compose as IaC
 Docker Compose --- dù đơn giản --- đã là một dạng IaC: hạ tầng (databases, brokers) và services đều định nghĩa trong file YAML, version controlled, reproducible.
-
-#strong[Bảng 12.10:] Các mức độ trưởng thành của IaC
 
 #figure(
   align(center)[#table(
@@ -391,9 +418,12 @@ Docker Compose --- dù đơn giản --- đã là một dạng IaC: hạ tầng (
     [#strong[Level 1]], [Docker Compose], [Single host, development, small production],
     [#strong[Level 2]], [Kubernetes + Helm], [Multi-host, auto-scaling, self-healing],
     [#strong[Level 3]], [Terraform + Kubernetes + ArgoCD], [Full GitOps --- infrastructure + services as code],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.10: Các mức độ trưởng thành của IaC],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Với LMS --- hệ thống giáo dục quy mô trung bình --- #strong[Level 1 (Docker Compose)] hiện đang phù hợp. Khi scale (nhiều sinh viên, nhiều trường), chuyển lên Level 2 (Kubernetes).
 
@@ -412,17 +442,19 @@ whoever set it up last."
 Docker Compose phù hợp cho development và hệ thống nhỏ (single host). Khi cần #strong[multi-host deployment, auto-scaling, self-healing], Kubernetes (K8s) trở thành nền tảng tiêu chuẩn. Newman trong \[4a, Ch.8\] nhận xét: "Kubernetes has become the de facto platform for running microservices at scale."
 
 ==== Kiến trúc Kubernetes
-#box(image("/figures/ch12/fig-12-6.svg"))
-
-#emph[Hình 12.6: Kiến trúc Kubernetes --- Control Plane và Worker Nodes]
+#figure(
+  image("/figures/ch12/fig-12-6.svg"),
+  caption: [Hình 12.6: Kiến trúc Kubernetes --- Control Plane và Worker Nodes],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #strong[Control Plane] quản lý cluster: API Server nhận requests (từ `kubectl` hoặc dashboard), etcd lưu toàn bộ cluster state, Scheduler quyết định pod chạy trên node nào, Controller Manager đảm bảo actual state = desired state.
 
 #strong[Worker Nodes] chạy workloads: Kubelet trên mỗi node nhận lệnh từ Control Plane → khởi động/dừng pods.
 
 ==== Concepts cốt lõi
-#strong[Bảng 12.11:] 6 Concepts cốt lõi trong Kubernetes
-
 #figure(
   align(center)[#table(
     columns: (20.45%, 18.18%, 61.36%),
@@ -435,13 +467,14 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
     [#strong[Ingress]], [HTTP routing từ external → services (domain-based)], [Nginx reverse proxy (manual)],
     [#strong[ConfigMap / Secret]], [Externalized configuration], [`.env` file],
     [#strong[HPA] (Horizontal Pod Autoscaler)], [Tự động scale pods dựa trên CPU/memory/custom metrics], [Không có],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.11: 6 Concepts cốt lõi trong Kubernetes],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 ==== Docker Compose vs Kubernetes --- So sánh chi tiết
-#strong[Bảng 12.12:] So sánh chi tiết Docker Compose và Kubernetes
-
 #figure(
   align(center)[#table(
     columns: (29.73%, 40.54%, 29.73%),
@@ -458,9 +491,12 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
     [#strong[Setup complexity]], [Thấp (1 YAML file)], [Cao (nhiều YAML, cluster setup)],
     [#strong[Learning curve]], [1-2 ngày], [2-4 tuần],
     [#strong[Team size cần thiết]], [1-3 người], [3-5+ người (hoặc managed K8s)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.12: So sánh chi tiết Docker Compose và Kubernetes],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 ==== LMS Migration Scenario: Compose → Kubernetes
 Nếu LMS cần scale (nhiều trường, nhiều sinh viên đồng thời):
@@ -496,8 +532,6 @@ kể complexity --- không cần tự setup/maintain control plane.
 === Serverless Deployment --- Khi nào phù hợp?
 Richardson trong \[2a, Ch.12\] liệt kê #strong[Serverless] (AWS Lambda, Google Cloud Functions, Azure Functions) là một deployment pattern cho microservices. Thay vì quản lý containers, bạn deploy #emph[functions] --- cloud provider quản lý infrastructure, auto-scale, và billing per invocation.
 
-#strong[Bảng 12.13:] Container (Docker/K8s) vs Serverless
-
 #figure(
   align(center)[#table(
     columns: (19.51%, 53.66%, 26.83%),
@@ -511,9 +545,12 @@ Richardson trong \[2a, Ch.12\] liệt kê #strong[Serverless] (AWS Lambda, Googl
     [#strong[Stateful]], [Có thể (volumes, sessions)], [Stateless only],
     [#strong[Runtime limit]], [Không giới hạn], [Thường 15 phút max per invocation],
     [#strong[Vendor lock-in]], [Thấp (Docker portable)], [Cao (API riêng mỗi cloud)],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.13: Container (Docker/K8s) vs Serverless],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #strong[Khi nào serverless phù hợp cho microservices?] - #strong[Event-driven, bursty workloads]: xử lý file upload, image resize, notification --- không cần server chạy 24/7 - #strong[Glue functions]: kết nối services, transform data, trigger workflows - #strong[Prototype/MVP]: deploy nhanh, không cần setup infrastructure
 
@@ -524,13 +561,15 @@ Trong LMS, #strong[Notification Service] là candidate tốt nhất cho serverle
 === Sidecar Pattern và Service Mesh
 Khi hệ thống microservices lớn (20+ services), mỗi service cần implement cùng cross-cutting concerns: mTLS, logging, tracing, circuit breaker, rate limiting. #strong[Sidecar pattern] giải quyết bằng cách đặt một #strong[proxy process bên cạnh mỗi service instance] --- proxy xử lý infrastructure concerns, service chỉ focus business logic.
 
-#box(image("/figures/ch12/fig-12-7.svg"))
-
-#emph[Hình 12.7: Sidecar Pattern --- Proxy xử lý infrastructure concerns (mTLS, tracing)]
+#figure(
+  image("/figures/ch12/fig-12-7.svg"),
+  caption: [Hình 12.7: Sidecar Pattern --- Proxy xử lý infrastructure concerns (mTLS, tracing)],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 #strong[Service Mesh] (Istio, Linkerd) = sidecar proxies trên mọi service + control plane quản lý tập trung. Tự động cung cấp: mTLS giữa services, distributed tracing, traffic management (canary routing), circuit breaking --- #strong[mà không cần thay đổi code].
-
-#strong[Bảng 12.14:] So sánh không dùng và dùng Service Mesh
 
 #figure(
   align(center)[#table(
@@ -543,9 +582,12 @@ Khi hệ thống microservices lớn (20+ services), mỗi service cần impleme
     [Circuit breaker], [Resilience4j trong code], [Sidecar config (Envoy)],
     [Canary routing], [Manual load balancer config], [Declarative traffic rules],
     [Overhead], [Không], [\~10-20ms latency per hop],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.14: So sánh không dùng và dùng Service Mesh],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 Với LMS (7 services, single host), service mesh hiện #strong[over-engineering]. Service mesh phù hợp khi: ≥20 services, multi-host deployment, polyglot stack (services viết bằng nhiều ngôn ngữ --- sidecar language-agnostic), hoặc yêu cầu security cao (mTLS mandatory).
 
@@ -555,13 +597,15 @@ Với LMS (7 services, single host), service mesh hiện #strong[over-engineerin
 === Hiện trạng
 Hệ thống LMS triển khai production trên #strong[Docker Compose] --- đây là kiến trúc deployment phổ biến cho hệ thống microservices quy mô nhỏ-trung:
 
-#box(image("/figures/ch12/fig-12-8.svg"))
-
-#emph[Hình 12.8: Deployment Architecture LMS hiện tại trên single host]
+#figure(
+  image("/figures/ch12/fig-12-8.svg"),
+  caption: [Hình 12.8: Deployment Architecture LMS hiện tại trên single host],
+  kind: image,
+  supplement: none,
+  numbering: none
+)
 
 === Phân tích theo deployment maturity
-#strong[Bảng 12.15:] Phân tích mức độ trưởng thành triển khai của LMS
-
 #figure(
   align(center)[#table(
     columns: (21.05%, 28.95%, 26.32%, 23.68%),
@@ -574,14 +618,15 @@ Hệ thống LMS triển khai production trên #strong[Docker Compose] --- đây
     [#strong[Deployment strategy]], [All-at-once (stop → deploy → start)], [🔴 Có downtime], [Sinh viên bị gián đoạn khi deploy],
     [#strong[IaC]], [Docker Compose files version controlled], [🟡 Basic IaC], [Có reproducibility nhưng thiếu automation],
     [#strong[Config management]], [application.yml trong container], [🟡 Partially externalized], [Một số config hardcode, chưa fully externalized],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.15: Phân tích mức độ trưởng thành triển khai của LMS],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 === Phân tích business context
 LMS phục vụ sinh viên → #strong[deployment windows] quan trọng:
-
-#strong[Bảng 12.16:] Deployment windows cho LMS
 
 #figure(
   align(center)[#table(
@@ -593,9 +638,12 @@ LMS phục vụ sinh viên → #strong[deployment windows] quan trọng:
     [Giữa tuần (off-peak)], [Trung bình], [Rolling update],
     [Summer break], [Thấp], [All-at-once OK],
     [Emergency hotfix], [Rất cao], [Canary --- test với ít users trước],
-  )]
-  , kind: table
-  )
+  )],
+  caption: [Bảng 12.16: Deployment windows cho LMS],
+  kind: table,
+  supplement: none,
+  numbering: none
+)
 
 #analysis("Phân tích gap — Manual deployment, no CI/CD pipeline")[
 Hệ thống LMS containerized (Docker) nhưng #strong[deploy thủ công]:
