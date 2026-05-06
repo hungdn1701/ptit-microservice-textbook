@@ -58,23 +58,65 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 > [!NOTE]
 > Phần này dành cho **core author** có quyền truy cập submodule `references/`. Xem [AGENTS.md](AGENTS.md) để biết thêm.
 
-**Yêu cầu:** [Pandoc](https://pandoc.org/installing.html) + Microsoft Edge (để xuất PDF).
+**Yêu cầu:** [Typst](https://typst.app/) (engine build PDF chính). Pandoc + MS Edge (cho build HTML legacy).
 
 ```powershell
 # Clone đầy đủ (bao gồm cả submodule)
 git clone --recurse-submodules https://github.com/hungdn1701/ptit-microservice-textbook.git
 
-# Build toàn bộ sách (HTML + PDF)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 all
+# Build toàn bộ sách (Typst PDF)
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all
 
 # Build một chương cụ thể (ví dụ: chương 3)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 03
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 03
 ```
 
 Output được ghi vào thư mục `output/` (gitignored):
-- `output/chapter-XX.html` — HTML từng chương
 - `output/chapter-XX.pdf` — PDF từng chương
-- `output/SOA-Microservices-Book.pdf` — Toàn bộ sách
+- `output/book.pdf` — Toàn bộ sách
+
+---
+
+## 🔄 Git Workflow cho Core Authors
+
+> [!CAUTION]
+> **Nguyên tắc bắt buộc:** Repo này sử dụng Git submodule (`references/`). Mọi thao tác pull/push **phải luôn bao gồm submodule**, nếu không sẽ gây mất đồng bộ giữa nội dung và hệ thống build.
+
+### Bắt đầu phiên làm việc — Pull
+
+```powershell
+# LUÔN dùng --recurse-submodules khi pull
+git pull --recurse-submodules
+
+# Nếu submodule bị rỗng hoặc lỗi
+git submodule update --init --recursive
+```
+
+### Kết thúc phiên — Commit & Push
+
+Quy trình **2 bước bắt buộc** — submodule trước, public repo sau:
+
+```powershell
+# Bước 1: Commit & push submodule (references/)
+cd references
+git add .
+git commit -m "docs: mô tả thay đổi"
+git push
+cd ..
+
+# Bước 2: Commit & push public repo (bao gồm submodule pointer)
+git add references manuscript figures AGENTS.md
+git commit -m "feat/fix: mô tả thay đổi"
+git push
+```
+
+> [!WARNING]
+> **Sai lầm thường gặp:**
+> - ❌ Push public repo mà **quên push submodule** → collaborator pull về thấy submodule trỏ vào commit chưa tồn tại trên remote
+> - ❌ Chỉ push submodule mà **quên bump pointer** ở public repo → public repo vẫn trỏ vào commit cũ
+> - ❌ Pull mà **không `--recurse-submodules`** → nội dung build scripts/typst bị cũ, gây conflict hoặc build lỗi
+>
+> **Quy tắc vàng:** Luôn push submodule TRƯỚC, public repo SAU. Luôn pull với `--recurse-submodules`.
 
 ---
 

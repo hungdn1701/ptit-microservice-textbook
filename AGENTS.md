@@ -16,13 +16,14 @@ ptit-microservice-textbook/        ← PUBLIC repo (this one)
 ├── figures/                       ← Diagrams & SVGs — PUBLIC
 ├── code/                          ← Interactive HTML demos — PUBLIC
 ├── templates/                     ← Pandoc HTML template — PUBLIC
-├── output/                        ← Generated HTML & PDF (gitignored) — LOCAL
+├── output/                        ← Generated PDF (gitignored) — LOCAL
 │
 └── references/                    ← Git SUBMODULE → ptit-microservice-textbook-internal (PRIVATE)
     ├── *.pdf                      ← Reference textbooks (7 books)
     ├── internal/
     │   ├── docs/                  ← CHANGELOG, PROGRESS, IDEAS, style-guide, ONBOARDING...
-    │   └── scripts/               ← Build pipeline (build-pdf.ps1, gen_svg_*.py...)
+    │   ├── scripts/               ← Build pipeline (build-typst.ps1, render-diagrams.ps1...)
+    │   └── typst/                 ← Typst source (main.typ, chapters/, theme/, filters/)
     ├── .agents/                   ← AI workflow definitions (parameterized)
     ├── case-study/                ← KBLab business domain documents
     ├── extracted/                 ← Extracted summaries from reference PDFs
@@ -53,14 +54,16 @@ ptit-microservice-textbook/        ← PUBLIC repo (this one)
 
 ## 🤖 Instructions for AI Assistants
 
-### ⚡ Step 0 — MANDATORY: Pull the submodule before anything else (Core Author)
+### ⚡ Step 0 — MANDATORY: Sync submodule on EVERY pull AND push (Core Author)
 
 > [!CAUTION]
-> **This is the most critical step.** Working without an up-to-date submodule means you will be
-> missing CHANGELOG, PROGRESS, style guides, and build scripts — leading to wrong assumptions,
-> duplicate work, and content conflicts between authors.
+> **This is the most critical step.** The repo uses a Git submodule (`references/`) that contains
+> ALL build scripts, Typst templates, and internal documentation. If submodule and public repo
+> get out of sync, content will appear missing, builds will fail, and authors will conflict.
+>
+> **Golden Rule:** Always pull WITH submodule. Always push submodule BEFORE public repo.
 
-If running as a core author, always ensure the submodule is current:
+#### Pull (start of session)
 
 ```powershell
 # If cloning for the first time:
@@ -72,6 +75,28 @@ git submodule update --init --recursive
 # On every subsequent session — sync BOTH repos:
 git pull --recurse-submodules
 ```
+
+#### Push (end of session) — 2-step process, ORDER MATTERS
+
+```powershell
+# Step A: ALWAYS push submodule FIRST
+cd references
+git add .
+git commit -m "docs: description of changes"
+git push
+cd ..
+
+# Step B: THEN push public repo (includes submodule pointer bump)
+git add references manuscript figures AGENTS.md
+git commit -m "feat/fix: description of changes"
+git push
+```
+
+> [!WARNING]
+> **Common mistakes that cause content loss:**
+> - ❌ Pushing public repo without pushing submodule first → collaborators get a pointer to a non-existent commit
+> - ❌ Pushing submodule without updating public repo → public repo still points to old submodule commit
+> - ❌ Pulling without `--recurse-submodules` → stale build scripts, Typst templates, and docs
 
 ### Step 1 — Determine your access level
 
