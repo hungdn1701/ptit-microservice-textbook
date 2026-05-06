@@ -1,3 +1,4 @@
 [submodule "references"]
 	path = references
 	url = https://github.com/hungdn1701/ptit-microservice-textbook-internal.git
+	branch = main

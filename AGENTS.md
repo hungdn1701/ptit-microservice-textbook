@@ -54,6 +54,10 @@ ptit-microservice-textbook/        ← PUBLIC repo (this one)
 
 ## 🤖 Instructions for AI Assistants
 
+> [!CAUTION]
+> **GLOBAL AI RULE: NEVER COMMIT OR PUSH WITHOUT EXPLICIT USER CONFIRMATION.**
+> You must always wait for the user to explicitly say "commit and push" or "go ahead and push" before running any `git commit` or `git push` commands. Do not assume approval based on successful builds or fixes.
+
 ### ⚡ Step 0 — MANDATORY: Sync submodule on EVERY pull AND push (Core Author)
 
 > [!CAUTION]
@@ -164,6 +168,38 @@ powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typ
 ```
 
 Output is written to `output/` (gitignored). Note: All scripts and `typst/` templates are safely contained within `references/internal/`.
+
+---
+
+## 🚫 Known Styling Rules & Gotchas (Bắt buộc đọc trước khi sửa Typst)
+
+### ❌ NEVER use `#set align(right)` inside callout blocks
+
+> [!CAUTION]
+> Đây là nguyên nhân gốc rễ của lỗi **callout box tràn lề phải (overflow)** tái diễn nhiều lần.
+>
+> **Root cause**: Khi dùng `#set align(right)` bên trong một `block` không có `width` ràng buộc, Typst sẽ mở rộng block ra ngoài lề phải trang. Lỗi này dễ bị tái giới thiệu vì nhìn code có vẻ hợp lý ("right-align the header") nhưng thực ra gây ra vỡ layout.
+
+**File liên quan**: `references/internal/typst/components/callouts.typ`
+
+**Rule**:
+- ✅ ĐÚNG: Header của callout **không có `align`** — tự nhiên căn trái, icon đứng trước title
+  ```typst
+  #block(below: 0.5em)[
+    #set text(font: font-sans, size: 10pt, weight: 700, fill: border-color)
+    #icon #h(0.4em) #title
+  ]
+  ```
+- ❌ SAI: Thêm `#set align(right)` vào header block (từng được commit nhầm vào `dfbe137`)
+  ```typst
+  #block(below: 0.5em)[
+    #set align(right)   // ← GÂY OVERFLOW, KHÔNG ĐƯỢC DÙNG
+    ...
+  ]
+  ```
+- ❌ SAI: Dùng `width: 100%` trong `block` callout — cũng gây overflow tương tự vì `inset` cộng vào 100%
+
+**Áp dụng cho cả**: `_callout()` helper và `learning-objectives()` block.
 
 ---
 
