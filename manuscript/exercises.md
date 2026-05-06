@@ -17,13 +17,13 @@ Mỗi bài tập/case study được phân loại:
 | 🐛 | **Debugging Scenario** | Tìm root cause từ symptoms — dạng on-call incident |
 | ⚖️ | **Architecture Decision Record** | Viết ADR cho một quyết định thiết kế |
 
-**Mức độ:** ⭐ Cơ bản | ⭐⭐ Trung bình | ⭐⭐⭐ Nâng cao (interview-level)
+**Mức độ:** ● Cơ bản | ●● Trung bình | ●●● Nâng cao (interview-level)
 
 ---
 
 ## Chương 1: Monolith → Microservices
 
-### 1-1 📊 Khi nào KHÔNG nên Microservices? ⭐⭐
+### 1-1 📊 Khi nào KHÔNG nên Microservices? ●●
 
 **Tình huống**: Bạn là architect consultant. Ba công ty thuê bạn tư vấn "có nên chuyển sang microservices?"
 
@@ -43,7 +43,7 @@ Mỗi bài tập/case study được phân loại:
 
 ---
 
-### 1-2 🔍 Case Study: Shopify — Monolith tỷ đô ⭐⭐⭐
+### 1-2 🔍 Case Study: Shopify — Monolith tỷ đô ●●●
 
 **Context**: Shopify (2023) vận hành trên **Ruby on Rails monolith** phục vụ hàng triệu merchants, xử lý $444 billion GMV. Thay vì chuyển sang microservices, Shopify chọn **Modular Monolith** — tách code thành components có boundaries rõ ràng nhưng deploy cùng nhau.
 
@@ -61,7 +61,7 @@ Mỗi bài tập/case study được phân loại:
 
 ## Chương 2: DDD & Bounded Contexts
 
-### 2-1 🏗️ Event Storming: Thiết kế Hệ thống Đặt Xe ⭐⭐
+### 2-1 🏗️ Event Storming: Thiết kế Hệ thống Đặt Xe ●●
 
 **Tình huống**: Bạn đang thiết kế hệ thống ride-hailing (kiểu Grab/Uber đơn giản hóa). Stakeholders mô tả:
 
@@ -77,7 +77,7 @@ Mỗi bài tập/case study được phân loại:
 
 ---
 
-### 2-2 📊 Shared Library vs API — Khi nào nên gì? ⭐⭐
+### 2-2 📊 Shared Library vs API — Khi nào nên gì? ●●
 
 **Tình huống**: Hai microservices (Order Service và Inventory Service) cần dùng chung logic validate mã sản phẩm (product code format). Team tranh luận:
 
@@ -98,7 +98,7 @@ Mỗi bài tập/case study được phân loại:
 
 ## Chương 3: Thiết kế API
 
-### 3-1 🔍 Case Study: Stripe API — Tại sao được coi là "gold standard"? ⭐⭐
+### 3-1 🔍 Case Study: Stripe API — Tại sao được coi là "gold standard"? ●●
 
 **Context**: Stripe API được cộng đồng developer đánh giá là **API design tốt nhất thế giới**. Phân tích tại sao.
 
@@ -114,7 +114,7 @@ Mỗi bài tập/case study được phân loại:
 
 ---
 
-### 3-2 🐛 Debugging: API Breaking Change Incident ⭐⭐⭐
+### 3-2 🐛 Debugging: API Breaking Change Incident ●●●
 
 **Tình huống incident**:
 
@@ -135,7 +135,7 @@ Mỗi bài tập/case study được phân loại:
 
 ## Chương 4: Giao tiếp Đồng bộ & Resilience
 
-### 4-1 🐛 Debugging: Cascading Failure — "Tại sao cả hệ thống chết?" ⭐⭐⭐
+### 4-1 🐛 Debugging: Cascading Failure — "Tại sao cả hệ thống chết?" ●●●
 
 **Tình huống incident (mô phỏng từ thực tế)**:
 
@@ -159,7 +159,7 @@ Mỗi bài tập/case study được phân loại:
 
 ---
 
-### 4-2 📊 REST vs gRPC vs GraphQL — Chọn gì cho scenario nào? ⭐⭐
+### 4-2 📊 REST vs gRPC vs GraphQL — Chọn gì cho scenario nào? ●●
 
 **Tình huống**: Bạn đang thiết kế communication giữa microservices cho hệ thống e-commerce:
 
@@ -181,7 +181,7 @@ Mỗi bài tập/case study được phân loại:
 
 ## Chương 5: Giao tiếp Bất đồng bộ
 
-### 5-1 📊 Kafka vs RabbitMQ — Quyết định dựa trên gì? ⭐⭐
+### 5-1 📊 Kafka vs RabbitMQ — Quyết định dựa trên gì? ●●
 
 **Tình huống**: 4 scenarios khác nhau, mỗi cái cần message broker:
 
@@ -202,7 +202,7 @@ Mỗi bài tập/case study được phân loại:
 
 ---
 
-### 5-2 🐛 Debugging: "Messages biến mất" — Dead Letter & Poison Pills ⭐⭐⭐
+### 5-2 🐛 Debugging: "Messages biến mất" — Dead Letter & Poison Pills ●●●
 
 **Tình huống incident**:
 
@@ -229,7 +229,7 @@ Mỗi bài tập/case study được phân loại:
 
 ## Chương 6: Saga Pattern
 
-### 6-1 🏗️ Design: Uber Ride Saga — Choreography hay Orchestration? ⭐⭐⭐
+### 6-1 🏗️ Design: Uber Ride Saga — Choreography hay Orchestration? ●●●
 
 **Tình huống**: Một chuyến xe Uber trải qua flow:
 
@@ -261,7 +261,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 
 ---
 
-### 6-2 📊 Trade-off: Choreography vs Orchestration ⭐⭐
+### 6-2 📊 Trade-off: Choreography vs Orchestration ●●
 
 **Bài tập**: Cho 4 saga scenarios, phân tích nên dùng Choreography hay Orchestration:
 
@@ -283,7 +283,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 
 ## Chương 7: Quản lý Dữ liệu
 
-### 7-1 📊 CAP Theorem trong Thực tế — "Pick Two" có đúng không? ⭐⭐⭐
+### 7-1 📊 CAP Theorem trong Thực tế — "Pick Two" có đúng không? ●●●
 
 **Tình huống**: Team tranh luận về database strategy:
 
@@ -310,7 +310,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 
 ---
 
-### 7-2 🏗️ Design: Database Migration Strategy cho LMS ⭐⭐
+### 7-2 🏗️ Design: Database Migration Strategy cho LMS ●●
 
 **Tình huống**: LMS hiện có shared database — Core Service và Assignment Service dùng chung PostgreSQL. Bạn được giao nhiệm vụ tách database.
 
@@ -340,7 +340,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ## Chương 8: API Gateway
 
-### 8-1 🔍 Case Study: Netflix Zuul → Spring Cloud Gateway → Custom Gateway ⭐⭐
+### 8-1 🔍 Case Study: Netflix Zuul → Spring Cloud Gateway → Custom Gateway ●●
 
 **Context**: Netflix đi qua 3 thế hệ API Gateway:
 - **Zuul 1** (2013): Blocking I/O, servlet-based → bottleneck ở 10K concurrent connections
@@ -358,7 +358,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-### 8-2 ⚖️ ADR: Rate Limiting Strategy ⭐⭐
+### 8-2 ⚖️ ADR: Rate Limiting Strategy ●●
 
 **Tình huống**: Hệ thống LMS bị abuse:
 - Một sinh viên viết script tự động submit 1000 lần/phút (brute-force đáp án SQL)
@@ -384,7 +384,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ## Chương 9: Bảo mật
 
-### 9-1 🐛 Security Incident: JWT Token Theft ⭐⭐⭐
+### 9-1 🐛 Security Incident: JWT Token Theft ●●●
 
 **Tình huống incident**:
 
@@ -406,7 +406,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-### 9-2 📊 OAuth2 + OIDC Flows — Chọn flow nào cho scenario nào? ⭐⭐
+### 9-2 📊 OAuth2 + OIDC Flows — Chọn flow nào cho scenario nào? ●●
 
 **Bài tập**: 4 applications cần integrate với Identity Provider (Keycloak/Auth0):
 
@@ -428,7 +428,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ## Chương 10: Chuyển đổi Thực tế
 
-### 10-1 🔍 Case Study: Amazon — Monolith → SOA → Microservices (2002–2020) ⭐⭐⭐
+### 10-1 🔍 Case Study: Amazon — Monolith → SOA → Microservices (2002–2020) ●●●
 
 **Context**: Jeff Bezos' 2002 mandate nổi tiếng:
 > "All teams will henceforth expose their data and functionality through service interfaces. There will be no other form of inter-process communication allowed. Anyone who doesn't do this will be fired."
@@ -443,7 +443,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-### 10-2 📊 Outbox Pattern vs Event Sourcing vs Change Data Capture ⭐⭐
+### 10-2 📊 Outbox Pattern vs Event Sourcing vs Change Data Capture ●●
 
 **Tình huống**: Team cần giải quyết dual-write problem (save DB + publish event). 3 approaches:
 
@@ -465,7 +465,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ## Chương 11: Observability
 
-### 11-1 🐛 Debugging: Latency Spike Mystery ⭐⭐⭐
+### 11-1 🐛 Debugging: Latency Spike Mystery ●●●
 
 **Tình huống incident**:
 
@@ -488,7 +488,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-### 11-2 📊 Observability Stack: Build vs Buy vs Managed ⭐⭐
+### 11-2 📊 Observability Stack: Build vs Buy vs Managed ●●
 
 **Tình huống**: CTO yêu cầu bạn đề xuất observability stack cho hệ thống 15 microservices:
 
@@ -513,7 +513,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ## Chương 12: Triển khai & DevOps
 
-### 12-1 📊 Docker Compose vs Kubernetes — At What Scale? ⭐⭐
+### 12-1 📊 Docker Compose vs Kubernetes — At What Scale? ●●
 
 **Tình huống**: 3 hệ thống ở các scale khác nhau:
 
@@ -533,7 +533,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-### 12-2 🏗️ Design: CI/CD Pipeline cho Microservices ⭐⭐⭐
+### 12-2 🏗️ Design: CI/CD Pipeline cho Microservices ●●●
 
 **Tình huống**: Bạn cần thiết kế CI/CD pipeline cho hệ thống LMS (7 services, mono-repo):
 
@@ -554,7 +554,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ---
 
-## Capstone: System Design Interview — Thiết kế "Online Judge" ⭐⭐⭐
+## Capstone: System Design Interview — Thiết kế "Online Judge" ●●●
 
 **Prompt (dạng interview 45 phút)**:
 

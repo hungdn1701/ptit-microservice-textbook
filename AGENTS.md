@@ -123,19 +123,22 @@ Files currently known to be in the private submodule (not in public repo):
 - `ONBOARDING.md` (this is new — see Step 2)
 - AI workflow definitions in `references/.agents/`
 
-### Step 5 — Build HTML & PDF (Author only)
+### Step 5 — Build PDF (Author only)
+
+> [!IMPORTANT]
+> **SVG Regeneration Rule**: Whenever you modify diagram source code or prepare to run the final PDF build, you MUST ensure all SVG files are regenerated and up to date by running the SVG rendering script `render-diagrams.ps1` với cờ `-Chapter all`. Script `build-typst.ps1` đã được cấu hình để tự động chạy bước này.
 
 Build scripts live inside the submodule. Run from the **repo root**:
 
 ```powershell
-# Build all chapters + full book (HTML + PDF via MS Edge headless)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 all
+# Build all chapters + full book
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all
 
 # Build a single chapter (e.g., chapter 03)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-pdf.ps1 03
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 03
 ```
 
-Output is written to `output/` (gitignored). If a `scripts/` directory exists at the repo root, it is a **temporary local convenience copy** — do not commit it to the public repo.
+Output is written to `output/` (gitignored). Note: All scripts and `typst/` templates are safely contained within `references/internal/`.
 
 ---
 
