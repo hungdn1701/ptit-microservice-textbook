@@ -107,10 +107,10 @@
   <text x="150.0" y="222.0" text-anchor="middle" class="subtitle">(current state)</text>
   <rect x="330" y="180" width="300" height="56" rx="12" class="info" />
   <text x="480.0" y="204.0" text-anchor="middle" class="title">learning_progress</text>
-  <text x="480.0" y="222.0" text-anchor="middle" class="subtitle">(tao moi tu events)</text>
+  <text x="480.0" y="222.0" text-anchor="middle" class="subtitle">(tạo moi từ events)</text>
   <rect x="710" y="180" width="200" height="56" rx="12" class="event" />
   <text x="810.0" y="204.0" text-anchor="middle" class="title">teacher_dashboard</text>
-  <text x="810.0" y="222.0" text-anchor="middle" class="subtitle">(tao moi tu events)</text>
+  <text x="810.0" y="222.0" text-anchor="middle" class="subtitle">(tạo moi từ events)</text>
   <rect x="40" y="280" width="880" height="80" rx="8" class="note" />
   <text x="60" y="305" class="title">Projections:</text>
   <text x="165" y="305" class="subtitle">Đọc events và tạo read-model phù hợp cho từng use case.</text>

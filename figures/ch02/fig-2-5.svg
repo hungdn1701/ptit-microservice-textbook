@@ -135,7 +135,7 @@
   <line x1="150" y1="180" x2="150" y2="240" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3" />
   <rect x="60" y="400" width="830" height="55" rx="8" class="note" />
   <text x="80" y="425" class="title">Quan hệ:</text>
-  <text x="160" y="425" class="subtitle">Customer-Supplier = Auth cung cấp, Core tiêu thụ | ACL = Judge dịch message thành model nội bộ</text>
+  <text x="160" y="425" class="subtitle">Customer-Supplier = Auth cùng cấp, Core tiêu thụ | ACL = Judge dịch message thành model nội bộ</text>
   <text x="80" y="445" class="subtitle">Vấn đề:</text>
   <text x="140" y="445" class="subtitle">Shared DB giữa Core và Assignment = coupling | Shared Kernel quá rộng (23 files)</text>
 </svg>

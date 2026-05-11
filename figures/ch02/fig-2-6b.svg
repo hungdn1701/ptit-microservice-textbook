@@ -97,20 +97,20 @@
   </style>
   <text x="480" y="25" text-anchor="middle" class="title">Erl's Service-Oriented Analysis — LMS</text>
   <rect x="30" y="50" width="430" height="210" rx="12" class="cluster" />
-  <text x="245.0" y="78" text-anchor="middle" class="title">Buoc 1: Automation Candidates</text>
+  <text x="245.0" y="78" text-anchor="middle" class="title">Bước 1: Automation Candidates</text>
   <line x1="44" y1="88" x2="446" y2="88" class="separator" />
   <rect x="60" y="90" width="190" height="56" rx="12" class="info" />
-  <text x="155.0" y="123.0" text-anchor="middle" class="title">Xac thuc nguoi dung</text>
+  <text x="155.0" y="123.0" text-anchor="middle" class="title">Xac thuc người dùng</text>
   <rect x="270" y="90" width="190" height="56" rx="12" class="service" />
   <text x="365.0" y="123.0" text-anchor="middle" class="title">Quan ly cau hoi SQL</text>
   <rect x="60" y="145" width="190" height="56" rx="12" class="event" />
-  <text x="155.0" y="178.0" text-anchor="middle" class="title">Cham bai tu dong</text>
+  <text x="155.0" y="178.0" text-anchor="middle" class="title">Cham bai từ dong</text>
   <rect x="270" y="145" width="190" height="56" rx="12" class="highlight" />
   <text x="365.0" y="178.0" text-anchor="middle" class="title">Quan ly bai tap/khoa hoc</text>
   <rect x="60" y="200" width="190" height="56" rx="12" class="warning" />
   <text x="155.0" y="233.0" text-anchor="middle" class="title">Thong bao ket qua</text>
   <rect x="500" y="50" width="430" height="210" rx="12" class="cluster" />
-  <text x="715.0" y="78" text-anchor="middle" class="title">Buoc 2: Service Layers</text>
+  <text x="715.0" y="78" text-anchor="middle" class="title">Bước 2: Service Layers</text>
   <line x1="514" y1="88" x2="916" y2="88" class="separator" />
   <rect x="520" y="90" width="180" height="56" rx="12" class="event" />
   <text x="610.0" y="114.0" text-anchor="middle" class="title">Task: Submission</text>

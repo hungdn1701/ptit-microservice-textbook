@@ -123,10 +123,10 @@
   <defs><linearGradient id="riskGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#dc2626"/></linearGradient></defs>
   <rect x="40" y="240" width="880" height="250" rx="10" class="note" />
   <text x="60" y="268" class="title">LMS lộ trình đề xuất:</text>
-  <text x="60" y="298" class="subtitle">Buoc 1: Tao VIEW cho Assignment doc tu Core tables (khong thay doi code)</text>
-  <text x="60" y="326" class="subtitle">Buoc 2: Tao API endpoint trong Core de Assignment goi thay vi query truc tiep DB</text>
-  <text x="60" y="354" class="subtitle">Buoc 3: Tach schema: core_schema va assignment_schema trong cung PostgreSQL</text>
-  <text x="60" y="382" class="subtitle">Buoc 4: Sync data qua Kafka CDC (Change Data Capture) tu core -> assignment</text>
-  <text x="60" y="410" class="subtitle">Buoc 5: Tach thanh 2 PostgreSQL instances hoan toan doc lap</text>
+  <text x="60" y="298" class="subtitle">Bước 1: Tạo VIEW cho Assignment đọc từ Core tables (không thay đổi code)</text>
+  <text x="60" y="326" class="subtitle">Bước 2: Tạo API endpoint trong Core để Assignment goi thay vì query trực tiếp DB</text>
+  <text x="60" y="354" class="subtitle">Bước 3: Tach schema: core_schema và assignment_schema trong cùng PostgreSQL</text>
+  <text x="60" y="382" class="subtitle">Bước 4: Sync data qua Kafka CDC (Change Data Capture) từ core -> assignment</text>
+  <text x="60" y="410" class="subtitle">Bước 5: Tach thành 2 PostgreSQL instances hoàn toàn đọc lap</text>
   <text x="60" y="460" class="small">Mỗi bước rollback-able. Không cần làm tất cả cùng lúc.</text>
 </svg>

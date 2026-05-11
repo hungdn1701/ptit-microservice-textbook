@@ -95,9 +95,9 @@
       stroke: #cbd5e1; stroke-width: 1.0;
     }
   </style>
-  <text x="480" y="20" text-anchor="middle" class="title">Event Sourcing vs Truyen thong</text>
+  <text x="480" y="20" text-anchor="middle" class="title">Event Sourcing vs Truyền thong</text>
   <rect x="30" y="55" width="400" height="200" rx="12" class="cluster" />
-  <text x="230.0" y="83" text-anchor="middle" class="title">Truyen thong: Luu State</text>
+  <text x="230.0" y="83" text-anchor="middle" class="title">Truyền thong: Luu State</text>
   <line x1="44" y1="93" x2="416" y2="93" class="separator" />
   <rect x="70" y="100" width="320" height="56" rx="12" class="legacy" />
   <text x="230.0" y="124.0" text-anchor="middle" class="title">Submission</text>

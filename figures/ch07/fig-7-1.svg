@@ -99,12 +99,12 @@
   <rect x="200" y="55" width="560" height="210" rx="12" class="danger" />
   <text x="480" y="80" text-anchor="middle" class="title">Shared Database — Vấn đề</text>
   <rect x="230" y="100" width="500" height="56" rx="12" class="service" />
-  <text x="480.0" y="133.0" text-anchor="middle" class="title">Schema coupling: Thay doi bang X anh huong A, B, C</text>
+  <text x="480.0" y="133.0" text-anchor="middle" class="title">Schema coupling: Thay đổi bang X anh huong A, B, C</text>
   <rect x="230" y="150" width="500" height="56" rx="12" class="event" />
-  <text x="480.0" y="183.0" text-anchor="middle" class="title">Deploy coupling: Migrate schema = deploy tat ca cung luc</text>
+  <text x="480.0" y="183.0" text-anchor="middle" class="title">Deploy coupling: Migrate schema = deploy tat ca cùng luc</text>
   <rect x="230" y="200" width="500" height="56" rx="12" class="info" />
   <text x="480.0" y="233.0" text-anchor="middle" class="title">Scale coupling: Khong the scale DB cho rieng mot service</text>
   <rect x="100" y="300" width="760" height="55" rx="8" class="note" />
   <text x="480" y="325" text-anchor="middle" class="title">Giải pháp: Database-per-Service (fig 7.2)</text>
-  <text x="480" y="345" text-anchor="middle" class="subtitle">Mỗi service own DB riêng. Giao tiep qua API, khong qua DB.</text>
+  <text x="480" y="345" text-anchor="middle" class="subtitle">Mỗi service own DB riêng. Giao tiep qua API, không qua DB.</text>
 </svg>

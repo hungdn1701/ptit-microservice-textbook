@@ -106,7 +106,7 @@
   <text x="480" y="150" text-anchor="middle" class="subtitle">(how is it performing)</text>
   <rect x="650" y="70" width="260" height="110" rx="12" class="service" />
   <text x="780.0" y="130.0" text-anchor="middle" class="title">Traces</text>
-  <text x="780" y="125" text-anchor="middle" class="subtitle">Theo doi HANH TRINH cua 1 request</text>
+  <text x="780" y="125" text-anchor="middle" class="subtitle">Theo đổi HANH TRINH cua 1 request</text>
   <text x="780" y="150" text-anchor="middle" class="subtitle">(where did it go)</text>
   <rect x="50" y="230" width="860" height="200" rx="10" class="note" />
   <text x="480" y="258" text-anchor="middle" class="title">LMS ví dụ cụ thể</text>

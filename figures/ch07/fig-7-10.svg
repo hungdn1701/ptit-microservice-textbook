@@ -118,7 +118,7 @@
   <path d="M 760 205 L 760 260" class="arrow" />
   <rect x="660" y="260" width="200" height="56" rx="12" class="storage" />
   <text x="760.0" y="284.0" text-anchor="middle" class="title">Read DB</text>
-  <text x="760.0" y="302.0" text-anchor="middle" class="subtitle">(co the khac tech)</text>
+  <text x="760.0" y="302.0" text-anchor="middle" class="subtitle">(có thể khac tech)</text>
   <rect x="60" y="350" width="840" height="100" rx="8" class="note" />
   <text x="80" y="375" class="title">LMS ứng dụng:</text>
   <text x="80" y="400" class="subtitle">Write: Core Service ghi submissions vào PostgreSQL</text>

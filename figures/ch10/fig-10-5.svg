@@ -110,7 +110,7 @@
   <path d="M 400 130 L 150 130" class="arrow-dashed" />
   <text x="275.0" y="122" text-anchor="middle" font-size="12" fill="#475569">OK</text>
   <rect x="100" y="170" width="200" height="40" rx="5" class="danger" />
-  <text x="200" y="193" text-anchor="middle" class="small">CRASH truoc khi gui event!</text>
+  <text x="200" y="193" text-anchor="middle" class="small">CRASH truoc khi gửi event!</text>
   <text x="480" y="235" text-anchor="middle" class="title">Database có record nhưng event KHÔNG được gửi</text>
   <text x="480" y="260" text-anchor="middle" class="subtitle">Downstream services KHÔNG BIẾT!</text>
   <rect x="60" y="310" width="840" height="80" rx="8" class="note" />

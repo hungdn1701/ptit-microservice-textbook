@@ -121,9 +121,9 @@
   <defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#dc2626"/></linearGradient></defs>
   <rect x="30" y="230" width="900" height="160" rx="10" class="note" />
   <text x="50" y="258" class="title">LMS áp dụng:</text>
-  <text x="50" y="288" class="subtitle">Buoc 1: Tach namespace: core_schema, assignment_schema (cung PostgreSQL)</text>
-  <text x="50" y="313" class="subtitle">Buoc 2: Tao VIEW cho assignment doc tu core_schema (read-only)</text>
-  <text x="50" y="338" class="subtitle">Buoc 3: Tao API /internal/users trong Auth de Assignment goi thay vi query truc tiep</text>
+  <text x="50" y="288" class="subtitle">Bước 1: Tach namespace: core_schema, assignment_schema (cung PostgreSQL)</text>
+  <text x="50" y="313" class="subtitle">Bước 2: Tạo VIEW cho assignment đọc từ core_schema (read-only)</text>
+  <text x="50" y="338" class="subtitle">Bước 3: Tạo API /internal/users trong Auth để Assignment goi thay vì query trực tiếp</text>
   <text x="50" y="363" class="subtitle">Bước 4: CDC (Debezium) đồng bộ core -> assignment cho data cần thiết</text>
-  <text x="50" y="388" class="subtitle">Buoc 5: Tach thanh 2 PostgreSQL instances (khi team du lon)</text>
+  <text x="50" y="388" class="subtitle">Bước 5: Tach thành 2 PostgreSQL instances (khi team đủ lớn)</text>
 </svg>

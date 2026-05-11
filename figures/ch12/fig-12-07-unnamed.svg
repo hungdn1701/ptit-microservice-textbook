@@ -120,7 +120,7 @@
   <rect x="364.0" y="211.0" width="112" height="18" rx="3" class="arrow-bg" />
   <text x="420.0" y="225.0" text-anchor="middle" class="small" fill="#475569">mTLS (encrypted)</text>
   <rect x="60" y="310" width="840" height="140" rx="10" class="note" />
-  <text x="80" y="340" class="title">Service Mesh (Istio/Linkerd) cung cấp:</text>
+  <text x="80" y="340" class="title">Service Mesh (Istio/Linkerd) cùng cấp:</text>
   <text x="80" y="370" class="subtitle">1. mTLS giữa services (zero-trust networking)</text>
   <text x="80" y="393" class="subtitle">2. Load balancing, retry, circuit breaker (không sửa code)</text>
   <text x="80" y="416" class="subtitle">3. Observability tự động (metrics, traces)</text>

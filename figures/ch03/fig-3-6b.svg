@@ -130,6 +130,6 @@
   <path d="M 660 220 L 730 172" class="arrow" />
   <path d="M 660 225 L 730 232" class="arrow" />
   <rect x="120" y="460" width="720" height="55" rx="8" class="note" />
-  <text x="480" y="482" text-anchor="middle" class="title">Domain Logic khong biet gi ve HTTP, JPA, Kafka</text>
+  <text x="480" y="482" text-anchor="middle" class="title">Domain Logic không biết gi ve HTTP, JPA, Kafka</text>
   <text x="480" y="502" text-anchor="middle" class="subtitle">Test business rules mà không cần infrastructure | Thay đổi adapter không ảnh hưởng domain</text>
 </svg>

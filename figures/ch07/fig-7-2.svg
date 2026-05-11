@@ -115,7 +115,7 @@
   <rect x="360" y="170" width="160" height="56" rx="12" class="storage" />
   <text x="440.0" y="203.0" text-anchor="middle" class="title">DB C</text>
   <text x="245" y="260" text-anchor="middle" class="subtitle">Mỗi service own DB riêng</text>
-  <text x="245" y="280" text-anchor="middle" class="subtitle">Deploy độc lập, scale doc lap</text>
+  <text x="245" y="280" text-anchor="middle" class="subtitle">Deploy độc lập, scale đọc lap</text>
   <rect x="80" y="295" width="340" height="30" rx="5" class="success" />
   <text x="250" y="315" text-anchor="middle" class="small">BEST PRACTICE</text>
   <rect x="500" y="55" width="430" height="300" rx="12" class="cluster" />
@@ -136,6 +136,6 @@
   <rect x="550" y="295" width="340" height="30" rx="5" class="danger" />
   <text x="720" y="315" text-anchor="middle" class="small">ANTI-PATTERN</text>
   <rect x="30" y="380" width="900" height="60" rx="8" class="note" />
-  <text x="480" y="405" text-anchor="middle" class="title">LMS hiện tại: Core va Assignment SHARED DB (app_db) — can tach</text>
+  <text x="480" y="405" text-anchor="middle" class="title">LMS hiện tại: Core và Assignment SHARED DB (app_db) — can tach</text>
   <text x="480" y="430" text-anchor="middle" class="subtitle">Xem lộ trình: fig 7.5 và Chương 10 (Strangler Fig)</text>
 </svg>

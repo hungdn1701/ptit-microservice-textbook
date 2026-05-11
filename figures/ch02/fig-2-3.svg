@@ -106,7 +106,7 @@
   <text x="320.0" y="232.0" text-anchor="middle" class="subtitle">(co identity)</text>
   <rect x="460" y="190" width="180" height="56" rx="12" class="event" />
   <text x="550.0" y="214.0" text-anchor="middle" class="title">Value Object</text>
-  <text x="550.0" y="232.0" text-anchor="middle" class="subtitle">(khong co identity)</text>
+  <text x="550.0" y="232.0" text-anchor="middle" class="subtitle">(không co identity)</text>
   <path d="M 430 150 L 320 190" class="arrow" />
   <path d="M 530 150 L 550 190" class="arrow" />
   <rect x="230" y="260" width="180" height="56" rx="12" class="info" />
@@ -122,7 +122,7 @@
   <path d="M 180 247 L 230 215" class="arrow" />
   <rect x="30" y="310" width="160" height="56" rx="12" class="event" />
   <text x="110.0" y="334.0" text-anchor="middle" class="title">Factory</text>
-  <text x="110.0" y="352.0" text-anchor="middle" class="subtitle">(tao Aggregate)</text>
+  <text x="110.0" y="352.0" text-anchor="middle" class="subtitle">(tạo Aggregate)</text>
   <path d="M 180 337 L 350 150" class="arrow" />
   <rect x="30" y="420" width="900" height="80" rx="8" class="note" />
   <text x="50" y="445" class="title">Ví dụ LMS:</text>

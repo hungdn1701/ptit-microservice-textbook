@@ -133,18 +133,18 @@
   <text x="300" y="355" class="title">Sync (REST/gRPC)</text>
   <text x="650" y="355" class="title">Async (Kafka/RabbitMQ)</text>
   <text x="80" y="375" class="small">Latency</text>
-  <text x="300" y="375" class="subtitle">Thap (truc tiep)</text>
-  <text x="650" y="375" class="subtitle">Cao hon (qua broker)</text>
+  <text x="300" y="375" class="subtitle">Thấp (trực tiếp)</text>
+  <text x="650" y="375" class="subtitle">Cao hơn (qua broker)</text>
   <text x="80" y="397" class="small">Coupling</text>
-  <text x="300" y="397" class="subtitle">Cao (A phu thuoc B)</text>
-  <text x="650" y="397" class="subtitle">Thap (A khong biet B)</text>
+  <text x="300" y="397" class="subtitle">Cao (A phụ thuộc B)</text>
+  <text x="650" y="397" class="subtitle">Thấp (A không biết B)</text>
   <text x="80" y="419" class="small">Failure</text>
   <text x="300" y="419" class="subtitle">Cascading</text>
   <text x="650" y="419" class="subtitle">Isolated</text>
   <text x="80" y="441" class="small">Throughput</text>
-  <text x="300" y="441" class="subtitle">Gioi han boi B</text>
+  <text x="300" y="441" class="subtitle">Giới hạn boi B</text>
   <text x="650" y="441" class="subtitle">Buffer by broker</text>
   <text x="80" y="463" class="small">Complexity</text>
-  <text x="300" y="463" class="subtitle">Don gian</text>
-  <text x="650" y="463" class="subtitle">Phuc tap hon (idempotency, ordering)</text>
+  <text x="300" y="463" class="subtitle">Đơn giản</text>
+  <text x="650" y="463" class="subtitle">Phức tạp hon (idempotency, ordering)</text>
 </svg>

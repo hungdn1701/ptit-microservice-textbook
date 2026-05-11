@@ -114,7 +114,7 @@
   <rect x="559.5" y="225" width="181" height="28" rx="6" class="event" />
   <text x="650" y="243" text-anchor="middle" class="subtitle">Update local user cache</text>
   <rect x="528.0" y="285" width="244" height="28" rx="6" class="info" />
-  <text x="650" y="303" text-anchor="middle" class="subtitle">Khi can hien thi: doc local copy</text>
+  <text x="650" y="303" text-anchor="middle" class="subtitle">Khi can hien thi: đọc local copy</text>
   <rect x="60" y="370" width="840" height="40" rx="6" class="note" />
   <text x="480" y="395" text-anchor="middle" class="subtitle">Eventual consistency: Assignment có thể hiển thị tên cũ vài giây. Chấp nhận được.</text>
 </svg>

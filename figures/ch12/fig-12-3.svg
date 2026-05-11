@@ -137,7 +137,7 @@ Tests</text>
   <text x="775" y="85" text-anchor="middle" class="title">Lợi ích</text>
   <text x="640" y="115" class="subtitle">Moi commit -> auto test</text>
   <text x="640" y="143" class="subtitle">Phat hien loi som</text>
-  <text x="640" y="171" class="subtitle">Security scan tu dong</text>
+  <text x="640" y="171" class="subtitle">Security scan từ dong</text>
   <text x="640" y="199" class="subtitle">Docker image versioned</text>
   <text x="640" y="227" class="subtitle">Deploy 1 click</text>
   <text x="640" y="255" class="subtitle">Rollback = deploy version cu</text>

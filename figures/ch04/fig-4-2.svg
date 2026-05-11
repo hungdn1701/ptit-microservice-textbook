@@ -108,7 +108,7 @@
   <text x="725" y="80" text-anchor="middle" class="title">Tự động bởi Feign</text>
   <rect x="560" y="95" width="170" height="56" rx="12" class="info" />
   <text x="645.0" y="128.0" text-anchor="middle" class="title">HTTP Request</text>
-  <text x="740" y="116" class="subtitle">GET/POST/PUT tu dong</text>
+  <text x="740" y="116" class="subtitle">GET/POST/PUT từ dong</text>
   <rect x="560" y="135" width="170" height="56" rx="12" class="service" />
   <text x="645.0" y="168.0" text-anchor="middle" class="title">JWT Header</text>
   <text x="740" y="156" class="subtitle">Authorization: Bearer ...</text>

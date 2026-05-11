@@ -53,6 +53,14 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 
 ---
 
+## 📥 Tải Giáo Trình (PDF)
+
+Phiên bản PDF hoàn chỉnh (v1.0.0) đã được phát hành:
+- **[Tải toàn bộ sách (SOA-Microservices-Book-v1.0.0.pdf)](release/v1.0.0/SOA-Microservices-Book-v1.0.0.pdf)**
+- [Xem từng chương rời](release/v1.0.0)
+
+---
+
 ## 🏗️ Build
 
 > [!NOTE]

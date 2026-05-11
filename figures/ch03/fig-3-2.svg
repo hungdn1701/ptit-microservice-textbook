@@ -112,7 +112,7 @@
   <text x="780" y="155" text-anchor="middle" class="title">Breaking Change!</text>
   <text x="780" y="180" text-anchor="middle" class="subtitle">Xoa field hien co</text>
   <text x="780" y="202" text-anchor="middle" class="subtitle">Doi ten field</text>
-  <text x="780" y="224" text-anchor="middle" class="subtitle">Doi kieu du lieu field</text>
+  <text x="780" y="224" text-anchor="middle" class="subtitle">Doi kieu dữ liệu field</text>
   <text x="780" y="246" text-anchor="middle" class="subtitle">Doi URL endpoint</text>
   <text x="780" y="270" text-anchor="middle" class="subtitle">Consumer cũ sẽ LỖI!</text>
   <path d="M 480 120 L 480 320" class="arrow" />

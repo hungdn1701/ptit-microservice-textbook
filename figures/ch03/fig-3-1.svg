@@ -110,7 +110,7 @@
   <text x="480" y="355" text-anchor="middle" class="mono">GET /users/1   DELETE /orders/5</text>
   <rect x="380.0" y="390" width="200" height="90" rx="10" class="success" />
   <text x="480" y="420" text-anchor="middle" class="title">Level 3: HATEOAS</text>
-  <text x="480" y="445" text-anchor="middle" class="subtitle">Response chua links dieu huong</text>
+  <text x="480" y="445" text-anchor="middle" class="subtitle">Response chưa links dieu huong</text>
   <text x="480" y="465" text-anchor="middle" class="mono">GET /users/1 -> {links: [{rel:"orders", href:"/users/1/orders"}]}</text>
   <path d="M 860 430 L 860 70" class="arrow" />
   <text x="870" y="250" class="title">REST</text>

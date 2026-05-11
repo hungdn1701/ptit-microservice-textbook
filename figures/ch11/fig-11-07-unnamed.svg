@@ -119,7 +119,7 @@
   <text x="420" y="372" class="mono">Uptime 99.5% (~44h downtime/nam)</text>
   <rect x="40" y="430" width="880" height="55" rx="8" class="note" />
   <text x="60" y="455" class="title">Quan hệ:</text>
-  <text x="135" y="455" class="subtitle">SLI (metric do duoc) -> SLO (target noi bo) -> SLA (cam ket voi stakeholder)</text>
+  <text x="135" y="455" class="subtitle">SLI (metric đo được) -> SLO (target noi bo) -> SLA (cam ket voi stakeholder)</text>
   <text x="60" y="475" class="small">Nếu SLI vi phạm SLO:</text>
   <text x="220" y="475" class="subtitle">alert team trước khi vi phạm SLA. Error budget = allowable downtime.</text>
 </svg>

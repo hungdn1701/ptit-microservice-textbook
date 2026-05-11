@@ -104,7 +104,7 @@
   <text x="480.0" y="254.0" text-anchor="middle" class="subtitle">Block moi request, fail fast</text>
   <rect x="700" y="200" width="200" height="80" rx="12" class="event" />
   <text x="800.0" y="236.0" text-anchor="middle" class="title">HALF-OPEN</text>
-  <text x="800.0" y="254.0" text-anchor="middle" class="subtitle">Thu 1 request de test</text>
+  <text x="800.0" y="254.0" text-anchor="middle" class="subtitle">Thu 1 request để test</text>
   <path d="M 260 220 L 380 220" class="arrow" />
   <rect x="246.5" y="209.0" width="147" height="18" rx="3" class="arrow-bg" />
   <text x="320.0" y="223.0" text-anchor="middle" class="small" fill="#475569">failures >= threshold</text>

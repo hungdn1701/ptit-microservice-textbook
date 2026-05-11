@@ -101,7 +101,7 @@
   <path d="M 480 95 L 480 120" class="arrow" />
   <rect x="270" y="120" width="420" height="75" rx="10" class="info" />
   <text x="480" y="150" text-anchor="middle" class="title">Controller</text>
-  <text x="480" y="175" text-anchor="middle" class="subtitle">Nhan request, validate input</text>
+  <text x="480" y="175" text-anchor="middle" class="subtitle">Nhận request, validate input</text>
   <path d="M 480 195 L 480 220" class="arrow" />
   <rect x="270" y="220" width="420" height="75" rx="10" class="service" />
   <text x="480" y="250" text-anchor="middle" class="title">Service Layer</text>
@@ -116,11 +116,11 @@
   <rect x="30" y="120" width="200" height="340" rx="10" class="note" />
   <text x="130" y="150" text-anchor="middle" class="title">Vấn đề</text>
   <text x="130" y="175" text-anchor="middle" class="subtitle">Dependency 1 chieu (top-down)</text>
-  <text x="130" y="197" text-anchor="middle" class="subtitle">Domain logic bi phu thuoc</text>
+  <text x="130" y="197" text-anchor="middle" class="subtitle">Domain logic bi phụ thuộc</text>
   <text x="130" y="219" text-anchor="middle" class="subtitle">vao framework (Spring,</text>
   <text x="130" y="241" text-anchor="middle" class="subtitle">JPA, HTTP...)</text>
   <text x="130" y="263" text-anchor="middle" class="subtitle"></text>
   <text x="130" y="285" text-anchor="middle" class="subtitle">Kho test business logic</text>
-  <text x="130" y="307" text-anchor="middle" class="subtitle">ma khong can database</text>
+  <text x="130" y="307" text-anchor="middle" class="subtitle">ma không can database</text>
   <text x="130" y="329" text-anchor="middle" class="subtitle">hoac web server</text>
 </svg>
