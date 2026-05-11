@@ -31,7 +31,7 @@ Newman trong [4a, Ch.9] liệt kê năm thách thức bảo mật đặc thù:
 **Bảng 9.1:** Thách thức bảo mật trong microservices
 
 | # | Thách thức | Monolith | Microservices |
-|---|-----------|----------|---------------|
+| :---: | :----------- | :---------- | :--------------- |
 | 1 | **Authentication** | Một session store | Mỗi service cần verify identity — ai là user? |
 | 2 | **Authorization** | Check in-process | Mỗi service cần check permissions — user có quyền gì? |
 | 3 | **Service-to-service trust** | Không có (in-process) | Service A gọi B — B biết A có đáng tin? |
@@ -61,7 +61,7 @@ Khi hệ thống scale hoặc risk profile tăng (thêm payment, personal data),
 **Bảng 9.2:** So sánh không có mTLS và có mTLS
 
 | Aspect | Không mTLS | Có mTLS |
-|--------|----------|---------|
+| :-------- | :---------- | :--------- |
 | Internal calls | HTTP không mã hóa | TLS mã hóa + mutual authentication |
 | Attacker vào network | Có thể gọi bất kỳ service | Bị từ chối vì thiếu certificate |
 | Implementation | Đơn giản | Cần certificate management (cert-manager, Istio) |
@@ -73,7 +73,7 @@ Trong LMS, mTLS hiện chưa cần (hệ thống nội bộ, single host). Nhưn
 **Bảng 9.3:** Các cấp độ lưu trữ secrets
 
 | Level | Cách lưu secrets | Rủi ro |
-|-------|-----------------|--------|
+| :------- | :----------------- | :-------- |
 | ❌ Hardcode | `password: "abc123"` trong code | Lộ qua git history |
 | ⚠️ Environment variables | `.env` file, Docker env | Lộ qua `docker inspect`, process listing |
 | ✅ Secrets manager | HashiCorp Vault, AWS Secrets Manager | Encrypted, audit log, rotation |
@@ -112,7 +112,7 @@ Ba phần của JWT:
 **Bảng 9.4:** Ba phần của JWT — nội dung và ví dụ
 
 | Phần | Nội dung | Ví dụ LMS |
-|------|---------|-----------|
+| :------ | :--------- | :----------- |
 | **Header** | Algorithm + type | `{"alg": "HS256", "typ": "JWT"}` |
 | **Payload** | Claims (dữ liệu) | `{"userId": "user-123", "roles": "STUDENT", "exp": 1710000000}` |
 | **Signature** | Verify integrity | `HMACSHA256(header + "." + payload, secretKey)` |
@@ -122,7 +122,7 @@ Ba phần của JWT:
 **Bảng 9.5:** HS256 (symmetric) vs RS256 (asymmetric)
 
 | | HS256 (Symmetric) | RS256 (Asymmetric) |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Key** | Shared secret key | Private key (sign) + Public key (verify) |
 | **Ai sign?** | Auth Service (có secret) | Auth Service (có private key) |
 | **Ai verify?** | Bất kỳ service nào có secret | Bất kỳ service nào có public key |
@@ -188,7 +188,7 @@ public TokenResponse refreshToken(@RequestBody RefreshRequest request) {
 **Bảng 9.5b:** Chiến lược token expiry
 
 | Token | Thời hạn | Lưu ở đâu | Lý do |
-|-------|---------|-----------|-------|
+| :------- | :--------- | :----------- | :------- |
 | **Access token** | 15-60 phút | Client memory/cookie | Ngắn → giảm window nếu bị leak |
 | **Refresh token** | 7-30 ngày | HttpOnly cookie + DB | Dài → trải nghiệm mượt, DB cho revocation |
 | **Token family** | Theo refresh token | DB (family ID) | Phát hiện reuse → revoke toàn bộ |
@@ -216,7 +216,7 @@ LMS implement giải pháp **hybrid** — validation khác nhau tùy service:
 **Bảng 9.6:** Ba loại validation trong LMS
 
 | Validation Type | Service | Khi nào | Chi tiết |
-|----------------|---------|--------|----------|
+| :---------------- | :--------- | :-------- | :---------- |
 | **Full (DB-based)** | Auth Service | Login, token refresh, sensitive operations | Verify signature + check DB (user active, token valid) |
 | **Claims-only** | Gateway | Mọi request | Verify JWT signature + expiry (stateless) |
 | **Header-trust** | Core, Judge, Assignment | Mọi request (sau gateway) | Tin tưởng `X-User-Id` và `X-User-Roles` từ gateway |
@@ -252,7 +252,7 @@ LMS hỗ trợ ba phương thức đăng nhập:
 **Bảng 9.7:** Ba phương thức đăng nhập trong LMS
 
 | Method | Flow | Khi nào |
-|--------|------|---------|
+| :-------- | :------ | :--------- |
 | **Username/Password** | Truyền thống, hash bcrypt | Default cho mọi user |
 | **Google OAuth2** | Authorization Code Flow | Sinh viên dùng Google của trường |
 | **PTIT QLDT** | Custom integration | Login bằng tài khoản quản lý đào tạo |
@@ -271,7 +271,7 @@ Authentication trả lời "người dùng là ai?". Authorization trả lời "
 **Bảng 9.8:** RBAC — vai trò và permissions trong LMS
 
 | Role | Permissions | Ví dụ |
-|------|------------|-------|
+| :------ | :------------ | :------- |
 | **STUDENT** | Submit bài, xem kết quả, xem bài tập, xem contest | Sinh viên |
 | **LECTURER** | Tất cả STUDENT + tạo bài, tạo contest, xem thống kê | Giảng viên |
 | **ADMIN** | Tất cả LECTURER + quản lý users, quản lý hệ thống | Quản trị viên |
@@ -329,7 +329,7 @@ LMS frontend sử dụng pattern khác biệt: **route permissions được fetc
 **Bảng 9.9:** Phân tích bảo mật toàn diện hệ thống LMS
 
 | Aspect | Hiện trạng | Risk Level | Best Practice |
-|--------|-----------|------------|---------------|
+| :-------- | :----------- | :------------ | :--------------- |
 | **JWT Algorithm** | HS256 (symmetric, shared secret) | ⚠️ Medium | RS256 cho production |
 | **Token Storage** | Client-side (localStorage) | ⚠️ Medium | HttpOnly cookie (XSS protection) |
 | **Secret Management** | Hardcoded trong application.yml | 🔴 High | Vault, AWS Secrets Manager |
@@ -366,7 +366,7 @@ Bảng 9.9 cho thấy "Secret Management" là risk level 🔴 High — `jwt.secr
 **Bảng 9.10:** Chiến lược Secret Management — từ cơ bản đến enterprise
 
 | Cấp độ | Cách tiếp cận | Ưu điểm | Nhược điểm | Phù hợp |
-|--------|--------------|---------|-----------|---------|
+| :-------- | :-------------- | :--------- | :----------- | :--------- |
 | **Level 1** | Environment Variables | Đơn giản, tách secret khỏi code | Secrets trong plaintext trên server, không audit trail | Dev/Staging |
 | **Level 2** | Encrypted Config (Spring Cloud Config + Jasypt) | Secrets mã hóa trong repo, decrypt lúc runtime | Vẫn cần quản lý encryption key | Small production |
 | **Level 3** | Secret Manager (HashiCorp Vault, AWS Secrets Manager, GCP Secret Manager) | Auto-rotation, audit log, access policies, dynamic secrets | Infrastructure cost, operational complexity | Production at scale |

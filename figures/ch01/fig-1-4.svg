@@ -6,6 +6,45 @@
     <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
     </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#0000001a"/>
+    </filter>
+    <linearGradient id="grad-service" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e6f4f3"/>
+      <stop offset="100%" stop-color="#ccebe8"/>
+    </linearGradient>
+    <linearGradient id="grad-storage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="grad-event" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef9c3"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+    <linearGradient id="grad-success" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="grad-danger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="grad-warning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="grad-info" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="grad-highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="grad-legacy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3f4f6"/>
+      <stop offset="100%" stop-color="#e5e7eb"/>
+    </linearGradient>
   </defs>
   <style>
     text {
@@ -13,23 +52,27 @@
       font-size: 14px;
       fill: #1a202c;
     }
-    .title { font-weight: bold; font-size: 16px; }
+    .title { font-weight: 600; font-size: 16px; }
     .small { font-size: 12px; }
     .subtitle { font-size: 13px; fill: #64748b; }
     .mono { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 12px; }
 
     .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
-    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
-    .storage { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
-    .event   { fill: #fef9c3;   stroke: #ca8a04;   stroke-width: 1.5; }
-    .success { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
-    .danger  { fill: #fee2e2;  stroke: #dc2626;  stroke-width: 1.5; }
-    .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
-    .info    { fill: #eff6ff;    stroke: #3b82f6;    stroke-width: 1.5; }
-    .highlight { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 1.5; }
-    .legacy  { fill: #f3f4f6;  stroke: #9ca3af;  stroke-width: 1.5; }
-    .note    { fill: #ffffff;     stroke: #cbd5e1;   stroke-width: 1.5; }
-    .step    { fill: #ffffff;     stroke: #94a3b8;         stroke-width: 1.5; }
+    .service { fill: url(#grad-service); stroke: #0f766e; stroke-width: 2.0; filter: url(#shadow); }
+    .storage { fill: url(#grad-storage); stroke: #2563eb; stroke-width: 2.0; filter: url(#shadow); }
+    .event   { fill: url(#grad-event);   stroke: #ca8a04;   stroke-width: 2.0; filter: url(#shadow); }
+    .success { fill: url(#grad-success); stroke: #16a34a; stroke-width: 2.0; filter: url(#shadow); }
+    .danger  { fill: url(#grad-danger);  stroke: #dc2626;  stroke-width: 2.0; filter: url(#shadow); }
+    .warning { fill: url(#grad-warning); stroke: #ea580c; stroke-width: 2.0; filter: url(#shadow); }
+    .info    { fill: url(#grad-info);    stroke: #3b82f6;    stroke-width: 2.0; filter: url(#shadow); }
+    .highlight { fill: url(#grad-highlight); stroke: #7c3aed; stroke-width: 2.0; filter: url(#shadow); }
+    .legacy  { fill: url(#grad-legacy);  stroke: #9ca3af;  stroke-width: 1.5; filter: url(#shadow); }
+    .note    { fill: #ffffff;    stroke: #cbd5e1;   stroke-width: 1.5; filter: url(#shadow); }
+    .step    { fill: #ffffff;    stroke: #94a3b8;         stroke-width: 1.5; filter: url(#shadow); }
+
+    .service-flat { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .storage-flat { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+    .event-flat   { fill: #fef9c3;   stroke: #ca8a04;   stroke-width: 1.5; }
 
     .arrow {
       stroke: #64748b; stroke-width: 1.5; fill: none;
@@ -40,48 +83,51 @@
       stroke-dasharray: 6 3; marker-end: url(#arrowhead);
     }
     .arrow-danger {
-      stroke: #dc2626; stroke-width: 2; fill: none;
+      stroke: #dc2626; stroke-width: 2.0; fill: none;
       marker-end: url(#arrowhead-danger);
     }
-    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+    .arrow-bg { fill: #ffffff; opacity: 0.92; }
     .lifeline {
-      stroke: #94a3b8; stroke-width: 1;
+      stroke: #94a3b8; stroke-width: 1.0;
       stroke-dasharray: 4 3; fill: none;
     }
+    .separator {
+      stroke: #cbd5e1; stroke-width: 1.0;
+    }
   </style>
-  <rect x="380" y="20" width="200" height="45" rx="20" class="danger" />
-  <text x="480.0" y="47.5" text-anchor="middle" class="title">Monolith đạt giới hạn?</text>
+  <rect x="380" y="20" width="200" height="56" rx="20" class="danger" />
+  <text x="480.0" y="53.0" text-anchor="middle" class="title">Monolith đạt giới hạn?</text>
   <path d="M 480 65 L 480 100" class="arrow" />
-  <polygon points="480,105.0 580.0,130 480,155.0 380.0,130" class="event" />
+  <polygon points="480,105.0 580.0,130 480,155.0 380.0,130" fill="#fef9c3" stroke="#ca8a04" stroke-width="2.0" filter="url(#shadow)" />
   <text x="480" y="135" text-anchor="middle" class="small">Scaling truyền thống OK?</text>
   <path d="M 580 130 L 700 130" class="arrow" />
   <text x="620" y="122" class="small">Có</text>
-  <rect x="700" y="108" width="200" height="45" rx="8" class="success" />
-  <text x="800.0" y="126.5" text-anchor="middle" class="title">Vertical/Horizontal scaling</text>
-  <text x="800.0" y="144.5" text-anchor="middle" class="subtitle">Giữ monolith</text>
+  <rect x="700" y="108" width="200" height="56" rx="12" class="success" />
+  <text x="800.0" y="132.0" text-anchor="middle" class="title">Vertical/Horizontal scaling</text>
+  <text x="800.0" y="150.0" text-anchor="middle" class="subtitle">Giữ monolith</text>
   <path d="M 480 155 L 480 200" class="arrow" />
   <text x="490" y="185" class="small">Không</text>
-  <polygon points="480,205.0 580.0,230 480,255.0 380.0,230" class="event" />
+  <polygon points="480,205.0 580.0,230 480,255.0 380.0,230" fill="#fef9c3" stroke="#ca8a04" stroke-width="2.0" filter="url(#shadow)" />
   <text x="480" y="235" text-anchor="middle" class="small">Team > 10 người?</text>
   <path d="M 380 230 L 180 230" class="arrow" />
   <text x="260" y="222" class="small">Không</text>
-  <rect x="60" y="208" width="200" height="45" rx="8" class="info" />
-  <text x="160.0" y="235.5" text-anchor="middle" class="title">Modular Monolith</text>
+  <rect x="60" y="208" width="200" height="56" rx="12" class="info" />
+  <text x="160.0" y="241.0" text-anchor="middle" class="title">Modular Monolith</text>
   <path d="M 480 255 L 480 310" class="arrow" />
   <text x="490" y="290" class="small">Có</text>
-  <rect x="380" y="310" width="200" height="55" rx="8" class="service" />
-  <text x="480.0" y="333.5" text-anchor="middle" class="title">Microservices</text>
-  <text x="480.0" y="351.5" text-anchor="middle" class="subtitle">(thường bắt đầu hybrid)</text>
+  <rect x="380" y="310" width="200" height="56" rx="12" class="service" />
+  <text x="480.0" y="334.0" text-anchor="middle" class="title">Microservices</text>
+  <text x="480.0" y="352.0" text-anchor="middle" class="subtitle">(thường bắt đầu hybrid)</text>
   <path d="M 480 365 L 480 410" class="arrow" />
-  <polygon points="480,415.0 600.0,440 480,465.0 360.0,440" class="event" />
+  <polygon points="480,415.0 600.0,440 480,465.0 360.0,440" fill="#fef9c3" stroke="#ca8a04" stroke-width="2.0" filter="url(#shadow)" />
   <text x="480" y="445" text-anchor="middle" class="small">Quá nhiều services nhỏ?</text>
   <path d="M 600 440 L 750 440" class="arrow" />
   <text x="660" y="432" class="small">Có</text>
-  <rect x="750" y="418" width="180" height="45" rx="8" class="highlight" />
-  <text x="840.0" y="436.5" text-anchor="middle" class="title">Domain-Oriented MS</text>
-  <text x="840.0" y="454.5" text-anchor="middle" class="subtitle">(Uber's DOMA)</text>
+  <rect x="750" y="418" width="180" height="56" rx="12" class="highlight" />
+  <text x="840.0" y="442.0" text-anchor="middle" class="title">Domain-Oriented MS</text>
+  <text x="840.0" y="460.0" text-anchor="middle" class="subtitle">(Uber's DOMA)</text>
   <path d="M 480 465 L 480 510" class="arrow" />
   <text x="490" y="493" class="small">Không</text>
-  <rect x="380" y="505" width="200" height="30" rx="8" class="success" />
-  <text x="480.0" y="525.0" text-anchor="middle" class="title">Tiếp tục tiến hóa</text>
+  <rect x="380" y="505" width="200" height="56" rx="12" class="success" />
+  <text x="480.0" y="538.0" text-anchor="middle" class="title">Tiếp tục tiến hóa</text>
 </svg>

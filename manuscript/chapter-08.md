@@ -31,7 +31,7 @@ Richardson trong [2a, Ch.8] liệt kê năm vấn đề khi client gọi trực 
 **Bảng 8.1:** Vấn đề khi client gọi trực tiếp microservices
 
 | # | Vấn đề | Hậu quả |
-|---|--------|---------|
+| :---: | :-------- | :--------- |
 | 1 | **Nhiều endpoints** | Client phải biết URL của mọi service — coupling chặt |
 | 2 | **Giao thức khác nhau** | Một số service dùng REST, một số dùng gRPC, WebSocket — client phải handle tất cả |
 | 3 | **Cross-cutting concerns phân tán** | Mỗi service tự implement authentication, CORS, rate limiting — duplicate, inconsistent |
@@ -61,7 +61,7 @@ Richardson trong [2a, Ch.8] phân biệt hai biến thể:
 **Bảng 8.2:** API Gateway vs BFF — khi nào dùng gì
 
 | Pattern | Mô tả | Khi nào dùng |
-|---------|-------|-------------|
+| :--------- | :------- | :------------- |
 | **API Gateway** | Một gateway cho tất cả clients | Team nhỏ, clients cần API tương tự |
 | **BFF** | Gateway riêng cho mỗi loại client | Mobile cần API khác web (ít data, batched calls) |
 
@@ -72,7 +72,7 @@ LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web fronte
 **Bảng 8.3:** Kịch bản chọn Single Gateway vs BFF
 
 | Scenario | Single Gateway | BFF |
-|----------|---------------|-----|
+| :---------- | :--------------- | :----- |
 | Web + Web admin (API tương tự) | ✅ Đủ | Over-engineering |
 | Web + Mobile (API khác nhau) | ❌ Mobile phải nhiều calls | ✅ Mobile BFF aggregate |
 | Web + IoT + Partner API | ❌ Gateway quá phức tạp | ✅ BFF per client type |
@@ -92,7 +92,7 @@ Hai lựa chọn phổ biến nhất trong Spring ecosystem:
 **Bảng 8.4:** Spring Cloud Gateway vs Netflix Zuul
 
 | | Spring Cloud Gateway | Netflix Zuul (1.x) |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Model** | Reactive (WebFlux, non-blocking) | Servlet (blocking, thread-per-request) |
 | **Performance** | Cao (ít threads, nhiều connections) | Thấp hơn (thread pool giới hạn) |
 | **Status** | Active, recommended | Deprecated (Netflix không maintain) |
@@ -110,7 +110,7 @@ LMS chọn **Spring Cloud Gateway** — lựa chọn đúng vì cần WebSocket 
 **Bảng 8.5:** Ba khái niệm cốt lõi của Spring Cloud Gateway
 
 | Concept | Mô tả | Ví dụ LMS |
-|---------|-------|-----------|
+| :--------- | :------- | :----------- |
 | **Route** | Mapping: predicate → URI đích | `/api/core/**` → `lb://core-service` |
 | **Predicate** | Điều kiện match request | `Path=/api/core/**`, `Method=GET,POST` |
 | **Filter** | Xử lý request/response trước/sau routing | `JwtRequestFilter`, `AddRequestHeader` |
@@ -260,7 +260,7 @@ Rate limiting ngăn một client gửi quá nhiều requests — bảo vệ serv
 **Bảng 8.6:** Chiến lược rate limiting
 
 | Chiến lược rate limit | Mô tả | Use case |
-|----------------------|-------|----------|
+| :---------------------- | :------- | :---------- |
 | **Per user** | Mỗi user N requests/giây | Ngăn user abuse |
 | **Per IP** | Mỗi IP address N requests/giây | Ngăn anonymous abuse |
 | **Per route** | Mỗi endpoint N requests/giây | Bảo vệ heavy endpoints |
@@ -347,7 +347,7 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 **Bảng 8.7:** Phân tích configuration Gateway trong LMS
 
 | Aspect | Hiện trạng LMS | Best Practice | Gap |
-|--------|---------------|---------------|-----|
+| :-------- | :--------------- | :--------------- | :----- |
 | **Routing** | `lb://` URIs qua Eureka | ✅ Đúng | — |
 | **JWT Validation** | Custom `JwtRequestFilter` | ✅ Đúng (validate tại edge) | — |
 | **CORS** | `allowedOrigins: "*"` | ❌ Nên restrict | Liệt kê origins cụ thể |

@@ -1,4 +1,4 @@
-﻿# Chương 1: Tổng quan SOA & Microservices
+# Chương 1: Tổng quan SOA & Microservices
 
 > *"Microservices are not the goal; sustainable fast flow of change is."*
 > — Chris Richardson, *Microservices Patterns*, 2nd Edition
@@ -33,7 +33,7 @@ Các biểu hiện cụ thể:
 **Bảng 1.1:** Các biểu hiện khi monolith đạt đến giới hạn
 
 | Biểu hiện | Mô tả | Hệ quả |
-|-----------|-------|--------|
+| :----------- | :------- | :-------- |
 | **Coordination bottleneck** | Mỗi thay đổi nhỏ đòi hỏi phối hợp nhiều team | Tốc độ phát triển giảm dần theo kích thước team |
 | **Deployment coupling** | Một tính năng mới = deploy lại toàn bộ | Release cycles kéo dài, rủi ro cao |
 | **Technology lock-in** | Toàn ứng dụng dùng chung stack | Không thể thử nghiệm công nghệ mới cho một phần |
@@ -83,7 +83,7 @@ Erl đúc kết 8 nguyên lý nền tảng cho mọi dịch vụ. **Bảng 1.2**
 **Bảng 1.2:** Tám nguyên lý hướng dịch vụ — SOA truyền thống vs Microservices
 
 | # | Nguyên lý | Trong SOA truyền thống | Trong Microservices |
-|---|-----------|----------------------|---------------------|
+|:---:|:----------|:---------------------|:--------------------|
 | 1 | **Standardized Contract** | WSDL, XML Schema | OpenAPI/Swagger, Protocol Buffers |
 | 2 | **Loose Coupling** | ESB giảm coupling | **Ưu tiên số 1**: database-per-service, async messaging |
 | 3 | **Abstraction** | Interface ẩn implementation | API là contract duy nhất, code là black box |
@@ -139,7 +139,7 @@ Scaling truyền thống (thêm server, tăng RAM) chỉ mở rộng trên trụ
 **Bảng 1.3:** So sánh SOA truyền thống và Microservices
 
 | Khía cạnh | SOA truyền thống | Microservices |
-|-----------|------------------|---------------|
+| :----------- | :------------------ | :--------------- |
 | **Phạm vi** | Toàn doanh nghiệp | Một ứng dụng hoặc bounded context |
 | **Kích thước dịch vụ** | Lớn, tái sử dụng tối đa | Nhỏ, focused, single responsibility |
 | **Giao tiếp** | ESB — middleware trung tâm | "Smart endpoints, dumb pipes" — REST/messaging |
@@ -214,7 +214,7 @@ Richardson trong phiên bản thứ hai (2025) giới thiệu một framework qu
 **Bảng 1.3b:** Fast Flow Architecture Qualities
 
 | Quality | Định nghĩa | Ví dụ KBLab |
-|---------|-----------|-------------|
+| :--------- | :----------- | :------------- |
 | **Deployability** | Mỗi service deploy độc lập, pipeline riêng, không cần coordinate với service khác | Judge Service deploy mà Core Service không cần biết |
 | **Testability** | Test service isolated, không cần spin up toàn bộ hệ thống | Test Judge logic mà không cần Gateway, Auth, Kafka |
 | **Developability** | Team thay đổi code dễ dàng, minimal conflicts, clear ownership | Team A sở hữu Judge, Team B sở hữu Assignment — không block nhau |
@@ -232,7 +232,7 @@ Làm sao biết mình đã đạt fast flow? Nghiên cứu của Forsgren, Humbl
 **Bảng 1.4:** DORA Metrics — So sánh Elite vs Low Performers
 
 | Metric | Elite Performers | Low Performers | Chênh lệch |
-|--------|:----------------:|:--------------:|:-----------:|
+| :-------- | :----------------: | :--------------: | :-----------: |
 | **Deployment Frequency** | Nhiều lần/ngày | 1 lần/1-6 tháng | 182× |
 | **Lead Time** (commit → production) | < 1 giờ | 1-6 tháng | — |
 | **Change Failure Rate** | < 5% | 40-60% | 8× tốt hơn |
@@ -289,7 +289,7 @@ Không phải mọi monolith đều giống nhau. Sự khác biệt nằm ở **
 **Bảng 1.4b:** Patchwork Monolith vs Modular Monolith
 
 | Loại | Đặc điểm | Triển vọng |
-|------|----------|-----------|
+| :------ | :---------- | :----------- |
 | **Patchwork Monolith** | Code chắp vá, mọi class phụ thuộc lẫn nhau, ranh giới mờ nhạt, "big ball of mud" | Cần refactor nghiêm túc — cả internal và external boundaries |
 | **Modular Monolith** | Module rõ ràng, giao tiếp qua interface, mỗi module có thể có schema riêng trong cùng DB | Deploy cùng nhau nhưng phát triển tương đối độc lập, **có thể tách dần** khi cần |
 
@@ -345,7 +345,7 @@ Ba câu hỏi cần trả lời trước khi chọn microservices:
 **Bảng 1.5:** Lợi ích của kiến trúc microservices
 
 | Lợi ích | Giải thích |
-|---------|-----------|
+| :--------- | :----------- |
 | **Independent deployability** | Deploy một service mà không ảnh hưởng các service khác — giảm rủi ro, tăng tần suất release |
 | **Team autonomy** | Mỗi team sở hữu toàn bộ lifecycle — from code to production |
 | **Technology diversity** | Chọn công nghệ phù hợp nhất cho từng bài toán cụ thể |
@@ -355,7 +355,7 @@ Ba câu hỏi cần trả lời trước khi chọn microservices:
 **Bảng 1.6:** Chi phí và thách thức của microservices
 
 | Chi phí | Giải thích |
-|---------|-----------|
+| :--------- | :----------- |
 | **Complexity tax** | Distributed systems phức tạp fundamentally: network latency, partial failures, eventual consistency — những thứ không tồn tại trong monolith |
 | **Operational overhead** | CI/CD pipeline, monitoring, logging, tracing, service discovery *cho mỗi service* |
 | **Data consistency** | Không có transactions xuyên service → phải dùng Saga pattern, eventual consistency |
@@ -379,7 +379,7 @@ Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực t
 **Ba nhóm người dùng chính:**
 
 | Nhóm | Vai trò | Quy mô |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Sinh viên** | Luyện tập SQL, tham gia thi, nộp bài tập, làm đồ án | Hàng nghìn / học kỳ |
 | **Giảng viên** | Soạn đề, tổ chức thi/kiểm tra, chấm điểm, theo dõi tiến độ | Hàng chục |
 | **Quản trị viên** | Quản lý tài khoản, cấu hình hệ thống, giám sát vận hành | Vài người |
@@ -414,7 +414,7 @@ Mỗi chương sách sẽ quay lại KBLab ở góc nhìn khác nhau. **Bảng 1
 **Bảng 1.7:** Ánh xạ bài toán kỹ thuật KBLab LMS theo chương
 
 | Bài toán kỹ thuật | Hiện trạng | Vấn đề cần giải quyết | Chương |
-|-------------------|-----------|----------------------|--------|
+|:------------------|:----------|:---------------------|:------:|
 | **Domain decomposition** | 4+ bounded contexts, shared library coupling | Domain logic lẫn vào shared lib | Ch.2 |
 | **API design** | REST controllers, naming không nhất quán | Thiếu versioning, error format không thống nhất | Ch.3 |
 | **Sync communication** | OpenFeign giữa services | Thiếu resilience patterns (circuit breaker, retry) | Ch.4 |
@@ -437,7 +437,7 @@ Richardson trong phiên bản 2 [2b, Ch.2] dành nguyên một chương kể câ
 **Bảng 1.8:** Năm quyết định kiến trúc KBLab muốn làm lại
 
 | # | Quyết định | Tại sao chọn lúc đó | Hậu quả thực tế | Anti-pattern tương ứng |
-|---|-----------|---------------------|-----------------|----------------------|
+|:---:|:----------|:--------------------|:----------------|:---------------------|
 | ① | **Shared database** giữa Core và Assignment | Nhanh hơn, không cần API giữa hai service | Thay đổi bảng `classroom` ở Core phá vỡ query ở Assignment; deploy cùng nhau bắt buộc | Richardson [2b]: *Data Services anti-pattern* |
 | ② | **Shared library** chứa quá nhiều thứ (entity, security, SQL parser) | Tái sử dụng code, giảm duplication | Mỗi thay đổi nhỏ buộc tất cả service rebuild + redeploy → mất independent deployability | Richardson [2b]: *Lock-step deployment* |
 | ③ | **JWT HS256** (symmetric key chia sẻ giữa services) | Đơn giản, setup 5 phút | Tất cả service biết secret key → bất kỳ service nào bị compromise đều có thể tạo JWT giả | Chi tiết tại Ch.9 |

@@ -28,7 +28,7 @@ Trong microservices, "deploy" có nghĩa khác hoàn toàn:
 **Bảng 12.1:** Thách thức triển khai Monolith vs Microservices
 
 | Monolith | Microservices |
-|----------|--------------|
+| :---------- | :-------------- |
 | 1 artifact → 1 server | N artifacts → N servers/containers |
 | 1 database migration | N database migrations (mỗi service) |
 | Restart 1 process | Restart N processes — **thứ tự quan trọng** |
@@ -44,7 +44,7 @@ Mitra trong [3, Ch.6] mô tả ba nguyên tắc DevOps nền tảng cho microser
 **Bảng 12.2:** Ba nguyên tắc DevOps nền tảng
 
 | Nguyên tắc | Mô tả | Ý nghĩa |
-|-----------|--------|---------|
+| :----------- | :-------- | :--------- |
 | **Immutable Infrastructure** | Không patch server đang chạy — tạo mới, deploy mới, xóa cũ | Reproducible, no configuration drift |
 | **Infrastructure as Code** | Mọi hạ tầng (server, network, database) định nghĩa trong code | Version control, review, rollback |
 | **Continuous Delivery** | Code luôn ở trạng thái sẵn sàng deploy — chỉ cần ấn nút | Giảm risk per deployment, feedback nhanh |
@@ -78,7 +78,7 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
 **Bảng 12.3:** So sánh chi tiết VM và Container
 
 | So sánh | VM | Container |
-|---------|-----|-----------|
+| :--------- | :----- | :----------- |
 | **Khởi động** | Phút | Giây |
 | **Kích thước** | Hàng GB (Guest OS) | Hàng MB-GB (chỉ app + libs) |
 | **Isolation** | Mạnh (hardware-level) | Trung bình (OS-level — share kernel) |
@@ -94,7 +94,7 @@ Richardson trong [2a, Ch.12] phân loại:
 **Bảng 12.4:** Năm mô hình triển khai (Deployment Patterns)
 
 | Pattern | Mô tả | Ưu điểm | Nhược điểm |
-|---------|--------|---------|------------|
+| :--------- | :-------- | :--------- | :------------ |
 | **Language-specific** | Deploy WAR/JAR trực tiếp lên server | Đơn giản | Không isolation, dependency conflicts |
 | **Service per VM** | Mỗi service = 1 VM (AMI/OVA) | Isolation mạnh | Tốn resource, chậm provision |
 | **Service per Container** | Mỗi service = 1 Docker container | Lightweight, fast, portable | Cần orchestration cho production |
@@ -212,7 +212,7 @@ volumes:
 **Bảng 12.5:** Điểm mạnh và giới hạn của Docker Compose
 
 | Điểm mạnh | Giới hạn |
-|-----------|---------|
+| :----------- | :--------- |
 | **Declarative**: toàn bộ stack trong 1 file | **Single host**: chỉ chạy trên 1 máy |
 | **Reproducible**: `docker compose up` = same result | **Không có self-healing**: container crash → không auto-restart |
 | **Dependencies**: `depends_on` đảm bảo thứ tự khởi động | **Không có load balancing**: cần reverse proxy thêm |
@@ -242,7 +242,7 @@ Trong monolith: 1 pipeline — build → test → deploy. Trong microservices: m
 **Bảng 12.6:** Mono-repo vs Poly-repo
 
 | | **Mono-repo** | **Poly-repo** |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Cấu trúc** | Tất cả services trong 1 repository | Mỗi service 1 repository |
 | **CI/CD** | 1 pipeline, cần detect changed services | N pipelines, independent triggers |
 | **Shared code** | Dễ — cùng repo, import trực tiếp | Cần publish shared library (Maven Central/internal) |
@@ -256,7 +256,7 @@ Mitra trong [3, Ch.6] khuyến nghị: đối với team nhỏ-trung, **mono-rep
 **Bảng 12.7:** Các best practices thiết kế CI/CD Pipeline
 
 | Practice | Mô tả | Lý do |
-|----------|--------|-------|
+| :---------- | :-------- | :------- |
 | **Build once, deploy everywhere** | Build image 1 lần → deploy staging → promote lên production | Cùng artifact, giảm risk "staging works, production doesn't" |
 | **Externalized config** | Config (DB URL, API keys) inject qua environment variables | Cùng image chạy dev/staging/production — chỉ khác config |
 | **Parallel pipelines** | Mỗi service build/test/deploy độc lập | Deploy Service A không block Service B |
@@ -304,7 +304,7 @@ Deploy version mới cho **một phần nhỏ traffic** — monitor metrics — 
 **Bảng 12.8:** So sánh các Deployment Strategies
 
 | Strategy | Downtime | Rollback | Resource cost | Phù hợp |
-|----------|----------|----------|---------------|---------|
+| :---------- | :---------- | :---------- | :--------------- | :--------- |
 | **Rolling** | Zero (nếu ≥2 instances) | Chậm (phải roll ngược) | Thấp (N+1 instances) | Default cho Kubernetes |
 | **Blue/Green** | Zero | Nhanh (switch router) | Cao (2× infrastructure) | Database migrations, major changes |
 | **Canary** | Zero | Nhanh (route 100% về old) | Thấp-trung bình (N+1) | Risky changes, A/B testing |
@@ -331,7 +331,7 @@ Mitra trong [3, Ch.6-7] mô tả IaC là nền tảng cho microservices deployme
 **Bảng 12.9:** Các công cụ Infrastructure as Code phổ biến
 
 | Thành phần | Công cụ phổ biến | Ví dụ LMS |
-|-----------|-----------------|-----------|
+| :----------- | :----------------- | :----------- |
 | **Infrastructure provisioning** | Terraform, Pulumi, CloudFormation | Tạo VMs, networks, managed databases |
 | **Container orchestration** | Kubernetes manifests, Helm charts | Deploy services, scaling rules |
 | **Configuration management** | Ansible, Chef, Puppet | Cấu hình OS, install packages |
@@ -344,7 +344,7 @@ Docker Compose — dù đơn giản — đã là một dạng IaC: hạ tầng (
 **Bảng 12.10:** Các mức độ trưởng thành của IaC
 
 | Level | Tool | Use case |
-|-------|------|----------|
+| :------- | :------ | :---------- |
 | **Level 1** | Docker Compose | Single host, development, small production |
 | **Level 2** | Kubernetes + Helm | Multi-host, auto-scaling, self-healing |
 | **Level 3** | Terraform + Kubernetes + ArgoCD | Full GitOps — infrastructure + services as code |
@@ -378,7 +378,7 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
 **Bảng 12.11:** 6 Concepts cốt lõi trong Kubernetes
 
 | Concept | Mô tả | Tương đương Docker Compose |
-|---------|--------|---------------------------|
+| :--------- | :-------- | :--------------------------- |
 | **Pod** | Đơn vị nhỏ nhất — 1+ containers cùng network/storage | Một `service` entry |
 | **Deployment** | Quản lý N replicas của pod, rolling updates | Không có (manual) |
 | **Service** | Stable network endpoint cho pods (load balancing) | Port mapping + links |
@@ -391,7 +391,7 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
 **Bảng 12.12:** So sánh chi tiết Docker Compose và Kubernetes
 
 | Capability | Docker Compose | Kubernetes |
-|-----------|---------------|-----------|
+| :----------- | :--------------- | :----------- |
 | **Multi-host** | ❌ Single host only | ✅ Cluster nhiều nodes |
 | **Auto-scaling** | ❌ Manual `--scale` | ✅ HPA dựa trên metrics |
 | **Self-healing** | ⚠️ `restart: always` (basic) | ✅ Liveness/readiness probes, auto-replace |
@@ -436,7 +436,7 @@ Richardson trong [2a, Ch.12] liệt kê **Serverless** (AWS Lambda, Google Cloud
 **Bảng 12.13:** Container (Docker/K8s) vs Serverless
 
 | Aspect | Container (Docker/K8s) | Serverless |
-|--------|----------------------|-----------|
+| :-------- | :---------------------- | :----------- |
 | **Quản lý server** | Tự quản lý (hoặc managed K8s) | Cloud provider quản lý hoàn toàn |
 | **Scaling** | Configure auto-scaling rules | Auto-scale tự động (0 → N) |
 | **Cost model** | Pay per server/hour (running or not) | Pay per invocation (không dùng = không trả) |
@@ -470,7 +470,7 @@ Khi hệ thống microservices lớn (20+ services), mỗi service cần impleme
 **Bảng 12.14:** So sánh không dùng và dùng Service Mesh
 
 | Aspect | Không Service Mesh | Có Service Mesh |
-|--------|-------------------|----------------|
+| :-------- | :------------------- | :---------------- |
 | mTLS | Tự implement trong code | Sidecar tự động |
 | Tracing | Add library (OpenTelemetry) | Sidecar tự inject headers |
 | Circuit breaker | Resilience4j trong code | Sidecar config (Envoy) |
@@ -496,7 +496,7 @@ Hệ thống LMS triển khai production trên **Docker Compose** — đây là 
 **Bảng 12.15:** Phân tích mức độ trưởng thành triển khai của LMS
 
 | Aspect | Hiện trạng | Maturity | Nhận xét |
-|--------|-----------|----------|---------|
+| :-------- | :----------- | :---------- | :--------- |
 | **Containerization** | Docker images cho tất cả services | 🟢 Tốt | Multi-stage builds, container registry (GitLab) |
 | **Orchestration** | Docker Compose trên single host | 🟡 OK cho quy mô hiện tại | Phù hợp team nhỏ, không overkill |
 | **CI/CD** | Manual build + push | 🔴 Gap lớn | Mỗi deploy phải build thủ công, rủi ro cao |
@@ -511,7 +511,7 @@ LMS phục vụ sinh viên → **deployment windows** quan trọng:
 **Bảng 12.16:** Deployment windows cho LMS
 
 | Thời điểm | Rủi ro deploy | Strategy phù hợp |
-|-----------|--------------|-------------------|
+| :----------- | :-------------- | :------------------- |
 | Trước/sau contest | Cao — contest có deadline | Blue/Green — rollback ngay nếu lỗi |
 | Giữa tuần (off-peak) | Trung bình | Rolling update |
 | Summer break | Thấp | All-at-once OK |

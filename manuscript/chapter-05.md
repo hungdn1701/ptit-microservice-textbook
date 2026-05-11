@@ -31,7 +31,7 @@ Chương 4 đã phân tích ba vấn đề cốt lõi của giao tiếp đồng 
 **Bảng 5.1:** Giao tiếp đồng bộ vs bất đồng bộ — giải pháp cho ba vấn đề
 
 | Vấn đề Sync | Giải pháp Async |
-|-------------|----------------|
+| :------------- | :---------------- |
 | **Temporal coupling** — cả hai service phải online | Producer gửi message xong tiếp tục, consumer xử lý khi sẵn sàng |
 | **Cascading failure** — B down → A down | A vẫn gửi được vào broker, B xử lý khi recovery |
 | **Latency** — A chờ B xử lý xong | A không chờ, user nhận kết quả qua notification/polling |
@@ -85,7 +85,7 @@ RabbitMQ dựa trên **AMQP** (Advanced Message Queuing Protocol), với kiến 
 **Bảng 5.2:** Các concepts cốt lõi của RabbitMQ
 
 | Concept RabbitMQ | Mô tả |
-|-----------------|--------|
+| :----------------- | :-------- |
 | **Exchange** | Nhận message và route đến queues theo rules |
 | **Queue** | Lưu message chờ consumer (FIFO) |
 | **Binding** | Rule kết nối exchange → queue (routing key, headers) |
@@ -99,7 +99,7 @@ RabbitMQ mạnh ở **smart routing**: một message có thể đến đúng que
 **Bảng 5.3:** Apache Kafka vs RabbitMQ — so sánh toàn diện
 
 | Tiêu chí | Apache Kafka | RabbitMQ |
-|----------|-------------|----------|
+| :---------- | :------------- | :---------- |
 | **Loại** | Durable — event log | Ephemeral — message queue |
 | **Model** | Append-only log, consumers theo dõi offset | Queue FIFO, message xóa sau ack |
 | **Throughput** | Rất cao (millions msg/sec) | Trung bình (tens of thousands/sec) |
@@ -120,7 +120,7 @@ RabbitMQ mạnh ở **smart routing**: một message có thể đến đúng que
 **Bảng 5.4:** Khi nào chọn Kafka, khi nào chọn RabbitMQ
 
 | Nhu cầu | Chọn |
-|---------|------|
+| :--------- | :------ |
 | Event sourcing, audit trail, replay | **Kafka** |
 | High throughput (100K+ msg/sec) | **Kafka** |
 | Stream processing (KStreams, ksqlDB) | **Kafka** |
@@ -142,7 +142,7 @@ LMS chọn Kafka vì cần **replay** (chấm lại bài khi Judge đổi logic)
 **Bảng 5.5:** Các concepts cốt lõi của Apache Kafka
 
 | Concept | Mô tả | Ví dụ LMS |
-|---------|-------|-----------|
+| :--------- | :------- | :----------- |
 | **Topic** | Luồng message theo category | `submissions`, `judge-results`, `notifications` |
 | **Partition** | Chia topic thành segments song song | 3 partitions cho `submissions` |
 | **Consumer Group** | Nhóm consumers chia nhau partitions | `judge-group` — 3 Judge instances |
@@ -229,7 +229,7 @@ Lưu ý: response là **202 Accepted** (không phải 200 OK) — nghĩa là "re
 **Bảng 5.6:** Ba cấp độ delivery guarantee
 
 | Guarantee | Mô tả | Hậu quả |
-|-----------|-------|---------|
+| :----------- | :------- | :--------- |
 | **At-most-once** | Message được gửi tối đa 1 lần. Có thể mất. | Nhanh nhưng unreliable |
 | **At-least-once** | Message được gửi ít nhất 1 lần. Có thể trùng. | Reliable nhưng cần idempotency |
 | **Exactly-once** | Message được xử lý đúng 1 lần. | Lý tưởng nhưng rất khó/đắt |
@@ -298,7 +298,7 @@ Rocha đề xuất mỗi event nên có ba phần [5, Ch.8]:
 **Bảng 5.7:** Cấu trúc event — metadata và payload
 
 | Phần | Mục đích | Fields quan trọng |
-|------|---------|-------------------|
+| :------ | :--------- | :------------------- |
 | **metadata** | Tracing, deduplication, versioning | `eventId` (cho idempotency), `correlationId` (cho tracing), `version` |
 | **payload** | Business data | Domain-specific data |
 
@@ -309,7 +309,7 @@ Rocha phân loại message thành 4 loại, mỗi loại có mục đích và na
 **Bảng 5.8:** Bốn loại message trong event-driven architecture
 
 | Loại | Mô tả | Naming | Ví dụ LMS | Delivery |
-|------|-------|--------|-----------|----------|
+| :------ | :------- | :-------- | :----------- | :---------- |
 | **Command** | Yêu cầu thực hiện hành động — *có thể bị từ chối* | Verb imperative | `JudgeSubmission`, `SendNotification` | Point-to-point |
 | **Event** | Thông báo sự kiện đã xảy ra — *sự thật, không thể reject* | Past participle | `SubmissionJudged`, `ContestStarted` | Pub/sub |
 | **Document** | Snapshot toàn bộ entity khi thay đổi — *full state, không chỉ delta* | Noun | `SubmissionDocument`, `UserDocument` | Pub/sub |
@@ -340,7 +340,7 @@ Sau khi Judge Service chấm xong, kết quả cần đến tay sinh viên. Có 
 **Bảng 5.9:** Ba cách đưa kết quả đến client
 
 | Cách | Mô tả | Nhược điểm |
-|------|-------|-----------|
+| :------ | :------- | :----------- |
 | **Polling** | Client hỏi server mỗi X giây | Lãng phí bandwidth, delay |
 | **Long polling** | Client giữ connection, server trả khi có data | Phức tạp, scaling khó |
 | **WebSocket** | Full-duplex connection, server push real-time | Cần maintain connection state |
@@ -404,7 +404,7 @@ Trong Contest mode, 100+ sinh viên đồng thời nộp bài trong thời gian 
 **Bảng 5.10:** Chi tiết các Kafka topics trong pipeline
 
 | Topic | Producer | Consumer | Message | Key |
-|-------|----------|----------|---------|-----|
+| :------- | :---------- | :---------- | :--------- | :----- |
 | `submissions` | Core Service | Judge Service | SQL + metadata | `userId` |
 | `judge-results` | Judge Service | Core Service | Result + timing | `submissionId` |
 | `score-updates` | Core Service | Leaderboard Aggregator | Score change | `contestId` |
@@ -415,7 +415,7 @@ Trong Contest mode, 100+ sinh viên đồng thời nộp bài trong thời gian 
 **Bảng 5.11:** Phân tích vấn đề Kafka pipeline trong LMS
 
 | # | Vấn đề | Hiện trạng | Best Practice [2a] |
-|---|--------|-----------|--------------------------|
+| :---: | :-------- | :----------- | :-------------------------- |
 | 1 | **Auto-commit offset** | Commit trước khi xử lý xong → message loss | Manual commit sau khi xử lý thành công |
 | 2 | **Không có DLT** | Failed messages bị retry vô hạn hoặc mất | Dead Letter Topic cho messages lỗi |
 | 3 | **Không idempotent** | Duplicate có thể tạo kết quả sai | Check `submissionId` trước khi judge |

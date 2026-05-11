@@ -6,6 +6,45 @@
     <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
     </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#0000001a"/>
+    </filter>
+    <linearGradient id="grad-service" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e6f4f3"/>
+      <stop offset="100%" stop-color="#ccebe8"/>
+    </linearGradient>
+    <linearGradient id="grad-storage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="grad-event" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef9c3"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+    <linearGradient id="grad-success" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="grad-danger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="grad-warning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="grad-info" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="grad-highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="grad-legacy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3f4f6"/>
+      <stop offset="100%" stop-color="#e5e7eb"/>
+    </linearGradient>
   </defs>
   <style>
     text {
@@ -13,23 +52,27 @@
       font-size: 14px;
       fill: #1a202c;
     }
-    .title { font-weight: bold; font-size: 16px; }
+    .title { font-weight: 600; font-size: 16px; }
     .small { font-size: 12px; }
     .subtitle { font-size: 13px; fill: #64748b; }
     .mono { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 12px; }
 
     .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
-    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
-    .storage { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
-    .event   { fill: #fef9c3;   stroke: #ca8a04;   stroke-width: 1.5; }
-    .success { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
-    .danger  { fill: #fee2e2;  stroke: #dc2626;  stroke-width: 1.5; }
-    .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
-    .info    { fill: #eff6ff;    stroke: #3b82f6;    stroke-width: 1.5; }
-    .highlight { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 1.5; }
-    .legacy  { fill: #f3f4f6;  stroke: #9ca3af;  stroke-width: 1.5; }
-    .note    { fill: #ffffff;     stroke: #cbd5e1;   stroke-width: 1.5; }
-    .step    { fill: #ffffff;     stroke: #94a3b8;         stroke-width: 1.5; }
+    .service { fill: url(#grad-service); stroke: #0f766e; stroke-width: 2.0; filter: url(#shadow); }
+    .storage { fill: url(#grad-storage); stroke: #2563eb; stroke-width: 2.0; filter: url(#shadow); }
+    .event   { fill: url(#grad-event);   stroke: #ca8a04;   stroke-width: 2.0; filter: url(#shadow); }
+    .success { fill: url(#grad-success); stroke: #16a34a; stroke-width: 2.0; filter: url(#shadow); }
+    .danger  { fill: url(#grad-danger);  stroke: #dc2626;  stroke-width: 2.0; filter: url(#shadow); }
+    .warning { fill: url(#grad-warning); stroke: #ea580c; stroke-width: 2.0; filter: url(#shadow); }
+    .info    { fill: url(#grad-info);    stroke: #3b82f6;    stroke-width: 2.0; filter: url(#shadow); }
+    .highlight { fill: url(#grad-highlight); stroke: #7c3aed; stroke-width: 2.0; filter: url(#shadow); }
+    .legacy  { fill: url(#grad-legacy);  stroke: #9ca3af;  stroke-width: 1.5; filter: url(#shadow); }
+    .note    { fill: #ffffff;    stroke: #cbd5e1;   stroke-width: 1.5; filter: url(#shadow); }
+    .step    { fill: #ffffff;    stroke: #94a3b8;         stroke-width: 1.5; filter: url(#shadow); }
+
+    .service-flat { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .storage-flat { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+    .event-flat   { fill: #fef9c3;   stroke: #ca8a04;   stroke-width: 1.5; }
 
     .arrow {
       stroke: #64748b; stroke-width: 1.5; fill: none;
@@ -40,37 +83,40 @@
       stroke-dasharray: 6 3; marker-end: url(#arrowhead);
     }
     .arrow-danger {
-      stroke: #dc2626; stroke-width: 2; fill: none;
+      stroke: #dc2626; stroke-width: 2.0; fill: none;
       marker-end: url(#arrowhead-danger);
     }
-    .arrow-bg { fill: #ffffff; opacity: 0.9; }
+    .arrow-bg { fill: #ffffff; opacity: 0.92; }
     .lifeline {
-      stroke: #94a3b8; stroke-width: 1;
+      stroke: #94a3b8; stroke-width: 1.0;
       stroke-dasharray: 4 3; fill: none;
+    }
+    .separator {
+      stroke: #cbd5e1; stroke-width: 1.0;
     }
   </style>
   <text x="480" y="30" text-anchor="middle" class="title">Context Map — KBLab LMS</text>
-  <rect x="60" y="80" width="180" height="70" rx="8" class="info" />
+  <rect x="60" y="80" width="180" height="70" rx="12" class="info" />
   <text x="150.0" y="111.0" text-anchor="middle" class="title">Auth Context</text>
   <text x="150.0" y="129.0" text-anchor="middle" class="subtitle">Upstream</text>
   <text x="150" y="170" text-anchor="middle" class="subtitle">Identity &amp; Access</text>
-  <rect x="390" y="80" width="180" height="70" rx="8" class="service" />
+  <rect x="390" y="80" width="180" height="70" rx="12" class="service" />
   <text x="480.0" y="111.0" text-anchor="middle" class="title">SQL Practice</text>
   <text x="480.0" y="129.0" text-anchor="middle" class="subtitle">Core Domain</text>
   <text x="480" y="170" text-anchor="middle" class="subtitle">Questions, Contests</text>
-  <rect x="690" y="80" width="200" height="70" rx="8" class="event" />
+  <rect x="690" y="80" width="200" height="70" rx="12" class="event" />
   <text x="790.0" y="111.0" text-anchor="middle" class="title">Judge Context</text>
   <text x="790.0" y="129.0" text-anchor="middle" class="subtitle">ACL</text>
   <text x="790" y="170" text-anchor="middle" class="subtitle">Evaluation Engine</text>
-  <rect x="390" y="240" width="180" height="70" rx="8" class="highlight" />
+  <rect x="390" y="240" width="180" height="70" rx="12" class="highlight" />
   <text x="480.0" y="271.0" text-anchor="middle" class="title">Assignment</text>
   <text x="480.0" y="289.0" text-anchor="middle" class="subtitle">Context</text>
   <text x="480" y="330" text-anchor="middle" class="subtitle">Courses, Grading</text>
-  <rect x="690" y="240" width="200" height="70" rx="8" class="warning" />
+  <rect x="690" y="240" width="200" height="70" rx="12" class="warning" />
   <text x="790.0" y="271.0" text-anchor="middle" class="title">Notification</text>
   <text x="790.0" y="289.0" text-anchor="middle" class="subtitle">Context</text>
   <text x="790" y="330" text-anchor="middle" class="subtitle">Alerts, Email</text>
-  <rect x="60" y="240" width="180" height="70" rx="8" class="danger" />
+  <rect x="60" y="240" width="180" height="70" rx="12" class="danger" />
   <text x="150.0" y="271.0" text-anchor="middle" class="title">Shared Kernel</text>
   <text x="150.0" y="289.0" text-anchor="middle" class="subtitle">(shared library)</text>
   <text x="150" y="330" text-anchor="middle" class="subtitle">JWT, BaseEntity</text>

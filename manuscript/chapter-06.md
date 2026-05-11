@@ -48,7 +48,7 @@ Richardson trong [2a, Ch.4] liệt kê lý do 2PC (XA transactions) không phù 
 **Bảng 6.1:** Tại sao 2PC không phù hợp với microservices
 
 | Vấn đề | Mô tả | Ảnh hưởng đến LMS |
-|--------|-------|-------------------|
+| :-------- | :------- | :------------------- |
 | **Synchronous blocking** | Tất cả participants bị lock cho đến khi commit | Judge Service xử lý SQL 5-30s → Core Service lock toàn bộ thời gian đó |
 | **Single point of failure** | Coordinator crash → tất cả participants stuck | Nếu coordinator down khi Judge đang chạy → submission stuck |
 | **Reduced availability** | Tất cả services phải online cùng lúc | Judge MySQL down → không submit được bất kỳ DBMS nào |
@@ -86,7 +86,7 @@ Richardson phân loại mỗi step trong saga thành ba loại [2a, Ch.4]. Áp d
 **Bảng 6.2:** Ba loại transactions trong saga — áp dụng cho LMS Submit Saga
 
 | Loại | Mô tả | Có compensation? | Ví dụ trong LMS |
-|------|-------|-------------------|-----------------|
+| :------ | :------- | :------------------- | :----------------- |
 | **Compensatable** | Có thể bị undo bởi compensating transaction | ✅ Có | T1: Create Submission (→ C1: Mark ERROR) |
 | **Pivot** | Điểm quyết định go/no-go — sau đây saga *cam kết* hoàn thành | ❌ Không cần | T2: Execute SQL (pass/fail) |
 | **Retriable** | Bước sau pivot — *phải* thành công (retry cho đến khi xong) | ❌ Không cần | T3: Update Score, T4: Notify Student |
@@ -108,7 +108,7 @@ Trong choreography, **không có coordinator**. Mỗi service lắng nghe events
 **Bảng 6.3:** Ưu và nhược điểm của Choreography
 
 | Ưu điểm | Nhược điểm |
-|---------|-----------|
+| :--------- | :----------- |
 | **Đơn giản**: không cần thêm service orchestrator | **Khó theo dõi**: logic phân tán, không ai biết "saga ở bước nào" |
 | **Loosely coupled**: services không biết nhau, chỉ biết events | **Cyclic dependencies**: rủi ro event loops (A → B → A) |
 | **Dễ thêm participants**: subscribe event mới là xong | **Testing khó**: test flow đầy đủ cần tất cả services chạy |
@@ -124,7 +124,7 @@ Trong orchestration, **saga orchestrator** điều phối toàn bộ flow, gửi
 **Bảng 6.4:** Ưu và nhược điểm của Orchestration
 
 | Ưu điểm | Nhược điểm |
-|---------|-----------|
+| :--------- | :----------- |
 | **Dễ hiểu**: logic tập trung, biết saga đang ở bước nào | **Centralization risk**: orchestrator là component thêm cần maintain |
 | **Không cyclic**: dependencies luôn orchestrator → service | **Thêm complexity**: cần build orchestrator service |
 | **Dễ test**: mock orchestrator, test từng step riêng lẻ | **Smart orchestrator risk**: logic business có thể "leak" vào orchestrator |
@@ -136,7 +136,7 @@ Rocha trong [5, §4.4] đề xuất kết hợp cả hai — và đây là cách
 **Bảng 6.5:** Choreography vs Orchestration — khi nào dùng gì
 
 | Scenario | Recommendation | LMS context |
-|----------|---------------|-------------|
+| :---------- | :--------------- | :------------- |
 | Saga đơn giản (2-3 steps) | **Choreography** | Submit flow hiện tại (3 steps) |
 | Saga phức tạp (4+ steps, branching) | **Orchestration** | Nếu thêm plagiarism check + rubric grading |
 | Cross-bounded context | **Choreography** giữa contexts | Core ↔ Judge (khác bounded context) |
@@ -157,7 +157,7 @@ Compensation không phải "undo" — nó là **hành động nghiệp vụ ngư
 **Bảng 6.6:** Thiết kế compensation trong LMS
 
 | Forward Transaction | Compensation | Lưu ý |
-|-------------------|-------------|-------|
+| :------------------- | :------------- | :------- |
 | T1: Create Submission (PENDING) | C1: Mark ERROR | Không DELETE submission — đổi status |
 | T2: Execute SQL | (Pivot — không cần compensation) | Judge tự cleanup sandbox |
 | T3: Update Score | C3: Revert Score | Trừ lại score nếu đã cộng |
@@ -249,7 +249,7 @@ if (fresh.getStatus() == SubmissionStatus.CANCELLED) {
 **Bảng 6.7:** Anomaly → Countermeasure — áp dụng cho LMS
 
 | Anomaly | Countermeasure phù hợp | Áp dụng LMS |
-|---------|----------------------|-------------|
+| :--------- | :---------------------- | :------------- |
 | **Lost updates** | Commutative updates, Version File | `incrementScore(+delta)` thay vì `setScore(value)` |
 | **Dirty reads** | Semantic lock, Pessimistic view | `JUDGING` status flag ngăn đọc score chưa final |
 | **Non-repeatable reads** | Re-read value | Check `status != CANCELLED` trước khi commit |
@@ -265,7 +265,7 @@ Microservices chuyển từ ACID sang **BASE** [7, Ch.9]:
 **Bảng 6.8:** ACID (Monolith) vs BASE (Microservices)
 
 | | ACID (Monolith LMS) | BASE (Microservices LMS) |
-|---|----------------|---------------------|
+| :--- | :---------------- | :--------------------- |
 | **A** | Atomic — submit + judge + score = all or nothing | **B**asically **A**vailable — system luôn nhận submission |
 | **C** | Consistent — score luôn đúng tại mọi thời điểm | **S**oft state — score có thể tạm thời chưa cập nhật |
 | **I** | Isolated — hai submissions không thấy nhau | **E**ventual consistency — leaderboard *cuối cùng* sẽ đúng |
@@ -287,7 +287,7 @@ Trong LMS: sau khi sinh viên nộp bài, có consistency window 1–30 giây tr
 **Bảng 6.9:** Strategies cho UI khi chấp nhận eventual consistency
 
 | Strategy | Mô tả | Cách LMS implement |
-|----------|-------|---------------------|
+| :---------- | :------- | :--------------------- |
 | **Optimistic UI** | Hiện trạng thái "sẽ thành công" trước khi xong | "Bài đã gửi thành công" (dù chưa chấm xong) |
 | **Push notification** | Cập nhật UI khi có kết quả | WebSocket push: "Kết quả: Correct ✅" |
 | **Compensation notification** | Thông báo nếu phải rollback | "Bài không chấm được, vui lòng thử lại" |
@@ -312,7 +312,7 @@ Richardson trong [2a, Ch.4] mô tả saga pattern với explicit orchestrator, s
 **Bảng 6.10:** Phân tích vấn đề Submit Flow trong LMS
 
 | # | Vấn đề | Hiện trạng LMS | Best Practice [2a, Ch.4] |
-|---|--------|---------------|--------------------------|
+| :---: | :-------- | :--------------- | :-------------------------- |
 | 1 | **Implicit saga** | Flow phân tán trong code, không có saga definition | Explicit saga class với state machine |
 | 2 | **Không compensation** | Judge crash → submission PENDING vĩnh viễn | Timeout-based compensation: PENDING > 5 min → ERROR |
 | 3 | **Không semantic lock** | User có thể submit lại khi đang judging | Status JUDGING block re-submission cùng câu hỏi |

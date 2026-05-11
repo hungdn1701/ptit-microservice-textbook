@@ -64,16 +64,19 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 # Clone đầy đủ (bao gồm cả submodule)
 git clone --recurse-submodules https://github.com/hungdn1701/ptit-microservice-textbook.git
 
-# Build toàn bộ sách (Typst PDF)
+# Build toàn bộ sách (dev mode — output/ gitignored)
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all
 
 # Build một chương cụ thể (ví dụ: chương 3)
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 03
+
+# Release build (output tracked trong release/<tag>/)
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1
 ```
 
-Output được ghi vào thư mục `output/` (gitignored):
-- `output/chapter-XX.pdf` — PDF từng chương
-- `output/book.pdf` — Toàn bộ sách
+Output:
+- **Dev build:** `output/` (gitignored) — `chapter-XX.pdf` + `book.pdf`
+- **Release build:** `release/<tag>/` (tracked) — tagged PDFs + `RELEASE_NOTES.md`
 
 ---
 

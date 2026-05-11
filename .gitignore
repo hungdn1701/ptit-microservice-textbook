@@ -24,10 +24,8 @@ manuscript/appendices/
 # ----- Gen scripts & build tools (private submodule) -----
 scripts/gen_svg_*.py
 scripts/pdf_to_md.py
-scripts/render-diagrams.ps1
 scripts/audit-interactive-css.ps1
 scripts/build-pdf.ps1
-scripts/mmdc-*.json
 
 # ----- Test/temporary figures -----
 figures/shared/test*
@@ -36,6 +34,8 @@ figures/shared/test*
 output/
 _build/
 _output/
+# Release directory IS tracked (contains tagged PDFs for distribution)
+!release/
 *.epub
 *.mobi
 
