@@ -36,9 +36,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## 12.5 Infrastructure as Code
 
-## Case Study: Dockerize hệ thống LMS
+## Case Study: Dockerize KBLab
 
-> 📋 Dockerize toàn bộ hệ thống LMS: viết Dockerfile cho từng service, cấu hình Docker Compose cho môi trường development, và thiết lập CI/CD cơ bản với GitHub Actions.
+> 📋 Dockerize KBLab: viết Dockerfile cho từng service, cấu hình Docker Compose cho môi trường development, và thiết lập CI/CD cơ bản với GitHub Actions.
 
 ## Tổng kết
 

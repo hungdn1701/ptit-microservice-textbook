@@ -12,7 +12,7 @@ Cuốn sách này khác ở ba điểm:
 
 1. **Tiếng Việt** — thuật ngữ kỹ thuật giữ nguyên tiếng Anh, nhưng lời giải thích và phân tích bằng tiếng Việt. Developer Việt Nam cần tài liệu gốc, không phải bản dịch máy.
 
-2. **Case study xuyên suốt** — thay vì ví dụ rời rạc, toàn bộ 12 chương sử dụng chung một hệ thống LMS (Learning Management System) thực tế. Mỗi chương phân tích *hiện trạng* → *gap* → *migration path* — không lý thuyết suông.
+2. **Case study xuyên suốt** — thay vì ví dụ rời rạc, toàn bộ 12 chương sử dụng chung KBLab, một hệ thống LMS (Learning Management System) thực tế. Mỗi chương phân tích *hiện trạng* → *gap* → *migration path* — không lý thuyết suông.
 
 3. **Problem-first** — mỗi pattern, mỗi concept bắt đầu bằng "bài toán": *vấn đề gì?* → *tại sao monolith không giải quyết được?* → *microservices giải quyết thế nào?* Đây là cách học hiệu quả nhất cho developer.
 
@@ -34,14 +34,14 @@ Yêu cầu kiến thức nền:
 
 **Tra cứu**: Phụ lục C (Pattern Catalog) liệt kê 40+ patterns với chương tham chiếu — lookup nhanh khi cần.
 
-**Case Study**: Theo dõi hệ thống LMS xuyên suốt sách để thấy một kiến trúc thực tế tiến hóa từ monolith sang microservices.
+**Case Study**: Theo dõi KBLab xuyên suốt sách để thấy một kiến trúc thực tế tiến hóa từ monolith sang microservices.
 
 ## Conventions trong sách
 
 | Ký hiệu | Ý nghĩa |
 |---------|---------|
 | 📐 **Nguyên tắc** | Triết lý hoặc best practice quan trọng |
-| 🔍 **Phân tích gap** | So sánh LMS hiện trạng vs best practice |
+| 🔍 **Phân tích gap** | So sánh KBLab hiện trạng vs best practice |
 | ⚠️ **Sai lầm thường gặp** | Anti-patterns và cách phòng tránh |
 | 💡 **Tip** | Mẹo thực hành |
 | `[2a, Ch.3]` | Tham chiếu đến sách (mã trong Đọc thêm) |

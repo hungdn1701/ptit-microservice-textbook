@@ -8,7 +8,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 - Hiểu mô hình giao tiếp bất đồng bộ và event-driven architecture
 - Phân biệt được Message Queue vs Event Stream
 - Nắm vững Apache Kafka: concepts, partitioning, consumer groups
-- Thực hành xây dựng producer/consumer trong hệ thống LMS
+- Thực hành xây dựng producer/consumer trong KBLab
 
 ## 5.1 Asynchronous Messaging — Tại sao?
 

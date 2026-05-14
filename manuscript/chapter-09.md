@@ -10,9 +10,9 @@
 - Hiểu các thách thức bảo mật đặc thù của kiến trúc microservices
 - Nắm vững cấu trúc JWT (JSON Web Token): header, payload, signature
 - Phân biệt hai chiến lược validation: DB-based (full validation) vs claims-only (stateless)
-- Hiểu OAuth2 flow và tích hợp external identity provider (Google)
+- Hiểu OAuth2/OIDC flow và tích hợp external identity provider (Microsoft/Google)
 - Thiết kế RBAC (Role-Based Access Control) cho hệ thống đa vai trò
-- Phân tích kiến trúc bảo mật của hệ thống LMS
+- Phân tích kiến trúc bảo mật của KBLab
 
 ---
 
@@ -50,7 +50,7 @@ Trong thực tế, mức độ áp dụng tùy thuộc vào **trust boundary**. 
 
 > **📐 Nguyên tắc — Zero Trust vs Pragmatic Trust**
 >
-> "Zero Trust" (mọi request đều verify, mọi service đều nghi ngờ) là lý tưởng. Trong thực tế, team nhỏ thường áp dụng **pragmatic trust**: gateway verify identity, services tin tưởng gateway. Newman trong [4a, Ch.9] ghi nhận: mức trust phù hợp phụ thuộc vào risk profile — hệ thống tài chính cần zero trust, hệ thống nội bộ có thể pragmatic trust. LMS là hệ thống academic nội bộ → pragmatic trust là hợp lý.
+> "Zero Trust" (mọi request đều verify, mọi service đều nghi ngờ) là lý tưởng. Trong thực tế, team nhỏ thường áp dụng **pragmatic trust**: gateway verify identity, services tin tưởng gateway. Newman trong [4a, Ch.9] ghi nhận: mức trust phù hợp phụ thuộc vào risk profile — hệ thống tài chính cần zero trust, hệ thống học thuật có thể pragmatic trust. KBLab là LMS học thuật → pragmatic trust là hợp lý nếu boundary nội bộ được kiểm soát rõ.
 
 ### Advanced: mTLS, Secrets Management, OAuth2 Scopes
 
@@ -66,7 +66,7 @@ Khi hệ thống scale hoặc risk profile tăng (thêm payment, personal data),
 | Attacker vào network | Có thể gọi bất kỳ service | Bị từ chối vì thiếu certificate |
 | Implementation | Đơn giản | Cần certificate management (cert-manager, Istio) |
 
-Trong LMS, mTLS hiện chưa cần (hệ thống nội bộ, single host). Nhưng nếu LMS deploy trên cloud với nhiều nodes → mTLS ngăn lateral movement nếu một node bị compromise.
+Trong KBLab, mTLS hiện chưa phải ưu tiên đầu tiên nếu các services chỉ giao tiếp trong boundary nội bộ được kiểm soát. Nhưng khi triển khai phân tán hơn hoặc có nhiều node/runtime, mTLS giúp ngăn lateral movement nếu một node bị compromise.
 
 **Secrets Management** — Credentials (DB passwords, API keys, JWT secrets) không nên nằm trong code hoặc Docker images:
 
@@ -78,9 +78,9 @@ Trong LMS, mTLS hiện chưa cần (hệ thống nội bộ, single host). Nhưn
 | ⚠️ Environment variables | `.env` file, Docker env | Lộ qua `docker inspect`, process listing |
 | ✅ Secrets manager | HashiCorp Vault, AWS Secrets Manager | Encrypted, audit log, rotation |
 
-LMS hiện dùng environment variables (đủ cho scope academic) — nhưng JWT secret nên rotate định kỳ và không commit vào git.
+KBLab hiện dùng environment variables ở một số môi trường (đủ cho scope academic) — nhưng JWT secret nên rotate định kỳ và không commit vào git.
 
-**OAuth2 Scopes** — Hiện tại LMS RBAC dùng roles (STUDENT, LECTURER, ADMIN). OAuth2 scopes mở rộng: thay vì "user có role ADMIN", scope cho phép "client application X có quyền `read:submissions` nhưng không có `write:grades`". Phù hợp khi LMS expose API cho third-party (mobile app độc lập, integration với hệ thống khác).
+**OAuth2 Scopes** — Hiện tại KBLab RBAC dùng roles (STUDENT, LECTURER, ADMIN). OAuth2 scopes mở rộng: thay vì "user có role ADMIN", scope cho phép "client application X có quyền `read:submissions` nhưng không có `write:grades`". Phù hợp khi KBLab expose API cho third-party (mobile app độc lập, integration với hệ thống khác).
 
 ---
 
@@ -111,7 +111,7 @@ Ba phần của JWT:
 
 **Bảng 9.4:** Ba phần của JWT — nội dung và ví dụ
 
-| Phần | Nội dung | Ví dụ LMS |
+| Phần | Nội dung | Ví dụ KBLab |
 | :------ | :--------- | :----------- |
 | **Header** | Algorithm + type | `{"alg": "HS256", "typ": "JWT"}` |
 | **Payload** | Claims (dữ liệu) | `{"userId": "user-123", "roles": "STUDENT", "exp": 1710000000}` |
@@ -130,15 +130,15 @@ Ba phần của JWT:
 | **Key rotation** | Phải update tất cả services | Chỉ update Auth Service (private key) |
 | **Use case** | Internal services, trust boundary rõ | Public APIs, nhiều third-party verifiers |
 
-### JWT Flow trong LMS
+### JWT Flow trong KBLab
 
 ![](../figures/ch09/fig-9-4.svg)
 
-*Hình 9.4: JWT Flow trong LMS — login, token generation, và subsequent requests*
+*Hình 9.4: JWT Flow trong KBLab — login, token generation, và subsequent requests*
 
-> **🔍 Phân tích gap — LMS dùng HS256 với shared secret**
+> **🔍 Phân tích gap — KBLab dùng HS256 với shared secret**
 >
-> Hệ thống LMS sử dụng HS256 (symmetric) — tất cả services chia sẻ cùng `jwt.secretKey`. Trong production, nếu bất kỳ service nào bị compromise, attacker có thể tạo JWT token giả mạo cho bất kỳ user nào. Với LMS (academic, internal), rủi ro chấp nhận được vì trust boundary ở gateway. **Migration path** (khi cần nâng security): (1) chuyển sang RS256 — Auth Service giữ private key, các service khác chỉ có public key, (2) dùng Spring Security OAuth2 Resource Server (built-in JWT verification), (3) key rotation qua config server.
+> KBLab sử dụng HS256 (symmetric) — các services chia sẻ cùng `jwt.secretKey`. Trong production, nếu bất kỳ service nào bị compromise, attacker có thể tạo JWT token giả mạo cho bất kỳ user nào. Với KBLab (academic, internal), rủi ro có thể chấp nhận ở giai đoạn đầu nếu trust boundary ở gateway rõ ràng. **Migration path** (khi cần nâng security): (1) chuyển sang RS256 — Auth Service giữ private key, các service khác chỉ có public key, (2) dùng Spring Security OAuth2 Resource Server (built-in JWT verification), (3) key rotation qua config server.
 
 ### Token Refresh & Rotation — Vòng đời của JWT
 
@@ -213,7 +213,7 @@ LMS implement giải pháp **hybrid** — validation khác nhau tùy service:
 
 *Hình 9.5: Dual Validation — full validation (Auth) vs claims-only (internal services)*
 
-**Bảng 9.6:** Ba loại validation trong LMS
+**Bảng 9.6:** Ba loại validation trong KBLab
 
 | Validation Type | Service | Khi nào | Chi tiết |
 | :---------------- | :--------- | :-------- | :---------- |
@@ -241,23 +241,25 @@ Tự quản lý username/password đòi hỏi: hash passwords (bcrypt), xử lý
 
 ### OAuth2 Authorization Code Flow
 
-LMS tích hợp **Google OAuth2** cho đăng nhập — sinh viên dùng tài khoản Google của trường. Flow: User → redirect Google consent → login → callback với authorization code → Auth Service exchange code for tokens (server-to-server) → fetch userinfo → find/create user → generate LMS JWT.
+KBLab tích hợp OAuth2/OIDC cho đăng nhập qua identity provider của trường (ví dụ Microsoft Entra ID hoặc Google Workspace). Flow: User → redirect tới provider → login → callback với authorization code → Auth Service exchange code for tokens (server-to-server) → fetch userinfo → find/create user → generate KBLab JWT.
 
-**Điểm quan trọng**: LMS *không dùng* Google token trực tiếp. Sau khi xác thực với Google, Auth Service tạo **JWT riêng của LMS** — services phía sau không biết user login bằng Google hay username/password. Đây là pattern **token exchange**: external token → internal token.
+**Điểm quan trọng**: KBLab *không dùng* external token trực tiếp. Sau khi xác thực với provider, Auth Service tạo **JWT riêng của KBLab** — services phía sau không biết user login bằng Microsoft, Google, QLĐT hay username/password. Đây là pattern **token exchange**: external token → internal token.
 
 ### Multiple Authentication Methods
 
-LMS hỗ trợ ba phương thức đăng nhập:
+KBLab hỗ trợ nhiều phương thức xác thực nhưng hội tụ về cùng một token nội bộ:
 
-**Bảng 9.7:** Ba phương thức đăng nhập trong LMS
+**Bảng 9.7:** Các phương thức xác thực trong KBLab
 
 | Method | Flow | Khi nào |
 | :-------- | :------ | :--------- |
 | **Username/Password** | Truyền thống, hash bcrypt | Default cho mọi user |
-| **Google OAuth2** | Authorization Code Flow | Sinh viên dùng Google của trường |
+| **Microsoft/Google OAuth2/OIDC** | Authorization Code Flow + PKCE khi phù hợp | SSO bằng tài khoản trường |
 | **PTIT QLDT** | Custom integration | Login bằng tài khoản quản lý đào tạo |
+| **Email verification** | Verify email trước khi kích hoạt/khôi phục | Giảm tài khoản giả, hỗ trợ reset password |
+| **Turnstile** | Challenge chống bot ở form nhạy cảm | Bảo vệ login/register/reset khỏi automation |
 
-Tất cả đều converge vào cùng output: **LMS JWT token** (chứa userId, roles, expiry). Auth Service expose `generateTokens(user)` — nhận User entity từ bất kỳ login method nào, trả về `{accessToken, refreshToken}`. Downstream services không phân biệt.
+Tất cả đều converge vào cùng output: **KBLab JWT token** (chứa userId, roles, expiry). Auth Service expose `generateTokens(user)` — nhận User entity từ bất kỳ login method nào, trả về `{accessToken, refreshToken}`. Downstream services không phân biệt. Đây là nền tảng cho SSO cross-platform: các module LMS core, Network Lab và DevOps Lab có thể chia sẻ identity nội bộ mà không buộc từng module hiểu mọi provider bên ngoài.
 
 
 ---
@@ -266,9 +268,9 @@ Tất cả đều converge vào cùng output: **LMS JWT token** (chứa userId, 
 
 ### Vấn đề: ai được làm gì?
 
-Authentication trả lời "người dùng là ai?". Authorization trả lời "người dùng được làm gì?". Trong LMS, ba vai trò chính cần permissions khác nhau:
+Authentication trả lời "người dùng là ai?". Authorization trả lời "người dùng được làm gì?". Trong KBLab, ba vai trò chính cần permissions khác nhau:
 
-**Bảng 9.8:** RBAC — vai trò và permissions trong LMS
+**Bảng 9.8:** RBAC — vai trò và permissions trong KBLab
 
 | Role | Permissions | Ví dụ |
 | :------ | :------------ | :------- |
@@ -276,9 +278,9 @@ Authentication trả lời "người dùng là ai?". Authorization trả lời "
 | **LECTURER** | Tất cả STUDENT + tạo bài, tạo contest, xem thống kê | Giảng viên |
 | **ADMIN** | Tất cả LECTURER + quản lý users, quản lý hệ thống | Quản trị viên |
 
-### RBAC Implementation trong LMS
+### RBAC Implementation trong KBLab
 
-LMS dùng Spring Security `@PreAuthorize` annotation với roles lưu trong JWT:
+KBLab dùng Spring Security `@PreAuthorize` annotation với roles lưu trong JWT:
 
 **Listing 9.2:** Spring Security `@PreAuthorize` — RBAC declarative
 
@@ -302,31 +304,31 @@ public void delete(@PathVariable UUID id) { ... }
 
 *Hình 9.6: Role Hierarchy — ADMIN inherits LECTURER inherits STUDENT*
 
-LMS lưu roles dạng **pipe-delimited** trong JWT: `"ADMIN|LECTURER|STUDENT"`. Khi gateway extract roles, nó truyền qua header `X-User-Roles` — Core Service parse và check permissions.
+KBLab lưu roles dạng **pipe-delimited** trong JWT: `"ADMIN|LECTURER|STUDENT"`. Khi gateway extract roles, nó truyền qua header `X-User-Roles` — Core Service parse và check permissions.
 
 ### API-driven Route Protection (Frontend)
 
-LMS frontend sử dụng pattern khác biệt: **route permissions được fetch từ API** (`GET /api/auth/me/permissions`) thay vì hardcoded — response chứa danh sách routes và actions mà user được phép. Frontend dynamic render routes dựa trên permissions này. Ưu điểm: thay đổi permissions ở backend → frontend tự cập nhật, không cần deploy lại.
+KBLab frontend sử dụng pattern khác biệt: **route permissions được fetch từ API** (`GET /api/auth/me/permissions`) thay vì hardcoded — response chứa danh sách routes và actions mà user được phép. Frontend dynamic render routes dựa trên permissions này. Ưu điểm: thay đổi permissions ở backend → frontend tự cập nhật, không cần deploy lại.
 
-> **🔍 Phân tích gap — RBAC trong LMS**
+> **🔍 Phân tích gap — RBAC trong KBLab**
 >
-> LMS implementation hiện tại có vài vấn đề: (1) Roles lưu dạng pipe-delimited string thay vì array — phải parse thủ công, dễ lỗi nếu role name chứa pipe. (2) `@PreAuthorize` annotations phân tán ở mỗi controller — khó audit "user role X có thể access những endpoint nào?". (3) Không có role hierarchy rõ ràng ở Spring Security level — ADMIN phải list cả LECTURER và STUDENT roles.
+> KBLab implementation hiện tại có vài vấn đề: (1) Roles lưu dạng pipe-delimited string thay vì array — phải parse thủ công, dễ lỗi nếu role name chứa pipe. (2) `@PreAuthorize` annotations phân tán ở mỗi controller — khó audit "user role X có thể access những endpoint nào?". (3) Không có role hierarchy rõ ràng ở Spring Security level — ADMIN phải list cả LECTURER và STUDENT roles. (4) DevOps Lab cần policy bổ sung ở runtime layer: user nào được tạo workspace, network namespace, container hoặc job đặc quyền.
 >
 > **Migration path**: (1) chuyển roles sang JSON array trong JWT payload, (2) cấu hình `RoleHierarchy` trong Spring Security, (3) cân nhắc tập trung authorization policies (Spring Security method security hoặc OPA).
 
 ---
 
-## 9.6 Case Study: Kiến trúc bảo mật trong hệ thống LMS
+## 9.6 Case Study: Kiến trúc bảo mật trong KBLab
 
 ### Tổng quan
 
 ![](../figures/ch09/fig-9-7.svg)
 
-*Hình 9.7: Kiến trúc bảo mật tổng thể của LMS*
+*Hình 9.7: Kiến trúc bảo mật tổng thể của KBLab*
 
 ### Phân tích tổng hợp
 
-**Bảng 9.9:** Phân tích bảo mật toàn diện hệ thống LMS
+**Bảng 9.9:** Phân tích bảo mật toàn diện KBLab
 
 | Aspect | Hiện trạng | Risk Level | Best Practice |
 | :-------- | :----------- | :------------ | :--------------- |
@@ -336,6 +338,8 @@ LMS frontend sử dụng pattern khác biệt: **route permissions được fetc
 | **CORS** | `allowedOrigins: "*"` | 🔴 High | Restrict to specific origins |
 | **Service-to-service auth** | Không có | ⚠️ Medium | mTLS hoặc service token |
 | **Rate Limiting** | Không có | ⚠️ Medium | Redis-based rate limiter |
+| **Email verification / bot defense** | Có/đang hoàn thiện theo module | ⚠️ Medium | Verify email + Turnstile cho form nhạy cảm |
+| **DevOps Lab isolation** | Runtime isolation riêng | 🔴 High nếu cấu hình sai | Sysbox/k3s + NetworkPolicy/RBAC |
 | **Input Validation** | Partial | ⚠️ Medium | Bean Validation (@Valid) |
 | **HTTPS** | Gateway level | ✅ Low | — |
 | **Password Hashing** | BCrypt | ✅ Low | — |
@@ -346,16 +350,19 @@ LMS frontend sử dụng pattern khác biệt: **route permissions được fetc
 - Restrict CORS origins
 - Move secrets ra khỏi application.yml → environment variables (tối thiểu)
 - Token vào HttpOnly cookie thay vì localStorage
+- Bật email verification và Turnstile cho login/register/reset ở các flow public
 
 **Phase 2 — Authentication Hardening** (effort trung bình):
 - Chuyển HS256 → RS256
 - Thống nhất JWT library version (đã đề cập ở Ch.8)
 - Token refresh flow với rotation (mỗi lần refresh → invalidate token cũ)
+- Chuẩn hóa SSO cross-platform: external token exchange → KBLab JWT → shared claims contract
 
 **Phase 3 — Service Mesh Security** (effort cao, khi scale):
 - Service-to-service authentication (mTLS hoặc internal JWT)
 - Centralized secret management (HashiCorp Vault)
 - API-level authorization policies (Open Policy Agent)
+- DevOps Lab runtime guardrails: Kubernetes RBAC, NetworkPolicy, resource quotas và Sysbox isolation
 
 ### Secret Management trong Production
 
@@ -437,11 +444,11 @@ JWT giải quyết bài toán authentication trong distributed system: stateless
 
 Dual validation — full validation tại Auth Service, claims-only tại gateway, header-trust tại internal services — là cách tiếp cận thực tế: cân bằng giữa security và performance. OAuth2 cho phép delegate authentication cho identity provider chuyên nghiệp, giảm effort quản lý credentials.
 
-RBAC là mô hình authorization phổ biến nhất — đủ tốt cho hầu hết hệ thống. LMS implement RBAC qua `@PreAuthorize` annotations, nhưng thiếu role hierarchy rõ ràng và authorization policy tập trung.
+RBAC là mô hình authorization phổ biến nhất — đủ tốt cho hầu hết hệ thống. KBLab implement RBAC qua `@PreAuthorize` annotations, nhưng thiếu role hierarchy rõ ràng và authorization policy tập trung.
 
-Phân tích LMS cho thấy kiến trúc bảo mật cơ bản đúng (JWT, gateway validation, RBAC) nhưng có nhiều quick wins cần xử lý: CORS restriction, secret management, token storage. Đây là technical debt bảo mật — không ảnh hưởng tính năng nhưng ảnh hưởng risk profile.
+Phân tích KBLab cho thấy kiến trúc bảo mật cơ bản đúng (JWT, gateway validation, RBAC, token exchange cho SSO) nhưng có nhiều quick wins cần xử lý: CORS restriction, secret management, token storage, email verification/Turnstile và runtime isolation cho DevOps Lab. Đây là technical debt bảo mật — không ảnh hưởng tính năng nhưng ảnh hưởng risk profile.
 
-Ở Chương 10, chúng ta sẽ tổng hợp mọi kiến thức từ Chương 1-9 vào **bài toán thực tế nhất**: chuyển đổi từ monolith sang microservices — khi nào nên chuyển, Strangler Fig pattern, tách database, và migration roadmap cho LMS.
+Ở Chương 10, chúng ta sẽ tổng hợp mọi kiến thức từ Chương 1-9 vào **bài toán thực tế nhất**: chuyển đổi từ monolith sang microservices — khi nào nên chuyển, Strangler Fig pattern, tách database, và migration roadmap cho KBLab.
 
 ---
 

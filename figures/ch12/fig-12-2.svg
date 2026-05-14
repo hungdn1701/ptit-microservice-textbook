@@ -127,6 +127,6 @@
   <rect x="30" y="380" width="900" height="60" rx="8" class="note" />
   <text x="50" y="405" class="title">Container:</text>
   <text x="140" y="405" class="subtitle">Lightweight (MB), startup ms, share kernel. VM: Heavy (GB), startup min, full OS.</text>
-  <text x="50" y="428" class="small">LMS:</text>
-  <text x="90" y="428" class="subtitle">Docker cho mỗi service + docker-compose cho local. Production: Kubernetes.</text>
+  <text x="50" y="428" class="small">KBLab:</text>
+  <text x="105" y="428" class="subtitle">Docker Compose cho LMS chính; k3s/Sysbox cho DevOps Lab isolation.</text>
 </svg>

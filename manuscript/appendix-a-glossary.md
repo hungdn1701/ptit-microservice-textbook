@@ -8,6 +8,7 @@
 | English | Cách dùng trong sách | Chương đầu |
 |---------|---------------------|-----------|
 | Aggregate | Aggregate | Ch.2 |
+| Anti-Corruption Layer | Anti-Corruption Layer (ACL) | Ch.4 |
 | API Gateway | API Gateway | Ch.8 |
 | Blue/Green Deployment | Blue/Green deployment | Ch.12 |
 | Bounded Context | Bounded Context | Ch.2 |
@@ -20,6 +21,7 @@
 | Correlation ID | correlation ID | Ch.8 |
 | CQRS | CQRS | Ch.7 |
 | Dead Letter Topic/Queue | Dead Letter Topic (DLT) | Ch.5 |
+| DB Queue | DB queue / database-backed queue | Ch.5 |
 | Docker Compose | Docker Compose | Ch.12 |
 | Domain-Driven Design | DDD (Domain-Driven Design) | Ch.2 |
 | Event Sourcing | Event Sourcing | Ch.7 |
@@ -28,6 +30,7 @@
 | Idempotency | idempotency / idempotent | Ch.4 |
 | Infrastructure as Code | IaC (Infrastructure as Code) | Ch.12 |
 | JWT | JWT (JSON Web Token) | Ch.9 |
+| k3s | k3s | Ch.12 |
 | Load Balancing | load balancing | Ch.4 |
 | Message broker | message broker | Ch.5 |
 | Microservice | microservice / dịch vụ vi mô (lần đầu) | Ch.1 |
@@ -42,6 +45,8 @@
 | Service Discovery | Service Discovery | Ch.4 |
 | SLI/SLO/SLA | SLI, SLO, SLA | Ch.11 |
 | Strangler Fig | Strangler Fig pattern | Ch.10 |
+| Sysbox | Sysbox | Ch.9 |
+| Turnstile | Turnstile | Ch.9 |
 
 ---
 

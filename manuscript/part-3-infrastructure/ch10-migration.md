@@ -30,11 +30,11 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 10.4.2 Branch by Abstraction
 ### 10.4.3 Parallel Run
 
-## 10.5 Migration Roadmap cho LMS — Tổng hợp xuyên suốt
+## 10.5 Migration Roadmap cho KBLab — Tổng hợp xuyên suốt
 
 ## 10.6 Sai lầm thường gặp khi Migration
 
-## Case Study: Migration Roadmap cho hệ thống LMS
+## Case Study: Migration Roadmap cho KBLab
 
 > 📋 Tổng hợp gap analyses từ Ch.1-12 thành 4-phase migration roadmap:
 > Phase 1 (Quick Wins) → Phase 2 (Observability) → Phase 3 (Resilience) → Phase 4 (Database Decomposition).

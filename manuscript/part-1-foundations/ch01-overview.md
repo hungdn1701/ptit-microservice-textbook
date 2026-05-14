@@ -8,7 +8,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 - Hiểu được lịch sử tiến hóa của kiến trúc phần mềm, từ Monolith đến SOA đến Microservices
 - Phân biệt được các kiểu kiến trúc và ưu nhược điểm của từng kiểu
 - Nhận biết khi nào nên (và không nên) áp dụng Microservices
-- Có cái nhìn tổng quan về hệ thống LMS — case study xuyên suốt cuốn sách
+- Có cái nhìn tổng quan về KBLab — case study xuyên suốt cuốn sách
 
 ## 1.1 Kiến trúc Monolith — Điểm khởi đầu
 
@@ -25,9 +25,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 1.4.1 Monolith-first approach
 ### 1.4.2 Các anti-patterns và bẫy thường gặp
 
-## Case Study: Hệ thống LMS — Từ Monolith đến Microservices
+## Case Study: KBLab — Từ Monolith đến Microservices
 
-> 📋 Giới thiệu hệ thống LMS với kiến trúc ban đầu là monolith. Phân tích các "nỗi đau" khi hệ thống phát triển, đặt nền tảng cho hành trình phân tách ở các chương tiếp theo.
+> 📋 Giới thiệu KBLab, một hệ thống LMS thực tế, với kiến trúc ban đầu là monolith. Phân tích các "nỗi đau" khi hệ thống phát triển, đặt nền tảng cho hành trình phân tách ở các chương tiếp theo.
 
 ## Tổng kết
 

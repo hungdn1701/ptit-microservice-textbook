@@ -30,9 +30,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 4.4.2 Retry & Timeout
 ### 4.4.3 Bulkhead Pattern
 
-## Case Study: SqlExecutorService — Chấm bài Practice Mode
+## Case Study: SQL Judge — Coordinator và DBMS Workers
 
-> 📋 Phân tích cách kblab-app gọi đồng bộ đến SqlExecutorService qua OpenFeign để thực thi SQL và trả kết quả cho sinh viên trong chế độ Practice (luyện tập). Bao gồm error handling và timeout configuration.
+> 📋 Phân tích cách KBLab dùng `judge` làm coordinator, gọi các `judge-*` workers (`judge-mysql`, `judge-sqlserver`, ...) để thực thi bài SQL theo DBMS. Trọng tâm là ownership routing, resilience theo worker, timeout và contract kết quả.
 
 ## Tổng kết
 

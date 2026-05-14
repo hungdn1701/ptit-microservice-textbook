@@ -12,7 +12,7 @@
 - Áp dụng **5 chiến lược tách database** từ góc nhìn migration thực tế
 - Hiểu **Anti-Corruption Layer** và các migration patterns bảo vệ ranh giới hệ thống
 - Thiết kế **Migration Roadmap** khả thi: phân chia phases, ưu tiên theo Impact × Effort
-- Phân tích migration path cho hệ thống LMS — tổng hợp gap analyses xuyên suốt 12 chương
+- Phân tích migration path cho KBLab — tổng hợp gap analyses xuyên suốt 12 chương
 
 ---
 
@@ -43,15 +43,17 @@ Newman trong [4b, Ch.1] bổ sung: microservices là **một lựa chọn kiến
 
 Richardson trong [2a, Ch.13] gọi đây là **Microservice Premium** — chi phí phải trả khi chuyển sang microservices: distributed system complexity, network failures, eventual consistency, operational overhead. Premium chỉ đáng trả khi benefits (independent deployment, scaling, team autonomy) **vượt qua** costs.
 
-### LMS: Tại sao bắt đầu từ microservices?
+### KBLab: Evolutionary Architecture, không phải Big Bang
 
-Hệ thống LMS bắt đầu với kiến trúc microservices — ngược với advice "monolith first". Đây có phải quyết định sai?
+KBLab không bắt đầu từ một bản thiết kế microservices hoàn hảo. Hệ thống đã đi qua nhiều thế hệ: các judge monolith riêng cho bài lập trình, Network Judge, SQL Judge mới, rồi dần hình thành các service cho auth, assignment, judge, notification và DevOps Lab. Vì vậy câu hỏi đúng không phải là "có nên microservices-first không?", mà là: *mỗi bước tiến hóa có đang giải quyết đúng vấn đề của thời điểm đó không?*
 
-> **🔍 Phân tích gap — "Microservice first" trong LMS**
+> **🔍 Phân tích gap — "Microservice first" trong KBLab**
 >
-> LMS khởi đầu là microservices vì hai lý do cụ thể: (1) mục đích **giáo dục** — bản thân hệ thống là learning material cho sinh viên, (2) domain đã rõ ràng (SQL Practice, Assignment, Auth, Judge) — không cần "discover" boundaries.
+> KBLab chọn hướng microservices vì hai lý do cụ thể: (1) mục đích **giáo dục** — bản thân hệ thống là learning material cho sinh viên, (2) domain cốt lõi đã đủ rõ sau nhiều năm vận hành judge systems: Identity, SQL Practice, Network Practice, Academic Management, Evaluation/Infrastructure.
 >
-> Tuy nhiên, trade-off hiện rõ: (1) shared database giữa Core và Assignment — coupling vẫn tồn tại dù services tách, (2) shared library chứa quá nhiều logic — "distributed monolith" risk, (3) complexity tax cao cho team 1-2 developers. Đây là ví dụ thực tế của Microservice Premium: **lợi ích giáo dục justify chi phí**, nhưng nếu đây là sản phẩm thương mại, monolith first sẽ hợp lý hơn.
+> Tuy nhiên, trade-off hiện rõ: (1) shared database giữa Core và Assignment — coupling vẫn tồn tại dù services tách, (2) shared library chứa quá nhiều logic — "distributed monolith" risk, (3) polyglot Java+Go làm tăng chi phí build/test/deploy. Đây là ví dụ thực tế của Microservice Premium: **lợi ích giáo dục và nhu cầu cô lập judge/lab justify chi phí**, nhưng vẫn cần roadmap giảm coupling có kiểm soát.
+
+Một bài học cụ thể nằm ở SQL Judge, không phải Network Practice. Network Practice được thiết kế độc lập để đánh giá giao tiếp qua mạng; nó minh họa tốt bounded context theo protocol. Với SQL Judge, bài toán là ranh giới giữa một `judge` coordinator và nhiều `judge-*` workers theo DBMS (`judge-mysql`, `judge-sqlserver`, ...). Migration đúng hướng là làm rõ ownership routing, chuẩn hóa contract job/result, thêm idempotency theo `judgeRunId`, rồi mới scale ngang từng worker theo workload DBMS.
 
 > **📐 Nguyên tắc — "Monolith First"**
 >
@@ -61,15 +63,15 @@ Hệ thống LMS bắt đầu với kiến trúc microservices — ngược vớ
 
 ### Bài học thực tế — Khi Migration đi sai hướng (Anti-patterns)
 
-Dù quyết định chuyển đổi là đúng đắn, *cách thức* chuyển đổi vẫn có thể dìm chết dự án. Richardson trong [2b, Ch.2] phân tích bốn anti-patterns phổ biến nhất khi chuyển từ monolith sang microservices — chúng ta minh họa qua các sai lầm *tiềm năng* nếu chia tách sai trong hệ thống LMS:
+Dù quyết định chuyển đổi là đúng đắn, *cách thức* chuyển đổi vẫn có thể dìm chết dự án. Richardson trong [2b, Ch.2] phân tích bốn anti-patterns phổ biến nhất khi chuyển từ monolith sang microservices — chúng ta minh họa qua các sai lầm *tiềm năng* nếu chia tách sai trong KBLab:
 
-**Bảng 10.1b:** Anti-patterns khi chuyển đổi Microservices (minh họa với LMS)
+**Bảng 10.1b:** Anti-patterns khi chuyển đổi Microservices (minh họa với KBLab)
 
-| Anti-pattern | Ví dụ sai lầm tiềm năng trong LMS | Hậu quả |
+| Anti-pattern | Ví dụ sai lầm tiềm năng trong KBLab | Hậu quả |
 | :--- | :--- | :--- |
 | **Data Services** *(CRUD wrappers)* | Tách `SqlExecutorService` thành `QuestionDataService` riêng — Core phải gọi HTTP mỗi lần cần data câu hỏi | Tăng latency mạng, mất lợi ích transaction nội bộ |
 | **Fine-grained Services** *(Chia quá nhỏ)* | Chia Auth thành 3 service: `UserProfile`, `UserCredential`, `UserSession` | Mỗi lần login phải orchestrate 3 services, khó debug |
-| **Microservices-first** | Xây LMS thành 4 microservices khi domain chưa rõ → thay đổi chấm điểm ảnh hưởng 3 services cùng lúc | Phát sinh "Distributed Monolith" (xem thêm §10.6) |
+| **Microservices-first** | Tách KBLab theo technical layer thay vì domain — mỗi thay đổi chấm điểm ảnh hưởng nhiều services cùng lúc | Phát sinh "Distributed Monolith" (xem thêm §10.6) |
 | **End-to-end QA Gate** | Deploy độc lập nhưng QA phải chờ gộp tất cả để test | Triệt tiêu *Independent Deployability* |
 
 Chúng ta sẽ phân tích sâu hơn về các sai lầm migration bổ sung (Big Bang Rewrite, Lift-and-Shift, Over-engineering) tại §10.6.
@@ -115,7 +117,7 @@ API Gateway (đã học ở Ch.8) đóng vai trò tự nhiên làm **seam** cho 
 | **Event-based** | New service listen events từ monolith, dần thay thế logic | Event-driven systems (Kafka, RabbitMQ) |
 | **Asset-based** | Tách static assets, UI components trước | Frontend-heavy applications |
 
-Với LMS — nơi đã có API Gateway (Spring Cloud Gateway, Ch.8) — **route-based Strangler Fig** là lựa chọn tự nhiên nhất. Mỗi route (`/api/core/**`, `/api/assignment/**`) đã mapping đến service riêng — cơ sở hạ tầng cho migration đã sẵn sàng.
+Với KBLab — nơi đã có API Gateway (Spring Cloud Gateway, Ch.8) — **route-based Strangler Fig** là lựa chọn tự nhiên nhất cho LMS chính. Với DevOps Lab, routing lại dựa trên hostname/wildcard DNS ở mức khái quát. Hai kiểu gateway này cùng tồn tại, cho thấy migration không nhất thiết dùng một pattern duy nhất cho mọi bounded context.
 
 > **📐 Nguyên tắc — Incremental Migration**
 >
@@ -182,11 +184,11 @@ Khi tách database, một anti-pattern phổ biến là **dual write**: service 
 | **Polling publisher** | Background thread poll outbox table | Đơn giản, không cần thêm infra | Delay, DB load |
 | **CDC (Change Data Capture)** | Debezium đọc DB transaction log | Real-time, không polling overhead | Thêm infra (Debezium + Kafka Connect) |
 
-> **🔍 Phân tích gap — LMS chưa có Outbox Pattern**
+> **🔍 Phân tích gap — KBLab chưa có Outbox Pattern**
 >
-> LMS hiện dùng **dual write**: Core Service lưu submission vào DB rồi gọi `submitProducer.send()` đến Kafka. Nếu Kafka unavailable tại thời điểm đó, submission đã lưu nhưng Judge Service không nhận bài — sinh viên thấy "đã nộp" nhưng không nhận kết quả chấm.
+> KBLab hiện dùng **dual write**: Core Service lưu submission vào DB rồi gọi `submitProducer.send()` đến Kafka. Nếu Kafka unavailable tại thời điểm đó, submission đã lưu nhưng Judge Service không nhận bài — sinh viên thấy "đã nộp" nhưng không nhận kết quả chấm.
 >
-> **Migration path**: (1) Ngắn hạn — retry logic cho Kafka producer (đã có nhưng cần verify), (2) Trung hạn — Outbox table + polling publisher, (3) Dài hạn — Debezium CDC. Với traffic thấp của LMS, polling publisher (trung hạn) đủ tốt — Debezium chỉ cần khi scale lên production lớn.
+> **Migration path**: (1) Ngắn hạn — retry logic cho Kafka producer (đã có nhưng cần verify), (2) Trung hạn — Outbox table + polling publisher, (3) Dài hạn — Debezium CDC. Với traffic thấp của KBLab hiện tại, polling publisher (trung hạn) đủ tốt — Debezium chỉ cần khi scale lên production lớn.
 
 ---
 
@@ -200,7 +202,7 @@ Khi tách service mới ra khỏi monolith, service mới cần giao tiếp vớ
 
 *Hình 10.7: Anti-Corruption Layer — lớp dịch giữa service mới và legacy*
 
-Ví dụ LMS: Judge Service nhận submissions từ Core Service qua Kafka. Core gửi format `{problem_id, source, testcases}` (legacy naming). Judge có thể: (1) ❌ dùng trực tiếp legacy field names trong code — coupling với legacy decisions, hoặc (2) ✅ tạo adapter dịch sang internal model `JudgeRequest{questionId, sqlStatement, expectedResults}` — clean boundary.
+Ví dụ KBLab: Judge Service nhận submissions từ Core Service qua Kafka. Core gửi format `{problem_id, source, testcases}` (legacy naming). Judge có thể: (1) ❌ dùng trực tiếp legacy field names trong code — coupling với legacy decisions, hoặc (2) ✅ tạo adapter dịch sang internal model `JudgeRequest{questionId, sqlStatement, expectedResults}` — clean boundary.
 
 ### Branch by Abstraction
 
@@ -230,7 +232,7 @@ Newman trong [4b, Ch.3] đề xuất **Branch by Abstraction** cho migration an 
 
 > **⚠️ Lưu ý — Parallel Run chỉ phù hợp cho read operations**. Write operations (INSERT, UPDATE) sẽ tạo side effects kép. Cho write operations, dùng **Canary Release** (Ch.12).
 
-Áp dụng cho LMS: nếu cần viết lại `CompareUtil` (logic so sánh kết quả SQL — critical nhất trong hệ thống), Parallel Run cho phép chạy old CompareUtil và new CompareUtil song song trên mọi submission, so sánh kết quả, đảm bảo new logic chấm điểm giống hệt trước khi switch.
+Áp dụng cho KBLab: nếu cần viết lại `CompareUtil` (logic so sánh kết quả SQL — critical nhất trong hệ thống), Parallel Run cho phép chạy old CompareUtil và new CompareUtil song song trên mọi submission, so sánh kết quả, đảm bảo new logic chấm điểm giống hệt trước khi switch.
 
 > **📐 Nguyên tắc — Make Migration Reversible**
 >
@@ -240,26 +242,26 @@ Newman trong [4b, Ch.3] đề xuất **Branch by Abstraction** cho migration an 
 
 ---
 
-## 10.5 Migration Roadmap cho LMS — Tổng hợp xuyên suốt
+## 10.5 Migration Roadmap cho KBLab — Tổng hợp xuyên suốt
 
 ### Tổng hợp Gap Analyses
 
-Xuyên suốt 9 chương đầu, chúng ta đã phân tích gap giữa LMS hiện tại và best practices. Bảng dưới tổng hợp toàn bộ — **đây là "inventory" cho migration roadmap**:
+Xuyên suốt 9 chương đầu, chúng ta đã phân tích gap giữa KBLab hiện tại và best practices. Bảng dưới tổng hợp toàn bộ — **đây là "inventory" cho migration roadmap**:
 
 **Bảng 10.6:** Tổng hợp Gap Analyses xuyên suốt Ch.1–12
 
 | Chương | Gap | Mức độ | Ref |
 | :-------- | :----- | :-------- | :----- |
-| Ch.2 | Shared library quá lớn (coupling giữa contexts) | ⚠️ Medium | §2.6 |
-| Ch.3 | API naming không nhất quán, thiếu versioning | ⚠️ Medium | §3.6 |
-| Ch.4 | Thiếu resilience patterns (circuit breaker, retry) | ⚠️ Medium | §4.4 |
-| Ch.5 | Thiếu dead letter queue, error handling cho Kafka | ⚠️ Medium | §5.6 |
+| Ch.2 | 5 contexts rõ hơn nhưng shared library vẫn coupling | ⚠️ Medium | §2.6 |
+| Ch.3 | API naming/versioning chưa nhất quán; SQL Judge worker contract cần chuẩn hóa | ⚠️ Medium | §3.5 |
+| Ch.4 | SQL Judge coordinator/worker và external integration cần ACL/resilience rõ hơn | ⚠️ Medium | §4.5 |
+| Ch.5 | Kafka pipeline cần DLQ/idempotency; SQL Judge dispatch và DevOps Lab queue cần chọn broker theo workload | ⚠️ Medium | §5.6 |
 | Ch.6 | Implicit saga (không có orchestrator) | 🟡 Low | §6.4 |
 | Ch.7 | **Shared database** (Core ↔ Assignment) | 🔴 High | §7.6 |
-| Ch.8 | CORS `allowAll`, thiếu rate limiting, correlation ID | 🔴 High | §8.5 |
-| Ch.9 | HS256 shared secret, hardcoded secrets | 🔴 High | §9.6 |
-| Ch.11 | Zero tracing, zero centralized logging | 🔴 High | §11.7 |
-| Ch.12 | Manual deployment, no CI/CD | 🔴 High | §12.7 |
+| Ch.8 | Spring Cloud Gateway + Go router cần thống nhất edge policies | 🔴 High | §8.5 |
+| Ch.9 | HS256 shared secret, token storage, secrets, SSO cross-platform | 🔴 High | §9.6 |
+| Ch.11 | Observability có Actuator/Prometheus một phần, chưa end-to-end tracing/log aggregation | 🔴 High | §11.7 |
+| Ch.12 | LMS chính Docker Compose; DevOps Lab k3s/Sysbox; CI/CD và rollback chưa đồng đều | 🔴 High | §12.7 |
 
 ### Migration Roadmap — 4 Phases
 
@@ -362,7 +364,7 @@ Tách database là thách thức lớn nhất — code coupling sửa được b
 
 Anti-Corruption Layer, Branch by Abstraction, và Parallel Run là toolkit cho migration an toàn — mỗi pattern phục vụ mục đích khác nhau nhưng chia sẻ nguyên tắc chung: **make migration reversible, make each step small, make the system always deployable**.
 
-Migration Roadmap cho LMS — tổng hợp gap analyses từ Ch.1-9 — cho thấy: Quick Wins (CORS, JWT, structured logging) có thể hoàn thành trong 1-2 tuần, mang lại giá trị ngay. Database decomposition — thay đổi lớn nhất — cần observability và resilience foundation trước khi bắt đầu. Mỗi decision là trade-off — không có "đúng tuyệt đối", chỉ có "phù hợp với context tại thời điểm đó".
+Migration Roadmap cho KBLab — tổng hợp gap analyses từ Ch.1-9 — cho thấy: Quick Wins (CORS, JWT, structured logging) có thể hoàn thành trong 1-2 tuần, mang lại giá trị ngay. Database decomposition — thay đổi lớn nhất — cần observability và resilience foundation trước khi bắt đầu. DevOps Lab cho thấy cùng một hệ thống có thể cần chiến lược khác nhau theo bounded context: Docker Compose đủ tốt cho LMS chính, trong khi lab isolation cần k3s/Sysbox. Mỗi decision là trade-off — không có "đúng tuyệt đối", chỉ có "phù hợp với context tại thời điểm đó".
 
 Ở Chương 11, chúng ta sẽ xem cách **quan sát và giám sát** hệ thống sau migration — logging, metrics, tracing — ba trụ cột giúp phát hiện và xử lý vấn đề trước khi user bị ảnh hưởng.
 

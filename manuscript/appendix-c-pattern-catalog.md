@@ -11,6 +11,7 @@
 | **Request/Response** | Client gửi request, chờ response | Ch.4 §4.1 | [2a] Ch.3 |
 | **Publish/Subscribe** | Producer publish event, consumers subscribe | Ch.5 §5.3 | [2a] Ch.3 |
 | **One-way Notification** | Fire-and-forget message | Ch.5 §5.6 | [2a] Ch.3 |
+| **DB-backed Queue** | Dùng database table làm hàng đợi job transactional | Ch.5 §5.6 | [5] Ch.3 |
 | **API Composition** | Gọi nhiều services, tổng hợp response | Ch.7 §7.3 | [2a] Ch.7 |
 | **Backend for Frontend (BFF)** | Gateway riêng cho từng loại client | Ch.8 §8.1 | [2a] Ch.8 |
 
@@ -40,6 +41,7 @@
 | Pattern | Mô tả ngắn | Chương | Ref |
 |---------|-----------|--------|-----|
 | **API Gateway** | Single entry point cho mọi clients | Ch.8 §8.1 | [2a] Ch.8 |
+| **Hostname-based Routing** | Route request theo hostname/subdomain tới workspace/runtime | Ch.8 §8.5 | [2a] Ch.8 |
 | **Service Discovery** | Registry để tìm service instances | Ch.4 §4.3 | [2a] Ch.3 |
 | **Client-side Discovery** | Client query registry + tự load balance | Ch.4 §4.3 | [2a] Ch.3 |
 | **Server-side Discovery** | Load balancer query registry | Ch.4 §4.3 | [2a] Ch.3 |
@@ -54,6 +56,7 @@
 | **Token Exchange** | External token → internal token | Ch.9 §9.4 | [4a] Ch.9 |
 | **Claims-based Identity Propagation** | Gateway validate, services trust headers | Ch.9 §9.3 | [2a] Ch.11 |
 | **RBAC** | Permissions based on user roles | Ch.9 §9.5 | [4a] Ch.9 |
+| **Runtime Isolation** | Cách ly workspace/container bằng runtime, network policy, quota | Ch.9 §9.6 | [4a] Ch.9 |
 
 ## Observability Patterns
 
@@ -97,6 +100,6 @@
 
 ---
 
-**Tổng cộng: 40+ patterns** được đề cập xuyên suốt 12 chương.
+**Tổng cộng: 45+ patterns** được đề cập xuyên suốt 12 chương.
 
 > **Lưu ý:** Bảng này liệt kê patterns ở mức overview — chi tiết, ví dụ, và trade-offs xem tại chương tương ứng.

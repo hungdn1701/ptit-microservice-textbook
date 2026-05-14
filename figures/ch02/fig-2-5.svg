@@ -96,46 +96,53 @@
     }
   </style>
   <text x="480" y="30" text-anchor="middle" class="title">Context Map — KBLab LMS</text>
-  <rect x="60" y="80" width="180" height="70" rx="12" class="info" />
-  <text x="150.0" y="111.0" text-anchor="middle" class="title">Auth Context</text>
-  <text x="150.0" y="129.0" text-anchor="middle" class="subtitle">Upstream</text>
-  <text x="150" y="170" text-anchor="middle" class="subtitle">Identity &amp; Access</text>
-  <rect x="390" y="80" width="180" height="70" rx="12" class="service" />
-  <text x="480.0" y="111.0" text-anchor="middle" class="title">SQL Practice</text>
-  <text x="480.0" y="129.0" text-anchor="middle" class="subtitle">Core Domain</text>
-  <text x="480" y="170" text-anchor="middle" class="subtitle">Questions, Contests</text>
-  <rect x="690" y="80" width="200" height="70" rx="12" class="event" />
-  <text x="790.0" y="111.0" text-anchor="middle" class="title">Judge Context</text>
-  <text x="790.0" y="129.0" text-anchor="middle" class="subtitle">ACL</text>
-  <text x="790" y="170" text-anchor="middle" class="subtitle">Evaluation Engine</text>
-  <rect x="390" y="240" width="180" height="70" rx="12" class="highlight" />
-  <text x="480.0" y="271.0" text-anchor="middle" class="title">Assignment</text>
-  <text x="480.0" y="289.0" text-anchor="middle" class="subtitle">Context</text>
-  <text x="480" y="330" text-anchor="middle" class="subtitle">Courses, Grading</text>
-  <rect x="690" y="240" width="200" height="70" rx="12" class="warning" />
-  <text x="790.0" y="271.0" text-anchor="middle" class="title">Notification</text>
-  <text x="790.0" y="289.0" text-anchor="middle" class="subtitle">Context</text>
-  <text x="790" y="330" text-anchor="middle" class="subtitle">Alerts, Email</text>
-  <rect x="60" y="240" width="180" height="70" rx="12" class="danger" />
-  <text x="150.0" y="271.0" text-anchor="middle" class="title">Shared Kernel</text>
-  <text x="150.0" y="289.0" text-anchor="middle" class="subtitle">(shared library)</text>
-  <text x="150" y="330" text-anchor="middle" class="subtitle">JWT, BaseEntity</text>
-  <path d="M 240 115 L 390 115" class="arrow" />
-  <rect x="255.5" y="104.0" width="119" height="18" rx="3" class="arrow-bg" />
-  <text x="315.0" y="118.0" text-anchor="middle" class="small" fill="#475569">Customer-Supplier</text>
-  <path d="M 570 115 L 690 115" class="arrow" />
-  <rect x="591.5" y="104.0" width="77" height="18" rx="3" class="arrow-bg" />
-  <text x="630.0" y="118.0" text-anchor="middle" class="small" fill="#475569">Kafka + ACL</text>
-  <path d="M 480 150 L 480 240" class="arrow" />
-  <text x="500" y="210" text-anchor="middle" class="subtitle">Shared DB</text>
-  <path d="M 570 275 L 690 275" class="arrow" />
-  <rect x="605.5" y="264.0" width="49" height="18" rx="3" class="arrow-bg" />
-  <text x="630.0" y="278.0" text-anchor="middle" class="small" fill="#475569">Pub/Sub</text>
-  <line x1="240" y1="275" x2="390" y2="275" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3" />
-  <line x1="150" y1="180" x2="150" y2="240" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3" />
+  <rect x="45" y="75" width="165" height="70" rx="12" class="info" />
+  <text x="127.5" y="106.0" text-anchor="middle" class="title">Identity</text>
+  <text x="127.5" y="124.0" text-anchor="middle" class="subtitle">Upstream</text>
+  <text x="128" y="165" text-anchor="middle" class="subtitle">JWT / OAuth2 / SSO</text>
+  <rect x="285" y="75" width="165" height="70" rx="12" class="service" />
+  <text x="367.5" y="106.0" text-anchor="middle" class="title">SQL Practice</text>
+  <text x="367.5" y="124.0" text-anchor="middle" class="subtitle">Core Domain</text>
+  <text x="368" y="165" text-anchor="middle" class="subtitle">Questions, Contests</text>
+  <rect x="525" y="75" width="165" height="70" rx="12" class="service" />
+  <text x="607.5" y="106.0" text-anchor="middle" class="title">Network Practice</text>
+  <text x="607.5" y="124.0" text-anchor="middle" class="subtitle">Protocol Domain</text>
+  <text x="608" y="165" text-anchor="middle" class="subtitle">TCP/UDP/RMI/SOAP</text>
+  <rect x="750" y="75" width="165" height="70" rx="12" class="event" />
+  <text x="832.5" y="106.0" text-anchor="middle" class="title">DevOps Practice</text>
+  <text x="832.5" y="124.0" text-anchor="middle" class="subtitle">Polyglot</text>
+  <text x="833" y="165" text-anchor="middle" class="subtitle">Go + k3s/Sysbox</text>
+  <rect x="285" y="245" width="190" height="70" rx="12" class="highlight" />
+  <text x="380.0" y="276.0" text-anchor="middle" class="title">Academic</text>
+  <text x="380.0" y="294.0" text-anchor="middle" class="subtitle">Context</text>
+  <text x="380" y="335" text-anchor="middle" class="subtitle">Courses, Grades, Thesis</text>
+  <rect x="550" y="245" width="190" height="70" rx="12" class="warning" />
+  <text x="645.0" y="276.0" text-anchor="middle" class="title">Communication</text>
+  <text x="645.0" y="294.0" text-anchor="middle" class="subtitle">Supporting</text>
+  <text x="645" y="335" text-anchor="middle" class="subtitle">Kafka, WebSocket, Email</text>
+  <rect x="45" y="245" width="165" height="70" rx="12" class="danger" />
+  <text x="127.5" y="276.0" text-anchor="middle" class="title">Shared Kernel</text>
+  <text x="127.5" y="294.0" text-anchor="middle" class="subtitle">(shared library)</text>
+  <text x="128" y="335" text-anchor="middle" class="subtitle">JWT, BaseEntity</text>
+  <path d="M 210 110 L 285 110" class="arrow" />
+  <rect x="227.5" y="99.0" width="40" height="18" rx="3" class="arrow-bg" />
+  <text x="247.5" y="113.0" text-anchor="middle" class="small" fill="#475569">auth</text>
+  <path d="M 450 110 L 525 110" class="arrow" />
+  <rect x="456.0" y="99.0" width="63" height="18" rx="3" class="arrow-bg" />
+  <text x="487.5" y="113.0" text-anchor="middle" class="small" fill="#475569">protocols</text>
+  <path d="M 690 110 L 750 110" class="arrow" />
+  <rect x="685.0" y="99.0" width="70" height="18" rx="3" class="arrow-bg" />
+  <text x="720.0" y="113.0" text-anchor="middle" class="small" fill="#475569">shared JWT</text>
+  <path d="M 368 145 L 380 245" class="arrow" />
+  <text x="410" y="210" text-anchor="middle" class="subtitle">Shared DB</text>
+  <path d="M 475 280 L 550 280" class="arrow" />
+  <rect x="491.5" y="269.0" width="42" height="18" rx="3" class="arrow-bg" />
+  <text x="512.5" y="283.0" text-anchor="middle" class="small" fill="#475569">events</text>
+  <line x1="210" y1="280" x2="285" y2="280" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3" />
+  <line x1="128" y1="180" x2="128" y2="245" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3" />
   <rect x="60" y="400" width="830" height="55" rx="8" class="note" />
   <text x="80" y="425" class="title">Quan hệ:</text>
-  <text x="160" y="425" class="subtitle">Customer-Supplier = Auth cùng cấp, Core tiêu thụ | ACL = Judge dịch message thành model nội bộ</text>
+  <text x="160" y="425" class="subtitle">Auth upstream | SQL/Network/DevOps dùng shared identity | Communication là supporting context</text>
   <text x="80" y="445" class="subtitle">Vấn đề:</text>
-  <text x="140" y="445" class="subtitle">Shared DB giữa Core và Assignment = coupling | Shared Kernel quá rộng (23 files)</text>
+  <text x="140" y="445" class="subtitle">Shared DB giữa SQL và Academic = coupling | Shared Kernel quá rộng (23 files)</text>
 </svg>

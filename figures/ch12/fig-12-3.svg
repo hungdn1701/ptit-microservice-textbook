@@ -142,8 +142,8 @@ Tests</text>
   <text x="640" y="227" class="subtitle">Deploy 1 click</text>
   <text x="640" y="255" class="subtitle">Rollback = deploy version cu</text>
   <text x="640" y="283" class="subtitle"></text>
-  <text x="640" y="311" class="subtitle">LMS target:</text>
-  <text x="640" y="339" class="subtitle">GitHub Actions + Docker</text>
-  <text x="640" y="367" class="subtitle">+ Harbor registry</text>
-  <text x="640" y="395" class="subtitle">+ K8s staging env</text>
+  <text x="640" y="311" class="subtitle">KBLab target:</text>
+  <text x="640" y="339" class="subtitle">GitLab CI + Docker</text>
+  <text x="640" y="367" class="subtitle">+ container registry</text>
+  <text x="640" y="395" class="subtitle">+ staging/smoke tests</text>
 </svg>

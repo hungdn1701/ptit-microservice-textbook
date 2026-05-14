@@ -14,7 +14,7 @@
 - Hiểu **distributed tracing** và các khái niệm trace, span, context propagation
 - Nắm framework đo lường: **SLI/SLO/SLA** và chiến lược alerting
 - Xây dựng **error handling strategy** nhất quán xuyên services
-- Phân tích observability gaps trong hệ thống LMS và đề xuất migration path
+- Phân tích observability gaps trong KBLab và đề xuất migration path
 
 ---
 
@@ -24,7 +24,7 @@
 
 Trong monolith, khi có bug: mở log file duy nhất, tìm exception, xem stack trace — xong. Toàn bộ request chạy trong cùng process, cùng log file, cùng database.
 
-Trong microservices, một request từ user có thể đi qua **5-7 services**, mỗi service có log riêng, database riêng, deploy cycle riêng. Khi request fail:
+Trong microservices, một request từ user có thể đi qua nhiều services, mỗi service có log riêng, database riêng, deploy cycle riêng. Khi request fail:
 - Service nào gây lỗi? Gateway? Core? Judge? Auth?
 - Lỗi xảy ra ở bước nào trong chuỗi gọi?
 - Latency 5 giây — do network, do database query, hay do Kafka consumer lag?
@@ -45,7 +45,7 @@ Richardson trong [2a, Ch.11] và Newman trong [4a, Ch.8] đều mô tả observa
 
 **Bảng 11.1:** Vai trò của ba trụ cột Observability
 
-| Trụ cột | Trả lời câu hỏi | Ví dụ trong LMS | Công cụ phổ biến |
+| Trụ cột | Trả lời câu hỏi | Ví dụ trong KBLab | Công cụ phổ biến |
 | :--------- | :----------------- | :----------------- | :----------------- |
 | **Logs** | "Chuyện gì đã xảy ra?" | `ERROR: SQL execution timeout for submission 123` | ELK Stack, Loki, Fluentd |
 | **Metrics** | "Hệ thống đang hoạt động thế nào?" | `judge_execution_time_p99 = 4.2s` | Prometheus, Grafana, Micrometer |
@@ -133,7 +133,7 @@ Hai stack phổ biến nhất:
 | Stack | Components | Ưu điểm | Nhược điểm | Phù hợp |
 | :------- | :----------- | :--------- | :------------ | :--------- |
 | **ELK** | Elasticsearch + Logstash + Kibana | Mature, full-text search mạnh | Resource-heavy (~4GB RAM minimum) | Team lớn, nhiều logs |
-| **PLG** | Promtail + Loki + Grafana | Lightweight, tích hợp metrics | Query kém linh hoạt hơn ELK | Team nhỏ-trung, LMS |
+| **PLG** | Promtail + Loki + Grafana | Lightweight, tích hợp metrics | Query kém linh hoạt hơn ELK | Team nhỏ-trung, KBLab |
 
 ### Correlation IDs — Kỹ thuật quan trọng nhất
 
@@ -221,7 +221,7 @@ Richardson trong [2a, Ch.11] mô tả bốn loại metrics cần thu thập:
 
 **Bảng 11.7:** Bốn loại metrics cần thu thập
 
-| Pattern | Mô tả | Ví dụ LMS |
+| Pattern | Mô tả | Ví dụ KBLab |
 | :--------- | :-------- | :----------- |
 | **Health Check API** | Endpoint `/health` cho orchestrator biết service sống/chết | Eureka dùng health check để route traffic |
 | **Application metrics** | Business-level metrics | Submission rate, judge duration, error rate |
@@ -232,7 +232,7 @@ Richardson trong [2a, Ch.11] mô tả bốn loại metrics cần thu thập:
 
 **Bảng 11.8:** Framework RED và USE
 
-| Framework | Dùng cho | Metrics | Ví dụ LMS |
+| Framework | Dùng cho | Metrics | Ví dụ KBLab |
 | :----------- | :--------- | :--------- | :----------- |
 | **RED** | **Services** (request-facing) | **R**ate, **E**rrors, **D**uration | Submission rate: 50 req/min, Error rate: 2%, P99 latency: 3.2s |
 | **USE** | **Resources** (infrastructure) | **U**tilization, **S**aturation, **E**rrors | CPU: 45%, DB connection pool: 8/10 active, Disk I/O errors: 0 |
@@ -245,7 +245,7 @@ Metrics chỉ hữu ích khi biết **ngưỡng nào là chấp nhận được*
 
 **Bảng 11.9:** Sự khác biệt giữa SLI, SLO và SLA
 
-| Khái niệm | Mô tả | Ví dụ LMS |
+| Khái niệm | Mô tả | Ví dụ KBLab |
 | :----------- | :-------- | :----------- |
 | **SLI** (Service Level Indicator) | *Metric cụ thể* đo chất lượng dịch vụ | Latency P99 của submission flow |
 | **SLO** (Service Level Objective) | *Mục tiêu nội bộ* cho SLI | "99% submissions trả kết quả trong < 5 giây" |
@@ -257,7 +257,7 @@ Metrics chỉ hữu ích khi biết **ngưỡng nào là chấp nhận được*
 
 Với LMS — hệ thống giáo dục nội bộ — SLO phù hợp:
 
-**Bảng 11.10:** SLO đề xuất cho hệ thống LMS
+**Bảng 11.10:** SLO đề xuất cho KBLab
 
 | SLI | SLO | Lý giải |
 | :----- | :----- | :--------- |
@@ -332,9 +332,9 @@ Error codes tập trung không chỉ phục vụ client — chúng là **nguồn
 - Group errors by category → dashboard: authentication issues vs business logic vs infrastructure
 - Error rate per service → SLI cho reliability
 
-> **🔍 Phân tích gap — Error format inconsistency trong LMS**
+> **🔍 Phân tích gap — Error format inconsistency trong KBLab**
 >
-> Hệ thống LMS sử dụng `@ControllerAdvice` với `ErrorCode` enum trong shared library — đúng pattern. Tuy nhiên, **Gateway** (Spring Cloud Gateway dùng WebFlux) xử lý JWT errors *bên ngoài* `@ControllerAdvice` (WebMVC pattern). Kết quả: Gateway trả error dạng `{ "message": "..." }` trong khi các services trả `{ "description": "..." }` — field name khác nhau. Frontend phải handle cả hai formats.
+> KBLab sử dụng `@ControllerAdvice` với `ErrorCode` enum trong shared library — đúng pattern. Tuy nhiên, **Gateway** (Spring Cloud Gateway dùng WebFlux) xử lý JWT errors *bên ngoài* `@ControllerAdvice` (WebMVC pattern). Kết quả: Gateway trả error dạng `{ "message": "..." }` trong khi các services trả `{ "description": "..." }` — field name khác nhau. Frontend phải handle cả hai formats.
 >
 > **Migration path**: (1) Tạo `GatewayExceptionHandler` riêng cho WebFlux, chuẩn hóa response format, (2) Đảm bảo tất cả error responses dùng cùng field names, (3) Thêm `traceId` vào error response để client có thể report cho support team.
 
@@ -350,19 +350,19 @@ Health checks phân loại theo mục đích:
 
 **Bảng 11.13:** Ba loại Health Checks
 
-| Loại | Câu hỏi trả lời | Ý nghĩa cho orchestrator | Ví dụ LMS |
+| Loại | Câu hỏi trả lời | Ý nghĩa cho orchestrator | Ví dụ KBLab |
 | :------ | :----------------- | :-------------------------- | :----------- |
 | **Liveness** | "Process còn chạy?" | Restart container nếu dead | JVM alive, không deadlock |
 | **Readiness** | "Sẵn sàng nhận traffic?" | Ngừng route traffic nếu not ready | Database connected, Kafka connected |
 | **Startup** | "Đã khởi tạo xong?" | Chờ startup xong mới check liveness | Schema migration done, cache warmed |
 
-Trong LMS, **Eureka** (Service Discovery) sử dụng health checks để quyết định routing: nếu Core Service instance báo `DOWN`, Eureka ngừng route traffic đến instance đó — Gateway tự động chuyển sang instance khác. Đây là nền tảng cho **self-healing**: hệ thống tự phục hồi mà không cần can thiệp thủ công.
+Trong KBLab, **Eureka** (Service Discovery) sử dụng health checks để quyết định routing: nếu Core Service instance báo `DOWN`, Eureka ngừng route traffic đến instance đó — Gateway tự động chuyển sang instance khác. DevOps Lab bổ sung health/readiness ở runtime layer để router chỉ chuyển traffic đến workspace sẵn sàng. Đây là nền tảng cho **self-healing**: hệ thống tự phục hồi mà không cần can thiệp thủ công.
 
 ### User Activity Tracking — Observability ở mức Business
 
-Ba trụ cột (logs, metrics, traces) giúp quan sát **hệ thống kỹ thuật**. Nhưng với LMS — một ứng dụng giáo dục — cần thêm: quan sát **hành vi học tập** (learning analytics). Sinh viên đang học gì? Bài nào khó nhất? Khi nào sinh viên hoạt động nhiều nhất?
+Ba trụ cột (logs, metrics, traces) giúp quan sát **hệ thống kỹ thuật**. Nhưng với KBLab — một LMS — cần thêm: quan sát **hành vi học tập** (learning analytics). Sinh viên đang học gì? Bài nào khó nhất? Khi nào sinh viên hoạt động nhiều nhất?
 
-LMS đã triển khai **User Activity Tracking** qua Kafka pipeline: khi sinh viên xem câu hỏi, nộp bài, hoặc tham gia contest, Core Service publish tracking events lên Kafka topic. Consumer ghi vào database — hoàn toàn **async, non-blocking**, không ảnh hưởng response time.
+KBLab đã triển khai **User Activity Tracking** qua Kafka pipeline: khi sinh viên xem câu hỏi, nộp bài, hoặc tham gia contest, Core Service publish tracking events lên Kafka topic. Consumer ghi vào database — hoàn toàn **async, non-blocking**, không ảnh hưởng response time.
 
 ![](../figures/ch11/fig-11-8.svg)
 
@@ -402,9 +402,9 @@ Nguyên tắc (theo *Principles of Chaos Engineering* — principlesofchaos.org)
 | **Resource exhaustion** | CPU 100%, disk full, memory leak | stress-ng, Gremlin |
 | **Dependency failure** | Database down, Kafka unavailable | Litmus, manual |
 
-Áp dụng cho LMS — ba chaos experiments hữu ích:
+Áp dụng cho KBLab — ba chaos experiments hữu ích:
 
-**Bảng 11.16:** Chaos experiments cho hệ thống LMS
+**Bảng 11.16:** Chaos experiments cho KBLab
 
 | Experiment | Giả thuyết | Kết quả mong đợi |
 | :----------- | :----------- | :----------------- |
@@ -439,29 +439,29 @@ Chaos Monkey phát triển thành **Simian Army** — tập hợp tools chuyên 
 
 ---
 
-## 11.7 Case Study: Observability trong hệ thống LMS
+## 11.7 Case Study: Observability trong KBLab
 
 ### Hiện trạng — Đánh giá theo Maturity Model
 
 ![](../figures/ch11/fig-11-9.svg)
 
-*Hình 11.9: Đánh giá hiện trạng Observability của LMS*
+*Hình 11.9: Đánh giá hiện trạng Observability của KBLab*
 
-**Đánh giá tổng thể: Level 1 (Reactive)** — hệ thống chạy production nhưng debug bằng `docker logs` thủ công. Khi submission chậm hoặc fail, developer phải mở logs từng container, ghép timestamps, và hy vọng tìm được root cause.
+**Đánh giá tổng thể: Level 2 đang tiến lên Level 3** — KBLab đã có Actuator/health ở một số services và nền tảng Prometheus/Grafana cho một phần hệ thống, nhưng vẫn cần chuẩn hóa correlation ID, log aggregation và tracing xuyên boundary. Khi submission chậm hoặc fail, developer không nên phải mở logs từng container và ghép timestamps thủ công.
 
 **Bảng 11.18:** Mức độ trưởng thành observability phân theo component
 
 | Component | Hiện trạng | Maturity Level |
 | :----------- | :----------- | :---------------- |
-| **Logging** | Console output, không aggregation, không structured | 🔴 Level 1 |
-| **Metrics** | Actuator health/info — Eureka dùng cho routing | 🟡 Level 2 |
-| **Tracing** | Không có — manual debugging | 🔴 Level 1 |
+| **Logging** | Java services có log qua MDC ở một số nơi; DevOps Lab dùng zerolog; cần gom tập trung | 🟡 Level 2 |
+| **Metrics** | Actuator/health + Prometheus/Grafana ở một phần hệ thống | 🟡 Level 2 |
+| **Tracing** | Correlation ID có nền tảng nhưng chưa chuẩn hóa end-to-end | 🟡 Level 2 |
 | **Error handling** | `@ControllerAdvice` + `ErrorCode` tốt, Gateway inconsistent | 🟢 Level 3 |
 | **User tracking** | Kafka-based async — tốt | 🟢 Level 3 |
 
 ### Phân tích theo business context
 
-Hệ thống LMS phục vụ **sinh viên học SQL** — có hai mode hoạt động chính với yêu cầu observability rất khác nhau:
+KBLab phục vụ **sinh viên học SQL, mạng, DevOps và các hoạt động LMS** — có nhiều mode hoạt động với yêu cầu observability khác nhau:
 
 **Bảng 11.19:** Hai chế độ hoạt động chính của LMS
 
@@ -469,26 +469,27 @@ Hệ thống LMS phục vụ **sinh viên học SQL** — có hai mode hoạt đ
 | :------ | :---------- | :-------------- | :------------------- |
 | **Practice mode** | Sinh viên tự luyện tập, traffic thấp, không deadline | Latency < 10s OK, downtime chấp nhận được | Basic monitoring đủ |
 | **Contest mode** | 100+ sinh viên submit đồng thời, có deadline, leaderboard real-time | Latency < 5s, availability 99.9% | Metrics + alerts bắt buộc |
+| **DevOps Lab runtime** | Workspace/container/network runtime biến động | Readiness chính xác, isolation lỗi | Promtail/Loki/Grafana + runtime metrics |
 
 Trong contest mode, **không có observability = bay mù**:
 - Judge Service overloaded → submissions queue up → leaderboard outdated → sinh viên phàn nàn
 - Không có custom metrics → không biết judge duration tăng cho đến khi student report
 - Không có tracing → không biết bottleneck ở Judge hay ở Kafka consumer
 
-> **🔍 Phân tích gap — Zero tracing, zero centralized logging**
+> **🔍 Phân tích gap — Observability chưa chuẩn hóa end-to-end**
 >
-> Hệ thống LMS vận hành production **không có distributed tracing** và **không có centralized logging**. Theo Richardson [2a, Ch.11] và Newman [4a, Ch.8], đây là rủi ro nghiêm trọng: mỗi incident debugging phải manual, MTTR (Mean Time To Resolve) cao, root cause analysis gần như không thể cho cross-service issues.
+> KBLab đã có một số mảnh observability đúng hướng: Actuator/Prometheus cho Java services, `X-Request-ID`/MDC ở shared layer, zerolog ở Go services, và PLG stack (Promtail/Loki/Grafana) cho DevOps Lab. Gap hiện tại là **chuẩn hóa end-to-end**: cùng một request/batch cần đi qua Gateway → service → Kafka/DB queue → Judge/runtime mà vẫn giữ được trace/correlation ID.
 >
 > **Migration path** (incremental — mỗi phase đều mang lại giá trị ngay, target: Level 3):
 >
 > **Phase 1 — Structured Logging + Correlation ID** (effort thấp, impact cao):
-> - Chuyển sang JSON logging (Logback JSON encoder — chỉ thay config, không thay code)
-> - Thêm Correlation ID filter vào Gateway, propagate qua HTTP/Kafka headers
+> - Chuẩn hóa JSON logging cho Java services và zerolog field names cho Go services
+> - Thêm/chuẩn hóa `X-Request-ID` hoặc `X-Correlation-Id` tại Gateway/router, propagate qua HTTP/Kafka/DB queue headers
 > - Giá trị ngay: debug cross-service bằng cách search một traceId
 >
 > **Phase 2 — Centralized Log Aggregation** (effort trung bình):
-> - Deploy Loki + Grafana (nhẹ hơn ELK, phù hợp team nhỏ)
-> - Cấu hình Docker logging driver → push logs về Loki
+> - Chuẩn hóa Promtail + Loki + Grafana cho cả LMS core và DevOps Lab
+> - Cấu hình Docker/k3s logging pipeline → push logs về Loki
 > - Giá trị ngay: search logs một nơi thay vì SSH vào từng container
 >
 > **Phase 3 — Distributed Tracing** (effort trung bình):
@@ -498,7 +499,7 @@ Trong contest mode, **không có observability = bay mù**:
 >
 > **Phase 4 — Business Metrics + Alerting** (effort trung bình):
 > - Thêm Prometheus + Grafana cho metrics collection/visualization
-> - Tạo SLOs cho contest mode: submission latency P99, judge availability
+> - Tạo SLOs cho contest mode và DevOps Lab runtime: submission latency P99, judge availability, workspace readiness
 > - Set up alerts: Judge unavailable → critical, latency spike → warning
 
 ---
@@ -530,7 +531,7 @@ Structured logging và Correlation ID là nền tảng — effort thấp nhất,
 
 Error handling nhất quán — centralized exception handler + error code taxonomy — phục vụ cả client (UX tốt hơn) và ops team (metrics theo error code category). User tracking qua Kafka pipeline mở rộng observability từ *hệ thống* sang *hành vi học tập* — giá trị riêng mà domain giáo dục khai thác từ observability.
 
-Phân tích LMS cho thấy observability đang ở Level 1 (Reactive) — gap nghiêm trọng thứ hai sau shared database (Ch.7). Migration path rõ ràng: structured logs → correlation IDs → centralized aggregation → tracing → metrics + SLOs. Mỗi phase mang lại giá trị ngay, không cần đợi "hoàn thiện toàn bộ" mới bắt đầu.
+Phân tích KBLab cho thấy observability đã có nhiều mảnh đúng hướng nhưng chưa thành một contract end-to-end. Migration path rõ ràng: structured logs → correlation IDs → centralized aggregation → tracing → metrics + SLOs. Mỗi phase mang lại giá trị ngay, không cần đợi "hoàn thiện toàn bộ" mới bắt đầu.
 
 Ở Chương 12, chúng ta sẽ chuyển sang **Triển khai và DevOps** — containerization, Docker Compose, CI/CD pipelines, và cách deploy hệ thống microservices hoàn chỉnh.
 

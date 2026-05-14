@@ -17,6 +17,7 @@
 | **Spring Security** | Authentication & Authorization | Ch.9 | spring.io/security |
 | **JJWT** | JWT generation & validation | Ch.9 | github.com/jwtk/jjwt |
 | **MapStruct** | DTO mapping code generator | Ch.3 | mapstruct.org |
+| **Chi** | Go HTTP router cho API/router nhẹ | Ch.3, 8 | github.com/go-chi/chi |
 
 ## Messaging & Data
 
@@ -25,6 +26,7 @@
 | **Apache Kafka** | Distributed event streaming platform | Ch.5, 6 | kafka.apache.org |
 | **PostgreSQL** | Relational database | Ch.7 | postgresql.org |
 | **Redis** | In-memory cache & rate limiting | Ch.8 | redis.io |
+| **golang-migrate** | Versioned database migrations cho Go services | Ch.7, 12 | github.com/golang-migrate/migrate |
 
 ## Infrastructure & DevOps
 
@@ -33,6 +35,8 @@
 | **Docker** | Containerization platform | Ch.12 | docker.com |
 | **Docker Compose** | Multi-container orchestration | Ch.12 | docs.docker.com/compose |
 | **Kubernetes** | Container orchestration (overview) | Ch.12 | kubernetes.io |
+| **k3s** | Lightweight Kubernetes distribution | Ch.12 | k3s.io |
+| **Sysbox** | Container runtime hỗ trợ sandbox/container-in-container | Ch.9, 12 | github.com/nestybox/sysbox |
 | **Jenkins / GitHub Actions** | CI/CD automation | Ch.12 | — |
 
 ## Testing
@@ -51,6 +55,15 @@
 | **OpenTelemetry** | Distributed tracing standard | Ch.11 | opentelemetry.io |
 | **ELK Stack** | Elasticsearch + Logstash + Kibana | Ch.11 | elastic.co |
 | **Prometheus + Grafana** | Metrics collection + visualization | Ch.11 | prometheus.io, grafana.com |
+| **Promtail + Loki** | Lightweight log aggregation stack | Ch.11 | grafana.com/oss/loki |
+| **zerolog** | Structured logging library cho Go | Ch.11 | github.com/rs/zerolog |
+
+## Security & Identity
+
+| Tool | Mô tả | Chương | URL |
+|------|-------|--------|-----|
+| **Microsoft Entra ID / OAuth2-OIDC** | External Identity Provider cho SSO | Ch.9 | microsoft.com/entra |
+| **Cloudflare Turnstile** | Bot protection challenge | Ch.9 | cloudflare.com/products/turnstile |
 
 ## Development Tools
 

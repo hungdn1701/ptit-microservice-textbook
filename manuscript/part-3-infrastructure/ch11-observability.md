@@ -35,7 +35,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 11.5.1 Liveness vs Readiness probes
 ### 11.5.2 Alerting strategies
 
-## Case Study: Error Handling & ErrorCode trong LMS
+## Case Study: Error Handling & ErrorCode trong KBLab
 
 > 📋 Phân tích hệ thống xử lý lỗi tập trung: ErrorCode.java enum cho standardized error codes, @ControllerAdvice cho global exception handling, và cách tracking exceptions xuyên suốt chuỗi service calls.
 

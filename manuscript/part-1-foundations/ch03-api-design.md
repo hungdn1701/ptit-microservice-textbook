@@ -33,9 +33,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 3.4.1 Error handling conventions
 ### 3.4.2 Idempotency
 
-## Case Study: Thiết kế API cho hệ thống LMS
+## Case Study: Thiết kế API cho KBLab
 
-> 📋 Thiết kế hợp đồng API cho các service trong LMS. Phân tích endpoint design của kblab-app và kblab-assignment.
+> 📋 Thiết kế hợp đồng API cho các service trong KBLab. Phân tích endpoint design của kblab-app và kblab-assignment.
 
 ## Tổng kết
 

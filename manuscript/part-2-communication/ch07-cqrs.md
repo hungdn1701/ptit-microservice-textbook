@@ -33,9 +33,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 ### 7.4.1 Xây dựng read-optimized views
 ### 7.4.2 View update strategies
 
-## Case Study: Truy xuất dữ liệu chéo service trong LMS
+## Case Study: Truy xuất dữ liệu chéo service trong KBLab
 
-> 📋 Cách hệ thống LMS truy vấn dữ liệu tổng hợp khi thông tin nằm rải rác giữa kblab-assignment (điểm số), kblab-app (lịch sử bài nộp), và kblab-auth (thông tin sinh viên).
+> 📋 Cách KBLab truy vấn dữ liệu tổng hợp khi thông tin nằm rải rác giữa kblab-assignment (điểm số), kblab-app (lịch sử bài nộp), và kblab-auth (thông tin sinh viên).
 
 ## Tổng kết
 

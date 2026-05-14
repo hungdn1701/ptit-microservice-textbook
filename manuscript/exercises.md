@@ -54,7 +54,7 @@ Mỗi bài tập/case study được phân loại:
 1. Tại sao Shopify — với quy mô lớn hơn hầu hết companies — lại KHÔNG chuyển sang microservices? Đây có mâu thuẫn với lời khuyên của Newman không?
 2. **Modular Monolith** khác gì **Microservices** về: (a) deployment boundary, (b) data isolation, (c) communication overhead, (d) team autonomy?
 3. Shopify dùng concept **Component Boundaries** thay vì **Service Boundaries**. So sánh hai khái niệm này — khi nào component boundary đủ, khi nào cần service boundary?
-4. Nếu hệ thống LMS trong sách áp dụng Modular Monolith thay vì Microservices, architecture sẽ trông thế nào? Vẽ diagram. Trade-offs so với kiến trúc hiện tại?
+4. Nếu KBLab trong sách áp dụng Modular Monolith thay vì Microservices, architecture sẽ trông thế nào? Vẽ diagram. Trade-offs so với kiến trúc hiện tại?
 5. **Debate**: "Microservices là bắt buộc cho hệ thống lớn" — bạn đồng ý hay phản đối? Dùng Shopify làm evidence.
 
 ---
@@ -90,8 +90,8 @@ Mỗi bài tập/case study được phân loại:
 **Câu hỏi phân tích**:
 
 1. Phân tích trade-off chi tiết cho từng option theo 5 tiêu chí: coupling, deploy independence, performance, maintenance, team autonomy
-2. LMS sử dụng shared library (`lms-shared`) chứa DTOs, ErrorCode, utils. Đây có phải anti-pattern? Khi nào shared library là hợp lý?
-3. Newman trong [4a] khuyên: "Chỉ share DTOs và cross-cutting concerns (logging, auth). KHÔNG share business logic." Áp dụng nguyên tắc này: phân loại nội dung `lms-shared` → cái nào nên giữ, cái nào nên di chuyển về service?
+2. KBLab sử dụng shared library (`kblab-shared`) chứa DTOs, ErrorCode, utils. Đây có phải anti-pattern? Khi nào shared library là hợp lý?
+3. Newman trong [4a] khuyên: "Chỉ share DTOs và cross-cutting concerns (logging, auth). KHÔNG share business logic." Áp dụng nguyên tắc này: phân loại nội dung `kblab-shared` → cái nào nên giữ, cái nào nên di chuyển về service?
 4. **Câu hỏi ByteByteGo**: Bạn join team mới, thấy shared library 50 classes được dùng bởi 8 services. Tất cả services phải deploy cùng lúc khi shared library thay đổi. Đây là symptom của vấn đề gì? Bạn propose giải pháp gì?
 
 ---
@@ -107,7 +107,7 @@ Mỗi bài tập/case study được phân loại:
 **Câu hỏi phân tích**:
 
 1. Stripe dùng **date-based versioning** (`2024-12-18`) thay vì `v1/v2`. So sánh với URL path versioning — ưu/nhược điểm gì? Khi nào date-based tốt hơn?
-2. Stripe API trả response dạng **envelope pattern**: `{ "object": "list", "data": [...], "has_more": true }`. So sánh với cách LMS trả `{ "data": [...], "pagination": {...} }` — cái nào tốt hơn? Tại sao?
+2. Stripe API trả response dạng **envelope pattern**: `{ "object": "list", "data": [...], "has_more": true }`. So sánh với cách KBLab trả `{ "data": [...], "pagination": {...} }` — cái nào tốt hơn? Tại sao?
 3. Stripe sử dụng **Idempotency Key** cho mọi POST request (tránh charge customer 2 lần). Thiết kế cơ chế tương tự cho `POST /api/submissions` của LMS — sinh viên submit bài 2 lần do mạng lag → chỉ chấm 1 lần
 4. Stripe luôn trả **error object nhất quán**: `{ "error": { "type": "card_error", "code": "expired_card", "message": "..." } }`. So sánh với error format hiện tại của LMS — gap ở đâu?
 5. **Thiết kế**: Nếu bạn phải thiết kế API cho tính năng mới: "Giảng viên tạo contest → sinh viên đăng ký → submit bài → leaderboard", viết danh sách endpoints theo Stripe style
@@ -175,7 +175,7 @@ Mỗi bài tập/case study được phân loại:
 1. Với mỗi scenario (A-D), chọn REST / gRPC / GraphQL. Giải thích trade-off
 2. Có scenario nào mà 2 protocols phù hợp như nhau? Tiêu chí "tiebreaker" là gì?
 3. Netflix dùng gRPC cho inter-service communication, GraphQL cho mobile BFF. Spotify dùng gRPC internal + REST public API. Pinterest chuyển từ REST sang gRPC internal, giảm latency 50%. Phân tích: tại sao các công ty lớn đều hướng gRPC cho internal nhưng giữ REST/GraphQL cho external?
-4. LMS hiện dùng REST toàn bộ (cả internal lẫn external). Nếu phải chọn 1 protocol chuyển sang cho internal communication — chọn gì? Cost/benefit analysis?
+4. KBLab hiện dùng REST cho LMS core, nhưng Network Lab đã có SOAP/REST/gRPC/JNP và DevOps Lab dùng Go/Chi cho một phần API. Nếu phải chọn protocol cho một boundary internal mới — chọn gì? Cost/benefit analysis?
 
 ---
 
@@ -196,9 +196,9 @@ Mỗi bài tập/case study được phân loại:
 
 1. Cho mỗi scenario: chọn Kafka hay RabbitMQ? Giải thích bằng architectural differences (log-based vs queue-based)
 2. Kleppmann trong [7, Ch.11] giải thích: Kafka = "distributed commit log" (append-only, consumer controls offset). RabbitMQ = "message queue" (broker pushes, message deleted after ack). Cách mental model này giúp quyết định thế nào?
-3. LinkedIn (inventor Kafka) xử lý 7 triệu messages/giây. Họ CẦN Kafka. LMS xử lý ~10 messages/phút. LMS có CẦN Kafka không? Trade-off giữa "học tool đúng" vs "dùng tool phù hợp"?
+3. LinkedIn (inventor Kafka) xử lý 7 triệu messages/giây. Họ CẦN Kafka. KBLab có nhiều loại queue khác nhau: submission pipeline, SQL Judge worker dispatch (`judge` → `judge-*`), DevOps Lab jobs. Flow nào thật sự cần Kafka, flow nào chỉ cần DB queue? Trade-off giữa "học tool đúng" vs "dùng tool phù hợp"?
 4. **Exactly-once delivery**: Kafka đạt exactly-once transactional semantics từ 0.11. RabbitMQ không có native exactly-once. Giải thích tại sao exactly-once khó và tại sao "at-least-once + idempotent consumer" thường đủ
-5. LMS chọn Kafka cho submission pipeline. Nếu dùng RabbitMQ thay thế, architecture thay đổi thế nào? Feature nào mất?
+5. KBLab chọn Kafka cho submission pipeline. Nếu dùng RabbitMQ hoặc DB queue thay thế, architecture thay đổi thế nào? Feature nào mất?
 
 ---
 
@@ -257,7 +257,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 2. Uber (thực tế) dùng **Orchestration** cho ride saga — tại sao? So sánh nếu dùng Choreography: bao nhiêu events cần? Ai track trạng thái tổng thể?
 3. **Isolation problem**: Rider A request ride, Driver X được match → trong lúc Driver X đang đường đến → Rider B request ride, hệ thống cũng match Driver X. Đây là anomaly gì? (Lost update? Dirty read?) Countermeasure nào cho scenario này?
 4. **Timeout design**: Driver không accept trong 30 giây → timeout → tìm driver khác. Nhưng network lag → Driver accept sau 31 giây (message arrive trễ). Thiết kế mechanism xử lý "late acceptance"
-5. **LMS comparison**: Submission saga trong LMS (Submit → Judge → Score) đơn giản hơn nhiều. Nhưng nếu LMS thêm feature "contest = phải trả phí" → saga phức tạp thêm thế nào? Vẽ diagram mới
+5. **KBLab comparison**: Submission saga trong KBLab (Submit → Judge → Score) đơn giản hơn nhiều. Nhưng nếu KBLab thêm feature "contest = phải trả phí" → saga phức tạp thêm thế nào? Vẽ diagram mới
 
 ---
 
@@ -301,7 +301,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 | MongoDB (replica set) | ? | ? |
 | Redis Cluster | ? | ? |
 
-3. LMS dùng PostgreSQL single master. Khi DB server down 10 phút (partition), hệ thống hoàn toàn unavailable. Nếu dùng PostgreSQL với streaming replication (primary + 2 standbys), trade-off thay đổi thế nào?
+3. KBLab dùng PostgreSQL cho nhiều dữ liệu giao dịch. Khi primary DB down một khoảng thời gian, hệ thống có thể unavailable cho các write path. Nếu dùng PostgreSQL với streaming replication, trade-off thay đổi thế nào?
 4. **E-commerce scenario**: Shopping cart vs Payment — yêu cầu C/A khác nhau:
    - Shopping cart: availability > consistency (OK nếu số lượng hiển thị chậm 5s)
    - Payment: consistency > availability (KHÔNG OK nếu charge 2 lần)
@@ -310,9 +310,9 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 
 ---
 
-### 7-2 🏗️ Design: Database Migration Strategy cho LMS ●●
+### 7-2 🏗️ Design: Database Migration Strategy cho KBLab ●●
 
-**Tình huống**: LMS hiện có shared database — Core Service và Assignment Service dùng chung PostgreSQL. Bạn được giao nhiệm vụ tách database.
+**Tình huống**: KBLab hiện có shared database — Core Service và Assignment Service dùng chung PostgreSQL. Bạn được giao nhiệm vụ tách database.
 
 **Constraints**:
 - Zero downtime (sinh viên đang dùng hệ thống)
@@ -352,9 +352,9 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 1. Tại sao Netflix KHÔNG dùng Zuul 2 mà tự build gateway mới? (Gợi ý: organizational reasons vs technical reasons)
 2. **Blocking vs Non-blocking Gateway**: Zuul 1 dùng 1 thread/request (blocking). Spring Cloud Gateway dùng event loop (non-blocking). Với 10K concurrent connections, Zuul 1 cần bao nhiêu threads? Spring Cloud Gateway cần bao nhiêu? Implications cho memory?
-3. LMS dùng Spring Cloud Gateway. Với traffic hiện tại (~100 req/phút), blocking hay non-blocking có khác biệt? Khi nào LMS CẦN non-blocking gateway?
+3. KBLab dùng Spring Cloud Gateway cho LMS core và Go hostname-based router cho DevOps Lab. Với traffic học thuật vừa phải, blocking hay non-blocking có khác biệt? Khi nào KBLab CẦN non-blocking gateway/router?
 4. **Gateway as Single Point of Failure**: Nếu Gateway crash, toàn bộ hệ thống down. Thiết kế: high availability cho Gateway? (Multiple instances? Load balancer phía trước?)
-5. **BFF Pattern (Backend for Frontend)**: Netflix có gateway riêng cho mobile app (ít bandwidth) và web app (cần nhiều data hơn). Nếu LMS cần support mobile app, bạn sẽ thiết kế BFF thế nào?
+5. **BFF Pattern (Backend for Frontend)**: Netflix có gateway riêng cho mobile app (ít bandwidth) và web app (cần nhiều data hơn). Nếu KBLab cần support mobile app, bạn sẽ thiết kế BFF thế nào?
 
 ---
 
@@ -402,7 +402,7 @@ Cross-reference: assignment_questions.question_id → questions.id
    - Tầng 4: Anomaly detection (submit từ 2 IPs khác nhau trong 5 phút → flag)
 3. **HS256 vs RS256**: Nếu system dùng RS256, sinh viên B có token nhưng KHÔNG có private key. Có thể tạo token giả không? Khác biệt thực tế so với HS256?
 4. **Token Blacklist**: Implement token blacklist (Redis set) để revoke tokens bị steal. Trade-off: JWT "stateless" advantage bị mất. Khi nào blacklist đáng trade-off?
-5. **Zero Trust**: Google BeyondCorp model — "every request must be authenticated and authorized, regardless of network location". Áp dụng vào LMS: internal services có cần validate JWT không? (Hiện tại LMS dùng "Pragmatic Trust" — trust service-to-service calls)
+5. **Zero Trust**: Google BeyondCorp model — "every request must be authenticated and authorized, regardless of network location". Áp dụng vào KBLab: internal services có cần validate JWT không? (Hiện tại KBLab dùng "Pragmatic Trust" — trust service-to-service calls trong boundary nội bộ)
 
 ---
 
@@ -422,7 +422,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 1. Cho mỗi app (A-D): chọn OAuth2 flow nào? (Authorization Code + PKCE, Client Credentials, Device Authorization Grant)
 2. **App A (SPA)**: Tại sao Authorization Code flow cần PKCE cho SPAs? Không có PKCE → attack nào có thể xảy ra?
 3. **App C (server-to-server)**: Client Credentials flow không có user context. Judge Service nhận token này → biết service identity nhưng không biết user nào submit. Thiết kế: làm sao truyền user context qua service-to-service calls?
-4. LMS hiện dùng custom JWT (không OAuth2). Nếu migrate sang Keycloak: những gì thay đổi? Lợi ích? Chi phí migration?
+4. KBLab dùng token exchange: external provider/QLĐT/username-password → KBLab JWT. Nếu migrate sang Keycloak hoặc Microsoft Entra ID làm IdP trung tâm: những gì thay đổi? Lợi ích? Chi phí migration?
 
 ---
 
@@ -439,7 +439,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 2. Amazon không làm "big bang" rewrite. Họ tách service dần dần qua nhiều năm. Strangler Fig Pattern (Ch.10) có thể áp dụng để mô tả quá trình này? Vẽ timeline 3 phases
 3. **"Two-Pizza Team" rule** — mỗi team 6-8 người, sở hữu 1-2 services. Conway's Law in action? Liên hệ với Ch.2 (team topology ↔ service boundaries)
 4. Amazon hiện có **hàng nghìn** microservices. Vấn đề mới: service sprawl, dependency management, ownership confusion. Giải pháp? (Service mesh, service catalog, platform teams)
-5. **LMS comparison**: LMS có 7 services cho team 2-3 người. Áp dụng Two-Pizza Rule: bao nhiêu services là hợp lý cho team size này? LMS có risk "too many services for small team" không?
+5. **KBLab comparison**: KBLab có nhiều services/module cho team nhỏ. Áp dụng Two-Pizza Rule: bao nhiêu services là hợp lý cho team size này? KBLab có risk "too many services for small team" không?
 
 ---
 
@@ -494,10 +494,10 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 | Option | Components | Cost (ước tính/tháng) | Effort setup |
 |--------|-----------|---------------------|-------------|
-| **A**: Self-hosted OSS | Prometheus + Grafana + Loki + Jaeger | $0 (infra: ~$200 VPS) | 2-3 tuần |
-| **B**: Managed OSS | Grafana Cloud (free tier → paid) | $50-500 | 2-3 ngày |
-| **C**: Commercial | Datadog / New Relic / Dynatrace | $500-2000 | 1 ngày (agent install) |
-| **D**: Cloud-native | AWS CloudWatch + X-Ray / GCP Cloud Monitoring | $100-400 | 1-2 ngày |
+| **A**: Self-hosted OSS | Prometheus + Grafana + Loki + Jaeger | Chi phí infra tự quản | 2-3 tuần |
+| **B**: Managed OSS | Grafana Cloud (free tier → paid) | Theo usage | 2-3 ngày |
+| **C**: Commercial | Datadog / New Relic / Dynatrace | Cao hơn, đổi lấy support | 1 ngày (agent install) |
+| **D**: Cloud-native | AWS CloudWatch + X-Ray / GCP Cloud Monitoring | Theo cloud provider | 1-2 ngày |
 
 **Câu hỏi phân tích**:
 
@@ -505,7 +505,7 @@ Cross-reference: assignment_questions.question_id → questions.id
    - Startup 5 người, budget $0-100/tháng
    - Scale-up 20 người, budget $500/tháng, SLA 99.9%
    - Enterprise 100 người, regulated industry (banking)
-2. LMS hiện ở Level 1 (Reactive). Migration path đề xuất đến Level 3: chọn option nào? Tại sao?
+2. KBLab hiện đã có một số mảnh Level 2 (Actuator/Prometheus/Grafana, zerolog/PLG ở DevOps Lab) nhưng chưa chuẩn hóa end-to-end. Migration path đề xuất đến Level 3: chọn option nào? Tại sao?
 3. **Vendor lock-in**: Datadog proprietary query language vs Prometheus PromQL (open standard). Khi nào vendor lock-in chấp nhận được? Khi nào dangerous?
 4. OpenTelemetry (OTel) đang trở thành standard — "instrument once, send to any backend". Chiến lược: adopt OTel từ đầu → dễ switch backend sau. Trade-off so với adopt vendor SDK?
 
@@ -520,14 +520,14 @@ Cross-reference: assignment_questions.question_id → questions.id
 | Hệ thống | Services | Traffic | Team | Yêu cầu |
 |----------|----------|---------|------|---------|
 | **A**: Startup MVP | 3 services | 500 req/ngày | 2 devs | Ship fast, budget thấp |
-| **B**: University LMS | 7 services | 10K req/ngày, burst khi contest | 3 devs | Reliability, easy ops |
+| **B**: KBLab LMS + labs | Nhiều services/module | Traffic học thuật, burst khi contest/lab | 3 devs | Reliability, easy ops |
 | **C**: E-commerce platform | 25 services | 1M req/ngày | 15 devs, 4 teams | Auto-scaling, zero downtime, multi-region |
 
 **Câu hỏi phân tích**:
 
 1. Cho mỗi hệ thống: Docker Compose hay Kubernetes? Hoặc hybrid? Giải thích dựa trên tiêu chí: team capability, operational overhead, scaling needs
 2. **Anti-pattern**: Hệ thống A (3 services, 2 devs) muốn dùng Kubernetes "để sẵn cho tương lai". Tính **cost of Kubernetes** cho team 2 người: learning time, cluster maintenance, debugging complexity. Cost > Benefit?
-3. **Migration path**: Hệ thống B (LMS) hiện dùng Docker Compose. Khi nào CẦN migrate lên K8s? Xác định 3 trigger signals (traffic, team size, SLA requirements)
+3. **Migration path**: Hệ thống B (KBLab) hiện dùng Docker Compose cho LMS core và k3s/Sysbox cho DevOps Lab. Khi nào CẦN mở rộng Kubernetes cho nhiều phần hơn? Xác định 3 trigger signals (traffic, team size, SLA requirements)
 4. **Managed vs Self-managed K8s**: GKE/EKS/AKS vs self-setup kubeadm. Cost comparison cho hệ thống C? Risk comparison?
 5. **Câu hỏi ByteByteGo**: "How does Kubernetes ensure zero-downtime deployment?" — Trả lời: Rolling Update mechanism, readiness probes, PDB (Pod Disruption Budget). Vẽ diagram
 
@@ -535,7 +535,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 ### 12-2 🏗️ Design: CI/CD Pipeline cho Microservices ●●●
 
-**Tình huống**: Bạn cần thiết kế CI/CD pipeline cho hệ thống LMS (7 services, mono-repo):
+**Tình huống**: Bạn cần thiết kế CI/CD pipeline cho KBLab (Java LMS core nhiều repo/service + DevOps Lab Go multi-binary):
 
 **Requirements**:
 - Push code → auto build → test → deploy staging → manual approval → deploy production

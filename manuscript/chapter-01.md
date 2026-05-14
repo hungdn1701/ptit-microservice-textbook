@@ -12,7 +12,7 @@
 - Phân biệt rõ SOA truyền thống, microservices, và modular monolith
 - Tìm hiểu cách các công ty công nghệ lớn đã buộc phải chuyển đổi — và bài học rút ra
 - Đánh giá khi nào nên — và khi nào *không* nên — áp dụng microservices
-- Làm quen với case study của sách: một hệ thống LMS cho trường đại học
+- Làm quen với case study của sách: KBLab — một hệ thống LMS cho trường đại học
 
 ---
 
@@ -244,7 +244,7 @@ Làm sao biết mình đã đạt fast flow? Nghiên cứu của Forsgren, Humbl
 
 > **🔍 Phân tích gap — DORA Metrics cho LMS**
 >
-> Hệ thống LMS hiện tại:
+> KBLab hiện tại:
 > - **Deployment Frequency**: Manual, khi cần (không scheduled) → Low Performer
 > - **Lead Time**: Chưa đo, nhưng thiếu CI/CD tự động → ước tính ngày-tuần
 > - **Change Failure Rate**: Không tracking → unknown
@@ -374,7 +374,7 @@ Ba câu hỏi cần trả lời trước khi chọn microservices:
 
 Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực tế: **KBLab** — nền tảng học tập trực tuyến (LMS) chuyên biệt cho các môn tin học thực hành, được phát triển và vận hành tại một trường đại học kỹ thuật.
 
-**Vấn đề cần giải quyết.** Tại trường đại học, các môn học liên quan đến Cơ sở dữ liệu và Lập trình mạng là bắt buộc cho hàng nghìn sinh viên mỗi năm. Giảng viên không thể thực thi và kiểm tra hàng trăm bài SQL mỗi tuần bằng tay. Sinh viên nộp bài và chờ vài ngày mới biết đúng sai — mất cơ hội sửa lỗi ngay. Chương trình đào tạo yêu cầu thành thạo nhiều hệ CSDL (MySQL, PostgreSQL, SQL Server), mỗi hệ có cú pháp riêng. Và thi trực tuyến dễ gian lận, khó kiểm soát.
+**Vấn đề cần giải quyết.** Tại trường đại học, các môn học liên quan đến Cơ sở dữ liệu, Lập trình mạng và Quản trị hệ thống/DevOps là bắt buộc cho hàng nghìn sinh viên mỗi năm. Giảng viên không thể thực thi và kiểm tra hàng trăm bài SQL, bài lập trình mạng hoặc bài thực hành Kubernetes mỗi tuần bằng tay. Sinh viên cần phản hồi nhanh để sửa lỗi ngay; giảng viên cần môi trường thi công bằng; hệ thống cần cô lập dữ liệu và môi trường thực hành để bài làm của sinh viên này không ảnh hưởng sinh viên khác.
 
 **Ba nhóm người dùng chính:**
 
@@ -384,18 +384,20 @@ Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực t
 | **Giảng viên** | Soạn đề, tổ chức thi/kiểm tra, chấm điểm, theo dõi tiến độ | Hàng chục |
 | **Quản trị viên** | Quản lý tài khoản, cấu hình hệ thống, giám sát vận hành | Vài người |
 
-**Ba chế độ hoạt động** — mỗi chế độ đặt ra yêu cầu kiến trúc khác nhau:
+**Bốn trụ cột nghiệp vụ** — mỗi trụ cột đặt ra yêu cầu kiến trúc khác nhau:
 
-- **Practice Mode** (luyện tập): Sinh viên viết SQL trên trình soạn thảo web, submit, và nhận kết quả **tức thì** (chấm đồng bộ). SQL được thực thi trên sandbox cô lập — mỗi submit có không gian bảng riêng. Nộp lại không giới hạn. Yêu cầu: latency thấp, response nhanh.
+- **SQL Lab**: Sinh viên viết SQL trên trình soạn thảo web, submit, và nhận kết quả trong Practice Mode hoặc Contest Mode. Practice Mode ưu tiên latency thấp; Contest Mode ưu tiên throughput, fairness, message queue và WebSocket realtime.
 
-- **Contest Mode** (thi đấu): Hàng trăm sinh viên submit đồng thời trong kỳ thi có thời gian giới hạn. Chấm **bất đồng bộ** qua hàng đợi message — đảm bảo công bằng. Kết quả đẩy về trình duyệt qua WebSocket ngay khi có. Bảng xếp hạng cập nhật thời gian thực. Yêu cầu: throughput cao, fault tolerance, eventual consistency.
+- **Network Lab**: Sinh viên viết Java client kết nối đến judge server qua nhiều nhóm giao thức: TCP, UDP, RMI, SOAP, REST và gRPC. Đây là nơi KBLab minh họa rất rõ technology diversity: không phải mọi service đều là Spring Boot REST API.
 
-- **Assignment Mode** (bài tập/đồ án): Giảng viên tạo khóa học, giao bài tập (cá nhân hoặc nhóm), sinh viên nộp bài, giảng viên chấm điểm. Tích hợp GitHub Classroom, hỗ trợ quản lý đồ án tốt nghiệp với quy trình duyệt hai cấp. Yêu cầu: data integrity, cross-service querying.
+- **Course Management**: Giảng viên tạo khóa học, bài tập cá nhân/nhóm, MCQ, điểm danh, grade scheme, đồ án tốt nghiệp và tích hợp GitHub Classroom. Yêu cầu chính: data integrity, workflow nhiều bước, cross-service query.
+
+- **DevOps Lab**: Sinh viên thực hành Docker/Kubernetes trong lab environment cô lập, truy cập qua terminal web, được chấm bằng validator script. Phần này dùng Go, k3s và Sysbox ở mức hạ tầng khái quát — đủ để phân tích kiến trúc, không cần public chi tiết vận hành cụ thể.
 
 **Ràng buộc thực tế** — đây là điều làm cho case study có giá trị giảng dạy:
 
 - **Team nhỏ**: 2–3 developers, không có dedicated DevOps hay QA team
-- **Hạ tầng hạn chế**: On-premise server, Docker Compose trên single host, không có Kubernetes
+- **Hạ tầng hạn chế**: hạ tầng nhỏ, LMS chính chạy Docker Compose; DevOps Lab dùng k3s/Sysbox cho bài toán lab isolation, không public sơ đồ máy chủ/domain cụ thể
 - **Phát triển nhanh dưới áp lực**: Hệ thống phải phục vụ sinh viên ngay, nhiều quyết định kiến trúc được chọn vì *nhanh*, không phải vì *đúng*
 - **Hệ thống đang chạy production**: Mọi cải thiện phải incremental — không thể dừng hoạt động để refactor toàn bộ
 
@@ -415,16 +417,16 @@ Mỗi chương sách sẽ quay lại KBLab ở góc nhìn khác nhau. **Bảng 1
 
 | Bài toán kỹ thuật | Hiện trạng | Vấn đề cần giải quyết | Chương |
 |:------------------|:----------|:---------------------|:------:|
-| **Domain decomposition** | 4+ bounded contexts, shared library coupling | Domain logic lẫn vào shared lib | Ch.2 |
-| **API design** | REST controllers, naming không nhất quán | Thiếu versioning, error format không thống nhất | Ch.3 |
-| **Sync communication** | OpenFeign giữa services | Thiếu resilience patterns (circuit breaker, retry) | Ch.4 |
-| **Async communication** | Kafka cho submission pipeline | Thiếu error handling, dead letter queue | Ch.5 |
+| **Domain decomposition** | 5 bounded contexts chính + supporting services | Shared library và shared DB vẫn tạo coupling | Ch.2 |
+| **API design** | REST controllers + Network Lab đa giao thức | Naming/versioning chưa thống nhất; contract nhiều protocol | Ch.3 |
+| **Sync communication** | OpenFeign, SQL Judge coordinator + `judge-*` workers, external integrations | Cần resilience + Anti-Corruption Layer rõ ràng | Ch.4 |
+| **Async communication** | Kafka cho SQL Contest; DB queue cho DevOps Lab | Cần idempotency, retry, dead letter và workload-based choice | Ch.5 |
 | **Distributed data** | **Shared database** giữa Core và Assignment | Vi phạm database-per-service, coupling cao | Ch.6, Ch.7 |
-| **API Gateway** | Spring Cloud Gateway + Eureka | Thiếu rate limiting, centralized logging | Ch.8 |
-| **Security** | JWT HS256 (symmetric key shared) | Cần RS256, thiếu service-to-service auth | Ch.9 |
-| **Migration strategy** | Shared DB + shared lib coupling | Strangler Fig, database decomposition | Ch.10 |
-| **Observability** | `@ControllerAdvice`, basic tracking | Thiếu distributed tracing, metrics, health checks | Ch.11 |
-| **Deployment** | Docker Compose trên single host | Thiếu CI/CD, health checks, zero-downtime deploy | Ch.12 |
+| **API Gateway** | Spring Cloud Gateway + Go reverse proxy cho lab routing | Path-based vs hostname-based gateway trade-off | Ch.8 |
+| **Security** | JWT HS256, OAuth2, SSO cross-platform | Secret management, token storage, defense-in-depth | Ch.9 |
+| **Migration strategy** | 10 năm tiến hóa, legacy QLĐT, GitHub Classroom | Strangler Fig, ACL, roadmap theo rủi ro | Ch.10 |
+| **Observability** | Actuator/Prometheus một phần, correlation ID đang mở rộng | Cần centralized logs, tracing, metrics end-to-end | Ch.11 |
+| **Deployment** | Docker Compose cho LMS chính; k3s/Sysbox cho DevOps Lab | CI/CD, rollback, resource isolation, không over-engineer | Ch.12 |
 
 > **🔍 Phân tích gap — Shared database**
 >
@@ -444,7 +446,7 @@ Richardson trong phiên bản 2 [2b, Ch.2] dành nguyên một chương kể câ
 | ④ | **Không có idempotency** cho submit endpoint | "Ai submit trùng đâu?" | Contest mode: client retry do mạng chập → duplicate submission → điểm sai | Chi tiết tại Ch.5, Ch.6 |
 | ⑤ | **`docker logs` thay cho observability** | "Team nhỏ, đọc log trực tiếp nhanh hơn" | Contest mode: 200 submissions, Judge chậm, không biết bottleneck ở đâu → debug mất hàng giờ | Chi tiết tại Ch.11 |
 
-Mỗi quyết định trên đều *hợp lý tại thời điểm đó* — team nhỏ, cần ship nhanh, ưu tiên feature hơn architecture. Nhưng khi hệ thống mở rộng (thêm Contest Mode, thêm Assignment, thêm Thesis Management), chi phí kỹ thuật (technical debt) tích lũy nhanh hơn tốc độ phát triển tính năng. Đây là bài học mà Richardson gọi là *"penny wise and pound foolish"* — tiết kiệm ở bước nhỏ, trả giá ở bước lớn.
+Mỗi quyết định trên đều *hợp lý tại thời điểm đó* — team nhỏ, cần ship nhanh, ưu tiên feature hơn architecture. Nhưng khi hệ thống mở rộng (Contest Mode, Assignment, Thesis Management, Network Lab đa giao thức, DevOps Lab bằng Go), chi phí kỹ thuật (technical debt) tích lũy nhanh hơn tốc độ phát triển tính năng. Đây là bài học mà Richardson gọi là *"penny wise and pound foolish"* — tiết kiệm ở bước nhỏ, trả giá ở bước lớn.
 
 > **📐 Nguyên tắc — Imperfect Systems Are the Best Teachers**
 >
@@ -475,7 +477,7 @@ Từ bài học của Netflix, Amazon, và Uber, chúng ta học được rằng
 
 Modular monolith không phải bước lùi mà là **bước đệm thông minh**: hiểu rõ domain trước khi chia tách. Quyết định kiến trúc cũng không chỉ là kỹ thuật — ngân sách, team, timeline, và văn hóa tổ chức đều ảnh hưởng ngang bằng.
 
-Cuối cùng, chúng ta đã giới thiệu case study KBLab — hệ thống LMS thực tế với ba chế độ hoạt động (Practice, Contest, Assignment), những ràng buộc rất quen thuộc với hầu hết dự án (team nhỏ, hạ tầng hạn chế, cần ship nhanh), và *năm quyết định kiến trúc team muốn làm lại* — bài học cautionary tale tương tự FTGO của Richardson. Ở Chương 2, chúng ta sẽ đi sâu vào **Domain-Driven Design** — phương pháp để xác định ranh giới dịch vụ, và bắt đầu phân tích domain của KBLab để tìm ra các bounded context tự nhiên.
+Cuối cùng, chúng ta đã giới thiệu case study KBLab — hệ thống LMS thực tế với bốn trụ cột (SQL Lab, Network Lab, Course Management, DevOps Lab), những ràng buộc rất quen thuộc với hầu hết dự án (team nhỏ, hạ tầng hạn chế, cần ship nhanh), và *năm quyết định kiến trúc team muốn làm lại* — bài học cautionary tale tương tự FTGO của Richardson. Ở Chương 2, chúng ta sẽ đi sâu vào **Domain-Driven Design** — phương pháp để xác định ranh giới dịch vụ, và bắt đầu phân tích domain của KBLab để tìm ra các bounded context tự nhiên.
 
 ---
 

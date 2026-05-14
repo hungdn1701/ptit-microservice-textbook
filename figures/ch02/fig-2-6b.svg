@@ -131,24 +131,29 @@
   <path d="M 460 155 L 500 155" class="arrow" />
   <rect x="30" y="290" width="900" height="220" rx="12" class="note" />
   <text x="480" y="315" text-anchor="middle" class="title">Kết quả: Ánh xạ sang Bounded Contexts</text>
-  <rect x="60" y="345" width="180" height="32" rx="6" class="info" />
-  <text x="150" y="366" text-anchor="middle" class="small">Identity &amp; Access</text>
-  <text x="260" y="366" class="title">=</text>
-  <text x="290" y="366" class="small">Auth Service</text>
-  <text x="500" y="366" class="subtitle">Utility Auth</text>
-  <rect x="60" y="385" width="180" height="32" rx="6" class="service" />
-  <text x="150" y="406" text-anchor="middle" class="small">SQL Practice</text>
-  <text x="260" y="406" class="title">=</text>
-  <text x="290" y="406" class="small">Core Service</text>
-  <text x="500" y="406" class="subtitle">Entity Question + Task Orchestrator</text>
-  <rect x="60" y="425" width="180" height="32" rx="6" class="event" />
-  <text x="150" y="446" text-anchor="middle" class="small">Evaluation</text>
-  <text x="260" y="446" class="title">=</text>
-  <text x="290" y="446" class="small">Judge Service</text>
-  <text x="500" y="446" class="subtitle">Complicated Subsystem</text>
-  <rect x="60" y="465" width="180" height="32" rx="6" class="highlight" />
-  <text x="150" y="486" text-anchor="middle" class="small">Academic</text>
-  <text x="260" y="486" class="title">=</text>
-  <text x="290" y="486" class="small">Assignment Service</text>
-  <text x="500" y="486" class="subtitle">Entity Course</text>
+  <rect x="60" y="335" width="180" height="32" rx="6" class="info" />
+  <text x="150" y="356" text-anchor="middle" class="small">Identity &amp; Access</text>
+  <text x="260" y="356" class="title">=</text>
+  <text x="290" y="356" class="small">kblab-auth</text>
+  <text x="500" y="356" class="subtitle">Utility Auth</text>
+  <rect x="60" y="369" width="180" height="32" rx="6" class="service" />
+  <text x="150" y="390" text-anchor="middle" class="small">SQL Practice</text>
+  <text x="260" y="390" class="title">=</text>
+  <text x="290" y="390" class="small">kblab-app + judge</text>
+  <text x="500" y="390" class="subtitle">Entity + Task</text>
+  <rect x="60" y="403" width="180" height="32" rx="6" class="service" />
+  <text x="150" y="424" text-anchor="middle" class="small">Network Practice</text>
+  <text x="260" y="424" class="title">=</text>
+  <text x="290" y="424" class="small">judge-network</text>
+  <text x="500" y="424" class="subtitle">Protocol Subsystem</text>
+  <rect x="60" y="437" width="180" height="32" rx="6" class="highlight" />
+  <text x="150" y="458" text-anchor="middle" class="small">Academic</text>
+  <text x="260" y="458" class="title">=</text>
+  <text x="290" y="458" class="small">kblab-assignment</text>
+  <text x="500" y="458" class="subtitle">Entity Course</text>
+  <rect x="60" y="471" width="180" height="32" rx="6" class="event" />
+  <text x="150" y="492" text-anchor="middle" class="small">DevOps Practice</text>
+  <text x="260" y="492" class="title">=</text>
+  <text x="290" y="492" class="small">dol-api</text>
+  <text x="500" y="492" class="subtitle">Task + Infra</text>
 </svg>

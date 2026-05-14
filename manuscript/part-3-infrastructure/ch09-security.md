@@ -36,7 +36,7 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## Case Study: JwtRequestFilter & KblabAuthService
 
-> 📋 Phân tích chi tiết cách hệ thống LMS xử lý xác thực: JwtRequestFilter tại Gateway kiểm tra token, KblabAuthService cấp phát và xác thực JWT. Flow từ login → token issuance → request validation.
+> 📋 Phân tích chi tiết cách KBLab xử lý xác thực: JwtRequestFilter tại Gateway kiểm tra token, KblabAuthService cấp phát và xác thực JWT. Flow từ login → token issuance → request validation.
 
 ## Tổng kết
 

@@ -125,7 +125,7 @@
   <rect x="560" y="265" width="330" height="56" rx="12" class="danger" />
   <text x="725.0" y="298.0" text-anchor="middle" class="title">Running (hy vong)</text>
   <rect x="30" y="360" width="900" height="60" rx="8" class="note" />
-  <text x="50" y="385" class="title">LMS hiện tại:</text>
+  <text x="50" y="385" class="title">KBLab hiện tại:</text>
   <text x="180" y="385" class="subtitle">Semi-manual (Docker Compose). Target: full CI/CD với GitHub Actions.</text>
   <text x="50" y="408" class="small">ROI:</text>
   <text x="90" y="408" class="subtitle">Automated = 5 min deploy, rollback 1 click. Manual = 30 min, error-prone.</text>

@@ -13,7 +13,7 @@
 - Thiết kế **CI/CD pipeline** cho microservices — build, test, deploy tự động
 - So sánh các **deployment strategies**: Rolling, Blue/Green, Canary
 - Hiểu **Infrastructure as Code** (IaC) và vai trò trong quản lý hạ tầng
-- Phân tích deployment architecture của hệ thống LMS và đề xuất cải thiện
+- Phân tích deployment architecture của KBLab và đề xuất cải thiện
 
 ---
 
@@ -138,9 +138,9 @@ Hai kỹ thuật quan trọng:
 
 ## 12.3 Docker Compose — Orchestration trên Một Máy
 
-### Vấn đề: chạy 7 services + databases + Kafka bằng tay?
+### Vấn đề: chạy nhiều services + databases + Kafka bằng tay?
 
-Hệ thống LMS có 7+ services, mỗi service cần database, Kafka cần Zookeeper, Gateway cần Eureka... Khởi động thủ công:
+KBLab LMS chính có nhiều Java services, mỗi service cần cấu hình riêng; Kafka cần broker, Gateway cần service discovery, database sandbox cần môi trường cô lập. Khởi động thủ công:
 
 **Listing 12.2:** Khởi động thủ công các services (Anti-pattern)
 
@@ -159,12 +159,12 @@ docker run -d core-service --db-url=... --kafka=... ...
 
 Docker Compose định nghĩa **toàn bộ stack** trong một file YAML — services, networks, volumes, dependencies. Một lệnh `docker compose up` khởi động toàn bộ hệ thống.
 
-Cấu trúc Docker Compose cho LMS (đơn giản hóa):
+Cấu trúc Docker Compose cho KBLab LMS chính (đơn giản hóa):
 
-**Listing 12.3:** Cấu hình Docker Compose cho hệ thống LMS
+**Listing 12.3:** Cấu hình Docker Compose cho KBLab LMS chính
 
 ```yaml
-# docker-compose.yml — toàn bộ hệ thống LMS
+# docker-compose.yml — KBLab LMS chính
 services:
   # --- Infrastructure ---
   postgres:
@@ -218,7 +218,7 @@ volumes:
 | **Dependencies**: `depends_on` đảm bảo thứ tự khởi động | **Không có load balancing**: cần reverse proxy thêm |
 | **Isolated networking**: services giao tiếp qua service name | **Không production-grade**: thiếu health checks, rolling updates |
 
-Docker Compose **phù hợp cho**: development environment, staging, CI/CD test environments, và **hệ thống nhỏ-trung production** (như LMS). Khi cần scale ra nhiều hosts, auto-healing, rolling updates → cần **Kubernetes** hoặc container orchestration platform.
+Docker Compose **phù hợp cho**: development environment, staging, CI/CD test environments, và **hệ thống nhỏ-trung production** (như KBLab LMS chính). Khi cần scale ra nhiều hosts, auto-healing, rolling updates → cần **Kubernetes** hoặc container orchestration platform. DevOps Lab là ngoại lệ có chủ đích: phần này cần k3s/Sysbox để cô lập lab environment, không phải vì toàn bộ hệ thống đã cần Kubernetes enterprise.
 
 ---
 
@@ -330,7 +330,7 @@ Mitra trong [3, Ch.6-7] mô tả IaC là nền tảng cho microservices deployme
 
 **Bảng 12.9:** Các công cụ Infrastructure as Code phổ biến
 
-| Thành phần | Công cụ phổ biến | Ví dụ LMS |
+| Thành phần | Công cụ phổ biến | Ví dụ KBLab |
 | :----------- | :----------------- | :----------- |
 | **Infrastructure provisioning** | Terraform, Pulumi, CloudFormation | Tạo VMs, networks, managed databases |
 | **Container orchestration** | Kubernetes manifests, Helm charts | Deploy services, scaling rules |
@@ -349,7 +349,7 @@ Docker Compose — dù đơn giản — đã là một dạng IaC: hạ tầng (
 | **Level 2** | Kubernetes + Helm | Multi-host, auto-scaling, self-healing |
 | **Level 3** | Terraform + Kubernetes + ArgoCD | Full GitOps — infrastructure + services as code |
 
-Với LMS — hệ thống giáo dục quy mô trung bình — **Level 1 (Docker Compose)** hiện đang phù hợp. Khi scale (nhiều sinh viên, nhiều trường), chuyển lên Level 2 (Kubernetes).
+Với KBLab LMS chính — hệ thống giáo dục quy mô trung bình — **Level 1 (Docker Compose)** hiện vẫn phù hợp. DevOps Lab dùng một cụm k3s nhỏ cho bài toán lab isolation riêng. Khi toàn hệ thống cần multi-host scaling, self-healing và rolling deployment đồng đều, mới chuyển dần lên Level 2 (Kubernetes).
 
 > **📐 Nguyên tắc — Infrastructure as Code**
 >
@@ -361,7 +361,7 @@ Với LMS — hệ thống giáo dục quy mô trung bình — **Level 1 (Docker
 
 ### Kubernetes — Container Orchestration cho Production
 
-Docker Compose phù hợp cho development và hệ thống nhỏ (single host). Khi cần **multi-host deployment, auto-scaling, self-healing**, Kubernetes (K8s) trở thành nền tảng tiêu chuẩn. Newman trong [4a, Ch.8] nhận xét: "Kubernetes has become the de facto platform for running microservices at scale."
+Docker Compose phù hợp cho development và hệ thống nhỏ, ít yêu cầu điều phối. Khi cần **multi-node deployment, auto-scaling, self-healing**, Kubernetes (K8s) trở thành nền tảng tiêu chuẩn. Newman trong [4a, Ch.8] nhận xét: "Kubernetes has become the de facto platform for running microservices at scale."
 
 #### Kiến trúc Kubernetes
 
@@ -403,29 +403,29 @@ Docker Compose phù hợp cho development và hệ thống nhỏ (single host). 
 | **Learning curve** | 1-2 ngày | 2-4 tuần |
 | **Team size cần thiết** | 1-3 người | 3-5+ người (hoặc managed K8s) |
 
-#### LMS Migration Scenario: Compose → Kubernetes
+#### KBLab Migration Scenario: Compose → Kubernetes
 
-Nếu LMS cần scale (nhiều trường, nhiều sinh viên đồng thời):
+Nếu KBLab cần scale rộng hơn (nhiều đơn vị đào tạo, nhiều sinh viên đồng thời):
 
-**Listing 12.4:** Scenario scale hệ thống LMS từ Compose lên Kubernetes
+**Listing 12.4:** Scenario scale KBLab từ Compose lên Kubernetes
 
 ```
-Phase 1 (Hiện tại): Docker Compose single host
-├── Đủ cho 1 trường, <500 sinh viên đồng thời
+Phase 1 (Hiện tại): Docker Compose cho LMS chính
+├── Phù hợp hạ tầng nhỏ và workload vừa phải
 ├── Deploy: docker-compose up -d
-└── Cost: 1 VPS ~$20/month
+└── Chi phí vận hành thấp, thao tác đơn giản
 
 Phase 2 (Scale): Managed Kubernetes (GKE/EKS/AKS)  
-├── 3+ trường, 2000+ sinh viên đồng thời
+├── Nhiều đơn vị đào tạo hoặc contest traffic lớn
 ├── Judge Service: HPA scale 1→10 pods khi contest
 ├── Core Service: 2-3 replicas cho high availability
 ├── PostgreSQL: managed service (Cloud SQL/RDS)
-└── Cost: ~$200-500/month (managed K8s)
+└── Chi phí và độ phức tạp tăng đáng kể
 ```
 
 > **📐 Nguyên tắc — Kubernetes khi nào?**
 >
-> Không chuyển lên K8s vì "Netflix dùng". Chuyển khi có **ít nhất 2 tiêu chí**: (1) cần multi-host deployment (single host không đủ resource), (2) cần auto-scaling (load biến động: contest → bình thường), (3) cần zero-downtime deployment (SLA yêu cầu), (4) team ≥3 người có thể invest thời gian học K8s. Managed Kubernetes (GKE, EKS, AKS) giảm đáng kể complexity — không cần tự setup/maintain control plane.
+> Không chuyển lên K8s vì "Netflix dùng". Chuyển khi có **ít nhất 2 tiêu chí**: (1) cần multi-node deployment hoặc workload isolation tốt hơn, (2) cần auto-scaling (load biến động: contest → bình thường), (3) cần zero-downtime deployment (SLA yêu cầu), (4) team đủ năng lực vận hành K8s. Managed Kubernetes (GKE, EKS, AKS) giảm đáng kể complexity — không cần tự setup/maintain control plane.
 
 ---
 
@@ -477,36 +477,42 @@ Khi hệ thống microservices lớn (20+ services), mỗi service cần impleme
 | Canary routing | Manual load balancer config | Declarative traffic rules |
 | Overhead | Không | ~10-20ms latency per hop |
 
-Với LMS (7 services, single host), service mesh hiện **over-engineering**. Service mesh phù hợp khi: ≥20 services, multi-host deployment, polyglot stack (services viết bằng nhiều ngôn ngữ — sidecar language-agnostic), hoặc yêu cầu security cao (mTLS mandatory).
+Với KBLab hiện tại, service mesh vẫn **over-engineering** cho LMS chính. Dù DevOps Lab làm hệ thống trở thành polyglot Java+Go, nhu cầu trước mắt là CI/CD, observability và secret management. Service mesh phù hợp khi: số lượng service lớn hơn nhiều, multi-host deployment trở thành mặc định, hoặc yêu cầu security cao đến mức mTLS bắt buộc giữa mọi service.
 
 ---
 
-## 12.7 Case Study: Deployment Architecture của hệ thống LMS
+## 12.7 Case Study: Deployment Architecture của KBLab
 
 ### Hiện trạng
 
-Hệ thống LMS triển khai production trên **Docker Compose** — đây là kiến trúc deployment phổ biến cho hệ thống microservices quy mô nhỏ-trung:
+KBLab hiện có hai kiểu deployment song song ở mức khái quát:
+
+1. **LMS chính**: các service Java/Spring Boot, database, Kafka, Gateway và frontend triển khai bằng Docker Compose trên hạ tầng nhỏ. Đây là lựa chọn thực dụng cho team nhỏ, dễ vận hành, không cần cluster phức tạp.
+2. **DevOps Lab**: phần thực hành Docker/Kubernetes dùng Go, k3s và Sysbox để tạo lab environment cô lập. Đây là nhu cầu domain đặc thù: sinh viên cần chạy container/lab riêng trong môi trường an toàn.
+
+Không cần public domain, IP hay sơ đồ máy chủ cụ thể; điều quan trọng với sách là **trade-off deployment**: cùng một hệ thống có thể dùng Docker Compose cho phần LMS chính và k3s/Sysbox cho bounded context cần isolation.
 
 ![](../figures/ch12/fig-12-8.svg)
 
-*Hình 12.8: Deployment Architecture LMS hiện tại trên single host*
+*Hình 12.8: Deployment Architecture KBLab ở mức khái quát*
 
 ### Phân tích theo deployment maturity
 
-**Bảng 12.15:** Phân tích mức độ trưởng thành triển khai của LMS
+**Bảng 12.15:** Phân tích mức độ trưởng thành triển khai của KBLab
 
 | Aspect | Hiện trạng | Maturity | Nhận xét |
 | :-------- | :----------- | :---------- | :--------- |
 | **Containerization** | Docker images cho tất cả services | 🟢 Tốt | Multi-stage builds, container registry (GitLab) |
-| **Orchestration** | Docker Compose trên single host | 🟡 OK cho quy mô hiện tại | Phù hợp team nhỏ, không overkill |
-| **CI/CD** | Manual build + push | 🔴 Gap lớn | Mỗi deploy phải build thủ công, rủi ro cao |
+| **Orchestration** | Docker Compose cho LMS chính; k3s/Sysbox cho DevOps Lab | 🟡 Phù hợp theo context | Không ép một platform cho mọi phần |
+| **CI/CD** | Manual build + push ở nhiều phần | 🔴 Gap lớn | Mỗi deploy thủ công làm tăng rủi ro version drift |
 | **Deployment strategy** | All-at-once (stop → deploy → start) | 🔴 Có downtime | Sinh viên bị gián đoạn khi deploy |
 | **IaC** | Docker Compose files version controlled | 🟡 Basic IaC | Có reproducibility nhưng thiếu automation |
 | **Config management** | application.yml trong container | 🟡 Partially externalized | Một số config hardcode, chưa fully externalized |
+| **Lab isolation** | k3s + Sysbox cho lab pods | 🟢 Đúng bài toán | Cần resource quota, RBAC, network policy rõ |
 
 ### Phân tích business context
 
-LMS phục vụ sinh viên → **deployment windows** quan trọng:
+KBLab phục vụ sinh viên → **deployment windows** quan trọng:
 
 **Bảng 12.16:** Deployment windows cho LMS
 
@@ -519,7 +525,7 @@ LMS phục vụ sinh viên → **deployment windows** quan trọng:
 
 > **🔍 Phân tích gap — Manual deployment, no CI/CD pipeline**
 >
-> Hệ thống LMS containerized (Docker) nhưng **deploy thủ công**: developer build image locally → push to registry → SSH into server → docker compose up. Không có automated testing trước deploy, không có rolling updates, không có rollback mechanism.
+> KBLab đã containerized, nhưng nhiều phần vẫn **deploy thủ công**: developer build image locally → push to registry → SSH vào hạ tầng → chạy lệnh deploy tương ứng. Không có automated testing trước deploy, chưa có rollback mechanism nhất quán, và CI/CD giữa LMS chính và DevOps Lab chưa đồng đều.
 >
 > Khi có bug trên production: (1) developer phát hiện từ user report, (2) fix code → build → push → deploy thủ công, (3) nếu fix sai → lặp lại. MTTR (Mean Time To Resolve) cao, rủi ro deploy nhầm version.
 >
@@ -539,16 +545,17 @@ LMS phục vụ sinh viên → **deployment windows** quan trọng:
 > - Hoặc blue/green cho contest periods: deploy version mới song song, switch khi sẵn sàng
 > - Giá trị ngay: deploy bất kỳ lúc nào, không ảnh hưởng sinh viên
 >
-> **Phase 4 — Kubernetes** (khi cần scale, effort cao):
-> - Chuyển từ Docker Compose sang Kubernetes khi cần: multi-host, auto-scaling, self-healing
-> - Hiện tại Docker Compose vẫn phù hợp — **đừng over-engineer**
+> **Phase 4 — Kubernetes/Cluster hardening** (khi cần scale, effort cao):
+> - Chuyển dần LMS chính từ Docker Compose sang Kubernetes khi cần: multi-host, auto-scaling, self-healing
+> - Với DevOps Lab: ưu tiên RBAC, NetworkPolicy, ResourceQuota, lab TTL và observability cho k3s/Sysbox
+> - Hiện tại không cần ép toàn bộ hệ thống lên Kubernetes — **đừng over-engineer**
 
 ---
 
 > **⚠️ Sai lầm thường gặp**
 >
-> 1. **Deploy Friday chiều** — Team deploy tính năng mới cuối tuần, bug phát hiện khi không ai online. Hậu quả: downtime kéo dài đến thứ hai. *Phòng tránh*: deploy sáng thứ hai-tư, khi team sẵn sàng xử lý vấn đề. Với LMS: tránh deploy trước/trong contest.
-> 2. **Dùng Kubernetes cho hệ thống 3 services** — "Netflix dùng Kubernetes, chúng ta cũng nên". Hậu quả: complexity overhead lớn (cluster management, RBAC, networking) cho team 2-3 người. *Phòng tránh*: Docker Compose đủ cho ≤10 services trên single host. Chuyển Kubernetes khi *cần* multi-host hoặc auto-scaling — không phải vì "industry trend".
+> 1. **Deploy Friday chiều** — Team deploy tính năng mới cuối tuần, bug phát hiện khi không ai online. Hậu quả: downtime kéo dài đến thứ hai. *Phòng tránh*: deploy sáng thứ hai-tư, khi team sẵn sàng xử lý vấn đề. Với KBLab: tránh deploy trước/trong contest hoặc buổi lab.
+> 2. **Dùng Kubernetes cho hệ thống 3 services** — "Netflix dùng Kubernetes, chúng ta cũng nên". Hậu quả: complexity overhead lớn (cluster management, RBAC, networking) cho team nhỏ. *Phòng tránh*: Docker Compose đủ cho hệ thống nhỏ, ít yêu cầu điều phối. Chuyển Kubernetes khi *cần* multi-node, isolation hoặc auto-scaling — không phải vì "industry trend".
 > 3. **Build image khác nhau cho mỗi environment** — Build riêng cho dev, staging, production — cùng code nhưng khác artifact. Hậu quả: "works on staging" nhưng fail production vì image khác. *Phòng tránh*: build once, deploy everywhere — externalize config qua environment variables.
 > 4. **Không có rollback plan** — Deploy version mới, có bug, không biết rollback thế nào. Hậu quả: panic, manual fix trên production, thêm bug mới. *Phòng tránh*: mọi deployment phải có rollback procedure documented — biết chính xác "nếu có lỗi, chạy lệnh gì để quay lại".
 > 5. **Shared database giữa services** — Chương 7 đã phân tích. Nhưng khi deploy: nếu Service A và B chia sẻ database, database migration của A có thể break B. *Phòng tránh*: mỗi service own database schema riêng — migration independent.
@@ -562,13 +569,13 @@ LMS phục vụ sinh viên → **deployment windows** quan trọng:
 
 ## Tổng kết
 
-Triển khai microservices phức tạp hơn monolith vì N services cần build, test, deploy, và rollback độc lập nhưng tương thích với nhau. **Containerization** (Docker) giải quyết "works on my machine" — đóng gói service + dependencies thành image portable. **Docker Compose** cho phép orchestrate nhiều services trên single host — phù hợp cho team nhỏ-trung và development/staging environments.
+Triển khai microservices phức tạp hơn monolith vì N services cần build, test, deploy, và rollback độc lập nhưng tương thích với nhau. **Containerization** (Docker) giải quyết "works on my machine" — đóng gói service + dependencies thành image portable. **Docker Compose** cho phép orchestrate nhiều services trên hạ tầng nhỏ — phù hợp cho team nhỏ-trung và development/staging environments.
 
 **CI/CD pipeline** là xương sống: code push → auto build → auto test → auto deploy. Không có CI/CD, microservices deployment trở thành "manual ceremony" — chậm, rủi ro, không reproducible. Three deployment strategies — Rolling, Blue/Green, Canary — lựa chọn theo mức rủi ro: bug fix nhỏ → rolling, thay đổi lớn → blue/green, tính năng mới → canary.
 
-**Infrastructure as Code** đảm bảo hạ tầng reproducible và version controlled — Docker Compose files đã là basic IaC. Khi scale, Terraform + Kubernetes + ArgoCD tạo thành full GitOps pipeline — nhưng đừng over-engineer: Docker Compose vừa đủ cho hệ thống ≤10 services.
+**Infrastructure as Code** đảm bảo hạ tầng reproducible và version controlled — Docker Compose files đã là basic IaC. Khi scale, Terraform + Kubernetes + ArgoCD tạo thành full GitOps pipeline — nhưng đừng over-engineer: hãy chọn mức orchestration theo từng bounded context.
 
-Phân tích LMS cho thấy containerization tốt (Docker images, registry) nhưng deployment manual — gap lớn nhất. Migration path rõ ràng: basic CI/CD pipeline → automated deployment → zero-downtime strategies. Kubernetes là bước cuối cùng — chỉ khi thực sự cần multi-host scaling.
+Phân tích KBLab cho thấy containerization tốt (Docker images, registry) và DevOps Lab đã có nhu cầu k3s/Sysbox riêng, nhưng deployment manual vẫn là gap lớn nhất. Migration path rõ ràng: basic CI/CD pipeline → automated deployment → zero-downtime strategies → cluster hardening khi thật sự cần.
 
 Qua 12 chương, chúng ta đã đi từ nền tảng SOA/Microservices (Ch.1-2), qua communication patterns (Ch.3-6), data management (Ch.7), infrastructure (Ch.8-9), migration thực tế (Ch.10), observability (Ch.11), đến deployment (Ch.12). Hành trình từ monolith đến microservices không phải "big bang migration" — mà là **chuỗi quyết định nhỏ, mỗi quyết định mang lại giá trị ngay lập tức**, với hiểu biết rằng mỗi pattern đều có trade-off.
 

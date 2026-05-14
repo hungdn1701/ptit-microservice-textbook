@@ -124,5 +124,5 @@
   <text x="80" y="370" class="subtitle">1. mTLS giữa services (zero-trust networking)</text>
   <text x="80" y="393" class="subtitle">2. Load balancing, retry, circuit breaker (không sửa code)</text>
   <text x="80" y="416" class="subtitle">3. Observability tự động (metrics, traces)</text>
-  <text x="80" y="440" class="subtitle">LMS: Chưa cần (quy mô nhỏ). Khi > 10 services, service mesh giảm complexity đáng kể.</text>
+  <text x="80" y="440" class="subtitle">KBLab: ưu tiên CI/CD + observability trước; service mesh chỉ khi mTLS/multi-host là bắt buộc.</text>
 </svg>

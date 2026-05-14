@@ -12,7 +12,7 @@
 - Phân biệt khi nào data duplication là chấp nhận được và khi nào nó là vấn đề
 - Hiểu CQRS (Command Query Responsibility Segregation) và khi nào nó cần thiết
 - Nắm tổng quan Event Sourcing — ưu/nhược điểm và khi nào nên áp dụng
-- Phân tích bài toán cross-service queries trong hệ thống LMS
+- Phân tích bài toán cross-service queries trong KBLab
 
 ---
 
@@ -54,7 +54,7 @@ Nguyên tắc **database-per-service** yêu cầu: mỗi service sở hữu dữ
 | **Separate database** | Cùng DB server, khác database | Trung bình | Thấp |
 | **Separate server** | Khác DB server hoàn toàn | Cao (polyglot possible) | Cao |
 
-Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hiện tại, **separate schema** là bước đầu tiên hợp lý — chi phí thấp nhưng ngăn được schema coupling ngầm.
+Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với KBLab hiện tại, **separate schema** là bước đầu tiên hợp lý — chi phí thấp nhưng ngăn được schema coupling ngầm.
 
 > **📐 Nguyên tắc — Data Should Be Owned, Not Shared**
 >
@@ -62,9 +62,9 @@ Cấp độ nào phù hợp tùy thuộc vào yêu cầu isolation. Với LMS hi
 >
 > *— Sam Newman, Monolith to Microservices [4b]*
 
-> **🔍 Phân tích gap — LMS shared database**
+> **🔍 Phân tích gap — KBLab shared database**
 >
-> Hệ thống LMS sử dụng **shared database** (`app_db`) giữa Core Service và Assignment Service — cả hai service đọc/ghi cùng PostgreSQL instance, có khả năng truy cập chéo bảng. Đây là hậu quả trực tiếp của việc Assignment được tách ra từ Core (cả hai ban đầu là một monolith `app`). Hậu quả: thay đổi schema cho Assignment có thể ảnh hưởng Core, và ngược lại — phá vỡ independent deployability.
+> KBLab sử dụng **shared database** (`app_db`) giữa Core Service và Assignment Service — cả hai service đọc/ghi cùng PostgreSQL instance, có khả năng truy cập chéo bảng. Đây là hậu quả trực tiếp của việc Assignment được tách ra từ Core (cả hai ban đầu là một monolith `app`). Hậu quả: thay đổi schema cho Assignment có thể ảnh hưởng Core, và ngược lại — phá vỡ independent deployability.
 >
 > **Migration path**: (1) xác định bảng nào thuộc về Core, bảng nào thuộc Assignment (dựa vào bounded context analysis từ Ch.2), (2) tạo separate schema trong cùng PostgreSQL, (3) thay thế cross-table queries bằng API calls qua Feign, (4) dài hạn: tách database server khi cần polyglot hoặc independent scaling.
 
@@ -98,7 +98,7 @@ CAP Theorem được đề cập ngắn gọn ở trên, nhưng hiểu *đúng* 
 
 **AP Systems** (Availability when Partitioned): khi partition xảy ra, system vẫn trả response nhưng data có thể stale. Ví dụ: Cassandra, DynamoDB cho phép đọc/ghi ở bất kỳ node nào — data *eventually* consistent.
 
-**Bảng 7.3:** CP vs AP cho từng service trong LMS
+**Bảng 7.3:** CP vs AP cho từng service trong KBLab
 
 | Service | Data | Nên CP hay AP? | Lý do |
 | :--------- | :------ | :--------------- | :------- |
@@ -123,7 +123,7 @@ Ba patterns chính (Newman [4a, Ch.11]):
 
 **Bảng 7.4:** So sánh ba caching patterns
 
-| Pattern | Ưu điểm | Nhược điểm | Áp dụng LMS |
+| Pattern | Ưu điểm | Nhược điểm | Áp dụng KBLab |
 | :--------- | :--------- | :------------ | :------------- |
 | **Cache-Aside** | Đơn giản, app kiểm soát | Cache miss = 2 calls (cache + DB) | Question list, user profiles |
 | **Read-Through** | Transparent cho app | Cache layer phức tạp hơn | — |
@@ -139,7 +139,7 @@ Ba patterns chính (Newman [4a, Ch.11]):
 | **Event-driven invalidation** | Service publish event → cache bị xóa | Data thay đổi thường xuyên (score update → invalidate leaderboard cache) |
 | **Versioned keys** | Cache key chứa version: `questions:v3` | Khi cần invalidate toàn bộ sau schema change |
 
-Trong LMS, Redis phù hợp nhất cho caching: đã có trong stack (dùng cho rate limiting ở Gateway — Ch.8), hỗ trợ TTL tự động, pub/sub cho invalidation events.
+Trong KBLab, Redis phù hợp nhất cho caching: đã có trong stack (dùng cho rate limiting ở Gateway — Ch.8), hỗ trợ TTL tự động, pub/sub cho invalidation events.
 
 ---
 
@@ -169,11 +169,11 @@ Newman đề xuất năm chiến lược, sắp xếp từ ít rủi ro đến n
 
 **5. Full Database Split** — Mỗi service có database server hoàn toàn riêng. Ưu điểm: isolation tối đa, polyglot possible. Nhược điểm: effort lớn, phải xử lý mọi cross-service data access.
 
-### Áp dụng cho LMS
+### Áp dụng cho KBLab
 
-Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợp nhất là **incremental**:
+Với bối cảnh KBLab (LMS học thuật, team nhỏ, cùng PostgreSQL), chiến lược phù hợp nhất là **incremental**:
 
-**Bảng 7.6:** Migration path tách database cho LMS
+**Bảng 7.6:** Migration path tách database cho KBLab
 
 | Phase | Chiến lược | Mô tả | Effort |
 | :------- | :----------- | :------- | :-------- |
@@ -183,7 +183,7 @@ Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợ
 
 > **💡 Tip — Khi nào đủ?**
 >
-> Không phải hệ thống nào cũng cần đến Phase 3. Với LMS, Phase 1 (separate schema) đã ngăn được schema coupling ngầm. Phase 2 (API wrapping) cần khi team mở rộng và cần deploy độc lập thực sự. Phase 3 chỉ cần khi có yêu cầu scale khác nhau hoặc polyglot persistence.
+> Không phải hệ thống nào cũng cần đến Phase 3. Với KBLab, Phase 1 (separate schema) đã ngăn được schema coupling ngầm. Phase 2 (API wrapping) cần khi team mở rộng và cần deploy độc lập thực sự. Phase 3 chỉ cần khi có yêu cầu scale khác nhau hoặc polyglot persistence.
 >
 > *Chi tiết migration roadmap thực tế, Outbox Pattern (reliable messaging khi tách DB), và thứ tự triển khai → xem Ch.10.*
 
@@ -193,7 +193,7 @@ Với bối cảnh LMS (team nhỏ, cùng PostgreSQL), chiến lược phù hợ
 
 ### Vấn đề: cần data từ service khác
 
-Sau khi tách database, vấn đề tiếp theo lập tức xuất hiện: **service A cần data mà service B sở hữu**. Ví dụ trong LMS: Assignment Service cần hiển thị tên sinh viên — nhưng `users` thuộc về Auth Service. Gọi Auth API mỗi lần cần tên? Lưu copy tên sinh viên tại Assignment?
+Sau khi tách database, vấn đề tiếp theo lập tức xuất hiện: **service A cần data mà service B sở hữu**. Ví dụ trong KBLab: Assignment Service cần hiển thị tên sinh viên — nhưng `users` thuộc về Auth Service. Gọi Auth API mỗi lần cần tên? Lưu copy tên sinh viên tại Assignment?
 
 Mitra trong [3, Ch.5] phân tích ba giải pháp, mỗi cách có trade-off riêng:
 
@@ -255,9 +255,9 @@ Newman trong [4b] đưa ra nguyên tắc rõ ràng: **"Duplication is far better
 >
 > Duplication is acceptable *only when* there is a clear **single source of truth**. Service A owns the data, Service B holds a copy. When data changes, the change flows from A → B (via events), never B → A. Nếu không rõ "ai sở hữu data này?", đó là tín hiệu bounded context chưa rõ ràng — quay lại Ch.2.
 
-> **🔍 Phân tích gap — Cross-service queries trong LMS**
+> **🔍 Phân tích gap — Cross-service queries trong KBLab**
 >
-> Hệ thống LMS hiện dùng **Feign calls** để query dữ liệu xuyên service — ví dụ: Assignment Service gọi Core Service để lấy danh sách câu hỏi. Đây là API call pattern (chiến lược 1). Với quy mô hiện tại (vài trăm students, request thấp), cách này chấp nhận được. Tuy nhiên, trong contest mode (100+ students, liên tục query), mỗi page load có thể trigger 5-10 Feign calls → latency tăng đáng kể.
+> KBLab hiện dùng **Feign calls** để query dữ liệu xuyên service — ví dụ: Assignment Service gọi Core Service để lấy danh sách câu hỏi. Đây là API call pattern (chiến lược 1). Với quy mô học thuật vừa phải, cách này chấp nhận được. Tuy nhiên, trong contest mode hoặc dashboard nhiều dữ liệu, mỗi page load có thể trigger nhiều Feign calls → latency tăng đáng kể.
 >
 > **Migration path**: (1) identify data nào Assignment cần *hiển thị* từ Core (chủ yếu reference data: tên câu hỏi, tên cuộc thi), (2) duplicate reference data qua Kafka events (UserUpdated, QuestionUpdated), (3) giữ Feign calls cho transactional queries (kiểm tra điểm real-time).
 
@@ -313,7 +313,7 @@ CQRS thêm complexity đáng kể — **đừng dùng khi không cần** [5, §4
 
 ### Ví dụ: Leaderboard trong Contest Mode
 
-Trong LMS, bảng xếp hạng contest cần join data từ nhiều nguồn:
+Trong KBLab, bảng xếp hạng contest cần join data từ nhiều nguồn:
 
 Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách.
 
@@ -335,7 +335,7 @@ Với CQRS, leaderboard có **read model riêng**: write side publish `ScoreUpda
 
 Với database truyền thống, chúng ta lưu **trạng thái hiện tại** (*current state*): `submission.status = JUDGED, score = 85`. Mọi thay đổi trước đó bị ghi đè — không biết submission đã qua những trạng thái nào, ai thay đổi, khi nào.
 
-Trong nhiều domain (tài chính, audit, legal), lịch sử thay đổi có giá trị ngang bằng hoặc hơn trạng thái hiện tại. Ngay cả trong LMS: "sinh viên nộp bài 3 lần, lần đầu sai, lần 2 đúng một phần, lần 3 đúng hoàn toàn" — thông tin này giá trị cho phân tích học tập, nhưng nếu chỉ lưu `status = CORRECT`, lịch sử bị mất.
+Trong nhiều domain (tài chính, audit, legal), lịch sử thay đổi có giá trị ngang bằng hoặc hơn trạng thái hiện tại. Ngay cả trong KBLab: "sinh viên nộp bài 3 lần, lần đầu sai, lần 2 đúng một phần, lần 3 đúng hoàn toàn" — thông tin này giá trị cho phân tích học tập, nhưng nếu chỉ lưu `status = CORRECT`, lịch sử bị mất.
 
 ### Event Sourcing pattern
 
@@ -375,7 +375,7 @@ Khi số lượng events tăng (1 submission có 5 events, 100,000 submissions =
 
 ### Projection Rebuilds — Tạo lại Views từ Events
 
-Một trong những lợi ích mạnh nhất của Event Sourcing: **tạo views mới mà không cần migration**. Ví dụ trong LMS:
+Một trong những lợi ích mạnh nhất của Event Sourcing: **tạo views mới mà không cần migration**. Ví dụ trong KBLab:
 
 1. Tháng 1: chỉ cần bảng `submissions` (score per question)
 2. Tháng 6: cần thêm bảng `learning_progress` (trend score theo thời gian per student)
@@ -397,7 +397,7 @@ Một trong những lợi ích mạnh nhất của Event Sourcing: **tạo views
 
 > **💡 Tip — Kafka ≈ Event Store?**
 >
-> Kafka với retention vĩnh viễn (infinite retention) có thể hoạt động như event store. LMS đã dùng Kafka cho submission pipeline (Ch.5). Về lý thuyết, messages trên topic `submissions` và `judge-results` *chính là* chuỗi events. Tuy nhiên, Kafka được thiết kế là message broker, không phải event store chuyên dụng — querying events theo entity ID khó hơn so với EventStoreDB hoặc Axon. Kleppmann trong [7, Ch.11] phân tích: Kafka phù hợp cho **event streaming** (*process events real-time*), còn Event Sourcing cần **event store** (*query events by aggregate*). Hai use cases liên quan nhưng khác nhau.
+> Kafka với retention vĩnh viễn (infinite retention) có thể hoạt động như event store. KBLab đã dùng Kafka cho submission pipeline (Ch.5). Về lý thuyết, messages trên topic `submissions` và `judge-results` *chính là* chuỗi events. Tuy nhiên, Kafka được thiết kế là message broker, không phải event store chuyên dụng — querying events theo entity ID khó hơn so với EventStoreDB hoặc Axon. Kleppmann trong [7, Ch.11] phân tích: Kafka phù hợp cho **event streaming** (*process events real-time*), còn Event Sourcing cần **event store** (*query events by aggregate*). Hai use cases liên quan nhưng khác nhau.
 
 ### Event Schema Evolution — Versioning Events
 
@@ -429,19 +429,19 @@ Events, giống API (Ch.3), cần **schema evolution** khi business thay đổi.
 | **Temporal analysis** (phân tích xu hướng) | ✅ Phù hợp | Query "trạng thái tại thời điểm X" tự nhiên |
 | **CRUD đơn giản** (quản lý users, settings) | ❌ Không | Overhead quá lớn cho lợi ích nhỏ |
 | **Domain phức tạp** (đơn hàng, booking) | ✅ Phù hợp | Business events map trực tiếp vào domain events |
-| **LMS submission tracking** | ⚠️ Tùy | Có giá trị cho learning analytics, nhưng hiện tại team nhỏ → không ưu tiên |
+| **KBLab submission tracking** | ⚠️ Tùy | Có giá trị cho learning analytics, nhưng hiện tại team nhỏ → không ưu tiên |
 
 ---
 
-## 7.6 Case Study: Quản lý dữ liệu trong hệ thống LMS
+## 7.6 Case Study: Quản lý dữ liệu trong KBLab
 
 ### Hiện trạng
 
-Phân tích source code LMS cho thấy kiến trúc dữ liệu hiện tại:
+Phân tích source code KBLab cho thấy kiến trúc dữ liệu hiện tại:
 
 ![](../figures/ch07/fig-7-14.svg)
 
-*Hình 7.14: Kiến trúc dữ liệu hiện tại của LMS — shared database là gap chính*
+*Hình 7.14: Kiến trúc dữ liệu hiện tại của KBLab — shared database là gap chính*
 
 **Quan sát chính:**
 
@@ -452,19 +452,21 @@ Phân tích source code LMS cho thấy kiến trúc dữ liệu hiện tại:
 
 ### Phân tích cross-service query patterns
 
-LMS sử dụng hai pattern để truy vấn dữ liệu xuyên service: (1) **Interface Projections** (Spring Data JPA) — query trả về lightweight projection thay vì full entity, giảm data transfer, (2) **Feign calls** — gọi API service khác khi cần data ngoài boundary.
+KBLab sử dụng hai pattern để truy vấn dữ liệu xuyên service: (1) **Interface Projections** (Spring Data JPA) — query trả về lightweight projection thay vì full entity, giảm data transfer, (2) **Feign calls** — gọi API service khác khi cần data ngoài boundary.
 
 ### Từ hiện trạng đến best practice
 
-**Bảng 7.15:** Tổng hợp vấn đề data management trong LMS và chiến lược migration
+**Bảng 7.15:** Tổng hợp vấn đề data management trong KBLab và chiến lược migration
 
-| # | Vấn đề | Hiện trạng LMS | Chiến lược migration |
+| # | Vấn đề | Hiện trạng KBLab | Chiến lược migration |
 | :---: | :-------- | :--------------- | :--------------------- |
 | 1 | **Shared database** | Core + Assignment cùng `app_db` | Separate schema → Full split |
 | 2 | **Cross-service joins** | Cross-table query trực tiếp | Thay bằng Feign hoặc event-based copy |
 | 3 | **Leaderboard query** | SQL JOIN trực tiếp | CQRS — pre-computed read model |
 | 4 | **Submission history** | CRUD (chỉ lưu current state) | Event Sourcing (cho analytics) |
 | 5 | **User reference data** | Feign call mỗi khi cần | Local copy via events |
+| 6 | **Grade Scheme / Attendance / MCQ Daily / CLO** | Nhiều read model học vụ cần tổng hợp dữ liệu khóa học, lớp, bài làm, chuẩn đầu ra | Xác định owner rõ ràng, duplicate read-only qua events hoặc materialized views |
+| 7 | **Schema migration không đồng nhất** | Java services thiên về JPA auto-DDL; Go services trong DevOps Lab phù hợp hơn với golang-migrate | Chuẩn hóa migration versioned scripts, không dựa vào auto-DDL ở production |
 
 ### Đề xuất migration path
 
@@ -479,6 +481,9 @@ Core publish `QuestionUpdated` events khi câu hỏi thay đổi. Assignment con
 
 **Phase 4 — CQRS cho Leaderboard** (effort cao, giá trị lớn cho contest mode):
 Tách leaderboard thành read model riêng. Kafka events (`ScoreUpdated`) feed vào denormalized leaderboard table. Query trả kết quả trong <10ms thay vì complex JOIN.
+
+**Phase 5 — Read models cho learning analytics** (khi mở rộng học vụ):
+Grade Scheme, Attendance, MCQ Daily và CLO nên được xem như read models học vụ. Owner của dữ liệu gốc vẫn nằm trong bounded context tương ứng; bảng tổng hợp chỉ phục vụ query nhanh cho giảng viên và báo cáo, không trở thành nguồn sự thật thứ hai.
 
 ---
 
@@ -500,7 +505,7 @@ Tách leaderboard thành read model riêng. Kafka events (`ScoreUpdated`) feed v
 
 Quản lý dữ liệu là bài toán phức tạp nhất khi chuyển từ monolith sang microservices — phức tạp hơn cả việc tách application code. Database-per-service không chỉ là nguyên tắc kỹ thuật mà là **điều kiện tiên quyết** cho independent deployability — mục tiêu cốt lõi của microservices. CAP Theorem nhắc nhở: trong hệ thống phân tán, consistency và availability luôn phải đánh đổi khi có network partition — mọi quyết định data management đều mang theo trade-off này.
 
-Năm chiến lược tách database (view → wrapping service → separate schema → data transfer → full split) cho phép migration **incremental** — không cần "big bang". Với team nhỏ như LMS, bắt đầu từ separate schema là bước đi thực tế nhất.
+Năm chiến lược tách database (view → wrapping service → separate schema → data transfer → full split) cho phép migration **incremental** — không cần "big bang". Với team nhỏ như KBLab, bắt đầu từ separate schema là bước đi thực tế nhất.
 
 Data duplication không phải anti-pattern — đây là **trade-off có chủ đích** để giảm runtime coupling. Nguyên tắc: mỗi data chỉ có một source of truth, các bản copy là read-only replicas fed bằng events. Newman đã nói rõ: "Duplication is far better than coupling."
 
@@ -508,9 +513,9 @@ CQRS (mở rộng từ nguyên tắc CQS của Meyer) tách read model và write
 
 Một bài toán liên quan chặt chẽ là **distributed transactions** — khi một business operation cần thay đổi data ở nhiều services. Saga pattern (đã thảo luận chi tiết ở Ch.6) là giải pháp: chuỗi local transactions + compensating actions thay vì distributed ACID transaction. Saga và data management bổ trợ nhau: database-per-service tạo ra nhu cầu Saga, còn CQRS/Event Sourcing cung cấp event pipeline mà Saga sử dụng.
 
-Phân tích LMS cho thấy gap nghiêm trọng nhất là shared database giữa Core và Assignment — vi phạm database-per-service và gây deploy coupling. Migration path rõ ràng: separate schema → API wrapping → event-based duplication → CQRS cho leaderboard. Mỗi phase độc lập, có thể dừng ở bất kỳ phase nào khi "đủ tốt" cho ngữ cảnh.
+Phân tích KBLab cho thấy gap nghiêm trọng nhất là shared database giữa Core và Assignment — vi phạm database-per-service và gây deploy coupling. Migration path rõ ràng: separate schema → API wrapping → event-based duplication → CQRS cho leaderboard và learning analytics. Mỗi phase độc lập, có thể dừng ở bất kỳ phase nào khi "đủ tốt" cho ngữ cảnh.
 
-Ở Chương 8, chúng ta sẽ chuyển sang **API Gateway** — single entry point cho hệ thống microservices: routing, authentication, rate limiting, và cách LMS sử dụng Spring Cloud Gateway.
+Ở Chương 8, chúng ta sẽ chuyển sang **API Gateway** — single entry point cho hệ thống microservices: routing, authentication, rate limiting, và cách KBLab sử dụng Spring Cloud Gateway.
 
 ---
 

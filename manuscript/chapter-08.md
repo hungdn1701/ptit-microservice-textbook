@@ -12,7 +12,7 @@
 - Sử dụng Spring Cloud Gateway (WebFlux) để triển khai gateway
 - Cấu hình route với Eureka service discovery (load-balanced URIs)
 - Thiết kế cross-cutting concerns tại gateway: authentication, CORS, rate limiting
-- Phân tích kiến trúc gateway trong hệ thống LMS
+- Phân tích kiến trúc gateway trong KBLab
 
 ---
 
@@ -20,7 +20,7 @@
 
 ### Vấn đề: client giao tiếp trực tiếp với nhiều services
 
-Khi không có gateway, client (web, mobile) phải biết địa chỉ của *từng* microservice và gọi trực tiếp. Với hệ thống LMS gồm 7+ services, mỗi trang web có thể cần gọi 3-4 services khác nhau:
+Khi không có gateway, client (web, mobile) phải biết địa chỉ của *từng* microservice và gọi trực tiếp. Với KBLab gồm nhiều services và module lab, mỗi trang web có thể cần gọi nhiều API khác nhau:
 
 ![](../figures/ch08/fig-8-1.svg)
 
@@ -65,7 +65,7 @@ Richardson trong [2a, Ch.8] phân biệt hai biến thể:
 | **API Gateway** | Một gateway cho tất cả clients | Team nhỏ, clients cần API tương tự |
 | **BFF** | Gateway riêng cho mỗi loại client | Mobile cần API khác web (ít data, batched calls) |
 
-LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web frontends (student + admin) với API requirements tương tự.
+KBLab sử dụng **single API Gateway** cho LMS core — phù hợp vì các web frontends chính có API requirements tương tự. Với DevOps Lab, KBLab bổ sung một lớp router riêng theo hostname để điều hướng workspace/lab runtime; đây là gateway chuyên biệt cho một bounded context, không thay thế Spring Cloud Gateway của LMS core.
 
 **Khi nào cần BFF?** BFF trở nên cần thiết khi different clients có **fundamentally different API needs** — không chỉ "filter bớt fields":
 
@@ -77,7 +77,7 @@ LMS sử dụng **single API Gateway** — phù hợp vì chỉ có 2 web fronte
 | Web + Mobile (API khác nhau) | ❌ Mobile phải nhiều calls | ✅ Mobile BFF aggregate |
 | Web + IoT + Partner API | ❌ Gateway quá phức tạp | ✅ BFF per client type |
 
-Ví dụ: nếu LMS thêm **mobile app** cho sinh viên, mobile cần: (1) **batched API** — màn hình "Dashboard" cần gọi 1 API trả về cả profile, recent submissions, leaderboard rank (thay vì 3 calls — mobile network chậm hơn), (2) **reduced payload** — mobile không cần HTML-ready data, chỉ cần raw data nhẹ, (3) **push notification integration** — gateway riêng cho mobile xử lý device tokens.
+Ví dụ: nếu KBLab thêm **mobile app** cho sinh viên, mobile cần: (1) **batched API** — màn hình "Dashboard" cần gọi 1 API trả về cả profile, recent submissions, leaderboard rank (thay vì 3 calls — mobile network chậm hơn), (2) **reduced payload** — mobile không cần HTML-ready data, chỉ cần raw data nhẹ, (3) **push notification integration** — gateway riêng cho mobile xử lý device tokens.
 
 Newman trong [4a, Ch.4] khuyến nghị: BFF nên **owned by frontend team** — team mobile viết Mobile BFF, team web viết Web BFF. Mỗi BFF là thin layer: nhận request từ client → gọi downstream services → aggregate + transform → trả về format phù hợp cho client đó.
 
@@ -109,7 +109,7 @@ LMS chọn **Spring Cloud Gateway** — lựa chọn đúng vì cần WebSocket 
 
 **Bảng 8.5:** Ba khái niệm cốt lõi của Spring Cloud Gateway
 
-| Concept | Mô tả | Ví dụ LMS |
+| Concept | Mô tả | Ví dụ KBLab |
 | :--------- | :------- | :----------- |
 | **Route** | Mapping: predicate → URI đích | `/api/core/**` → `lb://core-service` |
 | **Predicate** | Điều kiện match request | `Path=/api/core/**`, `Method=GET,POST` |
@@ -193,11 +193,11 @@ spring:
 
 ### Vấn đề: mỗi service tự xử lý authentication, CORS, logging
 
-Nếu mỗi service tự validate JWT token, tự configure CORS, tự implement rate limiting — code bị duplicate ở 5-7 services, mỗi lần thay đổi policy phải update tất cả. Đây chính là vấn đề gateway giải quyết: **tập trung cross-cutting concerns tại một điểm duy nhất**.
+Nếu mỗi service tự validate JWT token, tự configure CORS, tự implement rate limiting — code bị duplicate ở nhiều services, mỗi lần thay đổi policy phải update tất cả. Đây chính là vấn đề gateway giải quyết: **tập trung cross-cutting concerns tại một điểm duy nhất**.
 
 ### 1. Authentication — JWT Validation tại Gateway
 
-LMS implement JWT validation ở gateway thông qua custom `GatewayFilter`:
+KBLab implement JWT validation ở gateway thông qua custom `GatewayFilter`:
 
 **Listing 8.2:** JWT validation filter tại Gateway
 
@@ -249,9 +249,9 @@ Services phía sau nhận user info qua **custom headers** (`X-User-Id`, `X-User
 
 CORS tại gateway = **một nơi duy nhất** quản lý origins, methods, headers. Cấu hình `globalcors` trong Spring Cloud Gateway cho phép khai báo `allowedOrigins` (domains hợp lệ), `allowedMethods`, `allowCredentials` — services phía sau không cần CORS config vì gateway đã xử lý.
 
-> **🔍 Phân tích gap — LMS CORS `allowAll`**
+> **🔍 Phân tích gap — KBLab CORS `allowAll`**
 >
-> Hệ thống LMS hiện cấu hình `allowedOrigins: "*"` — cho phép *mọi* origin gọi API. Trong development, đây là cách đơn giản để tránh CORS errors. Trong production, đây là **rủi ro bảo mật**: bất kỳ website nào có thể gọi API của LMS bằng credentials của user (CSRF attack). **Migration**: (1) liệt kê rõ các origins hợp lệ (student frontend, admin frontend), (2) thêm `allowCredentials: true` cho cookie-based auth, (3) test kỹ với mobile app nếu có.
+> KBLab từng có cấu hình `allowedOrigins: "*"` — cho phép *mọi* origin gọi API. Trong development, đây là cách đơn giản để tránh CORS errors. Trong production, đây là **rủi ro bảo mật**: bất kỳ website nào có thể gọi API bằng credentials của user (CSRF attack). **Migration**: (1) liệt kê rõ các origins hợp lệ theo môi trường, không public domain cụ thể trong sách, (2) thêm `allowCredentials: true` cho cookie-based auth, (3) test kỹ với mobile app nếu có.
 
 ### 3. Rate Limiting
 
@@ -334,21 +334,25 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 
 ---
 
-## 8.5 Case Study: Gateway trong hệ thống LMS
+## 8.5 Case Study: Gateway trong KBLab
 
 ### Kiến trúc tổng thể
 
 ![](../figures/ch08/fig-8-7.svg)
 
-*Hình 8.7: Kiến trúc tổng thể LMS — Gateway là single entry point*
+*Hình 8.7: Kiến trúc tổng thể KBLab — Gateway là single entry point*
+
+KBLab có hai kiểu gateway/router đáng phân biệt:
+- **Spring Cloud Gateway** cho LMS core: route API theo path, validate JWT, CORS, rate limiting, correlation ID.
+- **Go hostname-based router** cho DevOps Lab: route workspace/lab runtime theo hostname/subdomain nội bộ, tích hợp với k3s/Sysbox ở lớp hạ tầng.
 
 ### Phân tích configuration
 
-**Bảng 8.7:** Phân tích configuration Gateway trong LMS
+**Bảng 8.7:** Phân tích configuration Gateway trong KBLab
 
-| Aspect | Hiện trạng LMS | Best Practice | Gap |
+| Aspect | Hiện trạng KBLab | Best Practice | Gap |
 | :-------- | :--------------- | :--------------- | :----- |
-| **Routing** | `lb://` URIs qua Eureka | ✅ Đúng | — |
+| **Routing** | `lb://` URIs qua Eureka cho Java services; hostname routing cho DevOps Lab | ✅ Đúng theo từng boundary | Cần tài liệu hóa route ownership |
 | **JWT Validation** | Custom `JwtRequestFilter` | ✅ Đúng (validate tại edge) | — |
 | **CORS** | `allowedOrigins: "*"` | ❌ Nên restrict | Liệt kê origins cụ thể |
 | **Rate Limiting** | Không có | ❌ Nên có | Redis + RequestRateLimiter |
@@ -360,7 +364,7 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 
 ### Vấn đề JWT Version Inconsistency
 
-Một vấn đề đáng chú ý trong LMS: gateway sử dụng **JJWT 0.11.5** (API mới: `parserBuilder()`) trong khi các services khác sử dụng **JJWT 0.9.1** (API cũ: `parser()`). Với HS256 đơn giản, hai versions tương thích ở happy path. Tuy nhiên, khi upgrade hoặc thêm RS256, version mismatch có thể gây inconsistent validation — gateway accept nhưng service reject, hoặc ngược lại.
+Một vấn đề đáng chú ý trong KBLab: gateway sử dụng **JJWT 0.11.5** (API mới: `parserBuilder()`) trong khi các services khác sử dụng **JJWT 0.9.1** (API cũ: `parser()`). Với HS256 đơn giản, hai versions tương thích ở happy path. Tuy nhiên, khi upgrade hoặc thêm RS256, version mismatch có thể gây inconsistent validation — gateway accept nhưng service reject, hoặc ngược lại.
 
 > **🔍 Phân tích gap — JWT library version inconsistency**
 >
@@ -371,6 +375,7 @@ Một vấn đề đáng chú ý trong LMS: gateway sử dụng **JJWT 0.11.5** 
 **Phase 1 — Security Hardening** (ưu tiên cao, effort thấp):
 - Restrict CORS origins (liệt kê frontend URLs cụ thể)
 - Thống nhất JJWT version
+- Tài liệu hóa boundary giữa Spring Cloud Gateway và Go hostname router
 
 **Phase 2 — Observability** (ưu tiên trung bình):
 - Thêm `X-Correlation-Id` GlobalFilter
@@ -406,9 +411,9 @@ Spring Cloud Gateway (WebFlux) là lựa chọn hiện đại cho Java ecosystem
 
 Cross-cutting concerns tại gateway — JWT validation, CORS, rate limiting, correlation ID — là đầu tư giúp hệ thống bảo mật, dễ debug, và dễ vận hành. Nguyên tắc: gateway xử lý infrastructure concerns, services xử lý business logic — ranh giới rõ ràng, trách nhiệm rõ ràng.
 
-Phân tích LMS cho thấy gateway architecture cơ bản đúng (Spring Cloud Gateway + Eureka + JWT), nhưng thiếu rate limiting, CORS quá mở, và JWT library version inconsistency. Migration path rõ ràng: hardening trước (CORS, JWT version), observability sau (correlation ID, logging), protection cuối (rate limiting).
+Phân tích KBLab cho thấy gateway architecture cơ bản đúng (Spring Cloud Gateway + Eureka + JWT cho LMS core, Go hostname router cho DevOps Lab), nhưng thiếu rate limiting, CORS quá mở ở một số môi trường, và JWT library version inconsistency. Migration path rõ ràng: hardening trước (CORS, JWT version), observability sau (correlation ID, logging), protection cuối (rate limiting).
 
-Ở Chương 9, chúng ta sẽ đi sâu vào **bảo mật microservices** — JWT structure, OAuth2 integration, dual validation strategy, và RBAC trong hệ thống LMS.
+Ở Chương 9, chúng ta sẽ đi sâu vào **bảo mật microservices** — JWT structure, OAuth2 integration, dual validation strategy, và RBAC trong KBLab.
 
 ---
 

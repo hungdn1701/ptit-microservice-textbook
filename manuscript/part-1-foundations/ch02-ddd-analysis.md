@@ -7,7 +7,7 @@
 Sau khi đọc xong chương này, bạn sẽ:
 - Hiểu các khái niệm cốt lõi của DDD: Ubiquitous Language, Bounded Context, Context Map
 - Biết cách áp dụng DDD để xác định ranh giới dịch vụ
-- Phân tích được 4 Bounded Contexts trong hệ thống LMS
+- Phân tích được các Bounded Contexts chính trong KBLab
 
 ## 2.1 Vì sao cần Domain-Driven Design?
 
@@ -26,9 +26,9 @@ Sau khi đọc xong chương này, bạn sẽ:
 
 ## 2.4 Event Storming — Phương pháp khám phá domain
 
-## Case Study: Khám phá 4 Bounded Contexts của LMS
+## Case Study: Khám phá các Bounded Contexts của KBLab
 
-> 📋 Áp dụng DDD để phân tích hệ thống LMS, xác định:
+> 📋 Áp dụng DDD để phân tích KBLab, xác định:
 > - **Identity & Access**: Định danh, phân quyền (kblab-auth)
 > - **Academic Management**: Quản lý đào tạo (kblab-assignment)
 > - **Practical Assessment**: Thực hành & đánh giá (kblab-app, kblab-judge, sandbox executors)
