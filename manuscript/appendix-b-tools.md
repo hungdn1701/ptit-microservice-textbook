@@ -2,8 +2,6 @@
 
 > Tổng hợp các công cụ và tài nguyên được sử dụng hoặc đề cập trong sách.
 
----
-
 ## Frameworks & Libraries
 
 | Tool | Mô tả | Chương | URL |
@@ -39,7 +37,7 @@
 | **Sysbox** | Container runtime hỗ trợ sandbox/container-in-container | Ch.9, 12 | github.com/nestybox/sysbox |
 | **Jenkins / GitHub Actions** | CI/CD automation | Ch.12 | — |
 
-## Testing
+## Migration & Release Management
 
 | Tool | Mô tả | Chương | URL |
 |------|-------|--------|-----|
@@ -73,6 +71,4 @@
 | **Postman** | API testing & documentation | postman.com |
 | **Swagger UI** | Interactive API documentation | swagger.io |
 
----
-
-> **Lưu ý:** Versions cụ thể phụ thuộc vào thời điểm sử dụng. Tham khảo trang chính thức của mỗi tool để có version mới nhất.
+> **Lưu ý:** Phiên bản cụ thể phụ thuộc vào thời điểm sử dụng. Tham khảo trang chính thức của mỗi công cụ để có thông tin mới nhất.

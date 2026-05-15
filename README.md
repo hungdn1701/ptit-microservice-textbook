@@ -1,4 +1,4 @@
-# Kiến trúc Hướng Dịch vụ & Microservices — Từ Lý thuyết đến Thực tiễn
+# Kiến trúc SOA & Microservices — Từ lý thuyết đến thực tiễn
 
 [![License: CC BY 4.0](https://img.shields.io/badge/Content-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![License: MIT](https://img.shields.io/badge/Code-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -6,8 +6,8 @@
 
 **Service-Oriented Architecture & Microservices: From Theory to Practice**
 
-> [!WARNING]
-> **Bản Beta** — Giáo trình đang trong quá trình hoàn thiện (`v1.0.0-beta`). Nội dung có thể thay đổi. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
+> [!NOTE]
+> **Phiên bản hiện tại: `v1.0.1`** — Bản PDF/HTML hoàn chỉnh đã được phát hành. Các chỉnh sửa hậu release tiếp tục được ghi nhận trong `[Unreleased]` trước khi đóng gói phiên bản kế tiếp. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
 
 Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ nền tảng SOA đến triển khai Microservices, minh họa xuyên suốt qua case study hệ thống **KBLab LMS** thực tế.
 
@@ -19,7 +19,7 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 |---|---|
 | **PDF** (khuyên dùng) | Tải bản mới nhất tại [Releases](https://github.com/hungdn1701/ptit-microservice-textbook/releases) |
 | **Online** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
-| **Tự build** | Xem mục [🏗️ Build](#️-build) bên dưới *(cần Pandoc + MS Edge)* |
+| **Tự build** | Xem mục [🏗️ Build](#️-build) bên dưới *(cần Typst + submodule `references/`)* |
 
 ---
 
@@ -43,7 +43,7 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 | 11 | [Observability](manuscript/chapter-11.md) | Logging, Tracing, Monitoring |
 | 12 | [Triển khai & Tự động hóa](manuscript/chapter-12.md) | Docker, Kubernetes, CI/CD |
 
-Kèm theo: [Bài tập](manuscript/exercises.md) · [Pattern Catalog](manuscript/appendix-c-pattern-catalog.md) · [Anti-patterns](manuscript/appendix-d-anti-patterns.md)
+Kèm theo: [Bài tập](manuscript/exercises.md) · [Glossary](manuscript/appendix-a-glossary.md) · [Tools & Resources](manuscript/appendix-b-tools.md) · [Pattern Catalog](manuscript/appendix-c-pattern-catalog.md) · [Anti-patterns](manuscript/appendix-d-anti-patterns.md)
 
 ---
 
@@ -53,11 +53,12 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 
 ---
 
-## 📥 Tải Giáo Trình (PDF)
+## 📥 Tải Giáo Trình
 
-Phiên bản PDF hoàn chỉnh (v1.0.0) đã được phát hành:
-- **[Tải toàn bộ sách (SOA-Microservices-Book-v1.0.0.pdf)](release/v1.0.0/SOA-Microservices-Book-v1.0.0.pdf)**
-- [Xem từng chương rời](release/v1.0.0)
+Phiên bản hoàn chỉnh (v1.0.1) đã được phát hành:
+- **[Tải toàn bộ sách PDF (SOA-Microservices-Book-v1.0.1.pdf)](release/v1.0.1/SOA-Microservices-Book-v1.0.1.pdf)**
+- **[Đọc bản HTML (SOA-Microservices-Book-v1.0.1.html)](release/v1.0.1/SOA-Microservices-Book-v1.0.1.html)**
+- [Xem từng chương rời](release/v1.0.1)
 
 ---
 
@@ -66,25 +67,43 @@ Phiên bản PDF hoàn chỉnh (v1.0.0) đã được phát hành:
 > [!NOTE]
 > Phần này dành cho **core author** có quyền truy cập submodule `references/`. Xem [AGENTS.md](AGENTS.md) để biết thêm.
 
-**Yêu cầu:** [Typst](https://typst.app/) (engine build PDF chính). Pandoc + MS Edge (cho build HTML legacy).
+**Yêu cầu:** [Typst](https://typst.app/) cho compile PDF/HTML. Luồng phát hành hiện tại không dùng pipeline HTML/PDF cũ; PDF và HTML đều compile qua Typst.
 
 ```powershell
 # Clone đầy đủ (bao gồm cả submodule)
 git clone --recurse-submodules https://github.com/hungdn1701/ptit-microservice-textbook.git
 
-# Build toàn bộ sách (dev mode — output/ gitignored)
+# Build toàn bộ sách (dev mode — reset output/ rồi sinh PDF local)
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all
 
 # Build một chương cụ thể (ví dụ: chương 3)
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 03
 
-# Release build (output tracked trong release/<tag>/)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1
+# Build HTML bằng Typst
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 html
+
+# Build PDF + HTML cùng lúc
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Html
+
+# Stable release build (PDF + HTML, artifact tracked trong release/<tag>/)
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1 -Html
+
+# Pre-release build theo SemVer, dùng cho release candidate trước bản chính thức
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1-rc.1 -PreRelease -Html
 ```
 
 Output:
-- **Dev build:** `output/` (gitignored) — `chapter-XX.pdf` + `book.pdf`
-- **Release build:** `release/<tag>/` (tracked) — tagged PDFs + `RELEASE_NOTES.md`
+- **Dev build:** `output/` (gitignored, disposable, được reset mỗi lần build) — `chapter-XX.pdf` + `book.pdf`; thêm `book.html` nếu chạy target `html` hoặc `all -Html`.
+- **Release build:** `release/<tag>/` (tracked) — tagged PDFs + `SOA-Microservices-Book-<tag>.html` + `RELEASE_NOTES.md` khi chạy `-Html`.
+
+Luồng nguồn hiện tại:
+- `manuscript/*.md` là nguồn nội dung public, thuận tiện để viết, review diff và cộng tác.
+- Build script đồng bộ `manuscript/*.md` sang `references/internal/typst/chapters/*.typ` trước khi compile.
+- `references/internal/typst/main.typ` là entry point PDF chính; `main-web.typ` là entry point HTML.
+
+Quy ước phiên bản:
+- **Stable release:** tag dạng `vX.Y.Z`, ví dụ `v1.0.1`.
+- **Pre-release:** dùng đúng thuật ngữ `pre-release`, tag dạng `vX.Y.Z-rc.N`, ví dụ `v1.0.1-rc.1`.
 
 ---
 

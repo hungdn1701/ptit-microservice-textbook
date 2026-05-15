@@ -1,4 +1,4 @@
-﻿# Chương 9: Bảo mật Microservices
+# Chương 9: Bảo mật Microservices
 
 > *"Security is not an afterthought. In a distributed system, every service is a potential attack surface."*
 > — Sam Newman, *Building Microservices* [4a]
@@ -347,18 +347,21 @@ KBLab frontend sử dụng pattern khác biệt: **route permissions được fe
 ### Đề xuất migration
 
 **Phase 1 — Quick Wins** (effort thấp, impact cao):
+
 - Restrict CORS origins
 - Move secrets ra khỏi application.yml → environment variables (tối thiểu)
 - Token vào HttpOnly cookie thay vì localStorage
 - Bật email verification và Turnstile cho login/register/reset ở các flow public
 
 **Phase 2 — Authentication Hardening** (effort trung bình):
+
 - Chuyển HS256 → RS256
 - Thống nhất JWT library version (đã đề cập ở Ch.8)
 - Token refresh flow với rotation (mỗi lần refresh → invalidate token cũ)
 - Chuẩn hóa SSO cross-platform: external token exchange → KBLab JWT → shared claims contract
 
 **Phase 3 — Service Mesh Security** (effort cao, khi scale):
+
 - Service-to-service authentication (mTLS hoặc internal JWT)
 - Centralized secret management (HashiCorp Vault)
 - API-level authorization policies (Open Policy Agent)
@@ -455,11 +458,13 @@ Phân tích KBLab cho thấy kiến trúc bảo mật cơ bản đúng (JWT, gat
 ## Đọc thêm
 
 **Sách tham khảo chính:**
+
 1. [4a] Sam Newman, *Building Microservices* — Ch.9: Security
 2. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.11: Developing secure services, Access Token pattern
 3. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.4: Encoding and Evolution (data formats, schema evolution — nền tảng cho hiểu binary/JSON encoding trong tokens và API messages)
 
 **Nguồn trực tuyến:**
+
 - JWT.io — jwt.io (interactive JWT decoder)
 - OWASP API Security Top 10 — owasp.org/www-project-api-security
 - Spring Security OAuth2 Resource Server — docs.spring.io/spring-security

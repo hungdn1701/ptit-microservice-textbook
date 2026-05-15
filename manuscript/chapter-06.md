@@ -1,4 +1,4 @@
-﻿# Chương 6: Giao dịch Phân tán — Saga Pattern
+# Chương 6: Giao dịch Phân tán — Saga Pattern
 
 > *"A saga is a sequence of local transactions. Each local transaction updates the database and publishes a message or event to trigger the next local transaction in the saga."*
 > — Chris Richardson, *Microservices Patterns* [2a]
@@ -278,6 +278,7 @@ Microservices chuyển từ ACID sang **BASE** [7, Ch.9]:
 > Rocha trong [5, Ch.5] định nghĩa **consistency window**: khoảng thời gian từ khi event xảy ra đến khi tất cả services phản ánh trạng thái mới nhất. Mục tiêu: giữ consistency window **đủ nhỏ** để user không nhận thấy.
 
 Trong KBLab: sau khi sinh viên nộp bài, có consistency window trước khi kết quả xuất hiện (tùy complexity của bài và tải của Judge). Trong thời gian đó:
+
 - `submission.status = JUDGING` (semantic lock)
 - Leaderboard hiện score cũ (chưa cập nhật)
 - UI hiện "Đang chấm..." — user chấp nhận được
@@ -349,11 +350,13 @@ public void checkSubmissionTimeouts() {
 ```
 
 **Phase 2 — Explicit Saga Definition** (effort trung bình):
+
 - Định nghĩa `SubmitSaga` class với state machine: PENDING → JUDGING → JUDGED / ERROR / TIMEOUT
 - Mỗi transition kèm compensation action rõ ràng
 - Log saga state changes cho auditing và debugging
 
 **Phase 3 — Saga Orchestrator** (effort cao, khi cần scale):
+
 - Cân nhắc khi submit flow mở rộng (thêm plagiarism check, grading rubric)
 - Hiện tại choreography vẫn đủ — flow chỉ 2-3 steps
 - Threshold: khi flow > 4 steps hoặc có complex branching → chuyển sang orchestration
@@ -407,11 +410,13 @@ Phân tích KBLab cho thấy hệ thống đang dùng implicit saga (choreograph
 ## Đọc thêm
 
 **Sách tham khảo chính:**
+
 1. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.4: Managing Transactions with Sagas
 2. [5] Hugo Rocha, *Practical Event-Driven MS Architecture* — Ch.4: Sagas (Choreography, Orchestration); Ch.5: Eventual Consistency
 3. [7] Martin Kleppmann, *Designing Data-Intensive Applications* — Ch.7: Transactions; Ch.9: Consistency and Consensus
 
 **Nguồn trực tuyến:**
+
 - Gregor Hohpe, "Starbucks Does Not Use Two-Phase Commit" (2004) — enterpriseintegrationpatterns.com
 - Caitie McCaffrey, "Applying the Saga Pattern" (Strange Loop 2015) — youtube.com
 - Eventuate Tram Sagas framework — eventuate.io

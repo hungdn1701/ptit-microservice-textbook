@@ -1,4 +1,4 @@
-﻿# Chương 10: Chuyển đổi Thực tế — Từ Monolith đến Microservices
+# Chương 10: Chuyển đổi Thực tế — Từ Monolith đến Microservices
 
 > *"If you can't build a monolith, what makes you think microservices are the answer?"*
 > — Simon Brown (trích dẫn bởi Sam Newman, [4b])
@@ -373,16 +373,19 @@ Migration Roadmap cho KBLab — tổng hợp gap analyses từ Ch.1-9 — cho th
 ## Đọc thêm
 
 **Sách tham khảo chính:**
+
 1. [4b] Sam Newman, *Monolith to Microservices* — Toàn bộ sách: decomposition patterns, database splitting, migration strategies
 2. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.13: Refactoring to Microservices — Strangler Fig, Anti-Corruption Layer
 3. [4a] Sam Newman, *Building Microservices* — Ch.3: How to Model Services (decomposition), Ch.5: Splitting the Monolith
 
 **Sách bổ trợ:**
+
 4. [6] Eric Evans, *Domain-Driven Design* — Ch.14: Anti-Corruption Layer, Context Mapping
 5. [3] Ronnie Mitra, *Microservices: Up and Running* — Ch.3: Architecture Design, migration planning
 6. [2b] Chris Richardson, *Microservices Patterns*, 2nd Ed. — Ch.2: Migration Anti-patterns; Ch.13: Refactoring to Microservices; Ch.21: Strangler Fig (updated)
 
 **Nguồn trực tuyến:**
+
 - [W1] Martin Fowler, "MonolithFirst" — martinfowler.com/bliki/MonolithFirst.html
 - [W2] Martin Fowler, "StranglerFigApplication" — martinfowler.com/bliki/StranglerFigApplication.html
 - Sam Newman, "Breaking Apart the Monolith" — samnewman.io

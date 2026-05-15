@@ -25,16 +25,16 @@ manuscript/appendices/
 scripts/gen_svg_*.py
 scripts/pdf_to_md.py
 scripts/audit-interactive-css.ps1
-scripts/build-pdf.ps1
 
 # ----- Test/temporary figures -----
 figures/shared/test*
 
-# ----- Build outputs -----
+# ----- Local build cache -----
+# output/ is disposable and reset by build-typst.ps1.
 output/
 _build/
 _output/
-# Release directory IS tracked (contains tagged PDFs for distribution)
+# release/ IS tracked (contains tagged publication artifacts).
 !release/
 *.epub
 *.mobi
@@ -83,9 +83,6 @@ docker-compose.override.yml
 *.log
 *.local.md
 tracked_files.txt
-
-# Typst auto-generated (from Pandoc conversion — source is .typ files after migration)
-typst/chapters/_pandoc-raw/
 
 # Test/temp files
 _test-*.typ

@@ -140,6 +140,7 @@ Mỗi bài tập/case study được phân loại:
 **Tình huống incident (mô phỏng từ thực tế)**:
 
 > **Timeline**:
+>
 > - 14:00 — Database server của Recommendation Service gặp sự cố hardware, tất cả queries timeout (30s)
 > - 14:02 — Product Service gọi Recommendation Service → timeout 30s → thread pool cạn kiệt
 > - 14:05 — Order Service gọi Product Service → cũng timeout → thread pool Order Service cạn kiệt
@@ -209,6 +210,7 @@ Mỗi bài tập/case study được phân loại:
 > **Symptoms**: Kiểm tra cuối kỳ — 5 sinh viên report "nộp bài nhưng không nhận kết quả". Giáo viên kiểm tra DB: submission records tồn tại, nhưng không có score.
 >
 > **Investigation log**:
+>
 > - Core Service logs: ✅ `SubmissionCreated` events published thành công
 > - Kafka topic `submissions`: ✅ Messages tồn tại (verified bằng `kafka-console-consumer`)
 > - Judge Service logs: 5 messages throw `JsonParseException` → consumer crash & restart → message được re-consume → crash lại → **infinite loop**
@@ -219,6 +221,7 @@ Mỗi bài tập/case study được phân loại:
 1. Đây là example của **"Poison Pill" message**. Định nghĩa poison pill. Tại sao nó nguy hiểm hơn một message fail bình thường?
 2. Không có DLT (Dead Letter Topic): consumer crash → restart → re-consume same message → crash → loop forever. **45 messages khác** (5 students không bị lỗi) cũng bị stuck sau poison pill. Giải thích mechanism (Kafka consumer offset không commit khi fail)
 3. Thiết kế giải pháp **3 tầng**:
+
    - Tầng 1: Retry (bao nhiêu lần? backoff strategy?)
    - Tầng 2: Dead Letter Topic (message format? alert mechanism?)
    - Tầng 3: Manual review dashboard (admin xem DLT messages, reprocess hoặc discard)
@@ -303,6 +306,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 
 3. KBLab dùng PostgreSQL cho nhiều dữ liệu giao dịch. Khi primary DB down một khoảng thời gian, hệ thống có thể unavailable cho các write path. Nếu dùng PostgreSQL với streaming replication, trade-off thay đổi thế nào?
 4. **E-commerce scenario**: Shopping cart vs Payment — yêu cầu C/A khác nhau:
+
    - Shopping cart: availability > consistency (OK nếu số lượng hiển thị chậm 5s)
    - Payment: consistency > availability (KHÔNG OK nếu charge 2 lần)
    - Thiết kế: dùng database strategy nào cho từng feature?
@@ -315,6 +319,7 @@ NHƯNG: KHÔNG thể undo trip (đã chạy rồi!) → Đây là "non-compensat
 **Tình huống**: KBLab hiện có shared database — Core Service và Assignment Service dùng chung PostgreSQL. Bạn được giao nhiệm vụ tách database.
 
 **Constraints**:
+
 - Zero downtime (sinh viên đang dùng hệ thống)
 - Team 2 developers
 - Timeline: 3 tháng
@@ -343,6 +348,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 ### 8-1 🔍 Case Study: Netflix Zuul → Spring Cloud Gateway → Custom Gateway ●●
 
 **Context**: Netflix đi qua 3 thế hệ API Gateway:
+
 - **Zuul 1** (2013): Blocking I/O, servlet-based → bottleneck ở 10K concurrent connections
 - **Zuul 2** (2016): Non-blocking, Netty-based → chưa bao giờ được Netflix dùng rộng rãi
 - **Spring Cloud Gateway** (2019): Reactive (WebFlux), community-driven → nhiều companies adopt
@@ -361,6 +367,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 ### 8-2 ⚖️ ADR: Rate Limiting Strategy ●●
 
 **Tình huống**: Hệ thống LMS bị abuse:
+
 - Một sinh viên viết script tự động submit 1000 lần/phút (brute-force đáp án SQL)
 - Judge Service overloaded → ảnh hưởng contest của 200 sinh viên khác
 
@@ -372,6 +379,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 2. **Context**: Mô tả vấn đề (abuse, impact)
 3. **Decision Drivers**: Security, Fair usage, Performance, Implementation cost
 4. **Options Considered**:
+
    - Option 1: Rate limit per user (5 submissions/phút) — cấu hình như Listing 8.3
    - Option 2: Rate limit per IP
    - Option 3: Rate limit per route + time window (contest endpoints nghiêm ngặt hơn)
@@ -396,6 +404,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 1. **Tại sao JWT stateless lại nguy hiểm trong case này?** Token bị steal nhưng server không biết — không có cơ chế revoke. So sánh với session-based auth (session ID có thể revoke ngay lập tức)
 2. **Mitigation layers** — thiết kế 4 tầng bảo vệ:
+
    - Tầng 1: Token TTL (giảm expiry → bao nhiêu phút là hợp lý?)
    - Tầng 2: Token Refresh + Rotation (Ch.9, Listing 9.2) — giải thích tại sao rotation phát hiện được theft
    - Tầng 3: Device fingerprinting (bind token với device/browser)
@@ -431,6 +440,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 ### 10-1 🔍 Case Study: Amazon — Monolith → SOA → Microservices (2002–2020) ●●●
 
 **Context**: Jeff Bezos' 2002 mandate nổi tiếng:
+
 > "All teams will henceforth expose their data and functionality through service interfaces. There will be no other form of inter-process communication allowed. Anyone who doesn't do this will be fired."
 
 **Câu hỏi phân tích**:
@@ -472,6 +482,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 > **Alert**: Grafana dashboard báo submission latency P99 tăng từ 2s → 12s. Xảy ra mỗi thứ Ba lúc 14:00.
 >
 > **Dữ liệu available**:
+>
 > - Metrics: CPU tất cả services < 30%. Memory OK. Kafka consumer lag tăng lúc 14:00.
 > - Logs: Không có errors. Judge Service log: "Executing SQL..." — bình thường.
 > - Tracing: Một trace sample cho thấy: Gateway (5ms) → Core (20ms) → Kafka publish (10ms) → Judge receive (delay 8000ms!) → Judge execute (800ms) → Core result (15ms)
@@ -538,6 +549,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 **Tình huống**: Bạn cần thiết kế CI/CD pipeline cho KBLab (Java LMS core nhiều repo/service + DevOps Lab Go multi-binary):
 
 **Requirements**:
+
 - Push code → auto build → test → deploy staging → manual approval → deploy production
 - Chỉ build/test services bị thay đổi (không build lại toàn bộ)
 - Database migrations chạy TRƯỚC service deploy
@@ -565,15 +577,18 @@ Cross-reference: assignment_questions.question_id → questions.id
 1. **Requirements clarification** (5 phút): Functional requirements? Non-functional (latency, throughput, availability)? Scale?
 2. **High-level design** (10 phút): Vẽ architecture diagram. Xác định services, databases, message queues
 3. **Deep dive** (20 phút): Chọn 2-3 components quan trọng nhất:
+
    - **Sandbox execution**: Docker container per submission? Security? Resource limits?
    - **Queue management**: Kafka partition strategy cho fair scheduling (contest mode)?
    - **Leaderboard**: CQRS + Redis sorted set? Update frequency?
 4. **Scale & Trade-offs** (10 phút):
+
    - 1000 concurrent submissions → Judge Service scaling strategy?
    - CAP trade-off cho leaderboard: real-time (eventual consistent) vs accurate (strong consistent)?
    - Cost estimation: mỗi submission = 1 Docker container × 10 giây = how much compute?
 
 **Tiêu chí đánh giá**:
+
 - [ ] Architecture có ≥4 services rõ ràng
 - [ ] Communication patterns hợp lý (sync vs async, khi nào dùng gì)
 - [ ] Data management strategy (database-per-service, CQRS cho leaderboard)

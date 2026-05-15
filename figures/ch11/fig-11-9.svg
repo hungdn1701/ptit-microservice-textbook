@@ -99,22 +99,22 @@
   <rect x="30" y="60" width="170" height="136" rx="8" class="info" />
   <text x="115" y="85" text-anchor="middle" class="title">Logging</text>
   <text x="115" y="110" text-anchor="middle" class="subtitle">Spring Boot default (console)</text>
-  <text x="115" y="132" text-anchor="middle" class="subtitle">Khong centralized</text>
-  <text x="115" y="154" text-anchor="middle" class="subtitle">Khong structured</text>
+  <text x="115" y="132" text-anchor="middle" class="subtitle">Chưa centralized</text>
+  <text x="115" y="154" text-anchor="middle" class="subtitle">Chưa structured</text>
   <rect x="60" y="171" width="110" height="20" rx="4" class="warning" />
   <text x="115" y="185" text-anchor="middle" class="small">PARTIAL</text>
   <rect x="215" y="60" width="170" height="136" rx="8" class="event" />
   <text x="300" y="85" text-anchor="middle" class="title">Metrics</text>
   <text x="300" y="110" text-anchor="middle" class="subtitle">Actuator basic (health, info)</text>
-  <text x="300" y="132" text-anchor="middle" class="subtitle">Khong Prometheus</text>
-  <text x="300" y="154" text-anchor="middle" class="subtitle">Khong business metrics</text>
+  <text x="300" y="132" text-anchor="middle" class="subtitle">Chưa chuẩn Prometheus</text>
+  <text x="300" y="154" text-anchor="middle" class="subtitle">Thiếu business metrics</text>
   <rect x="245" y="171" width="110" height="20" rx="4" class="info" />
   <text x="300" y="185" text-anchor="middle" class="small">BASIC</text>
   <rect x="400" y="60" width="170" height="136" rx="8" class="danger" />
   <text x="485" y="85" text-anchor="middle" class="title">Tracing</text>
-  <text x="485" y="110" text-anchor="middle" class="subtitle">Khong co</text>
-  <text x="485" y="132" text-anchor="middle" class="subtitle">Khong correlation ID</text>
-  <text x="485" y="154" text-anchor="middle" class="subtitle">Khong trace propagation</text>
+  <text x="485" y="110" text-anchor="middle" class="subtitle">Chưa có</text>
+  <text x="485" y="132" text-anchor="middle" class="subtitle">Thiếu correlation ID</text>
+  <text x="485" y="154" text-anchor="middle" class="subtitle">Thiếu trace propagation</text>
   <rect x="430" y="171" width="110" height="20" rx="4" class="danger" />
   <text x="485" y="185" text-anchor="middle" class="small">MISSING</text>
   <rect x="585" y="60" width="170" height="136" rx="8" class="success" />
@@ -128,7 +128,7 @@
   <text x="855" y="85" text-anchor="middle" class="title">User Tracking</text>
   <text x="855" y="110" text-anchor="middle" class="subtitle">Kafka-based async</text>
   <text x="855" y="132" text-anchor="middle" class="subtitle">Non-blocking</text>
-  <text x="855" y="154" text-anchor="middle" class="subtitle">Chi basic events</text>
+  <text x="855" y="154" text-anchor="middle" class="subtitle">Chỉ basic events</text>
   <rect x="800" y="171" width="110" height="20" rx="4" class="warning" />
   <text x="855" y="185" text-anchor="middle" class="small">PARTIAL</text>
   <rect x="30" y="290" width="900" height="80" rx="8" class="note" />

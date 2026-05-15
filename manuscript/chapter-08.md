@@ -1,4 +1,4 @@
-﻿# Chương 8: API Gateway
+# Chương 8: API Gateway
 
 > *"The API Gateway is the single entry point for all clients. It handles cross-cutting concerns so that individual services don't have to."*
 > — Chris Richardson, *Microservices Patterns* [2a]
@@ -177,6 +177,7 @@ spring:
 *Hình 8.5: Luồng `lb://` — Eureka lookup + load balance + route*
 
 `lb://core-service` thực hiện ba bước tự động:
+
 1. **Lookup**: query Eureka tìm tất cả instances có tên `core-service`
 2. **Load balance**: chọn instance bằng Spring Cloud LoadBalancer (round-robin mặc định)
 3. **Forward**: gửi request đến instance được chọn
@@ -343,6 +344,7 @@ Gateway là điểm lý tưởng để gắn **correlation ID** — unique ID th
 *Hình 8.7: Kiến trúc tổng thể KBLab — Gateway là single entry point*
 
 KBLab có hai kiểu gateway/router đáng phân biệt:
+
 - **Spring Cloud Gateway** cho LMS core: route API theo path, validate JWT, CORS, rate limiting, correlation ID.
 - **Go hostname-based router** cho DevOps Lab: route workspace/lab runtime theo hostname/subdomain nội bộ, tích hợp với k3s/Sysbox ở lớp hạ tầng.
 
@@ -373,15 +375,18 @@ Một vấn đề đáng chú ý trong KBLab: gateway sử dụng **JJWT 0.11.5*
 ### Đề xuất migration
 
 **Phase 1 — Security Hardening** (ưu tiên cao, effort thấp):
+
 - Restrict CORS origins (liệt kê frontend URLs cụ thể)
 - Thống nhất JJWT version
 - Tài liệu hóa boundary giữa Spring Cloud Gateway và Go hostname router
 
 **Phase 2 — Observability** (ưu tiên trung bình):
+
 - Thêm `X-Correlation-Id` GlobalFilter
 - Request/response logging tại gateway
 
 **Phase 3 — Protection** (ưu tiên trung bình):
+
 - Rate limiting per user (Redis + RequestRateLimiter)
 - Request size limits cho file upload endpoints
 
@@ -420,15 +425,18 @@ Phân tích KBLab cho thấy gateway architecture cơ bản đúng (Spring Cloud
 ## Đọc thêm
 
 **Sách tham khảo chính:**
+
 1. [2a] Chris Richardson, *Microservices Patterns*, 1st Ed. — Ch.8: External API Patterns (API Gateway, BFF)
 2. [4a] Sam Newman, *Building Microservices* — Ch.4: Integration, Smart Endpoints and Dumb Pipes
 3. [1] Thomas Erl, *SOA Analysis & Design* — API Gateway trong enterprise SOA context
 
 **Sách bổ trợ:**
+
 4. [2b] Chris Richardson, *Microservices Patterns*, 2nd Ed. — Ch.8: External API Patterns (updated)
 5. [5] Hugo Rocha, *Practical Event-Driven MS Architecture* — Ch.9: UI in EDA, BFF pattern
 
 **Nguồn trực tuyến:**
+
 - Spring Cloud Gateway reference — docs.spring.io/spring-cloud-gateway
 - Netflix Zuul → Spring Cloud Gateway migration guide
 - OWASP API Security Top 10 — owasp.org/www-project-api-security

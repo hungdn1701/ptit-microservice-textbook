@@ -3,50 +3,123 @@
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
     </marker>
+    <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2.5" flood-color="#0000001a"/>
+    </filter>
+    <linearGradient id="grad-service" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e6f4f3"/>
+      <stop offset="100%" stop-color="#ccebe8"/>
+    </linearGradient>
+    <linearGradient id="grad-storage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="grad-event" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef9c3"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+    <linearGradient id="grad-success" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="grad-danger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#fecaca"/>
+    </linearGradient>
+    <linearGradient id="grad-warning" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="grad-info" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="grad-highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="grad-legacy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3f4f6"/>
+      <stop offset="100%" stop-color="#e5e7eb"/>
+    </linearGradient>
   </defs>
   <style>
-    text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; fill: #1a202c; }
-    .title { font-weight: bold; font-size: 16px; }
+    text {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      fill: #1a202c;
+    }
+    .title { font-weight: 600; font-size: 16px; }
+    .small { font-size: 12px; }
     .subtitle { font-size: 13px; fill: #64748b; }
+    .mono { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; font-size: 12px; }
+
     .cluster { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 3; }
-    .service { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
-    .pipeline { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
-    .storage { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
-    .logs { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
-    .metrics { fill: #E3F2FD; stroke: #2563eb; stroke-width: 1.5; }
-    .traces { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
-    .bad { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
-    .good { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
-    .sli { fill: #E8F5E9; stroke: #16a34a; stroke-width: 1.5; }
-    .slo { fill: #FFF9C4; stroke: #ca8a04; stroke-width: 1.5; }
-    .sla { fill: #FFCDD2; stroke: #c62828; stroke-width: 1.5; }
-    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
-    .step { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+    .service { fill: url(#grad-service); stroke: #0f766e; stroke-width: 2.0; filter: url(#shadow); }
+    .storage { fill: url(#grad-storage); stroke: #2563eb; stroke-width: 2.0; filter: url(#shadow); }
+    .event   { fill: url(#grad-event);   stroke: #ca8a04;   stroke-width: 2.0; filter: url(#shadow); }
+    .success { fill: url(#grad-success); stroke: #16a34a; stroke-width: 2.0; filter: url(#shadow); }
+    .danger  { fill: url(#grad-danger);  stroke: #dc2626;  stroke-width: 2.0; filter: url(#shadow); }
+    .warning { fill: url(#grad-warning); stroke: #ea580c; stroke-width: 2.0; filter: url(#shadow); }
+    .info    { fill: url(#grad-info);    stroke: #3b82f6;    stroke-width: 2.0; filter: url(#shadow); }
+    .highlight { fill: url(#grad-highlight); stroke: #7c3aed; stroke-width: 2.0; filter: url(#shadow); }
+    .legacy  { fill: url(#grad-legacy);  stroke: #9ca3af;  stroke-width: 1.5; filter: url(#shadow); }
+    .note    { fill: #ffffff;    stroke: #cbd5e1;   stroke-width: 1.5; filter: url(#shadow); }
+    .step    { fill: #ffffff;    stroke: #94a3b8;         stroke-width: 1.5; filter: url(#shadow); }
+
+    .service-flat { fill: #e6f4f3; stroke: #0f766e; stroke-width: 1.5; }
+    .storage-flat { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+    .event-flat   { fill: #fef9c3;   stroke: #ca8a04;   stroke-width: 1.5; }
+
+    .arrow {
+      stroke: #64748b; stroke-width: 1.5; fill: none;
+      marker-end: url(#arrowhead);
+    }
+    .arrow-dashed {
+      stroke: #64748b; stroke-width: 1.5; fill: none;
+      stroke-dasharray: 6 3; marker-end: url(#arrowhead);
+    }
+    .arrow-danger {
+      stroke: #dc2626; stroke-width: 2.0; fill: none;
+      marker-end: url(#arrowhead-danger);
+    }
+    .arrow-bg { fill: #ffffff; opacity: 0.92; }
+    .lifeline {
+      stroke: #94a3b8; stroke-width: 1.0;
+      stroke-dasharray: 4 3; fill: none;
+    }
+    .separator {
+      stroke: #cbd5e1; stroke-width: 1.0;
+    }
   </style>
-  <rect x="55" y="20" width="130" height="40" rx="8" class="service" />
-  <text x="120" y="45" text-anchor="middle" class="title">Student</text>
-  <line x1="120" y1="60" x2="120" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
-  <rect x="265" y="20" width="130" height="40" rx="8" class="service" />
-  <text x="330" y="45" text-anchor="middle" class="title">Core Service</text>
-  <line x1="330" y1="60" x2="330" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
-  <rect x="475" y="20" width="130" height="40" rx="8" class="service" />
-  <text x="540" y="45" text-anchor="middle" class="title">Kafka</text>
-  <line x1="540" y1="60" x2="540" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
-  <rect x="685" y="20" width="130" height="40" rx="8" class="service" />
-  <text x="750" y="45" text-anchor="middle" class="title">Tracker Consumer</text>
-  <line x1="750" y1="60" x2="750" y2="470" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3" />
-  <path d="M 120 100 L 330 100" class="arrow" />
-  <text x="225" y="92" text-anchor="middle" font-size="12" fill="#475569">Submit bài</text>
-  <rect x="290" y="130" width="80" height="30" rx="6" class="logs" />
-  <text x="330" y="150" text-anchor="middle" class="subtitle">Xử lý logic</text>
-  <path d="M 330 190 L 120 190" class="arrow" stroke-dasharray="6 3" />
-  <text x="225" y="182" text-anchor="middle" font-size="12" fill="#475569">Response (nhanh!)</text>
-  <path d="M 330 260 L 540 260" class="arrow" />
-  <text x="435" y="252" text-anchor="middle" font-size="12" fill="#475569">UserTracker event</text>
-  <text x="435" y="275" text-anchor="middle" font-size="11" fill="#16a34a">(async — không block response)</text>
-  <path d="M 540 340 L 750 340" class="arrow" />
-  <text x="645" y="332" text-anchor="middle" font-size="12" fill="#475569">Consume + save to DB</text>
-  <rect x="80" y="400" width="800" height="55" rx="8" class="pipeline" />
-  <text x="480" y="425" text-anchor="middle" class="title">Tracking hoàn toàn async — không ảnh hưởng response time của student</text>
-  <text x="480" y="445" text-anchor="middle" class="subtitle">Data dùng cho: learning analytics, peak hour detection, content recommendation</text>
+  <text x="480" y="18" text-anchor="middle" class="title">User Activity Tracking — Async via Kafka</text>
+  <rect x="60.0" y="35" width="120" height="40" rx="8" class="service" />
+  <text x="120" y="60" text-anchor="middle" class="title">Student</text>
+  <line x1="120" y1="75" x2="120" y2="420" class="lifeline" />
+  <rect x="284.0" y="35" width="132" height="40" rx="8" class="service" />
+  <text x="350" y="60" text-anchor="middle" class="title">Core Service</text>
+  <line x1="350" y1="75" x2="350" y2="420" class="lifeline" />
+  <rect x="520.0" y="35" width="120" height="40" rx="8" class="service" />
+  <text x="580" y="60" text-anchor="middle" class="title">Kafka</text>
+  <line x1="580" y1="75" x2="580" y2="420" class="lifeline" />
+  <rect x="736.0" y="35" width="168" height="40" rx="8" class="service" />
+  <text x="820" y="60" text-anchor="middle" class="title">Tracker Consumer</text>
+  <line x1="820" y1="75" x2="820" y2="420" class="lifeline" />
+  <path d="M 120 90 L 350 90" class="arrow" />
+  <text x="235.0" y="82" text-anchor="middle" font-size="12" fill="#475569">Submit SQL answer</text>
+  <rect x="277.0" y="130" width="146" height="28" rx="6" class="service" />
+  <text x="350" y="148" text-anchor="middle" class="subtitle">Process submission</text>
+  <path d="M 350 175 L 580 175" class="arrow" />
+  <text x="465.0" y="167" text-anchor="middle" font-size="12" fill="#475569">Pub: UserActivityEvent</text>
+  <path d="M 350 210 L 120 210" class="arrow-dashed" />
+  <text x="235.0" y="202" text-anchor="middle" font-size="12" fill="#475569">Response (non-blocking)</text>
+  <path d="M 580 265 L 820 265" class="arrow" />
+  <text x="700.0" y="257" text-anchor="middle" font-size="12" fill="#475569">Consume activity event</text>
+  <rect x="705.0" y="305" width="230" height="28" rx="6" class="info" />
+  <text x="820" y="323" text-anchor="middle" class="subtitle">Log activity, update analytics</text>
+  <rect x="60" y="400" width="840" height="30" rx="6" class="note" />
+  <text x="480" y="420" text-anchor="middle" class="subtitle">Non-blocking: Core không chờ tracking. Tracking có thể lag vài giây — chấp nhận được.</text>
 </svg>
