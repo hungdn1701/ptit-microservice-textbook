@@ -71,7 +71,7 @@ Spotify (2012) là case study nổi tiếng nhất về tổ chức team cho mic
 
 | Cấu trúc | Mô tả | Ý nghĩa cho microservices |
 | :----------- | :-------- | :-------------------------- |
-| **Squad** (6-12 người) | Đơn vị tự trị, sở hữu features end-to-end | = Stream-aligned team = sở hữu 1+ microservices |
+| **Squad** (6-12 người) | Đơn vị tự trị, sở hữu tính năng end-to-end | = Stream-aligned team = sở hữu 1+ microservices |
 | **Tribe** (max 150 — Dunbar's number) | Nhóm squads cùng mission | Alignment mà không mất autonomy |
 | **Chapter** | Nhóm người cùng competency xuyên squads | Chia sẻ best practices (ví dụ: all backend devs) |
 | **Guild** | Cộng đồng quan tâm xuyên tribes | Knowledge sharing (ví dụ: Web Performance Guild) |
@@ -96,7 +96,7 @@ Richardson trong phiên bản thứ hai (2025) giới thiệu một framework ph
 | Lực | Loại | Mô tả | Ví dụ KBLab |
 | :----- | :------ | :------- | :----------- |
 | **Simple interactions** | 🌑 Matter (hút) | Components tương tác phức tạp → giữ cùng service | `ContestQuestion` ↔ `Contest` luôn query chung → hợp lý ở cùng Core Service |
-| **Efficient interactions** | 🌑 Matter (hút) | Cần latency thấp → in-process call nhanh hơn network | Submission → Score update cần nhanh → hiện cùng service |
+| **Efficient interactions** | 🌑 Matter (hút) | Cần latency thấp → in-process call nhanh hơn network | Submission → Score cập nhật cần nhanh → hiện cùng service |
 | **Prefer ACID** | 🌑 Matter (hút) | Cần ACID transaction → cùng DB dễ hơn saga | Create contest + add questions = 1 transaction → cùng service |
 | **Minimize runtime coupling** | 🌑 Matter (hút) | Giảm dependency lúc runtime → ít network calls | Judge Service xử lý độc lập (receive message → run → return) |
 | **Simple components** | ⚡ Energy (đẩy) | Mỗi service nhỏ, dễ hiểu | Core Service (24 files) vs nếu gộp tất cả (~50+ files) |

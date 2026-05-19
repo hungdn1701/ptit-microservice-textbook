@@ -340,7 +340,7 @@ KBLab frontend sử dụng pattern khác biệt: **route permissions được fe
 | **Rate Limiting** | Không có | ⚠️ Medium | Redis-based rate limiter |
 | **Email verification / bot defense** | Có/đang hoàn thiện theo module | ⚠️ Medium | Verify email + Turnstile cho form nhạy cảm |
 | **DevOps Lab isolation** | Runtime isolation riêng | 🔴 High nếu cấu hình sai | Sysbox/k3s + NetworkPolicy/RBAC |
-| **Input Validation** | Partial | ⚠️ Medium | Bean Validation (@Valid) |
+| **Input Validation** | Partial | ⚠️ Medium | Bean Validation (`@Valid`) |
 | **HTTPS** | Gateway level | ✅ Low | — |
 | **Password Hashing** | BCrypt | ✅ Low | — |
 

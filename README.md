@@ -7,7 +7,7 @@
 **Service-Oriented Architecture & Microservices: From Theory to Practice**
 
 > [!NOTE]
-> **Phiên bản hiện tại: `v1.0.1`** — Bản PDF/HTML hoàn chỉnh đã được phát hành. Các chỉnh sửa hậu release tiếp tục được ghi nhận trong `[Unreleased]` trước khi đóng gói phiên bản kế tiếp. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
+> **Phiên bản hiện tại: `v1.0.2`** — Bản PDF/HTML hoàn chỉnh đã được phát hành. Các chỉnh sửa hậu release tiếp tục được ghi nhận trong `[Unreleased]` trước khi đóng gói phiên bản kế tiếp. Mọi phản hồi xin gửi qua [Issues](https://github.com/hungdn1701/ptit-microservice-textbook/issues).
 
 Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ nền tảng SOA đến triển khai Microservices, minh họa xuyên suốt qua case study hệ thống **KBLab LMS** thực tế.
 
@@ -55,10 +55,10 @@ Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các 
 
 ## 📥 Tải Giáo Trình
 
-Phiên bản hoàn chỉnh (v1.0.1) đã được phát hành:
-- **[Tải toàn bộ sách PDF (SOA-Microservices-Book-v1.0.1.pdf)](release/v1.0.1/SOA-Microservices-Book-v1.0.1.pdf)**
-- **[Đọc bản HTML (SOA-Microservices-Book-v1.0.1.html)](release/v1.0.1/SOA-Microservices-Book-v1.0.1.html)**
-- [Xem từng chương rời](release/v1.0.1)
+Phiên bản hoàn chỉnh (v1.0.2) đã được phát hành:
+- **[Tải toàn bộ sách PDF (SOA-Microservices-Book-v1.0.2.pdf)](release/v1.0.2/SOA-Microservices-Book-v1.0.2.pdf)**
+- **[Đọc bản HTML (SOA-Microservices-Book-v1.0.2.html)](release/v1.0.2/SOA-Microservices-Book-v1.0.2.html)**
+- [Xem từng chương rời](release/v1.0.2)
 
 ---
 
@@ -86,10 +86,10 @@ powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typ
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Html
 
 # Stable release build (PDF + HTML, artifact tracked trong release/<tag>/)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1 -Html
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.2 -Html
 
 # Pre-release build theo SemVer, dùng cho release candidate trước bản chính thức
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1-rc.1 -PreRelease -Html
+powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.2-rc.1 -PreRelease -Html
 ```
 
 Output:
@@ -102,8 +102,8 @@ Luồng nguồn hiện tại:
 - `references/internal/typst/main.typ` là entry point PDF chính; `main-web.typ` là entry point HTML.
 
 Quy ước phiên bản:
-- **Stable release:** tag dạng `vX.Y.Z`, ví dụ `v1.0.1`.
-- **Pre-release:** dùng đúng thuật ngữ `pre-release`, tag dạng `vX.Y.Z-rc.N`, ví dụ `v1.0.1-rc.1`.
+- **Stable release:** tag dạng `vX.Y.Z`, ví dụ `v1.0.2`.
+- **Pre-release:** dùng đúng thuật ngữ `pre-release`, tag dạng `vX.Y.Z-rc.N`, ví dụ `v1.0.2-rc.1`.
 
 ---
 

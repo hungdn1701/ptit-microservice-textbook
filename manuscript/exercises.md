@@ -69,7 +69,7 @@ Mỗi bài tập/case study được phân loại:
 
 **Yêu cầu**:
 
-1. **Liệt kê Domain Events** (≥12 events) theo timeline: `RideRequested → DriverFound → DriverAccepted → ...`
+1. **Liệt kê Domain Events** (≥12 events) theo lịch trình: `RideRequested → DriverFound → DriverAccepted → ...`
 2. **Xác định Aggregates**: nhóm events → xác định ≥4 aggregates (Ride? Driver? Payment? ...)
 3. **Vẽ Bounded Contexts**: xác định ≥4 contexts với relationships
 4. **Câu hỏi trade-off**: Nên tách "Rating" thành bounded context riêng hay gộp vào "Ride Management"? Phân tích ưu nhược của cả hai cách
@@ -119,7 +119,7 @@ Mỗi bài tập/case study được phân loại:
 **Tình huống incident**:
 
 > 9:00 AM — Team deploy Core Service v2.3: đổi response field `questionTitle` → `title` (cleaner naming).
-> 9:15 AM — Mobile app (v1.2, chưa update) crash khi load danh sách câu hỏi. 200 sinh viên đang luyện tập bị ảnh hưởng.
+> 9:15 AM — Mobile app (v1.2, chưa cập nhật) crash khi load danh sách câu hỏi. 200 sinh viên đang luyện tập bị ảnh hưởng.
 > 9:30 AM — Dashboard team phát hiện, rollback Core Service về v2.2.
 > 10:00 AM — Postmortem bắt đầu.
 
@@ -139,7 +139,7 @@ Mỗi bài tập/case study được phân loại:
 
 **Tình huống incident (mô phỏng từ thực tế)**:
 
-> **Timeline**:
+> **Lịch trình**:
 >
 > - 14:00 — Database server của Recommendation Service gặp sự cố hardware, tất cả queries timeout (30s)
 > - 14:02 — Product Service gọi Recommendation Service → timeout 30s → thread pool cạn kiệt
@@ -151,9 +151,9 @@ Mỗi bài tập/case study được phân loại:
 
 **Câu hỏi phân tích**:
 
-1. Vẽ **timeline diagram** (kiểu sequence diagram) cho cascading failure. Service nào fail trước? Domino effect lan thế nào?
+1. Vẽ **lịch trình diagram** (kiểu sequence diagram) cho cascading failure. Service nào fail trước? Domino effect lan thế nào?
 2. **Root cause vs Trigger**: Database hardware failure là trigger. Root cause thực sự là gì? (gợi ý: thiếu pattern nào?)
-3. Nếu hệ thống có **Circuit Breaker** (Resilience4j) giữa mỗi service call, timeline sẽ thay đổi thế nào? Viết lại timeline
+3. Nếu hệ thống có **Circuit Breaker** (Resilience4j) giữa mỗi service call, lịch trình sẽ thay đổi thế nào? Viết lại lịch trình
 4. Nếu có Circuit Breaker VÀ **Bulkhead**, kết quả khác gì so với chỉ có Circuit Breaker?
 5. Thiết kế **Resilience configuration** cho hệ thống 4 tầng này: timeout, retry, circuit breaker, bulkhead cho mỗi tầng. Giải thích tại sao timeout tầng ngoài phải > timeout tầng trong
 6. **Câu hỏi ByteByteGo**: Netflix xử lý 2 tỷ requests/ngày. Thiếu circuit breaker ở MỘT service có thể crash entire platform. Netflix giải quyết bằng cách nào? (Hystrix → Resilience4j)
@@ -446,7 +446,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 **Câu hỏi phân tích**:
 
 1. Bezos mandate 2002 ra đời TRƯỚC thuật ngữ "microservices" (2014). Amazon gọi kiến trúc của họ là "Service-Oriented Architecture". Sự khác biệt giữa SOA của Amazon và microservices hiện đại là gì?
-2. Amazon không làm "big bang" rewrite. Họ tách service dần dần qua nhiều năm. Strangler Fig Pattern (Ch.10) có thể áp dụng để mô tả quá trình này? Vẽ timeline 3 phases
+2. Amazon không làm "big bang" rewrite. Họ tách service dần dần qua nhiều năm. Strangler Fig Pattern (Ch.10) có thể áp dụng để mô tả quá trình này? Vẽ lịch trình 3 phases
 3. **"Two-Pizza Team" rule** — mỗi team 6-8 người, sở hữu 1-2 services. Conway's Law in action? Liên hệ với Ch.2 (team topology ↔ service boundaries)
 4. Amazon hiện có **hàng nghìn** microservices. Vấn đề mới: service sprawl, dependency management, ownership confusion. Giải pháp? (Service mesh, service catalog, platform teams)
 5. **KBLab comparison**: KBLab có nhiều services/module cho team nhỏ. Áp dụng Two-Pizza Rule: bao nhiêu services là hợp lý cho team size này? KBLab có risk "too many services for small team" không?
@@ -513,8 +513,8 @@ Cross-reference: assignment_questions.question_id → questions.id
 **Câu hỏi phân tích**:
 
 1. Cho 3 team profiles, recommendation nào phù hợp nhất?
-   - Startup 5 người, budget $0-100/tháng
-   - Scale-up 20 người, budget $500/tháng, SLA 99.9%
+   - Startup 5 người, ngân sách $0-100/tháng
+   - Scale-up 20 người, ngân sách $500/tháng, SLA 99.9%
    - Enterprise 100 người, regulated industry (banking)
 2. KBLab hiện đã có một số mảnh Level 2 (Actuator/Prometheus/Grafana, zerolog/PLG ở DevOps Lab) nhưng chưa chuẩn hóa end-to-end. Migration path đề xuất đến Level 3: chọn option nào? Tại sao?
 3. **Vendor lock-in**: Datadog proprietary query language vs Prometheus PromQL (open standard). Khi nào vendor lock-in chấp nhận được? Khi nào dangerous?
@@ -530,7 +530,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 
 | Hệ thống | Services | Traffic | Team | Yêu cầu |
 |----------|----------|---------|------|---------|
-| **A**: Startup MVP | 3 services | 500 req/ngày | 2 devs | Ship fast, budget thấp |
+| **A**: Startup MVP | 3 services | 500 req/ngày | 2 devs | Ship fast, ngân sách thấp |
 | **B**: KBLab LMS + labs | Nhiều services/module | Traffic học thuật, burst khi contest/lab | 3 devs | Reliability, easy ops |
 | **C**: E-commerce platform | 25 services | 1M req/ngày | 15 devs, 4 teams | Auto-scaling, zero downtime, multi-region |
 
@@ -540,7 +540,7 @@ Cross-reference: assignment_questions.question_id → questions.id
 2. **Anti-pattern**: Hệ thống A (3 services, 2 devs) muốn dùng Kubernetes "để sẵn cho tương lai". Tính **cost of Kubernetes** cho team 2 người: learning time, cluster maintenance, debugging complexity. Cost > Benefit?
 3. **Migration path**: Hệ thống B (KBLab) hiện dùng Docker Compose cho LMS core và k3s/Sysbox cho DevOps Lab. Khi nào CẦN mở rộng Kubernetes cho nhiều phần hơn? Xác định 3 trigger signals (traffic, team size, SLA requirements)
 4. **Managed vs Self-managed K8s**: GKE/EKS/AKS vs self-setup kubeadm. Cost comparison cho hệ thống C? Risk comparison?
-5. **Câu hỏi ByteByteGo**: "How does Kubernetes ensure zero-downtime deployment?" — Trả lời: Rolling Update mechanism, readiness probes, PDB (Pod Disruption Budget). Vẽ diagram
+5. **Câu hỏi ByteByteGo**: "How does Kubernetes ensure zero-downtime deployment?" — Trả lời: Rolling Update mechanism, readiness probes, PDB (Pod Disruption Ngân sách). Vẽ diagram
 
 ---
 

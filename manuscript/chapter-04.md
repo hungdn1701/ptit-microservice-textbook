@@ -50,7 +50,7 @@ Richardson trong phiên bản thứ hai [2b, Ch.4] phân biệt rõ hai loại c
 | **Định nghĩa** | Thay đổi service A → **phải** thay đổi service B | Service A **cần** B đang chạy để xử lý request |
 | **Khi nào xảy ra** | Khi phát triển, compile, deploy | Khi hệ thống đang chạy (runtime) |
 | **Ảnh hưởng** | Giảm team autonomy, tăng coordination | Giảm availability, tăng latency |
-| **Ví dụ KBLab** | Core Service đổi DTO format → Auth Service phải update parser | Core Service gọi sync Judge → Judge down → Core trả lỗi |
+| **Ví dụ KBLab** | Core Service đổi DTO format → Auth Service phải cập nhật parser | Core Service gọi sync Judge → Judge down → Core trả lỗi |
 | **Giải pháp** | API versioning (§3.2), backward compatible changes | Async messaging (Ch.5), Circuit Breaker (§4.4) |
 
 **Iceberg Principle** — Richardson gọi đây là nguyên tắc nền tảng cho loose coupling [2b, Ch.4]:

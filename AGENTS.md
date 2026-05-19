@@ -348,4 +348,4 @@ Services: `kblab-auth`, `kblab-assignment`, `kblab-app`, `kblab-judge`, `kblab-n
 - Version tag format: stable releases use `vX.Y.Z`; pre-release candidates use `vX.Y.Z-rc.N` (for example `v1.0.1-rc.1`). Use the term **pre-release** consistently for any version before the stable release.
 - Figure/Table/Listing numbering **must** be sequential and unique per chapter. Check existing numbers before adding new ones.
 - Callout icons: `📐` Architecture note, `🔍` Deep dive, `⚠️` Common mistake, `💡` Tip.
-- The current release is **v1.0.1** (2026-05-15). All 12 chapters are complete. New work goes into `[Unreleased]` in CHANGELOG.
+- The current release is **v1.0.2**. All 12 chapters are complete. New work goes into `[Unreleased]` in CHANGELOG.

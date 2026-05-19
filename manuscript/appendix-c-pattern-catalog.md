@@ -46,7 +46,7 @@
 | **Client-side Discovery** | Client query registry + tự load balance | Ch.4 §4.3 | [2a] Ch.3 |
 | **Server-side Discovery** | Load balancer query registry | Ch.4 §4.3 | [2a] Ch.3 |
 | **Sidecar** | Process phụ đi kèm mỗi service instance | Ch.12 §12.6 | [3] Ch.8 |
-| **Strangler Fig** | Migration incremental từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
+| **Strangler Fig** | Migration tăng dần từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
 
 ## Security Patterns
 
@@ -82,7 +82,7 @@
 
 | Pattern | Mô tả ngắn | Chương | Ref |
 |---------|-----------|--------|-----|
-| **Strangler Fig** | Migration incremental từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
+| **Strangler Fig** | Migration tăng dần từ monolith | Ch.10 §10.2 | [4b] Ch.3 |
 | **Anti-Corruption Layer** | Dịch model giữa old/new systems | Ch.10 §10.4 | [6] Ch.14 |
 | **Branch by Abstraction** | Tạo abstraction, switch implementation | Ch.10 §10.4 | [4b] Ch.3 |
 | **Outbox Pattern** | Reliable messaging khi tách database | Ch.10 §10.3 | [2a] Ch.4 |

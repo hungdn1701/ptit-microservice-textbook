@@ -11,25 +11,35 @@
 | Anti-Corruption Layer | Anti-Corruption Layer (ACL) | Ch.4 |
 | API Gateway | API Gateway | Ch.8 |
 | Blue/Green Deployment | Blue/Green deployment | Ch.12 |
+| Bottleneck | bottleneck (điểm nghẽn) | Ch.1 |
 | Bounded Context | Bounded Context | Ch.2 |
+| Build | build (biên dịch/đóng gói) | Ch.12 |
 | Bulkhead | Bulkhead | Ch.4 |
 | Canary Deployment | Canary deployment | Ch.12 |
 | Circuit Breaker | Circuit Breaker | Ch.4 |
 | Choreography | choreography | Ch.6 |
 | CI/CD | CI/CD | Ch.12 |
+| Cluster | cluster (cụm) | Ch.12 |
 | Container | container | Ch.12 |
 | Correlation ID | correlation ID | Ch.8 |
 | CQRS | CQRS | Ch.7 |
 | Dead Letter Topic/Queue | Dead Letter Topic (DLT) | Ch.5 |
 | DB Queue | DB queue / database-backed queue | Ch.5 |
+| Debug | debug (gỡ lỗi) | Ch.1 |
 | Docker Compose | Docker Compose | Ch.12 |
 | Domain-Driven Design | DDD (Domain-Driven Design) | Ch.2 |
+| Downtime | downtime (thời gian ngừng hoạt động) | Ch.4 |
 | Event Sourcing | Event Sourcing | Ch.7 |
 | Event Storming | Event Storming | Ch.5 |
 | Event-driven | hướng sự kiện (event-driven) | Ch.5 |
 | Idempotency | idempotency / idempotent | Ch.4 |
 | Infrastructure as Code | IaC (Infrastructure as Code) | Ch.12 |
 | JWT | JWT (JSON Web Token) | Ch.9 |
+| Overhead | overhead (chi phí phụ) | Ch.1 |
+| Pipeline | pipeline (quy trình tự động) | Ch.5 |
+| Refactor | refactor (tái cấu trúc) | Ch.1 |
+| Scaling | scaling (mở rộng) | Ch.1 |
+| Team | team (nhóm/đội phát triển) | Ch.1 |
 | k3s | k3s | Ch.12 |
 | Load Balancing | load balancing | Ch.4 |
 | Message broker | message broker | Ch.5 |

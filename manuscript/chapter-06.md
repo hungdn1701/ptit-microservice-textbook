@@ -393,7 +393,7 @@ Các workflow này thường nên bắt đầu bằng **explicit state machine**
 
 ## Tổng kết
 
-Distributed transactions là bài toán khó nhất khi chuyển từ monolith sang microservices. Two-Phase Commit — giải pháp truyền thống — không phù hợp vì blocking, single point of failure, và giảm availability.
+Distributed transactions là bài toán khó nhất khi chuyển từ monolith sang microservices. Two-Giai đoạn Commit — giải pháp truyền thống — không phù hợp vì blocking, single point of failure, và giảm availability.
 
 Saga pattern giải quyết bằng cách thay một ACID transaction bằng chuỗi local transactions + compensating transactions. Ba loại transactions (compensatable, pivot, retriable) tạo cấu trúc rõ ràng cho mỗi saga. Choreography (phi tập trung) phù hợp cho sagas đơn giản, orchestration (tập trung) cho sagas phức tạp.
 
@@ -417,6 +417,6 @@ Phân tích KBLab cho thấy hệ thống đang dùng implicit saga (choreograph
 
 **Nguồn trực tuyến:**
 
-- Gregor Hohpe, "Starbucks Does Not Use Two-Phase Commit" (2004) — enterpriseintegrationpatterns.com
+- Gregor Hohpe, "Starbucks Does Not Use Two-Giai đoạn Commit" (2004) — enterpriseintegrationpatterns.com
 - Caitie McCaffrey, "Applying the Saga Pattern" (Strange Loop 2015) — youtube.com
 - Eventuate Tram Sagas framework — eventuate.io

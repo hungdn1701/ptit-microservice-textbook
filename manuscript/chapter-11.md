@@ -539,7 +539,7 @@ Structured logging và Correlation ID là nền tảng — effort thấp nhất,
 
 Error handling nhất quán — centralized exception handler + error code taxonomy — phục vụ cả client (UX tốt hơn) và ops team (metrics theo error code category). User tracking qua Kafka pipeline mở rộng observability từ *hệ thống* sang *hành vi học tập* — giá trị riêng mà domain giáo dục khai thác từ observability.
 
-Phân tích KBLab cho thấy observability đã có nhiều mảnh đúng hướng nhưng chưa thành một contract end-to-end. Migration path rõ ràng: structured logs → correlation IDs → centralized aggregation → tracing → metrics + SLOs. Mỗi phase mang lại giá trị ngay, không cần đợi "hoàn thiện toàn bộ" mới bắt đầu.
+Phân tích KBLab cho thấy observability đã có nhiều mảnh đúng hướng nhưng chưa thành một contract end-to-end. Migration path rõ ràng: structured logs → correlation IDs → centralized aggregation → tracing → metrics + SLOs. Mỗi giai đoạn mang lại giá trị ngay, không cần đợi "hoàn thiện toàn bộ" mới bắt đầu.
 
 Ở Chương 12, chúng ta sẽ chuyển sang **Triển khai và DevOps** — containerization, Docker Compose, CI/CD pipelines, và cách deploy hệ thống microservices hoàn chỉnh.
 

@@ -46,7 +46,7 @@
 | 21 | **Chia database quá sớm** — Tách DB trước khi hiểu data access patterns | Phát hiện cần JOIN liên tục → build event pipeline phức tạp | Bắt đầu separate schema, theo dõi 2-4 tuần, rồi mới quyết định | 7 |
 | 22 | **CQRS cho mọi thứ** — Áp dụng cho CRUD đơn giản | Complexity tăng 3-5x cho data thay đổi 1 lần/tuần | CQRS chỉ khi read phức tạp, high volume, hoặc cross-service joins | 7 |
 | 23 | **Duplicate data không có source of truth** — Copy data mà không rõ ai sở hữu | Conflict khi hai services cùng sửa, không biết bản nào đúng | Mỗi data entity chỉ có 1 owner — copies là read-only replicas | 7 |
-| 24 | **Quên replication lag** — Write → read ngay → thấy data cũ | User confused: nộp bài OK nhưng leaderboard chưa cập nhật | UI "optimistic update" — hiển thị dự kiến ngay, cập nhật khi event đến | 7 |
+| 24 | **Quên replication lag** — Write → read ngay → thấy data cũ | User confused: nộp bài OK nhưng leaderboard chưa cập nhật | UI "optimistic cập nhật" — hiển thị dự kiến ngay, cập nhật khi event đến | 7 |
 
 ## Security & Gateway
 
@@ -67,7 +67,7 @@
 | 32 | **Big Bang Rewrite** — Viết lại toàn bộ hệ thống từ zero thay vì migrate dần | Cả hai hệ thống cần maintain, "switch day" không bao giờ đến | Strangler Fig — tách từng phần, mỗi phần mang giá trị ngay | 10 |
 | 33 | **Migrate quá nhanh** — Tách 20 services trong 2 tháng vì "architecture decision" | Boundaries sai → refactor lại, effort gấp đôi | Migrate 1 service tại 1 thời điểm, bắt đầu từ service có giá trị cao nhất | 10 |
 | 34 | **Lift-and-shift không redesign** — Copy code monolith nguyên xi vào containers | Network latency + failure modes, vẫn coupled | Anti-Corruption Layer, redesign domain model cho mỗi service | 10 |
-| 35 | **Over-engineering infra** — K8s + Istio + full monitoring cho 3 services, 100 req/min | 70% thời gian maintain infra thay vì phát triển features | Docker Compose đủ cho ≤10 services, scale infra khi cần | 10 |
+| 35 | **Over-engineering infra** — K8s + Istio + full monitoring cho 3 services, 100 req/min | 70% thời gian maintain infra thay vì phát triển tính năng | Docker Compose đủ cho ≤10 services, scale infra khi cần | 10 |
 | 36 | **Chỉ log khi lỗi** — Không log request flow bình thường | Khi lỗi xảy ra, không đủ context để debug | Structured logging cho mọi request + correlation ID | 11 |
 | 37 | **Metric quá nhiều hoặc quá ít** — 500 metrics hoặc chỉ CPU/RAM | Quá nhiều: noise, alert fatigue. Quá ít: blind spots | Focus SLI/SLO: latency, error rate, throughput | 11 |
 | 38 | **Alert mọi thứ** — Mỗi exception → SNS → email/Slack | Alert fatigue: team ignore alerts, miss real incidents | Alert trên *symptoms* (SLO breach), không trên *causes* | 11 |
