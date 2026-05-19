@@ -100,6 +100,7 @@ git push
 > - ❌ Pushing public repo without pushing submodule first → collaborators get a pointer to a non-existent commit
 > - ❌ Pushing submodule without updating public repo → public repo still points to old submodule commit
 > - ❌ Pulling without `--recurse-submodules` → stale build scripts, Typst templates, and docs
+> - ❌ Using `git add .` without explicitly staging the submodule pointer → `git add .` sometimes skips the submodule if it was just pushed. **Always explicitly use `git add references` or check `git status` before committing in the public repo.**
 
 ### Step 1 — Determine your access level
 
