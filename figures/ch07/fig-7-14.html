@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.14 — KBLab — Kiến trúc dữ liệu hiện tại (vấn đề)
+    =========================================================
+    Tier 1 HTML migration từ fig-7-14.svg
+    Layout: 4 services on top → data layer below, Core+Assignment sharing app_db (danger)
+    Capture: gen-diagrams.ps1 → fig-7-14.png → Typst image()
+  -->
+  <title>Fig 7.14 — KBLab — Kiến trúc dữ liệu hiện tại (vấn đề) | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .arch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .arch-arrow::after {
+      content: '↓';
+      font-size: 16px;
+      color: #64748b;
+      line-height: 1.2;
+    }
+    .arch-arrow.danger::after {
+      color: #dc2626;
+      content: '↓';
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height:580px;">
+
+    <div class="d-title-page">KBLab — Kiến trúc dữ liệu hiện tại (vấn đề)</div>
+
+    <!-- Application Layer -->
+    <div class="d-cluster" style="margin-bottom:0;">
+      <span class="d-label">Application Layer</span>
+
+      <div class="d-grid-4" style="margin-top:6px;">
+        <div class="d-box d-service" style="text-align:center;">
+          <div class="d-title">Core Service</div>
+          <div class="d-sub" style="font-size:10px;">questions, submissions,<br>contests, stats</div>
+        </div>
+        <div class="d-box d-highlight" style="text-align:center;">
+          <div class="d-title">Assignment Svc</div>
+          <div class="d-sub" style="font-size:10px;">courses, assignments,<br>grades, thesis</div>
+        </div>
+        <div class="d-box d-info" style="text-align:center;">
+          <div class="d-title">Auth Service</div>
+          <div class="d-sub" style="font-size:10px;">users, roles,<br>tokens</div>
+        </div>
+        <div class="d-box d-event" style="text-align:center;">
+          <div class="d-title">Judge Service</div>
+          <div class="d-sub" style="font-size:10px;">execution,<br>grading</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrows from services to databases -->
+    <div style="display:flex; gap:0; margin: 4px 0;">
+      <!-- Core & Assignment both go to shared DB (danger arrows) -->
+      <div class="arch-arrow danger" style="flex:1;"></div>
+      <div class="arch-arrow danger" style="flex:1;"></div>
+      <div class="arch-arrow" style="flex:1;"></div>
+      <div class="arch-arrow" style="flex:1;"></div>
+    </div>
+
+    <!-- Data Layer -->
+    <div class="d-cluster">
+      <span class="d-label">Data Layer</span>
+
+      <div class="d-row" style="align-items:flex-start; gap:10px; margin-top:6px;">
+
+        <!-- Shared DB (PROBLEM) -->
+        <div class="d-box d-danger" style="flex:2; text-align:center;">
+          <div class="d-title">🗄️ PostgreSQL — app_db</div>
+          <div class="d-sub" style="font-size:11px;">(SHARED!) Core + Assignment dùng chung</div>
+          <div style="margin-top:6px; padding:4px 6px; background:#fca5a5; border-radius:4px;
+               font-size:11px; font-weight:600; color:#7f1d1d;">
+            ← PROBLEM: Schema coupling · Deploy coupling · Scale coupling
+          </div>
+        </div>
+
+        <!-- Auth DB -->
+        <div class="d-box d-storage" style="flex:1; text-align:center;">
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">auth_db</div>
+          <div style="margin-top:4px; font-size:10px; color:#16a34a;">✓ độc lập</div>
+        </div>
+
+        <!-- Judge sandboxes -->
+        <div class="d-box d-storage" style="flex:1; text-align:center;">
+          <div class="d-title">Sandbox DBs</div>
+          <div class="d-sub">per-DBMS (MySQL, PG…)</div>
+          <div style="margin-top:4px; font-size:10px; color:#16a34a;">✓ độc lập</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Problem summary -->
+    <div class="d-box d-danger" style="margin-top:12px; text-align:center;">
+      <div class="d-title">⚠ Vấn đề: Core và Assignment SHARED app_db</div>
+      <div class="d-sub">
+        Cần tách theo lộ trình Hình 7.5 (5 bước). Không thể deploy Core mà không ảnh hưởng Assignment.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

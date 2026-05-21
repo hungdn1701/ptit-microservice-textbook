@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.3 — CAP Theorem trong Microservices
+    =========================================================
+    Tier 1 HTML migration từ fig-7-3.svg
+    Layout: CP vs AP side-by-side + top danger banner + bottom note
+    Capture: gen-diagrams.ps1 → fig-7-3.png → Typst image()
+  -->
+  <title>Fig 7.3 — CAP Theorem trong Microservices | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .cap-property {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: 800;
+      border: 2px solid;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">CAP Theorem — Khi Network Partition xảy ra</div>
+
+    <!-- Network Partition banner -->
+    <div class="d-box d-danger" style="text-align:center; margin-bottom:16px; padding:10px 14px;">
+      <div class="d-title">⚡ Network Partition xảy ra — phải chọn 1 trong 2: Consistency hoặc Availability</div>
+    </div>
+
+    <!-- CAP Triangle visual -->
+    <div class="d-row" style="justify-content:center; gap:8px; margin-bottom:12px;">
+      <div class="cap-property" style="background:#eff6ff; border-color:#3b82f6; color:#1e3a8a;">C</div>
+      <div style="font-size:11px; color:#64748b; align-self:center;">+</div>
+      <div class="cap-property" style="background:#f0fdf4; border-color:#16a34a; color:#14532d;">A</div>
+      <div style="font-size:11px; color:#64748b; align-self:center;">+</div>
+      <div class="cap-property" style="background:#fff7ed; border-color:#ea580c; color:#7c2d12;">P</div>
+      <div style="font-size:12px; color:#64748b; align-self:center; margin-left:8px;">— chỉ đảm bảo được 2/3 khi có Partition</div>
+    </div>
+
+    <div class="d-grid-2" style="gap:16px; margin-bottom:16px;">
+
+      <!-- CP System -->
+      <div class="d-box d-info">
+        <div class="d-row" style="gap:8px; margin-bottom:8px; align-items:center;">
+          <div class="cap-property" style="background:#dbeafe; border-color:#3b82f6; color:#1e3a8a; width:36px; height:36px; font-size:14px;">CP</div>
+          <div>
+            <div class="d-title">CP System — Chọn Consistency</div>
+            <div class="d-sub">Consistency + Partition Tolerance</div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-stack">
+          <div style="font-size:12px; color:#334155;">
+            ✓ Trả lời <strong>THẤT BẠI</strong> (error/timeout) thay vì trả data sai
+          </div>
+          <div style="font-size:12px; color:#334155;">
+            📦 Ví dụ: <strong>PostgreSQL</strong> (single leader replication)
+          </div>
+          <div style="font-size:12px; color:#334155;">
+            🏫 LMS: <strong>Auth Service</strong> — user data phải chính xác
+          </div>
+        </div>
+      </div>
+
+      <!-- AP System -->
+      <div class="d-box d-event">
+        <div class="d-row" style="gap:8px; margin-bottom:8px; align-items:center;">
+          <div class="cap-property" style="background:#fef9c3; border-color:#ca8a04; color:#713f12; width:36px; height:36px; font-size:14px;">AP</div>
+          <div>
+            <div class="d-title">AP System — Chọn Availability</div>
+            <div class="d-sub">Availability + Partition Tolerance</div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-stack">
+          <div style="font-size:12px; color:#334155;">
+            ✓ Trả data <strong>CÓ THỂ CŨ</strong> nhưng luôn sẵn sàng (never fails)
+          </div>
+          <div style="font-size:12px; color:#334155;">
+            📦 Ví dụ: <strong>Cassandra, DynamoDB</strong>
+          </div>
+          <div style="font-size:12px; color:#334155;">
+            🏫 LMS: <strong>Leaderboard</strong> — eventual consistency chấp nhận được
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BASE note -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:12px;">
+        <div>
+          <div class="d-title" style="margin-bottom:4px;">Thực tế: Microservices mặc định là BASE</div>
+          <div class="d-sub"><strong>B</strong>asically Available · <strong>S</strong>oft-state · <strong>E</strong>ventually consistent</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:#e2e8f0; margin:0;"></div>
+        <div>
+          <div class="d-title" style="margin-bottom:4px;">Không có CA trong distributed system</div>
+          <div class="d-sub">Network partition <strong>LUÔN có thể xảy ra</strong> — không thể bỏ qua P</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

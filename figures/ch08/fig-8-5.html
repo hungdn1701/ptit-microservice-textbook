@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.5 - Gateway + Eureka — Load Balanced Routing</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Gateway + Eureka — Load Balanced Routing">
+    <div class="d-box d-service svg-box" style="left:40px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:240px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:440.5px;top:35px;width:159px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:640px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:800px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-event svg-box" style="left:202.5px;top:220px;width:195px;height:28px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 100 90 L 300 90" class="arrow" />
+      <path d="M 300 135 L 520 135" class="arrow" />
+      <path d="M 520 180 L 300 180" class="arrow-dashed" />
+      <path d="M 300 265 L 700 265" class="arrow" />
+      <path d="M 700 310 L 300 310" class="arrow-dashed" />
+      <path d="M 300 350 L 100 350" class="arrow-dashed" />
+      <line x1="100" y1="75" x2="100" y2="420" class="lifeline" />
+      <line x1="300" y1="75" x2="300" y2="420" class="lifeline" />
+      <line x1="520" y1="75" x2="520" y2="420" class="lifeline" />
+      <line x1="700" y1="75" x2="700" y2="420" class="lifeline" />
+      <line x1="860" y1="75" x2="860" y2="420" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">Gateway + Eureka — Load Balanced Routing</div>
+    <div class="svg-text svg-title" style="left:100px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Client</div>
+    <div class="svg-text svg-title" style="left:300px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:520px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Eureka Registry</div>
+    <div class="svg-text svg-title" style="left:700px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Core #1</div>
+    <div class="svg-text svg-title" style="left:860px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Core #2</div>
+    <div class="svg-text svg-title" style="left:200px;top:68px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">GET /api/core/questions</div>
+    <div class="svg-text svg-title" style="left:410px;top:113px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Query: core-service instances?</div>
+    <div class="svg-text svg-title" style="left:410px;top:158px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">[core:8080, core:8081]</div>
+    <div class="svg-text svg-title" style="left:300px;top:224px;width:360px;transform:translateX(-50%);text-align:center;">Round-Robin: chon Core #1</div>
+    <div class="svg-text svg-title" style="left:500px;top:243px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Forward request</div>
+    <div class="svg-text svg-title" style="left:500px;top:288px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:200px;top:328px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response to client</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.3 — Durable Broker (Kafka) vs Ephemeral Broker (RabbitMQ)
+    =========================================================
+    Tier 1 HTML migration từ fig-5-3.svg
+    Layout: Grid 2 cột (Kafka retain / RabbitMQ delete) + ghi chú LMS
+    Capture: gen-diagrams.ps1 → fig-5-3.png → Typst image()
+  -->
+  <title>Fig 5.3 — Durable Broker vs Ephemeral Broker | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .lms-row { font-size: 12px; color: #334155; margin-bottom: 5px; line-height: 1.5; }
+    .lms-row strong { color: #0f766e; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Durable Broker (Kafka) vs Ephemeral Broker (RabbitMQ)</div>
+
+    <div class="d-grid-2" style="margin-bottom: 16px; align-items: start;">
+
+      <!-- LEFT: Kafka — Durable -->
+      <div class="d-cluster">
+        <span class="d-label">Durable Broker — Kafka</span>
+        <div class="d-col" style="align-items: center; margin-top: 14px; gap: 6px;">
+          <!-- Producer -->
+          <div class="d-box d-service" style="text-align:center; width:120px;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <!-- Event Log -->
+          <div class="d-box d-storage" style="text-align:center; width:180px;">
+            <div class="d-title">Event Log</div>
+            <div class="d-sub">append-only, persistent</div>
+          </div>
+          <!-- Retained badge -->
+          <div class="badge d-success" style="font-size:11px;">✅ Retained — Replay bất kỳ lúc nào</div>
+          <div class="d-arrow-v"></div>
+          <!-- Two consumers -->
+          <div class="d-row" style="gap: 10px;">
+            <div class="d-box d-info" style="text-align:center; min-width:80px;">
+              <div class="d-title">Consumer A</div>
+              <div class="d-sub">Judge Svc</div>
+            </div>
+            <div class="d-box d-info" style="text-align:center; min-width:80px;">
+              <div class="d-title">Consumer B</div>
+              <div class="d-sub">Leaderboard</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-sep" style="margin-top:12px;"></div>
+        <div style="font-size:11.5px; color:#1e3a8a; line-height:1.6;">
+          Message <strong>lưu lại</strong> trong log.<br>
+          Consumer mới có thể đọc lại từ offset đầu tiên.
+        </div>
+      </div>
+
+      <!-- RIGHT: RabbitMQ — Ephemeral -->
+      <div class="d-cluster">
+        <span class="d-label">Ephemeral Broker — RabbitMQ</span>
+        <div class="d-col" style="align-items: center; margin-top: 14px; gap: 6px;">
+          <!-- Producer -->
+          <div class="d-box d-service" style="text-align:center; width:120px;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <!-- Queue -->
+          <div class="d-box d-event" style="text-align:center; width:160px;">
+            <div class="d-title">Queue</div>
+            <div class="d-sub">in-memory / durable</div>
+          </div>
+          <!-- Deleted badge -->
+          <div class="badge d-danger" style="font-size:11px;">⛔ Deleted sau khi ACK</div>
+          <div class="d-arrow-v"></div>
+          <!-- Single Consumer -->
+          <div class="d-box d-info" style="text-align:center; min-width:120px;">
+            <div class="d-title">Consumer</div>
+            <div class="d-sub">Notification Svc</div>
+          </div>
+          <!-- Extra spacer to match height -->
+          <div style="height: 34px;"></div>
+        </div>
+        <div class="d-sep" style="margin-top:12px;"></div>
+        <div style="font-size:11.5px; color:#7c2d12; line-height:1.6;">
+          Message <strong>bị xóa</strong> sau khi consumer ACK.<br>
+          Không replay được — phù hợp task queue đơn giản.
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- LMS note -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom: 10px;">LMS chọn Kafka vì</div>
+      <div class="lms-row"><strong>1. Replay:</strong> Khi Judge bị lỗi, có thể replay messages từ offset cũ mà không mất dữ liệu</div>
+      <div class="lms-row"><strong>2. Multi-consumer:</strong> Judge + Leaderboard + Notification cùng đọc một topic với offset độc lập</div>
+      <div class="lms-row"><strong>3. Event log:</strong> Audit trail đầy đủ cho mọi submission trong contest</div>
+      <div class="lms-row"><strong>4. Throughput:</strong> Kafka xử lý 100K+ msg/s — phù hợp với contest mode đồng thời</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

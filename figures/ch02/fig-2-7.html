@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.7 — 5 Bounded Contexts trong KBLab
+    =========================================================
+    Tier 1 HTML migration từ fig-2-7.svg
+    Layout: 5 d-cluster boxes in grid (3 top, 2 bottom) + shared kernel note
+    Capture: gen-diagrams.ps1 → fig-2-7.png → Typst image()
+  -->
+  <title>Fig 2.7 — 5 Bounded Contexts trong KBLab | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .bc-card {
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 14px;
+      text-align: center;
+      flex: 1;
+    }
+    .bc-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .bc-card-svc {
+      font-size: 10px;
+      font-family: monospace;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+    .bc-card-desc {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">5 Bounded Contexts — KBLab</div>
+
+    <div class="d-cluster" style="margin-bottom: 14px;">
+      <span class="d-label">Domain contexts (supporting services omitted for clarity)</span>
+
+      <!-- Top row: 3 contexts -->
+      <div class="d-row" style="align-items:stretch; gap:10px; margin-top:12px; margin-bottom:10px;">
+
+        <div class="bc-card d-info">
+          <div class="bc-card-title">Identity &amp; Access</div>
+          <div class="bc-card-svc">kblab-auth</div>
+          <div class="bc-card-desc">JWT, OAuth2, SSO, roles</div>
+        </div>
+
+        <div class="bc-card d-service">
+          <div class="bc-card-title">SQL Practice</div>
+          <div class="bc-card-svc">kblab-app + judge</div>
+          <div class="bc-card-desc">questions, contests, submissions</div>
+        </div>
+
+        <div class="bc-card d-service">
+          <div class="bc-card-title">Network Practice</div>
+          <div class="bc-card-svc">kblab-judge-network</div>
+          <div class="bc-card-desc">TCP, UDP, RMI, SOAP, REST, gRPC</div>
+        </div>
+
+      </div>
+
+      <!-- Bottom row: 2 contexts -->
+      <div class="d-row" style="align-items:stretch; gap:10px; justify-content:center;">
+
+        <div class="bc-card d-highlight" style="max-width: 320px;">
+          <div class="bc-card-title">Academic Management</div>
+          <div class="bc-card-svc">kblab-assignment</div>
+          <div class="bc-card-desc">courses, grades, attendance, thesis</div>
+        </div>
+
+        <div class="bc-card d-event" style="max-width: 320px;">
+          <div class="bc-card-title">DevOps Practice</div>
+          <div class="bc-card-svc">dol-api / dol-infra / dol-web</div>
+          <div class="bc-card-desc">Go, k3s, Sysbox, lab pods</div>
+        </div>
+
+      </div>
+
+    </div><!-- /.d-cluster -->
+
+    <!-- Shared Kernel note -->
+    <div class="d-box d-note" style="text-align:center;">
+      <div class="d-sub">Shared Kernel chỉ nên giữ cross-cutting concerns; domain logic phải quay về context sở hữu.</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

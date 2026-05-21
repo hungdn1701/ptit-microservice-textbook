@@ -49,7 +49,7 @@ Mitra trong [3, Ch.6] mô tả ba nguyên tắc DevOps nền tảng cho microser
 | **Infrastructure as Code** | Mọi hạ tầng (server, network, database) định nghĩa trong code | Version control, review, rollback |
 | **Continuous Delivery** | Code luôn ở trạng thái sẵn sàng deploy — chỉ cần ấn nút | Giảm risk per deployment, feedback nhanh |
 
-![](../figures/ch12/fig-12-1.svg)
+![](../figures/ch12/fig-12-1.png)
 
 *Hình 12.1: Triển khai thủ công (Manual) vs Tự động (Automated Pipeline)*
 
@@ -71,7 +71,7 @@ Khi deploy microservices, mỗi service cần environment riêng: JDK version, d
 
 **Container** (Docker) đóng gói ứng dụng + dependencies + runtime thành một **image** — chạy giống nhau trên mọi môi trường. Khác với Virtual Machine: container chia sẻ kernel với host OS → nhẹ hơn, khởi động trong giây thay vì phút.
 
-![](../figures/ch12/fig-12-2.svg)
+![](../figures/ch12/fig-12-2.png)
 
 *Hình 12.2: So sánh kiến trúc Virtual Machines và Containers*
 
@@ -235,7 +235,7 @@ Trong monolith: 1 pipeline — build → test → deploy. Trong microservices: m
 
 ### CI/CD Architecture cho Microservices
 
-![](../figures/ch12/fig-12-3.svg)
+![](../figures/ch12/fig-12-3.png)
 
 *Hình 12.3: CI/CD Pipeline chuẩn cho Microservices*
 
@@ -285,7 +285,7 @@ Khi deploy version mới của một service, làm sao đảm bảo users không
 
 Thay thế **từng instance một** — dần dần chuyển từ version cũ sang version mới. Không cần gấp đôi infrastructure.
 
-![](../figures/ch12/fig-12-4.svg)
+![](../figures/ch12/fig-12-4.png)
 
 *Hình 12.4: Quá trình diễn ra Rolling Update*
 
@@ -293,7 +293,7 @@ Thay thế **từng instance một** — dần dần chuyển từ version cũ s
 
 Chạy **hai bản hoàn chỉnh** song song — "Blue" (current) và "Green" (new). Router chuyển traffic một lần. Rollback = chuyển router ngược lại.
 
-![](../figures/ch12/fig-12-5.svg)
+![](../figures/ch12/fig-12-5.png)
 
 *Hình 12.5: Kiến trúc Blue/Green Deployment*
 
@@ -368,7 +368,7 @@ Docker Compose phù hợp cho development và hệ thống nhỏ, ít yêu cầu
 
 #### Kiến trúc Kubernetes
 
-![](../figures/ch12/fig-12-6.svg)
+![](../figures/ch12/fig-12-6.png)
 
 *Hình 12.6: Kiến trúc Kubernetes — Control Plane và Worker Nodes*
 
@@ -466,7 +466,7 @@ Trong LMS, **Notification Service** là candidate tốt nhất cho serverless: e
 
 Khi hệ thống microservices lớn (20+ services), mỗi service cần implement cùng cross-cutting concerns: mTLS, logging, tracing, circuit breaker, rate limiting. **Sidecar pattern** giải quyết bằng cách đặt một **proxy process bên cạnh mỗi service instance** — proxy xử lý infrastructure concerns, service chỉ focus business logic.
 
-![](../figures/ch12/fig-12-7.svg)
+![](../figures/ch12/fig-12-7.png)
 
 *Hình 12.7: Sidecar Pattern — Proxy xử lý infrastructure concerns (mTLS, tracing)*
 
@@ -497,7 +497,7 @@ KBLab hiện có hai kiểu deployment song song ở mức khái quát:
 
 Không cần public domain, IP hay sơ đồ máy chủ cụ thể; điều quan trọng với sách là **trade-off deployment**: cùng một hệ thống có thể dùng Docker Compose cho phần LMS chính và k3s/Sysbox cho bounded context cần isolation.
 
-![](../figures/ch12/fig-12-8.svg)
+![](../figures/ch12/fig-12-8.png)
 
 *Hình 12.8: Deployment Architecture KBLab ở mức khái quát*
 

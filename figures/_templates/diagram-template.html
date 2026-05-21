@@ -10,7 +10,8 @@
       • KHÔNG dùng external fonts (Google Fonts) — ảnh hưởng Playwright
       • KHÔNG dùng backdrop-filter / blur / position:fixed
       • Mọi content nằm trong .diagram-canvas (960×auto)
-      • Thay đổi style: chỉ trong <style> của file, KHÔNG sửa diagram-style.css
+      • Ưu tiên token trong diagram-book-theme.css; tránh hardcode màu/font
+      • Style override per-figure chỉ dùng cho layout/positioning
       • Viewport Playwright: { width: 960, height: 540 } — xem gen-diagrams.ps1
   -->
   <title>Fig N.N — [Tên hình] | Ch.N</title>

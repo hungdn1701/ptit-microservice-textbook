@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.6 — Con đường từ Monolith đến Microservices
+    =========================================================
+    Tier 1 HTML migration từ fig-1-6.svg
+    Layout: 3-step pipeline + anti-pattern danger zone below
+    Capture: gen-diagrams.ps1 → fig-1-6.png → Typst image()
+  -->
+  <title>Fig 1.6 — Con đường từ Monolith đến Microservices | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .step-note {
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    .step-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Con đường từ Monolith đến Microservices</div>
+
+    <!-- Annotations row -->
+    <div class="d-row" style="align-items:flex-start; margin-bottom: 8px; gap: 16px;">
+      <div class="d-box d-note d-grow" style="text-align:center;">
+        <div class="d-title" style="font-size:11px;">Code chắp vá</div>
+        <div class="d-sub">Ranh giới mờ nhạt</div>
+      </div>
+      <div style="width:60px;"></div>
+      <div class="d-box d-note d-grow" style="text-align:center;">
+        <div class="d-title" style="font-size:11px;">Module rõ ràng</div>
+        <div class="d-sub">Interface-based</div>
+      </div>
+      <div style="width:60px;"></div>
+      <div class="d-box d-note d-grow" style="text-align:center;">
+        <div class="d-title" style="font-size:11px;">Deploy độc lập</div>
+        <div class="d-sub">Database-per-service</div>
+      </div>
+    </div>
+
+    <!-- Dashed lines from annotations to steps -->
+    <div class="d-row" style="justify-content:space-around; margin-bottom:4px; gap:16px;">
+      <div style="flex:1; text-align:center; color:#94a3b8; font-size:16px;">⋮</div>
+      <div style="width:60px;"></div>
+      <div style="flex:1; text-align:center; color:#94a3b8; font-size:16px;">⋮</div>
+      <div style="width:60px;"></div>
+      <div style="flex:1; text-align:center; color:#94a3b8; font-size:16px;">⋮</div>
+    </div>
+
+    <!-- Happy path: 3 steps -->
+    <div class="d-row" style="align-items:flex-start; gap: 0;">
+
+      <div class="step-col">
+        <div class="d-box d-danger" style="width:100%; text-align:center;">
+          <div class="d-title">Patchwork Monolith</div>
+          <div class="d-sub">Big ball of mud</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:70px; padding-top:16px;">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="d-arrow-label" style="margin-top:4px;">refactor</div>
+      </div>
+
+      <div class="step-col">
+        <div class="d-box d-event" style="width:100%; text-align:center;">
+          <div class="d-title">Modular Monolith</div>
+          <div class="d-sub">Clear boundaries</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:70px; padding-top:16px;">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="d-arrow-label" style="margin-top:4px;">tách dần</div>
+      </div>
+
+      <div class="step-col">
+        <div class="d-box d-service" style="width:100%; text-align:center;">
+          <div class="d-title">Microservices</div>
+          <div class="d-sub">(hybrid hoặc full)</div>
+        </div>
+      </div>
+
+    </div><!-- /.happy-path -->
+
+    <div class="d-sep" style="margin: 20px 0;"></div>
+
+    <!-- Anti-pattern danger zone -->
+    <div class="d-zone d-zone-danger" style="margin-bottom:10px;">
+      ⚠ Anti-Pattern: Tách trực tiếp không qua modular hóa
+    </div>
+
+    <div class="d-box d-danger" style="text-align:center; max-width:360px; margin: 0 auto;">
+      <div class="d-title">❌ Distributed Monolith</div>
+      <div class="d-sub">Worst of both worlds — các services vẫn tight-coupled như monolith</div>
+    </div>
+
+    <div class="d-caption">Bắt buộc đi qua Modular Monolith trước khi tách thành Microservices</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

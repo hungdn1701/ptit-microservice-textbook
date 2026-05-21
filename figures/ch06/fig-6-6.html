@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.6 — Transactional Outbox Pattern
+    =========================================================
+    Tier 1 HTML migration từ fig-6-6.svg
+    Layout: Sequence diagram — 5 participants (Student, Core, Kafka, Judge, WebSocket)
+    Capture: gen-diagrams.ps1 → fig-6-6.png → Typst image()
+  -->
+  <title>Fig 6.6 — Transactional Outbox Pattern | Ch.6</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .d-seq-msg-line.reverse::after {
+      content: '◀';
+      left: -8px;
+      right: auto;
+    }
+    .tx-box {
+      background: #dcfce7;
+      border: 1.5px solid #16a34a;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.7;
+      color: #14532d;
+    }
+    .tx-box .tx-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #16a34a;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 660px;">
+
+    <div class="d-title-page">Transactional Outbox Pattern</div>
+
+    <!--
+      Participants (N=5, flex:1 each):
+        0: Student  1: Core Service  2: Kafka  3: Judge Service  4: WebSocket
+      Forward  (a→b, a<b): left = a+0.5, line = b-a, right = N-b-0.5
+      Backward (b→a, b>a): same flexes + class "reverse"
+    -->
+    <div class="d-seq-container">
+
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Student</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Judge Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-highlight">WebSocket</div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- Student(0) → Core(1): Submit SQL  [left=0.5, line=1, right=3.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Submit SQL</span>
+          </div>
+          <div style="flex:3.5"></div>
+        </div>
+
+        <!-- Atomic transaction block — positioned at Core column (col 1) -->
+        <div class="d-seq-msg" style="min-height: auto; align-items: flex-start; padding: 4px 0;">
+          <div style="flex:1"></div>
+          <div style="flex:1">
+            <div class="tx-box">
+              <div class="tx-label">Atomic Transaction</div>
+              <div>BEGIN TX</div>
+              <div>1. INSERT submission</div>
+              <div>2. INSERT outbox_event</div>
+              <div>COMMIT</div>
+            </div>
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- Core(1) → Student(0): 202 Accepted  [backward, dashed; left=0.5, line=1, right=3.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text" style="color:#16a34a; font-weight:600;">202 Accepted</span>
+          </div>
+          <div style="flex:3.5"></div>
+        </div>
+
+        <!-- Note at Core(1): Poller/CDC reads outbox  [col=1, N=5] -->
+        <div class="d-seq-msg" style="min-height:28px;">
+          <div style="flex:1"></div>
+          <div class="d-zone d-zone-warning" style="flex:1; text-align:center; font-size:10px; padding:3px 6px; white-space:nowrap;">
+            Poller / CDC reads outbox
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- Core(1) → Kafka(2): Publish event  [left=1.5, line=1, right=2.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Publish event</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <!-- Kafka(2) → Judge(3): Consume  [left=2.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Consume</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Note at Judge(3): [Execute SQL]  [col=3, N=5] -->
+        <div class="d-seq-msg" style="min-height:28px;">
+          <div style="flex:3"></div>
+          <div class="d-zone d-zone-warning" style="flex:1; text-align:center; font-size:10px; padding:3px 6px; white-space:nowrap;">
+            [Execute SQL]
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- Judge(3) → Kafka(2): Pub: Result  [backward; left=2.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line reverse" style="flex:1">
+            <span class="d-seq-msg-text">Pub: Result</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Kafka(2) → Core(1): Consume result  [backward; left=1.5, line=1, right=2.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line reverse" style="flex:1">
+            <span class="d-seq-msg-text">Consume result</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <div style="height:8px;"></div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+    <!-- Key insight note -->
+    <div class="d-box d-note" style="margin-top:12px;">
+      <div class="d-label" style="margin-bottom:6px;">Tại sao Outbox Pattern giải quyết vấn đề?</div>
+      <div style="font-size:12px; color:#334155; line-height:1.6;">
+        INSERT submission và INSERT outbox_event nằm trong <strong>cùng một transaction</strong> DB.
+        Nếu transaction thất bại → cả hai đều không tồn tại (atomicity).<br>
+        Outbox Poller (hoặc Debezium CDC) đọc và publish event <em>sau khi</em> transaction commit thành công —
+        đảm bảo <strong>exactly-once semantics</strong> giữa DB và Kafka.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

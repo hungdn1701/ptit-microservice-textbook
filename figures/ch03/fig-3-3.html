@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 3.3 — API-First Workflow với OpenAPI
+    =========================================================
+    Tier 1 HTML migration từ fig-3-3.svg
+    Layout: Pipeline ngang (Annotations → Spec) rồi fan-out 4 outputs dạng grid-2
+    Capture: gen-diagrams.ps1 → fig-3-3.png → Typst image()
+  -->
+  <title>Fig 3.3 — API-First Workflow với OpenAPI | Ch.3</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .pipeline-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .fanout-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .fanout-arrow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .output-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">API-First Workflow với OpenAPI</div>
+
+    <!-- Pipeline row -->
+    <div class="pipeline-row">
+
+      <!-- Step 1: Java Annotations -->
+      <div class="d-box d-service" style="min-width:160px; text-align:center;">
+        <div class="d-title">Java Annotations</div>
+        <div class="d-sub">@Operation, @Tag,</div>
+        <div class="d-sub">@ApiResponse</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h"></div>
+
+      <!-- Step 2: OpenAPI Spec -->
+      <div class="d-box d-event" style="min-width:150px; text-align:center;">
+        <div class="d-title">OpenAPI Spec</div>
+        <div class="d-sub">(YAML / JSON)</div>
+      </div>
+
+      <!-- Fan-out arrow + outputs -->
+      <div style="display:flex; align-items:center; gap:4px; flex-shrink:0;">
+        <div style="width:24px; height:2px; background:#94a3b8;"></div>
+        <div style="font-size:18px; color:#94a3b8;">⇒</div>
+      </div>
+
+      <!-- 4 output boxes in 2x2 grid -->
+      <div class="output-grid d-grow">
+
+        <div class="d-box d-success">
+          <div class="d-title">Swagger UI</div>
+          <div class="d-sub">Interactive documentation</div>
+        </div>
+
+        <div class="d-box d-info">
+          <div class="d-title">Client SDK</div>
+          <div class="d-sub">Auto-generated (Java, TS, Python)</div>
+        </div>
+
+        <div class="d-box d-highlight">
+          <div class="d-title">Contract Tests</div>
+          <div class="d-sub">Validation against spec</div>
+        </div>
+
+        <div class="d-box d-warning">
+          <div class="d-title">Mock Server</div>
+          <div class="d-sub">Frontend dev without backend</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom note -->
+    <div class="d-box d-note" style="margin-top:4px;">
+      <div class="d-row" style="gap:16px; align-items:flex-start; flex-wrap:wrap;">
+        <div>
+          <span class="d-title">Nguyên tắc: </span>
+          <span class="d-sub">Design API trước (contract-first), implement sau. Mọi thay đổi API phải cập nhật spec.</span>
+        </div>
+        <div>
+          <span class="d-title">LMS: </span>
+          <span class="d-sub">Hiện đang code-first (annotations). Migration: export spec → review → contract tests.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.6 — Event Storming Flow
+    =========================================================
+    Tier 1 HTML migration từ fig-2-6.svg
+    Layout: Horizontal pipeline Command → Aggregate → Domain Event → Policy → Domain Event
+    Capture: gen-diagrams.ps1 → fig-2-6.png → Typst image()
+  -->
+  <title>Fig 2.6 — Event Storming Flow | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .es-box {
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 12px 10px;
+      text-align: center;
+      min-width: 130px;
+      flex-shrink: 0;
+    }
+    .es-type {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+    .es-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .es-note {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Event Storming Flow</div>
+
+    <!-- Main horizontal pipeline -->
+    <div class="d-row" style="justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+
+      <!-- Command -->
+      <div class="es-box d-info">
+        <div class="es-type">Command</div>
+        <div class="es-name">Submit Answer</div>
+        <div class="es-note">(hành động)</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h"></div>
+
+      <!-- Aggregate -->
+      <div class="es-box d-event">
+        <div class="es-type">Aggregate</div>
+        <div class="es-name">Submission</div>
+        <div class="es-note">(entity chính)</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h"></div>
+
+      <!-- Domain Event 1 -->
+      <div class="es-box d-warning">
+        <div class="es-type">Domain Event</div>
+        <div class="es-name">Submission</div>
+        <div class="es-name">Created</div>
+        <div class="es-note">(đã xảy ra)</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h"></div>
+
+      <!-- Policy -->
+      <div class="es-box d-highlight">
+        <div class="es-type">Policy</div>
+        <div class="es-name">Auto-judge</div>
+        <div class="es-name" style="font-size:12px;">on submit</div>
+        <div class="es-note">(quy tắc)</div>
+      </div>
+
+    </div>
+
+    <!-- Arrow down from Policy to Event 2 -->
+    <div style="display:flex; justify-content:flex-end; padding-right: 10px; margin-bottom:4px;">
+      <div style="padding-right: 62px;">
+        <div class="d-arrow-v"></div>
+      </div>
+    </div>
+
+    <!-- Domain Event 2 (aligned under Policy) -->
+    <div style="display:flex; justify-content:flex-end; padding-right: 10px; margin-bottom: 20px;">
+      <div class="es-box d-warning">
+        <div class="es-type">Domain Event</div>
+        <div class="es-name">Submission</div>
+        <div class="es-name">Judged</div>
+        <div class="es-note">(kết quả chấm)</div>
+      </div>
+    </div>
+
+    <!-- Process summary -->
+    <div class="d-box d-note">
+      <div class="d-title" style="margin-bottom:6px;">Quy trình Event Storming:</div>
+      <div class="d-row" style="gap:12px; flex-wrap:wrap;">
+        <div class="d-box d-info" style="flex:1; font-size:11px; text-align:center; min-width:160px;">
+          <div class="d-title" style="font-size:11px;">1. Domain Events</div>
+          <div class="d-sub">Gì đã xảy ra?</div>
+        </div>
+        <div class="d-box d-info" style="flex:1; font-size:11px; text-align:center; min-width:160px;">
+          <div class="d-title" style="font-size:11px;">2. Commands</div>
+          <div class="d-sub">Hành động nào gây ra event?</div>
+        </div>
+        <div class="d-box d-info" style="flex:1; font-size:11px; text-align:center; min-width:160px;">
+          <div class="d-title" style="font-size:11px;">3. Aggregates</div>
+          <div class="d-sub">Nhóm events theo aggregate</div>
+        </div>
+        <div class="d-box d-info" style="flex:1; font-size:11px; text-align:center; min-width:160px;">
+          <div class="d-title" style="font-size:11px;">4. Boundaries</div>
+          <div class="d-sub">Vẽ ranh giới Bounded Context</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

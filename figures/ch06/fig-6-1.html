@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.1 — Two-Phase Commit (2PC) Sequence Diagram
+    =========================================================
+    Tier 1 HTML migration từ fig-6-1.svg
+    Layout: Sequence diagram — 3 participants (Coordinator, Core DB1, Judge DB2)
+    Capture: gen-diagrams.ps1 → fig-6-1.png → Typst image()
+  -->
+  <title>Fig 6.1 — Two-Phase Commit (2PC) | Ch.6</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .d-seq-msg-line.reverse::after {
+      content: '◀';
+      left: -8px;
+      right: auto;
+    }
+    .phase-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #374151;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin: 6px 0 2px;
+      display: inline-block;
+    }
+    .phase-section {
+      border: 1.5px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 4px 8px 6px;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 540px;">
+
+    <div class="d-title-page">Two-Phase Commit (2PC)</div>
+
+    <!--
+      Participants (N=3, flex:1 each):
+        0: Coordinator  1: Core Service (DB1)  2: Judge Service (DB2)
+      Forward  (a→b): left = a+0.5, line = b-a, right = N-b-0.5
+      Backward (b→a): same flexes + class "reverse"
+    -->
+    <div class="d-seq-container">
+
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-warning">Coordinator</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service (DB1)</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Judge Service (DB2)</div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- Phase 1 header -->
+        <div style="margin: 8px 0 4px;">
+          <span class="phase-label">Phase 1 — Prepare</span>
+        </div>
+
+        <!-- Coord(0) → Core(1): PREPARE?  [left=0.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">PREPARE?</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Coord(0) → Judge(2): PREPARE?  [left=0.5, line=2, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text">PREPARE?</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Core(1) → Coord(0): YES (ready)  [backward, dashed; left=0.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text" style="color:#16a34a;">YES (ready)</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Judge(2) → Coord(0): YES (ready)  [backward, dashed; left=0.5, line=2, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:2">
+            <span class="d-seq-msg-text" style="color:#16a34a;">YES (ready)</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Phase 2 header -->
+        <div style="margin: 8px 0 4px;">
+          <span class="phase-label">Phase 2 — Commit</span>
+        </div>
+
+        <!-- Coord(0) → Core(1): COMMIT!  [left=0.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text" style="font-weight:600;">COMMIT!</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Coord(0) → Judge(2): COMMIT!  [left=0.5, line=2, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text" style="font-weight:600;">COMMIT!</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Core(1) → Coord(0): ACK  [backward, dashed; left=0.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text">ACK</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Judge(2) → Coord(0): ACK  [backward, dashed; left=0.5, line=2, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:2">
+            <span class="d-seq-msg-text">ACK</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <div style="height:8px;"></div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+    <!-- Anti-pattern warning -->
+    <div class="d-box d-danger" style="margin-top:12px;">
+      <div class="d-title" style="margin-bottom:4px;">⚠️ Anti-pattern trong Microservices</div>
+      <div style="font-size:12px; line-height:1.6;">
+        2PC <strong>không phù hợp</strong> cho microservices: single point of failure (Coordinator),
+        high latency (2 round-trips), lock resources xuyên service.<br>
+        <strong>Giải pháp thay thế:</strong> Saga pattern (Hình 6.2 – 6.6)
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

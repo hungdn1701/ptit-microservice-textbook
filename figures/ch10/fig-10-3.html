@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.3 - Database: Shared vs Per-Service</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Database: Shared vs Per-Service">
+    <div class="d-cluster svg-box" style="left:30px;top:55px;width:430px;height:250px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:80px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-highlight svg-box" style="left:280px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-storage svg-box" style="left:80px;top:180px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-storage svg-box" style="left:280px;top:180px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:500px;top:55px;width:430px;height:250px;border-radius:12px;"></div>
+    <div class="d-box d-danger svg-box" style="left:550px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-danger svg-box" style="left:750px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-danger svg-box" style="left:615px;top:195px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:30px;top:340px;width:900px;height:55px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 155 145 L 155 180" class="arrow" />
+      <path d="M 355 145 L 355 180" class="arrow" />
+      <path d="M 625 145 L 715 195" class="arrow" />
+      <path d="M 825 145 L 715 195" class="arrow" />
+      <line x1="44" y1="93" x2="446" y2="93" class="separator" />
+      <line x1="514" y1="93" x2="916" y2="93" class="separator" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:6px;width:360px;transform:translateX(-50%);text-align:center;">Database: Shared vs Per-Service</div>
+    <div class="svg-text svg-title" style="left:245px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Database-per-Service — Decoupled</div>
+    <div class="svg-text svg-title" style="left:160px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:360px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Assignment Svc</div>
+    <div class="svg-text svg-title" style="left:160px;top:199px;width:360px;transform:translateX(-50%);text-align:center;">Core DB</div>
+    <div class="svg-text svg-title" style="left:360px;top:199px;width:360px;transform:translateX(-50%);text-align:center;">Assignment DB</div>
+    <div class="svg-text svg-title" style="left:245px;top:256px;width:360px;transform:translateX(-50%);text-align:center;">Thay đổi schema chỉ ảnh hưởng 1 service</div>
+    <div class="svg-text svg-title" style="left:715px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Shared Database — Coupled</div>
+    <div class="svg-text svg-title" style="left:630px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:830px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Assignment Svc</div>
+    <div class="svg-text svg-title" style="left:715px;top:214px;width:360px;transform:translateX(-50%);text-align:center;">Shared DB</div>
+    <div class="svg-text svg-title" style="left:715px;top:256px;width:360px;transform:translateX(-50%);text-align:center;">Thay đổi schema ảnh hưởng cả hai!</div>
+    <div class="svg-text svg-title" style="left:480px;top:351px;width:360px;transform:translateX(-50%);text-align:center;">LMS: Core v&#224; Assignment đang SHARED app_db. Cần t&#225;ch theo lộ tr&#236;nh 5 bước (fig 10.4).</div>
+  </div>
+</body>
+</html>

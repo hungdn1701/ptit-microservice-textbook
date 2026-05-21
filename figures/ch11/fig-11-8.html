@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.8 - User Activity Tracking — Async via Kafka</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="User Activity Tracking — Async via Kafka">
+    <div class="d-box d-service svg-box" style="left:60px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:284px;top:35px;width:132px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:520px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:736px;top:35px;width:168px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:277px;top:130px;width:146px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-info svg-box" style="left:705px;top:305px;width:230px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:400px;width:840px;height:30px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 120 90 L 350 90" class="arrow" />
+      <path d="M 350 175 L 580 175" class="arrow" />
+      <path d="M 350 210 L 120 210" class="arrow-dashed" />
+      <path d="M 580 265 L 820 265" class="arrow" />
+      <line x1="120" y1="75" x2="120" y2="420" class="lifeline" />
+      <line x1="350" y1="75" x2="350" y2="420" class="lifeline" />
+      <line x1="580" y1="75" x2="580" y2="420" class="lifeline" />
+      <line x1="820" y1="75" x2="820" y2="420" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">User Activity Tracking — Async via Kafka</div>
+    <div class="svg-text svg-title" style="left:120px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Student</div>
+    <div class="svg-text svg-title" style="left:350px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:580px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Kafka</div>
+    <div class="svg-text svg-title" style="left:820px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Tracker Consumer</div>
+    <div class="svg-text svg-title" style="left:235px;top:68px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Submit SQL answer</div>
+    <div class="svg-text svg-title" style="left:350px;top:134px;width:360px;transform:translateX(-50%);text-align:center;">Process submission</div>
+    <div class="svg-text svg-title" style="left:465px;top:153px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Pub: UserActivityEvent</div>
+    <div class="svg-text svg-title" style="left:235px;top:188px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response (non-blocking)</div>
+    <div class="svg-text svg-title" style="left:700px;top:243px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Consume activity event</div>
+    <div class="svg-text svg-title" style="left:820px;top:309px;width:360px;transform:translateX(-50%);text-align:center;">Log activity, update analytics</div>
+    <div class="svg-text svg-title" style="left:480px;top:406px;width:360px;transform:translateX(-50%);text-align:center;">Non-blocking: Core kh&#244;ng chờ tracking. Tracking c&#243; thể lag v&#224;i gi&#226;y — chấp nhận được.</div>
+  </div>
+</body>
+</html>

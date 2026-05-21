@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.4 - Spring Cloud Gateway — Request Pipeline</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Spring Cloud Gateway — Request Pipeline">
+    <div class="d-box d-legacy svg-box" style="left:30px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:185px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:340px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:495px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-highlight svg-box" style="left:650px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-legacy svg-box" style="left:805px;top:80px;width:160px;height:70px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:30px;top:200px;width:900px;height:120px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 170 115 L 185 115" class="arrow" />
+      <path d="M 325 115 L 340 115" class="arrow" />
+      <path d="M 480 115 L 495 115" class="arrow" />
+      <path d="M 635 115 L 650 115" class="arrow" />
+      <path d="M 790 115 L 805 115" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Spring Cloud Gateway — Request Pipeline</div>
+    <div class="svg-text svg-title" style="left:110px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">HTTP Request</div>
+    <div class="svg-text svg-title" style="left:100px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">tu client</div>
+    <div class="svg-text svg-title" style="left:265px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">Route Predicates</div>
+    <div class="svg-text svg-title" style="left:255px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Path, Host, Header</div>
+    <div class="svg-text svg-title" style="left:420px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">Pre-Filters</div>
+    <div class="svg-text svg-title" style="left:410px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">JWT validation,</div>
+    <div class="svg-text svg-title" style="left:410px;top:132px;width:360px;transform:translateX(-50%);text-align:center;">CORS, logging</div>
+    <div class="svg-text svg-title" style="left:575px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">Route to Service</div>
+    <div class="svg-text svg-title" style="left:565px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">lb://service-name</div>
+    <div class="svg-text svg-title" style="left:730px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">Post-Filters</div>
+    <div class="svg-text svg-title" style="left:720px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Response headers,</div>
+    <div class="svg-text svg-title" style="left:720px;top:132px;width:360px;transform:translateX(-50%);text-align:center;">metrics</div>
+    <div class="svg-text svg-title" style="left:885px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">HTTP Response</div>
+    <div class="svg-text svg-title" style="left:875px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">ve client</div>
+    <div class="svg-text svg-title" style="left:50px;top:211px;width:850px;text-align:left;">LMS Gateway config:</div>
+    <div class="svg-text svg-mono" style="left:50px;top:236px;width:850px;text-align:left;">- Path=/api/auth/** -&gt; lb://auth-service</div>
+    <div class="svg-text svg-mono" style="left:50px;top:256px;width:850px;text-align:left;">- Path=/api/core/** -&gt; lb://core-service (JWT filter truoc)</div>
+    <div class="svg-text svg-mono" style="left:50px;top:276px;width:850px;text-align:left;">- Path=/api/judge/** -&gt; lb://judge-service</div>
+    <div class="svg-text svg-mono" style="left:50px;top:296px;width:850px;text-align:left;">- lb:// = load-balanced qua Eureka (client-side discovery)</div>
+  </div>
+</body>
+</html>

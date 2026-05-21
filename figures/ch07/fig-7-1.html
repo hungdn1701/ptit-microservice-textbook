@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.1 — Hệ quả của Shared Database
+    =========================================================
+    Tier 1 HTML migration từ fig-7-1.svg
+    Layout: Central danger container with 3 problem boxes + bottom note
+    Capture: gen-diagrams.ps1 → fig-7-1.png → Typst image()
+  -->
+  <title>Fig 7.1 — Hệ quả của Shared Database | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Shared Database — Hậu quả</div>
+
+    <!-- Central danger cluster showing the 3 problem types -->
+    <div class="d-cluster" style="border-color:#dc2626; background:#fff5f5; margin-bottom:16px;">
+      <span class="d-label" style="color:#dc2626; background:#fff5f5;">Shared Database — Vấn đề</span>
+
+      <div class="d-stack" style="margin-top:8px;">
+
+        <div class="d-box d-service">
+          <div class="d-title">Schema coupling</div>
+          <div class="d-sub">Thay đổi bảng X ảnh hưởng Service A, B, C — không thể deploy độc lập</div>
+        </div>
+
+        <div class="d-box d-event">
+          <div class="d-title">Deploy coupling</div>
+          <div class="d-sub">Migrate schema = phải deploy tất cả services cùng lúc — zero-downtime impossible</div>
+        </div>
+
+        <div class="d-box d-info">
+          <div class="d-title">Scale coupling</div>
+          <div class="d-sub">Không thể scale DB cho riêng một service — bottleneck ảnh hưởng toàn hệ thống</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Visual: services pointing to one DB -->
+    <div class="d-row" style="justify-content:center; align-items:flex-end; gap:0; margin-bottom:16px;">
+      <div class="d-col" style="align-items:center; gap:6px; width:180px;">
+        <div class="d-box d-danger" style="width:140px; text-align:center;">
+          <div class="d-title">Service A</div>
+        </div>
+        <div class="d-arrow-v"></div>
+      </div>
+      <div class="d-col" style="align-items:center; gap:6px; width:180px;">
+        <div class="d-box d-danger" style="width:140px; text-align:center;">
+          <div class="d-title">Service B</div>
+        </div>
+        <div class="d-arrow-v"></div>
+      </div>
+      <div class="d-col" style="align-items:center; gap:6px; width:180px;">
+        <div class="d-box d-danger" style="width:140px; text-align:center;">
+          <div class="d-title">Service C</div>
+        </div>
+        <div class="d-arrow-v"></div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center; margin-bottom:16px;">
+      <div class="d-box d-danger" style="width:300px; text-align:center;">
+        <div class="d-title">🗄️ Shared Database</div>
+        <div class="d-sub">Tất cả cùng dùng chung — single point of coupling</div>
+      </div>
+    </div>
+
+    <!-- Solution note -->
+    <div class="d-box d-note" style="text-align:center;">
+      <div class="d-title">Giải pháp: Database-per-Service (Hình 7.2)</div>
+      <div class="d-sub">Mỗi service own DB riêng. Giao tiếp qua API, không qua DB trực tiếp.</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

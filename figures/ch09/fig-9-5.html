@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.5 - JWT Validation — Gateway vs Services</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="JWT Validation — Gateway vs Services">
+    <div class="d-cluster svg-box" style="left:30px;top:65px;width:420px;height:200px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:500px;top:65px;width:430px;height:200px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:30px;top:300px;width:900px;height:80px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <line x1="44" y1="103" x2="436" y2="103" class="separator" />
+      <line x1="514" y1="103" x2="916" y2="103" class="separator" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">JWT Validation — Gateway vs Services</div>
+    <div class="svg-text svg-title" style="left:240px;top:79px;width:360px;transform:translateX(-50%);text-align:center;">Auth Service — Full Validation</div>
+    <div class="svg-text svg-title" style="left:60px;top:101px;width:850px;text-align:left;">1. Verify JWT signature (secret key)</div>
+    <div class="svg-text svg-title" style="left:60px;top:131px;width:850px;text-align:left;">2. Check expiry (exp claim)</div>
+    <div class="svg-text svg-title" style="left:60px;top:161px;width:850px;text-align:left;">3. Query DB: user exists? active?</div>
+    <div class="svg-text svg-title" style="left:240px;top:221px;width:360px;transform:translateX(-50%);text-align:center;">Nặng, nhưng ch&#237;nh x&#225;c nhất</div>
+    <div class="svg-text svg-title" style="left:715px;top:79px;width:360px;transform:translateX(-50%);text-align:center;">Core/Judge — Claims-Only</div>
+    <div class="svg-text svg-title" style="left:530px;top:101px;width:850px;text-align:left;">1. Read X-User-Id header (tu Gateway)</div>
+    <div class="svg-text svg-title" style="left:530px;top:131px;width:850px;text-align:left;">2. Read X-User-Roles header</div>
+    <div class="svg-text svg-title" style="left:530px;top:161px;width:850px;text-align:left;">3. Authorize based on roles</div>
+    <div class="svg-text svg-title" style="left:715px;top:221px;width:360px;transform:translateX(-50%);text-align:center;">Nhẹ, nhanh, tin tưởng Gateway</div>
+    <div class="svg-text svg-title" style="left:50px;top:311px;width:850px;text-align:left;">Trade-off:</div>
+    <div class="svg-text svg-title" style="left:50px;top:336px;width:850px;text-align:left;">Gateway l&#224;m &#39;heavy lifting&#39; (verify JWT). Services chỉ đọc headers = nhanh, &#237;t coupling với Auth.</div>
+    <div class="svg-text svg-title" style="left:50px;top:356px;width:850px;text-align:left;">Rủi ro: Nếu bypass Gateway (internal call), kh&#244;ng c&#243; validation. =&gt; Cần mutual TLS hoặc service mesh.</div>
+  </div>
+</body>
+</html>

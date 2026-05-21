@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.5 - Distributed Tracing — traceId propagation</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Distributed Tracing — traceId propagation">
+    <div class="d-box d-service svg-box" style="left:90px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:354px;top:35px;width:132px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:629.5px;top:35px;width:141px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-event svg-box" style="left:49px;top:90px;width:202px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-service svg-box" style="left:284px;top:170px;width:272px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-event svg-box" style="left:553.5px;top:250px;width:293px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-success svg-box" style="left:294.5px;top:335px;width:251px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:420px;width:840px;height:30px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 150 135 L 420 135" class="arrow" />
+      <path d="M 420 215 L 700 215" class="arrow" />
+      <path d="M 700 300 L 420 300" class="arrow-dashed" />
+      <path d="M 420 375 L 150 375" class="arrow-dashed" />
+      <line x1="150" y1="75" x2="150" y2="420" class="lifeline" />
+      <line x1="420" y1="75" x2="420" y2="420" class="lifeline" />
+      <line x1="700" y1="75" x2="700" y2="420" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">Distributed Tracing — traceId propagation</div>
+    <div class="svg-text svg-title" style="left:150px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:420px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:700px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Judge Service</div>
+    <div class="svg-text svg-title" style="left:150px;top:94px;width:360px;transform:translateX(-50%);text-align:center;">Generate traceId = abc-123</div>
+    <div class="svg-text svg-title" style="left:285px;top:113px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">X-Trace-Id: abc-123</div>
+    <div class="svg-text svg-title" style="left:420px;top:174px;width:360px;transform:translateX(-50%);text-align:center;">Log: [traceId=abc-123] Processing...</div>
+    <div class="svg-text svg-title" style="left:560px;top:193px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">X-Trace-Id: abc-123 (propagate)</div>
+    <div class="svg-text svg-title" style="left:700px;top:254px;width:360px;transform:translateX(-50%);text-align:center;">Log: [traceId=abc-123] Executing SQL...</div>
+    <div class="svg-text svg-title" style="left:560px;top:278px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Result: score=85</div>
+    <div class="svg-text svg-title" style="left:420px;top:339px;width:360px;transform:translateX(-50%);text-align:center;">Log: [traceId=abc-123] Score = 85</div>
+    <div class="svg-text svg-title" style="left:285px;top:353px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:480px;top:426px;width:360px;transform:translateX(-50%);text-align:center;">C&#249;ng 1 traceId xuy&#234;n suốt: Gateway -&gt; Core -&gt; Judge. T&#236;m mọi log li&#234;n quan bằng 1 query.</div>
+  </div>
+</body>
+</html>

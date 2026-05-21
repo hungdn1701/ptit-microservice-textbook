@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.6 - CDC (Change Data Capture) Pattern</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="CDC (Change Data Capture) Pattern">
+    <div class="d-box d-service svg-box" style="left:60px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:270px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:494px;top:35px;width:132px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:730px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-event svg-box" style="left:441.5px;top:180px;width:237px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:420px;width:840px;height:30px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 120 90 L 330 90" class="arrow" />
+      <path d="M 330 130 L 120 130" class="arrow-dashed" />
+      <path d="M 560 230 L 330 230" class="arrow" />
+      <path d="M 330 270 L 560 270" class="arrow-dashed" />
+      <path d="M 560 315 L 790 315" class="arrow" />
+      <path d="M 560 360 L 330 360" class="arrow" />
+      <line x1="120" y1="75" x2="120" y2="420" class="lifeline" />
+      <line x1="330" y1="75" x2="330" y2="420" class="lifeline" />
+      <line x1="560" y1="75" x2="560" y2="420" class="lifeline" />
+      <line x1="790" y1="75" x2="790" y2="420" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">CDC (Change Data Capture) Pattern</div>
+    <div class="svg-text svg-title" style="left:120px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Service</div>
+    <div class="svg-text svg-title" style="left:330px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Database</div>
+    <div class="svg-text svg-title" style="left:560px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">CDC / Poller</div>
+    <div class="svg-text svg-title" style="left:790px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Kafka</div>
+    <div class="svg-text svg-title" style="left:225px;top:68px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">INSERT submission</div>
+    <div class="svg-text svg-title" style="left:225px;top:108px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">OK</div>
+    <div class="svg-text svg-title" style="left:560px;top:184px;width:360px;transform:translateX(-50%);text-align:center;">Poll outbox table / Read binlog</div>
+    <div class="svg-text svg-title" style="left:445px;top:208px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Read new outbox events</div>
+    <div class="svg-text svg-title" style="left:445px;top:248px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">[{type: SubmissionCreated, ...}]</div>
+    <div class="svg-text svg-title" style="left:675px;top:293px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Publish events to Kafka</div>
+    <div class="svg-text svg-title" style="left:445px;top:338px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Mark events as published</div>
+    <div class="svg-text svg-title" style="left:480px;top:426px;width:360px;transform:translateX(-50%);text-align:center;">Debezium: read MySQL/PostgreSQL binlog. At-least-once delivery. Cần idempotency ở consumer.</div>
+  </div>
+</body>
+</html>

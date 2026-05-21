@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.10 - Fig 10.10</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Fig 10.10">
+    <div class="d-cluster svg-box" style="left:40px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:40px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:55px;top:190px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:55px;top:240px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:55px;top:290px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:55px;top:340px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:265px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:265px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:280px;top:190px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:280px;top:240px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:280px;top:290px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:490px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:490px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:505px;top:190px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:505px;top:240px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:505px;top:290px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:505px;top:340px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:715px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:715px;top:100px;width:205px;height:300px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:730px;top:190px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:730px;top:240px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:730px;top:290px;width:175px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:730px;top:340px;width:175px;height:35px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 245 250 L 265 250" class="arrow" />
+      <path d="M 470 250 L 490 250" class="arrow" />
+      <path d="M 695 250 L 715 250" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:142.5px;top:121px;width:360px;transform:translateX(-50%);text-align:center;">Phase 1: Quick Wins</div>
+    <div class="svg-text svg-title" style="left:142.5px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">(1-2 tuần)</div>
+    <div class="svg-text svg-subtitle" style="left:142.5px;top:198px;width:360px;transform:translateX(-50%);text-align:center;">CORS restrict</div>
+    <div class="svg-text svg-subtitle" style="left:142.5px;top:248px;width:360px;transform:translateX(-50%);text-align:center;">JWT version unify</div>
+    <div class="svg-text svg-subtitle" style="left:142.5px;top:298px;width:360px;transform:translateX(-50%);text-align:center;">Structured logging</div>
+    <div class="svg-text svg-subtitle" style="left:142.5px;top:348px;width:360px;transform:translateX(-50%);text-align:center;">Correlation ID</div>
+    <div class="svg-text svg-title" style="left:367.5px;top:121px;width:360px;transform:translateX(-50%);text-align:center;">Phase 2: Observability</div>
+    <div class="svg-text svg-title" style="left:367.5px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">(2-4 tuần)</div>
+    <div class="svg-text svg-subtitle" style="left:367.5px;top:198px;width:360px;transform:translateX(-50%);text-align:center;">Centralized logs</div>
+    <div class="svg-text svg-subtitle" style="left:367.5px;top:248px;width:360px;transform:translateX(-50%);text-align:center;">Distributed tracing</div>
+    <div class="svg-text svg-subtitle" style="left:367.5px;top:298px;width:360px;transform:translateX(-50%);text-align:center;">Business metrics</div>
+    <div class="svg-text svg-title" style="left:592.5px;top:121px;width:360px;transform:translateX(-50%);text-align:center;">Phase 3: Resilience</div>
+    <div class="svg-text svg-title" style="left:592.5px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">(3-6 tuần)</div>
+    <div class="svg-text svg-subtitle" style="left:592.5px;top:198px;width:360px;transform:translateX(-50%);text-align:center;">Circuit breaker</div>
+    <div class="svg-text svg-subtitle" style="left:592.5px;top:248px;width:360px;transform:translateX(-50%);text-align:center;">Dead letter queue</div>
+    <div class="svg-text svg-subtitle" style="left:592.5px;top:298px;width:360px;transform:translateX(-50%);text-align:center;">Rate limiting</div>
+    <div class="svg-text svg-subtitle" style="left:592.5px;top:348px;width:360px;transform:translateX(-50%);text-align:center;">Basic CI/CD</div>
+    <div class="svg-text svg-title" style="left:817.5px;top:121px;width:360px;transform:translateX(-50%);text-align:center;">Phase 4: Decomposition</div>
+    <div class="svg-text svg-title" style="left:817.5px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">(6-12 tuần)</div>
+    <div class="svg-text svg-subtitle" style="left:817.5px;top:198px;width:360px;transform:translateX(-50%);text-align:center;">Schema separation</div>
+    <div class="svg-text svg-subtitle" style="left:817.5px;top:248px;width:360px;transform:translateX(-50%);text-align:center;">API-based access</div>
+    <div class="svg-text svg-subtitle" style="left:817.5px;top:298px;width:360px;transform:translateX(-50%);text-align:center;">Shared lib refactor</div>
+    <div class="svg-text svg-subtitle" style="left:817.5px;top:348px;width:360px;transform:translateX(-50%);text-align:center;">Outbox pattern</div>
+  </div>
+</body>
+</html>

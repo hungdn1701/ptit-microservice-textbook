@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.5 — Cascading Failure
+    =========================================================
+    Tier 1 HTML migration từ fig-4-5.svg
+    Layout: Architecture diagram showing failure cascade chain
+    Capture: gen-diagrams.ps1 → fig-4-5.png → Typst image()
+  -->
+  <title>Fig 4.5 — Cascading Failure | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .cascade-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .cascade-chain {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .chain-label {
+      font-size: 10.5px;
+      color: #64748b;
+      font-style: italic;
+    }
+    .propagation-box {
+      border-radius: 8px;
+      border: 2px solid #dc2626;
+      background: #fef2f2;
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7f1d1d;
+    }
+    .propagation-box .p-line { margin-bottom: 4px; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Cascading Failure</div>
+
+    <!-- Two parallel chains -->
+    <div class="cascade-layout">
+
+      <!-- Chain 1: Client → Service A → Service B -->
+      <div class="cascade-chain">
+        <div class="d-box d-legacy" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Client</div>
+          <div class="d-sub">Timeout sau 30s...</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="chain-label">gọi sync (chờ...)</div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-danger" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Service A</div>
+          <div class="d-sub">💀 Thread pool BLOCKED — 100% threads bị giữ</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="chain-label">gọi sync</div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-danger" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Service B</div>
+          <div class="d-sub">🐌 Database chậm — response time &gt; 10s</div>
+        </div>
+      </div>
+
+      <!-- Chain 2: Service E → Service D → Service B -->
+      <div class="cascade-chain">
+        <div class="d-box d-warning" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Service E</div>
+          <div class="d-sub">Chờ D... cũng bắt đầu chậm</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="chain-label">gọi sync (chờ D...)</div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-warning" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Service D</div>
+          <div class="d-sub">⚠ Thread pool filling up</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="chain-label">gọi sync</div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-danger" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Service B (chung)</div>
+          <div class="d-sub">🐌 Root cause — 1 service chậm, nhiều caller bị ảnh hưởng</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Propagation summary -->
+    <div class="propagation-box" style="margin-bottom:12px;">
+      <div class="p-line">B chậm → A bị block → Client timeout</div>
+      <div class="p-line">B chậm → D bị ảnh hưởng → E cũng bị ảnh hưởng</div>
+    </div>
+
+    <!-- Solution hint -->
+    <div class="d-box d-note">
+      <span class="d-title">Giải pháp: </span>
+      <span class="d-sub">
+        <strong>Circuit Breaker</strong> (fig 4.6) — fail fast thay vì chờ vô hạn ·
+        <strong>Bulkhead</strong> (fig 4.7) — cách ly failure, không lan truyền ·
+        <strong>Timeout</strong> — giới hạn thời gian chờ
+      </span>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

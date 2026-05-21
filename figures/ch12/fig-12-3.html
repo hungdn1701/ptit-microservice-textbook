@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.3 - CI/CD Pipeline</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="CI/CD Pipeline">
+    <div class="d-cluster svg-box" style="left:30px;top:55px;width:560px;height:200px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:60px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:195px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:330px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-highlight svg-box" style="left:465px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:30px;top:280px;width:560px;height:180px;border-radius:12px;"></div>
+    <div class="d-box d-danger svg-box" style="left:60px;top:320px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:195px;top:320px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:330px;top:320px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-success svg-box" style="left:465px;top:320px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:620px;top:55px;width:310px;height:400px;border-radius:10px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 180 127 L 195 127" class="arrow" />
+      <path d="M 315 127 L 330 127" class="arrow" />
+      <path d="M 450 127 L 465 127" class="arrow" />
+      <path d="M 180 347 L 195 347" class="arrow" />
+      <path d="M 315 347 L 330 347" class="arrow" />
+      <path d="M 450 347 L 465 347" class="arrow" />
+      <path d="M 525 155 L 525 280" class="arrow" />
+      <line x1="44" y1="93" x2="576" y2="93" class="separator" />
+      <line x1="44" y1="318" x2="576" y2="318" class="separator" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:6px;width:360px;transform:translateX(-50%);text-align:center;">CI/CD Pipeline</div>
+    <div class="svg-text svg-title" style="left:310px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Continuous Integration</div>
+    <div class="svg-text svg-title" style="left:140px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Git Push</div>
+    <div class="svg-text svg-title" style="left:275px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Build</div>
+    <div class="svg-text svg-title" style="left:410px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Unit Tests</div>
+    <div class="svg-text svg-title" style="left:545px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Integration
+Tests</div>
+    <div class="svg-text svg-title" style="left:60px;top:176px;width:850px;text-align:left;">(Maven/Gradle)</div>
+    <div class="svg-text svg-title" style="left:195px;top:176px;width:850px;text-align:left;">(JUnit)</div>
+    <div class="svg-text svg-title" style="left:330px;top:176px;width:850px;text-align:left;">(Testcontainers)</div>
+    <div class="svg-text svg-title" style="left:310px;top:294px;width:360px;transform:translateX(-50%);text-align:center;">Continuous Delivery</div>
+    <div class="svg-text svg-title" style="left:140px;top:339px;width:360px;transform:translateX(-50%);text-align:center;">Security Scan</div>
+    <div class="svg-text svg-title" style="left:275px;top:339px;width:360px;transform:translateX(-50%);text-align:center;">Docker Image</div>
+    <div class="svg-text svg-title" style="left:410px;top:339px;width:360px;transform:translateX(-50%);text-align:center;">Push Registry</div>
+    <div class="svg-text svg-title" style="left:545px;top:339px;width:360px;transform:translateX(-50%);text-align:center;">Deploy Staging</div>
+    <div class="svg-text svg-title" style="left:60px;top:396px;width:850px;text-align:left;">(SAST/deps)</div>
+    <div class="svg-text svg-title" style="left:195px;top:396px;width:850px;text-align:left;">(Dockerfile)</div>
+    <div class="svg-text svg-title" style="left:330px;top:396px;width:850px;text-align:left;">(Harbor/ECR)</div>
+    <div class="svg-text svg-title" style="left:465px;top:396px;width:850px;text-align:left;">(auto)</div>
+    <div class="svg-text svg-title" style="left:775px;top:71px;width:360px;transform:translateX(-50%);text-align:center;">Lợi &#237;ch</div>
+    <div class="svg-text svg-title" style="left:640px;top:101px;width:850px;text-align:left;">Moi commit -&gt; auto test</div>
+    <div class="svg-text svg-title" style="left:640px;top:129px;width:850px;text-align:left;">Phat hien loi som</div>
+    <div class="svg-text svg-title" style="left:640px;top:157px;width:850px;text-align:left;">Security scan từ dong</div>
+    <div class="svg-text svg-title" style="left:640px;top:185px;width:850px;text-align:left;">Docker image versioned</div>
+    <div class="svg-text svg-title" style="left:640px;top:213px;width:850px;text-align:left;">Deploy 1 click</div>
+    <div class="svg-text svg-title" style="left:640px;top:241px;width:850px;text-align:left;">Rollback = deploy version cu</div>
+    <div class="svg-text svg-title" style="left:640px;top:269px;width:850px;text-align:left;"></div>
+    <div class="svg-text svg-title" style="left:640px;top:297px;width:850px;text-align:left;">KBLab target:</div>
+    <div class="svg-text svg-title" style="left:640px;top:325px;width:850px;text-align:left;">GitLab CI + Docker</div>
+    <div class="svg-text svg-title" style="left:640px;top:353px;width:850px;text-align:left;">+ container registry</div>
+    <div class="svg-text svg-title" style="left:640px;top:381px;width:850px;text-align:left;">+ staging/smoke tests</div>
+  </div>
+</body>
+</html>

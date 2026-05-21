@@ -1,3 +1,5 @@
+@import url('./diagram-book-theme.css');
+
 /* ============================================================
    diagram-style.css — Static Diagram Design System
    SOA & Microservices Textbook · v1.0
@@ -20,8 +22,8 @@
 /* Force light bg, remove animations, remove star-field —
    đảm bảo Playwright capture ra PNG sạch, print-safe.          */
 .diagram-mode {
-  background: #ffffff !important;
-  color: #1a202c !important;
+  background: var(--diagram-color-bg, #ffffff) !important;
+  color: var(--diagram-color-text, #1a202c) !important;
   min-height: unset;
 }
 
@@ -32,32 +34,32 @@
 .diagram-canvas {
   width: 960px;
   min-height: 540px;
-  padding: 28px 32px;
-  background: #ffffff;
+  padding: var(--diagram-space-4, 32px);
+  background: var(--diagram-color-surface, #ffffff);
   box-sizing: border-box;
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  font-size: 13px;
+  font-family: var(--diagram-font-body, 'Inter', -apple-system, system-ui, sans-serif);
+  font-size: var(--diagram-size-node-body, 13px);
   line-height: 1.5;
-  color: #1a202c;
+  color: var(--diagram-color-text, #1a202c);
   position: relative;
 }
 
 /* ── Typography Scale ── */
 .d-title-page {
-  font-size: 15px;
+  font-size: var(--diagram-size-section, 18px);
   font-weight: 700;
-  color: #1a202c;
+  color: var(--diagram-color-text, #1a202c);
   text-align: center;
   margin-bottom: 20px;
   letter-spacing: -0.01em;
 }
 
-.d-title   { font-size: 13px; font-weight: 600; color: #1a202c; }
-.d-label   { font-size: 11px; font-weight: 600; color: #64748b;
+.d-title   { font-size: var(--diagram-size-node-title, 14px); font-weight: 600; color: var(--diagram-color-text, #1a202c); }
+.d-label   { font-size: var(--diagram-size-meta, 12px); font-weight: 600; color: var(--diagram-color-muted, #64748b);
              text-transform: uppercase; letter-spacing: 0.05em; }
-.d-sub     { font-size: 11px; font-weight: 400; color: #64748b; margin-top: 2px; }
-.d-mono    { font-family: 'JetBrains Mono', 'Fira Code', monospace;
-             font-size: 11px; color: #475569; }
+.d-sub     { font-size: var(--diagram-size-meta, 12px); font-weight: 400; color: var(--diagram-color-muted, #64748b); margin-top: 2px; }
+.d-mono    { font-family: var(--diagram-font-mono, 'JetBrains Mono', 'Fira Code', monospace);
+             font-size: var(--diagram-size-meta, 12px); color: var(--diagram-color-muted, #475569); }
 
 /* ── Layout Primitives ── */
 .d-row     { display: flex; flex-direction: row;  align-items: center;  gap: 12px; }
@@ -90,7 +92,7 @@
 */
 
 .d-box {
-  border-radius: 10px;
+  border-radius: var(--diagram-radius-card, 14px);
   border: 1.5px solid;
   padding: 10px 14px;
   transition: none; /* no hover effects — print-safe */

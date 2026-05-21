@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.6 — Async Submission Flow (Sequence Diagram)
+    =========================================================
+    Tier 1 HTML migration từ fig-5-6.svg
+    Layout: Sequence diagram — 6 participants
+    Capture: gen-diagrams.ps1 → fig-5-6.png → Typst image()
+  -->
+  <title>Fig 5.6 — Async Submission Flow | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    /* Reverse (right-to-left) arrow direction */
+    .d-seq-msg-line.reverse::after {
+      content: '◀';
+      left: -8px;
+      right: auto;
+    }
+    /* Non-blocking highlight */
+    .nonblocking-note {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 10px;
+      color: #14532d;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 620px;">
+
+    <div class="d-title-page">Async Submission — Contest Mode</div>
+
+    <!--
+      Participants (N=6, flex:1 each):
+        0: Student  1: Frontend  2: Core Service  3: Kafka  4: Judge Service  5: WebSocket
+      Forward  (a→b, a<b): left = a+0.5, line = b-a, right = N-b-0.5
+      Backward (b→a, b>a): left = a+0.5, line = b-a, right = N-b-0.5  + class "reverse"
+    -->
+    <div class="d-seq-container">
+
+      <!-- Participants row -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Student</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Frontend</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Judge Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-highlight">WebSocket</div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- 1. Student(0) → Frontend(1): Submit SQL  [left=0.5, line=1, right=4.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Submit SQL</span>
+          </div>
+          <div style="flex:4.5"></div>
+        </div>
+
+        <!-- 2. Frontend(1) → Core Service(2): POST /submit  [left=1.5, line=1, right=3.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">POST /submit</span>
+          </div>
+          <div style="flex:3.5"></div>
+        </div>
+
+        <!-- 3. Core(2) → Kafka(3): Publish SubmitMessage  [left=2.5, line=1, right=2.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Publish SubmitMessage</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <!-- 4. Core(2) → Frontend(1): 202 Accepted  [backward, dashed; left=1.5, line=1, right=3.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text" style="color:#16a34a; font-weight:600;">
+              202 Accepted (không chờ kết quả)
+            </span>
+          </div>
+          <div style="flex:3.5"></div>
+        </div>
+
+        <!-- Spacer row + non-blocking annotation -->
+        <div class="d-seq-msg" style="min-height:24px; justify-content:center;">
+          <div style="flex:1.5"></div>
+          <div style="flex:1; display:flex; justify-content:center; align-items:center;">
+            <span class="nonblocking-note">⚡ Non-blocking — A tiếp tục ngay</span>
+          </div>
+          <div style="flex:3.5"></div>
+        </div>
+
+        <!-- 5. Kafka(3) → Judge(4): Consume message  [left=3.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:3.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Consume message</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- 6. Note at Judge(4): Execute SQL on sandbox  [col=4, N=6] -->
+        <div class="d-seq-msg" style="min-height:28px;">
+          <div style="flex:4"></div>
+          <div class="d-zone d-zone-warning" style="flex:1; text-align:center; font-size:10px; padding:3px 6px; white-space:nowrap;">
+            Execute SQL on sandbox
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- 7. Judge(4) → Kafka(3): Publish ResultMessage  [backward; left=3.5, line=1, right=1.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:3.5"></div>
+          <div class="d-seq-msg-line reverse" style="flex:1">
+            <span class="d-seq-msg-text">Publish ResultMessage</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- 8. Kafka(3) → Core(2): Consume result  [backward; left=2.5, line=1, right=2.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line reverse" style="flex:1">
+            <span class="d-seq-msg-text">Consume result</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <!-- 9. Core(2) → WebSocket(5): Push via WebSocket  [left=2.5, line=3, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line" style="flex:3">
+            <span class="d-seq-msg-text">Push via WebSocket</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- 10. WebSocket(5) → Frontend(1): Update UI  [backward; left=1.5, line=4, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line reverse" style="flex:4">
+            <span class="d-seq-msg-text">Update UI</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- 11. Frontend(1) → Student(0): Hiển thị kết quả  [backward, dashed; left=0.5, line=1, right=4.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text">Hiển thị kết quả</span>
+          </div>
+          <div style="flex:4.5"></div>
+        </div>
+
+        <div style="height:8px;"></div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

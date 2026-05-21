@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.9 — API Composition Pattern
+    =========================================================
+    Tier 1 HTML migration từ fig-7-9.svg
+    Layout: Client → Composer (Gateway/BFF) → 3 services in parallel → compose
+    Capture: gen-diagrams.ps1 → fig-7-9.png → Typst image()
+  -->
+  <title>Fig 7.9 — API Composition Pattern | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .fan-arrows {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      position: relative;
+      height: 40px;
+    }
+    .fan-arrows::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 16.67%;
+      right: 16.67%;
+      height: 1.5px;
+      background: #94a3b8;
+    }
+    .fan-arrow-stem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+    .fan-arrow-stem::after {
+      content: '↓';
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">API Composition Pattern</div>
+
+    <!-- Client -->
+    <div style="display:flex; justify-content:center; margin-bottom:6px;">
+      <div class="d-box d-legacy" style="width:200px; text-align:center;">
+        <div class="d-title">Client</div>
+        <div class="d-sub">Web / Mobile App</div>
+      </div>
+    </div>
+
+    <div class="d-arrow-v" style="text-align:center;"></div>
+
+    <!-- API Composer / Gateway -->
+    <div style="display:flex; justify-content:center; margin-bottom:4px; margin-top:4px;">
+      <div class="d-box d-highlight" style="width:320px; text-align:center;">
+        <div class="d-title">API Composer</div>
+        <div class="d-sub">Gateway hoặc BFF — nhận 1 request, gọi N services</div>
+      </div>
+    </div>
+
+    <!-- Fan-out arrows from composer to 3 services -->
+    <div class="fan-arrows" style="margin: 0 20px 4px;">
+      <div class="fan-arrow-stem"></div>
+      <div class="fan-arrow-stem"></div>
+      <div class="fan-arrow-stem"></div>
+    </div>
+
+    <!-- 3 services in a row -->
+    <div class="d-row" style="align-items:flex-start; gap:10px; margin-bottom:10px;">
+      <div class="d-box d-service d-grow" style="text-align:center;">
+        <div class="d-title">Service A</div>
+        <div class="d-sub">student data</div>
+      </div>
+      <div class="d-box d-service d-grow" style="text-align:center;">
+        <div class="d-title">Service B</div>
+        <div class="d-sub">assignment data</div>
+      </div>
+      <div class="d-box d-service d-grow" style="text-align:center;">
+        <div class="d-title">Service C</div>
+        <div class="d-sub">grade data</div>
+      </div>
+    </div>
+
+    <!-- Fan-in arrows back to composer -->
+    <div style="display:flex; justify-content:space-around; margin-bottom:2px;">
+      <div style="font-size:20px; color:#94a3b8;">↗</div>
+      <div style="font-size:20px; color:#94a3b8;">↑</div>
+      <div style="font-size:20px; color:#94a3b8;">↖</div>
+    </div>
+
+    <!-- Compose box -->
+    <div style="display:flex; justify-content:center; margin-bottom:12px;">
+      <div class="d-box d-success" style="width:320px; text-align:center;">
+        <div class="d-title">Merge &amp; Compose Response</div>
+        <div class="d-sub">1 response duy nhất trả về Client</div>
+      </div>
+    </div>
+
+    <!-- Explanation note -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:16px; flex-wrap:wrap; align-items:flex-start;">
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">Composer thực hiện</div>
+          <div class="d-sub">Gọi <strong>parallel</strong> 3 services, merge kết quả, trả về client 1 response duy nhất.</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:#e2e8f0; margin:0;"></div>
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">LMS Dashboard</div>
+          <div class="d-sub">Gateway làm composer cho dashboard page: student info + assignments + grades → 1 API call từ client.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

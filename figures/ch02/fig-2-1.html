@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.1 — Conway's Law vs Inverse Conway Maneuver
+    =========================================================
+    Tier 1 HTML migration từ fig-2-1.svg
+    Layout: 2-column comparison: passive (Conway) vs proactive (Inverse)
+    Capture: gen-diagrams.ps1 → fig-2-1.png → Typst image()
+  -->
+  <title>Fig 2.1 — Conway's Law vs Inverse Conway Maneuver | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Conway's Law vs Inverse Conway Maneuver</div>
+
+    <div class="d-grid-2" style="align-items: start; gap: 20px;">
+
+      <!-- LEFT: Conway's Law (passive) -->
+      <div class="d-cluster">
+        <span class="d-label">Conway's Law (thụ động)</span>
+
+        <div style="font-size:12px; color:#64748b; text-align:center; margin: 8px 0 10px;">Cấu trúc team hiện tại</div>
+
+        <div class="d-grid-2" style="gap:8px; margin-bottom:10px;">
+          <div class="d-box d-info" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Team A</div>
+            <div class="d-sub">Frontend + DB</div>
+          </div>
+          <div class="d-box d-info" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Team B</div>
+            <div class="d-sub">Backend + API</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:6px;">
+          <span style="font-size:11px; color:#64748b;">↓ phản ánh</span>
+        </div>
+
+        <div class="d-grid-2" style="gap:8px; margin-bottom:12px;">
+          <div class="d-box d-legacy" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Module A</div>
+            <div class="d-sub">UI + Data</div>
+          </div>
+          <div class="d-box d-legacy" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Module B</div>
+            <div class="d-sub">Logic + API</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; font-size:11px; color:#64748b; margin-bottom:10px;">
+          Kiến trúc phần mềm phản ánh cấu trúc team<br>
+          <span style="color:#dc2626; font-weight:600;">Coupling chéo</span> giữa modules
+        </div>
+
+        <div class="d-box d-danger" style="text-align:center;">
+          <div class="d-title" style="font-size:12px;">Kiến trúc = bản sao cấu trúc tổ chức</div>
+          <div class="d-sub">(không chủ động)</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Inverse Conway Maneuver (proactive) -->
+      <div class="d-cluster">
+        <span class="d-label">Inverse Conway (chủ động)</span>
+
+        <div style="font-size:12px; color:#64748b; text-align:center; margin: 8px 0 10px;">Kiến trúc phần mềm mong muốn</div>
+
+        <div class="d-grid-2" style="gap:8px; margin-bottom:10px;">
+          <div class="d-box d-service" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Service X</div>
+          </div>
+          <div class="d-box d-service" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Service Y</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:6px;">
+          <span style="font-size:11px; color:#64748b;">↓ thiết kế team</span>
+        </div>
+
+        <div class="d-grid-2" style="gap:8px; margin-bottom:12px;">
+          <div class="d-box d-success" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Team X</div>
+            <div class="d-sub">Own Service X</div>
+          </div>
+          <div class="d-box d-success" style="text-align:center;">
+            <div class="d-title" style="font-size:12px;">Team Y</div>
+            <div class="d-sub">Own Service Y</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; font-size:11px; color:#64748b; margin-bottom:10px;">
+          Tái cấu trúc team phù hợp kiến trúc<br>
+          <span style="color:#16a34a; font-weight:600;">Deploy độc lập</span> theo service
+        </div>
+
+        <div class="d-box d-success" style="text-align:center;">
+          <div class="d-title" style="font-size:12px;">Thiết kế team để đạt kiến trúc mong muốn</div>
+          <div class="d-sub">(chủ động)</div>
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <div class="d-caption">Conway's Law: tổ chức tác động thụ động lên kiến trúc — Inverse Conway: chủ động thiết kế tổ chức phù hợp kiến trúc đích</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

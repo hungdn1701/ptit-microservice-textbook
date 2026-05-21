@@ -27,7 +27,7 @@ Do đó, API trong microservices cần được thiết kế **cẩn thận hơn
 
 Leonard Richardson đề xuất mô hình 4 cấp độ trưởng thành cho REST API [2a, Ch.3]:
 
-![](../figures/ch03/fig-3-1.svg)
+![](../figures/ch03/fig-3-1.png)
 
 *Hình 3.1: Richardson Maturity Model — bốn cấp độ trưởng thành của REST API*
 
@@ -212,7 +212,7 @@ Martin Kleppmann phân tích hai chiều compatibility [7, Ch.4]:
 
 Quy tắc vàng khi thay đổi API:
 
-![](../figures/ch03/fig-3-2.svg)
+![](../figures/ch03/fig-3-2.png)
 
 *Hình 3.2: Quy tắc schema evolution — thay đổi nào là breaking change*
 
@@ -260,7 +260,7 @@ public class QuestionController {
 
 Kết quả: truy cập `/swagger-ui.html` → có UI tương tác để test API trực tiếp.
 
-![](../figures/ch03/fig-3-3.svg)
+![](../figures/ch03/fig-3-3.png)
 
 *Hình 3.3: Pipeline từ code annotations đến Swagger UI và client SDK*
 
@@ -296,7 +296,7 @@ Vấn đề:
 
 **DTO pattern** tạo lớp đệm giữa internal model và external contract [2a]:
 
-![](../figures/ch03/fig-3-4.svg)
+![](../figures/ch03/fig-3-4.png)
 
 *Hình 3.4: DTO pattern — tách internal model và external contract*
 
@@ -347,7 +347,7 @@ Trong KBLab, pattern này được áp dụng qua `dto/request/` và `dto/respon
 
 DTO pattern ở trên là một phần của kiến trúc rộng hơn mà Richardson mô tả chi tiết trong [2b, Ch.3 & Ch.13]: **Hexagonal Architecture** (còn gọi là Ports & Adapters, do Alistair Cockburn đề xuất). Đây là kiến trúc được đề xuất cho mỗi service trong microservices:
 
-![](../figures/ch03/fig-3-6b.svg)
+![](../figures/ch03/fig-3-6b.png)
 
 *Hình 3.6b: Hexagonal Architecture cho Core Service trong KBLab*
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.2 — Mô hình Spotify: Tribe, Squad, Chapter, Guild
+    =========================================================
+    Tier 1 HTML migration từ fig-2-2.svg
+    Layout: Tribe cluster with 3 Squads + Chapter column + Guild
+    Capture: gen-diagrams.ps1 → fig-2-2.png → Typst image()
+  -->
+  <title>Fig 2.2 — Mô hình Spotify: Tribe, Squad, Chapter, Guild | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .squad-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    .squad-title {
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+    .member-pill {
+      border-radius: 6px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      margin: 0 4px;
+    }
+    .chapter-col {
+      border-radius: 10px;
+      border: 1.5px dashed #3b82f6;
+      background: rgba(37,99,235,0.06);
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 11px;
+      color: #1e3a8a;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    .sep-v {
+      width: 1px;
+      background: #cbd5e1;
+      margin: 0 10px;
+      align-self: stretch;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Mô hình tổ chức Spotify — Tribe, Squad, Chapter, Guild</div>
+
+    <div class="d-row" style="align-items: flex-start; gap: 16px;">
+
+      <!-- Tribe cluster with 3 Squads -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Tribe (40–150 người)</span>
+
+        <!-- Squad: Search -->
+        <div class="squad-row d-service" style="margin-top: 8px;">
+          <div class="squad-title">Squad: Search</div>
+          <div class="sep-v"></div>
+          <div class="member-pill">FE Dev</div>
+          <div class="member-pill">BE Dev</div>
+          <div class="member-pill">Tester</div>
+        </div>
+
+        <!-- Squad: Player -->
+        <div class="squad-row" style="border-color:#b45309; background:#fef3e2;">
+          <div class="squad-title" style="color:#7c2d12;">Squad: Player</div>
+          <div class="sep-v"></div>
+          <div class="member-pill">FE Dev</div>
+          <div class="member-pill">BE Dev</div>
+          <div class="member-pill">Data</div>
+        </div>
+
+        <!-- Squad: Social -->
+        <div class="squad-row d-service">
+          <div class="squad-title">Squad: Social</div>
+          <div class="sep-v"></div>
+          <div class="member-pill">FE Dev</div>
+          <div class="member-pill">BE Dev</div>
+          <div class="member-pill">UX</div>
+        </div>
+
+      </div>
+
+      <!-- Chapter (cross-squad) -->
+      <div class="chapter-col" style="align-self: stretch; display:flex; flex-direction:column; justify-content:center; gap:6px;">
+        <div style="font-weight:700; font-size:12px; writing-mode: vertical-rl; transform: rotate(180deg); margin: 0 auto;">Chapter (cross-squad)</div>
+        <div style="font-size:10px; margin-top:4px;">All BE Devs</div>
+      </div>
+
+    </div>
+
+    <!-- Guild -->
+    <div class="d-row" style="margin-top: 16px; gap: 12px; align-items: flex-start;">
+      <div class="d-arrow d-arrow-h-dashed"></div>
+      <div class="d-cluster" style="flex:1;">
+        <span class="d-label">Guild (cross-tribe)</span>
+        <div style="margin-top:8px; font-size:12px; color:#1a202c; font-weight:600;">Ví dụ: Web Performance Guild</div>
+        <div class="d-sub">(Cộng đồng chia sẻ kiến thức — tự nguyện, không có hierarchy)</div>
+      </div>
+    </div>
+
+    <div class="d-sep"></div>
+    <div class="d-caption">Squad = autonomous team; Chapter = kỹ năng đồng nhất; Guild = cộng đồng thực hành tự nguyện</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

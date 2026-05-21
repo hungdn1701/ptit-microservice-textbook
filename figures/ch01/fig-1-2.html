@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.2 — Kiến trúc phân cấp SOA theo Erl
+    =========================================================
+    Tier 1 HTML migration từ fig-1-2.svg
+    Layout: Nested boxes (4 levels) + right-side annotations
+    Capture: gen-diagrams.ps1 → fig-1-2.png → Typst image()
+  -->
+  <title>Fig 1.2 — Kiến trúc phân cấp SOA theo Erl | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .nested-box {
+      border-radius: 14px;
+      border: 1.5px dashed #94a3b8;
+      background: #f8fafc;
+      padding: 14px 16px 16px;
+      position: relative;
+    }
+    .nested-box .box-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 10px;
+    }
+    .inner-service {
+      border-radius: 10px;
+      border: 1.5px solid #0f766e;
+      background: #e6f4f3;
+      padding: 14px 16px;
+    }
+    .inner-service .box-label {
+      color: #085041;
+    }
+    .inner-service .box-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+    .annot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+      width: 220px;
+    }
+    .annot-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .annot-arrow {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Kiến trúc phân cấp dịch vụ — SOA theo Erl</div>
+
+    <div class="d-row" style="align-items: flex-start; gap: 20px;">
+
+      <!-- Nested architecture layers -->
+      <div class="nested-box d-grow">
+        <div class="box-label">Service-Oriented Enterprise Architecture</div>
+
+        <div class="nested-box">
+          <div class="box-label">Service Inventory Architecture</div>
+
+          <div class="nested-box">
+            <div class="box-label">Service Composition Architecture</div>
+
+            <div class="inner-service">
+              <div class="box-label">Service Architecture</div>
+              <div class="box-sub">(Tập trung vào 1 dịch vụ duy nhất)</div>
+            </div>
+
+          </div><!-- /.service-composition -->
+        </div><!-- /.service-inventory -->
+      </div><!-- /.enterprise -->
+
+      <!-- Right annotations -->
+      <div class="annot-list">
+        <div class="d-box d-legacy" style="font-size:12px;">
+          <div class="d-title" style="font-size:12px;">SOA truyền thống</div>
+          <div class="d-sub">hướng tới cấp Enterprise</div>
+        </div>
+        <div class="d-arrow d-arrow-v" style="align-self:center;"></div>
+        <div class="d-box d-info" style="font-size:12px;">
+          <div class="d-title" style="font-size:12px;">Service Registry &amp; Discovery</div>
+          <div class="d-sub">Danh mục toàn bộ</div>
+        </div>
+        <div class="d-arrow d-arrow-v" style="align-self:center;"></div>
+        <div class="d-box d-warning" style="font-size:12px;">
+          <div class="d-title" style="font-size:12px;">Saga Pattern, API Gateway</div>
+          <div class="d-sub">Tổ hợp nhiều dịch vụ</div>
+        </div>
+        <div class="d-arrow d-arrow-v" style="align-self:center;"></div>
+        <div class="d-box d-service" style="font-size:12px;">
+          <div class="d-title" style="font-size:12px;">Microservices tập trung</div>
+          <div class="d-sub">thiết kế ở cấp Service Architecture</div>
+        </div>
+      </div>
+
+    </div><!-- /.d-row -->
+
+    <div class="d-caption">Microservices thiết kế ở cấp Service Architecture; SOA truyền thống hướng tới cấp Enterprise</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

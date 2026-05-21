@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.5 — Context Map — KBLab LMS
+    =========================================================
+    Tier 1 HTML migration từ fig-2-5.svg
+    Layout: Grid of bounded contexts with relationship arrows
+    Capture: gen-diagrams.ps1 → fig-2-5.png → Typst image()
+  -->
+  <title>Fig 2.5 — Context Map KBLab LMS | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .ctx-box {
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 10px 12px;
+      text-align: center;
+      flex: 1;
+    }
+    .ctx-title { font-size: 13px; font-weight: 700; }
+    .ctx-role  { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; opacity: 0.75; }
+    .ctx-sub   { font-size: 11px; color: #64748b; margin-top: 4px; }
+    .rel-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+      min-width: 50px;
+    }
+    .rel-label {
+      font-size: 10px;
+      color: #64748b;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 1px 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Context Map — KBLab LMS</div>
+
+    <!-- Top row: 4 main contexts -->
+    <div class="d-row" style="align-items: stretch; gap: 0; margin-bottom: 6px;">
+
+      <div class="ctx-box d-info">
+        <div class="ctx-title">Identity</div>
+        <div class="ctx-role">Upstream</div>
+        <div class="ctx-sub">JWT / OAuth2 / SSO</div>
+      </div>
+
+      <div class="rel-arrow">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="rel-label">auth</div>
+      </div>
+
+      <div class="ctx-box d-service">
+        <div class="ctx-title">SQL Practice</div>
+        <div class="ctx-role">Core Domain</div>
+        <div class="ctx-sub">Questions, Contests</div>
+      </div>
+
+      <div class="rel-arrow">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="rel-label">protocols</div>
+      </div>
+
+      <div class="ctx-box d-service">
+        <div class="ctx-title">Network Practice</div>
+        <div class="ctx-role">Protocol Domain</div>
+        <div class="ctx-sub">TCP/UDP/RMI/SOAP</div>
+      </div>
+
+      <div class="rel-arrow">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="rel-label">shared JWT</div>
+      </div>
+
+      <div class="ctx-box d-event">
+        <div class="ctx-title">DevOps Practice</div>
+        <div class="ctx-role">Polyglot</div>
+        <div class="ctx-sub">Go + k3s / Sysbox</div>
+      </div>
+
+    </div>
+
+    <!-- Vertical arrows from top row down -->
+    <div class="d-row" style="justify-content: space-around; gap:0; padding: 0 60px; margin-bottom: 4px;">
+      <div style="color:#64748b; font-size:14px;">↓</div>
+      <div style="color:#64748b; font-size:14px; opacity:0;">↓</div>
+      <div style="color:#64748b; font-size:14px; opacity:0;">↓</div>
+      <div style="color:#64748b; font-size:14px; opacity:0;">↓</div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="d-row" style="align-items:stretch; gap: 12px; margin-bottom: 12px;">
+
+      <div class="ctx-box d-danger" style="max-width:180px; flex:none;">
+        <div class="ctx-title">Shared Kernel</div>
+        <div class="ctx-role">(shared library)</div>
+        <div class="ctx-sub">JWT, BaseEntity</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; justify-content:center; flex-shrink:0;">
+        <div style="font-size:13px; color:#64748b;">⇢</div>
+        <div class="rel-label">Shared DB</div>
+      </div>
+
+      <div class="ctx-box d-highlight" style="flex:1;">
+        <div class="ctx-title">Academic</div>
+        <div class="ctx-role">Context</div>
+        <div class="ctx-sub">Courses, Grades, Thesis</div>
+      </div>
+
+      <div class="rel-arrow">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="rel-label">events</div>
+      </div>
+
+      <div class="ctx-box d-warning" style="flex:1;">
+        <div class="ctx-title">Communication</div>
+        <div class="ctx-role">Supporting</div>
+        <div class="ctx-sub">Kafka, WebSocket, Email</div>
+      </div>
+
+    </div>
+
+    <!-- Legend / issues -->
+    <div class="d-box d-note">
+      <div class="d-title" style="margin-bottom:4px;">Quan hệ &amp; vấn đề:</div>
+      <div class="d-sub">Identity là <strong>upstream</strong> — SQL/Network/DevOps dùng shared identity | Communication là <strong>supporting context</strong></div>
+      <div class="d-sub" style="margin-top:3px; color:#dc2626;"><strong>⚠ Vấn đề:</strong> Shared DB giữa SQL và Academic = coupling | Shared Kernel quá rộng (23 files)</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

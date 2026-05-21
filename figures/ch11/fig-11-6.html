@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.6 - Trace Waterfall — Timing visualization</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Trace Waterfall — Timing visualization">
+    <div class="d-box d-event svg-box" style="left:200px;top:100px;width:850px;height:30px;border-radius:4px;"></div>
+    <div class="d-box d-service svg-box" style="left:220px;top:150px;width:600px;height:30px;border-radius:4px;"></div>
+    <div class="d-box d-danger svg-box" style="left:350px;top:200px;width:550px;height:30px;border-radius:4px;"></div>
+    <div class="d-box d-service svg-box" style="left:610px;top:250px;width:200px;height:30px;border-radius:4px;"></div>
+    <div class="d-box d-note svg-box" style="left:40px;top:350px;width:880px;height:60px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <line x1="200" y1="80" x2="900" y2="80" class="" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Trace Waterfall — Timing visualization</div>
+    <div class="svg-text svg-title" style="left:50px;top:56px;width:850px;text-align:left;">Service</div>
+    <div class="svg-text svg-mono" style="left:200px;top:56px;width:850px;text-align:left;">0ms</div>
+    <div class="svg-text svg-mono" style="left:450px;top:56px;width:850px;text-align:left;">500ms</div>
+    <div class="svg-text svg-mono" style="left:700px;top:56px;width:850px;text-align:left;">1000ms</div>
+    <div class="svg-text svg-title" style="left:50px;top:104px;width:850px;text-align:left;">Gateway</div>
+    <div class="svg-text svg-small" style="left:625px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">850ms</div>
+    <div class="svg-text svg-title" style="left:50px;top:154px;width:850px;text-align:left;">Core Service</div>
+    <div class="svg-text svg-small" style="left:520px;top:156px;width:360px;transform:translateX(-50%);text-align:center;">600ms</div>
+    <div class="svg-text svg-title" style="left:50px;top:204px;width:850px;text-align:left;">Judge Service</div>
+    <div class="svg-text svg-small" style="left:625px;top:206px;width:360px;transform:translateX(-50%);text-align:center;">550ms</div>
+    <div class="svg-text svg-title" style="left:50px;top:254px;width:850px;text-align:left;">Core Service</div>
+    <div class="svg-text svg-small" style="left:710px;top:256px;width:360px;transform:translateX(-50%);text-align:center;">200ms</div>
+    <div class="svg-text svg-title" style="left:50px;top:306px;width:850px;text-align:left;">TOTAL: 850ms</div>
+    <div class="svg-text svg-title" style="left:60px;top:361px;width:850px;text-align:left;">Insight:</div>
+    <div class="svg-text svg-title" style="left:120px;top:361px;width:850px;text-align:left;">Judge Service mất 550ms (65% total). Bottleneck = SQL execution on sandbox.</div>
+    <div class="svg-text svg-small" style="left:60px;top:381px;width:850px;text-align:left;">Tool:</div>
+    <div class="svg-text svg-title" style="left:100px;top:381px;width:850px;text-align:left;">Jaeger / Zipkin / Tempo hiển thị waterfall n&#224;y từ trace data.</div>
+  </div>
+</body>
+</html>

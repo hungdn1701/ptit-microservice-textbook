@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.2 — Publish/Subscribe vs Point-to-Point
+    =========================================================
+    Tier 1 HTML migration từ fig-5-2.svg
+    Layout: Grid 2 cột (Pub/Sub fan-out, Point-to-Point) + ghi chú LMS
+    Capture: gen-diagrams.ps1 → fig-5-2.png → Typst image()
+  -->
+  <title>Fig 5.2 — Publish/Subscribe vs Point-to-Point | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .fanout-consumers { display: flex; flex-direction: column; gap: 6px; }
+    .lms-note-row { display: flex; gap: 8px; align-items: baseline; font-size: 12px;
+                    margin-bottom: 4px; }
+    .lms-note-row .tag { font-weight: 700; min-width: 90px; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Hai mô hình: Publish/Subscribe vs Point-to-Point</div>
+
+    <div class="d-grid-2" style="margin-bottom: 16px; align-items: start;">
+
+      <!-- LEFT: Pub/Sub -->
+      <div class="d-cluster">
+        <span class="d-label">Publish / Subscribe</span>
+        <div class="d-row" style="margin: 14px 0 10px; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <!-- Producer -->
+          <div class="d-box d-service" style="text-align:center;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <!-- Topic -->
+          <div class="d-box d-event" style="text-align:center;">
+            <div class="d-title">Topic</div>
+            <div class="d-sub">submission-topic</div>
+          </div>
+          <!-- Fan-out arrows + consumers -->
+          <div class="fanout-consumers" style="margin-left:8px;">
+            <div class="d-row">
+              <div class="d-arrow d-arrow-h"></div>
+              <div class="d-box d-info" style="min-width:100px; text-align:center;">
+                <div class="d-title">Consumer 1</div>
+                <div class="d-sub">Judge</div>
+              </div>
+            </div>
+            <div class="d-row">
+              <div class="d-arrow d-arrow-h"></div>
+              <div class="d-box d-info" style="min-width:100px; text-align:center;">
+                <div class="d-title">Consumer 2</div>
+                <div class="d-sub">Leaderboard</div>
+              </div>
+            </div>
+            <div class="d-row">
+              <div class="d-arrow d-arrow-h"></div>
+              <div class="d-box d-info" style="min-width:100px; text-align:center;">
+                <div class="d-title">Consumer 3</div>
+                <div class="d-sub">Notification</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div style="font-size:11.5px; color:#374151; line-height:1.6;">
+          Mỗi consumer nhận <strong>TẤT CẢ</strong> messages từ topic.<br>
+          Kafka: mỗi consumer group đọc offset riêng độc lập.
+        </div>
+      </div>
+
+      <!-- RIGHT: Point-to-Point -->
+      <div class="d-cluster">
+        <span class="d-label">Point-to-Point</span>
+        <div class="d-row" style="margin: 14px 0 10px; justify-content: center; flex-wrap: wrap; gap: 8px;">
+          <!-- Producer -->
+          <div class="d-box d-service" style="text-align:center;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <!-- Queue -->
+          <div class="d-box d-event" style="text-align:center;">
+            <div class="d-title">Queue</div>
+            <div class="d-sub">dead-letter-queue</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <!-- Single Consumer -->
+          <div class="d-box d-info" style="text-align:center;">
+            <div class="d-title">Consumer</div>
+            <div class="d-sub">DLQ Handler</div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div style="font-size:11.5px; color:#374151; line-height:1.6;">
+          Mỗi message chỉ <strong>MỘT</strong> consumer xử lý.<br>
+          RabbitMQ: default behavior — round-robin delivery.
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- LMS usage note -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom: 10px;">LMS sử dụng cả hai mô hình</div>
+      <div class="lms-note-row">
+        <span class="tag" style="color:#0f766e;">Pub/Sub:</span>
+        <span style="color:#334155;">
+          <code>submission-topic</code> → Judge Consumer + Leaderboard Consumer + Notification Consumer
+        </span>
+      </div>
+      <div class="lms-note-row">
+        <span class="tag" style="color:#ca8a04;">Point-to-Point:</span>
+        <span style="color:#334155;">
+          <code>dead-letter-queue</code> → DLQ Consumer (xử lý message lỗi, retry có kiểm soát)
+        </span>
+      </div>
+      <div class="lms-note-row" style="margin-top:4px;">
+        <span class="tag" style="color:#2563eb;">Kafka note:</span>
+        <span style="color:#334155;">
+          Consumer Group = point-to-point trong cùng group.  Khác group = pub/sub riêng biệt.
+        </span>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

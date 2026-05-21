@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.5 — Lộ trình tách Database — 5 bước
+    =========================================================
+    Tier 1 HTML migration từ fig-7-5.svg
+    Layout: Horizontal 5-step pipeline + CSS gradient risk bar + detail note
+    NOTE: linearGradient risk bar replaced with CSS gradient div
+    Capture: gen-diagrams.ps1 → fig-7-5.png → Typst image()
+  -->
+  <title>Fig 7.5 — Lộ trình tách Database — 5 bước | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.12);
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-bottom: 4px;
+    }
+    .risk-label {
+      font-size: 11px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height:620px;">
+
+    <div class="d-title-page">Lộ trình tách Database — 5 bước</div>
+
+    <!-- 5-step pipeline -->
+    <div class="d-row" style="align-items:flex-start; gap:4px; margin-bottom:8px;">
+
+      <!-- Step 1 -->
+      <div class="d-box d-success d-grow" style="text-align:center; min-width:0;">
+        <div class="step-num">1</div>
+        <div class="d-title">Database View</div>
+        <div class="d-sub">read-only projection</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="flex-shrink:0; padding-top:18px;"></div>
+
+      <!-- Step 2 -->
+      <div class="d-box d-info d-grow" style="text-align:center; min-width:0;">
+        <div class="step-num">2</div>
+        <div class="d-title">Wrapping Service</div>
+        <div class="d-sub">API trước DB</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="flex-shrink:0; padding-top:18px;"></div>
+
+      <!-- Step 3 -->
+      <div class="d-box d-event d-grow" style="text-align:center; min-width:0;">
+        <div class="step-num">3</div>
+        <div class="d-title">Separate Schema</div>
+        <div class="d-sub">namespace isolation</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="flex-shrink:0; padding-top:18px;"></div>
+
+      <!-- Step 4 -->
+      <div class="d-box d-warning d-grow" style="text-align:center; min-width:0;">
+        <div class="step-num">4</div>
+        <div class="d-title">Data Transfer</div>
+        <div class="d-sub">sync/async copy</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="flex-shrink:0; padding-top:18px;"></div>
+
+      <!-- Step 5 -->
+      <div class="d-box d-service d-grow" style="text-align:center; min-width:0;">
+        <div class="step-num">5</div>
+        <div class="d-title">Full Database Split</div>
+        <div class="d-sub">independent DBs</div>
+      </div>
+
+    </div>
+
+    <!-- Risk gradient bar -->
+    <div style="padding: 0 2px; margin-bottom:4px;">
+      <div style="height:8px; background: linear-gradient(90deg, #dcfce7 0%, #fef08a 50%, #fee2e2 100%); border-radius:4px;"></div>
+      <div class="risk-label">
+        <span>⬅ Rủi ro: Thấp</span>
+        <span>Rủi ro: Cao ➡</span>
+      </div>
+    </div>
+
+    <div class="d-sep"></div>
+
+    <!-- LMS detail steps note -->
+    <div class="d-box d-note">
+      <div class="d-title" style="margin-bottom:8px;">🏫 LMS — Lộ trình đề xuất</div>
+      <div class="d-stack" style="gap:6px;">
+        <div style="font-size:12px; color:#334155;">
+          <span style="font-weight:600; color:#16a34a;">Bước 1:</span>
+          Tạo VIEW cho Assignment đọc từ Core tables (không thay đổi code)
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="font-weight:600; color:#3b82f6;">Bước 2:</span>
+          Tạo API endpoint trong Core để Assignment gọi thay vì query trực tiếp DB
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="font-weight:600; color:#ca8a04;">Bước 3:</span>
+          Tách schema: <code style="font-family:monospace; font-size:11px;">core_schema</code> và
+          <code style="font-family:monospace; font-size:11px;">assignment_schema</code> trong cùng PostgreSQL
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="font-weight:600; color:#ea580c;">Bước 4:</span>
+          Sync data qua Kafka CDC (Change Data Capture) từ core → assignment
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="font-weight:600; color:#0f766e;">Bước 5:</span>
+          Tách thành 2 PostgreSQL instances hoàn toàn độc lập
+        </div>
+      </div>
+      <div class="d-sep" style="margin:8px 0;"></div>
+      <div style="font-size:11px; color:#64748b; text-align:center;">
+        💡 Mỗi bước rollback-able. Không cần làm tất cả cùng lúc.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

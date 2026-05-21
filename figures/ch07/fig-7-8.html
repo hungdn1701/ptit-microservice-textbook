@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.8 — Data Replication via Events
+    =========================================================
+    Tier 1 HTML migration từ fig-7-8.svg
+    Layout: Sequence diagram 3 actors — Auth Service, Kafka, Assignment Service
+    Capture: gen-diagrams.ps1 → fig-7-8.png → Typst image()
+  -->
+  <title>Fig 7.8 — Data Replication via Events | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .seq-line {
+      position: absolute;
+      top: 50%;
+      height: 1.5px;
+      background: #64748b;
+    }
+    .seq-line.dashed {
+      background: repeating-linear-gradient(
+        90deg, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+      );
+    }
+    .seq-arrow-r::after {
+      content: '▶';
+      position: absolute;
+      right: -6px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .seq-arrow-l::before {
+      content: '◀';
+      position: absolute;
+      left: -6px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .seq-msg-text {
+      position: absolute;
+      left: 50%;
+      top: -13px;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #334155;
+      background: #ffffff;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+    .seq-note {
+      position: absolute;
+      border-radius: 6px;
+      border: 1.5px solid;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      top: 6px;
+    }
+    .seq-row {
+      position: relative;
+      height: 44px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height:560px;">
+
+    <div class="d-title-page">Data Replication qua Events</div>
+
+    <div class="d-seq-container">
+
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Auth Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Assignment Service</div>
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <!-- Actor centers: 16.67% | 50% | 83.33% -->
+      <div style="position:relative; padding-top:8px; min-height:360px;">
+
+        <!-- Row 1: Note at Auth(0) — user updated -->
+        <div class="seq-row" style="height:52px;">
+          <div class="seq-note" style="left:calc(0% + 5px); width:calc(33.33% - 10px);
+               background:#eff6ff; border-color:#3b82f6; color:#1e3a8a;">
+            User cập nhật tên<br>
+            <span style="font-size:10px; font-weight:400;">(name change event)</span>
+          </div>
+        </div>
+
+        <!-- Row 2: Auth(0) → Kafka(1) — publish event -->
+        <div class="seq-row" style="margin-top:4px;">
+          <div class="seq-line seq-arrow-r" style="left:16.67%; width:33.33%;">
+            <span class="seq-msg-text">Pub: UserUpdated {userId, name}</span>
+          </div>
+        </div>
+
+        <!-- Row 3: Kafka(1) → Assignment(2) — consume -->
+        <div class="seq-row" style="margin-top:4px;">
+          <div class="seq-line seq-arrow-r" style="left:50%; width:33.33%;">
+            <span class="seq-msg-text">Consume: UserUpdated</span>
+          </div>
+        </div>
+
+        <!-- Row 4: Note at Assignment(2) — cache update -->
+        <div class="seq-row" style="height:52px; margin-top:4px;">
+          <div class="seq-note" style="left:calc(66.67% + 5px); width:calc(33.33% - 10px);
+               background:#fef9c3; border-color:#ca8a04; color:#713f12;">
+            Cập nhật local cache<br>
+            <span style="font-size:10px; font-weight:400;">user_cache[userId] = name</span>
+          </div>
+        </div>
+
+        <!-- Row 5: Note at Assignment(2) — read local copy -->
+        <div class="seq-row" style="height:52px; margin-top:4px;">
+          <div class="seq-note" style="left:calc(66.67% + 5px); width:calc(33.33% - 10px);
+               background:#eff6ff; border-color:#3b82f6; color:#1e3a8a;">
+            Khi hiển thị:<br>
+            <span style="font-size:10px; font-weight:400;">đọc local copy (no network call)</span>
+          </div>
+        </div>
+
+        <!-- Vertical lifelines -->
+        <div style="position:absolute; top:0; left:16.67%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+        <div style="position:absolute; top:0; left:50%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+        <div style="position:absolute; top:0; left:83.33%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+
+      </div><!-- /messages area -->
+
+    </div><!-- /seq-container -->
+
+    <!-- Eventual consistency note -->
+    <div class="d-box d-note" style="margin-top:12px;">
+      <div class="d-title">Eventual Consistency — chấp nhận được ở đây</div>
+      <div class="d-sub">
+        Assignment có thể hiển thị tên cũ vài giây sau khi Auth cập nhật.
+        Đánh đổi lấy: <strong>zero network calls</strong> khi hiển thị assignment list.
+        Không cần gọi Auth mỗi lần render.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

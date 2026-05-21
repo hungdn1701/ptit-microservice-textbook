@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.13 — Event Store + Projections
+    =========================================================
+    Tier 1 HTML migration từ fig-7-13.svg
+    Layout: Event Store → fan-out arrows → 3 projections
+    Capture: gen-diagrams.ps1 → fig-7-13.png → Typst image()
+  -->
+  <title>Fig 7.13 — Event Store + Projections | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .fan-out {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      position: relative;
+      height: 48px;
+    }
+    .fan-out::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 16.67%;
+      right: 16.67%;
+      height: 1.5px;
+      background: #94a3b8;
+    }
+    .fan-out-stem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      padding-top: 0;
+    }
+    .fan-out-stem::after {
+      content: '↓';
+      font-size: 16px;
+      color: #64748b;
+      line-height: 1;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Event Store + Projections</div>
+
+    <!-- Event Store at top center -->
+    <div style="display:flex; justify-content:center; margin-bottom:6px;">
+      <div class="d-box d-storage" style="width:320px; text-align:center;">
+        <div class="d-title">🗄️ Event Store</div>
+        <div class="d-sub">500K+ events — append-only, immutable</div>
+      </div>
+    </div>
+
+    <!-- Fan-out arrows to 3 projections -->
+    <div class="fan-out" style="margin: 0 20px;">
+      <div class="fan-out-stem"></div>
+      <div class="fan-out-stem"></div>
+      <div class="fan-out-stem"></div>
+    </div>
+
+    <!-- 3 Projections -->
+    <div class="d-row" style="align-items:flex-start; gap:10px; margin-bottom:14px;">
+
+      <!-- submissions table -->
+      <div class="d-box d-service d-grow" style="text-align:center;">
+        <div class="d-title">submissions table</div>
+        <div class="d-sub">current state</div>
+        <div class="d-sep" style="margin:6px 0;"></div>
+        <div style="font-size:11px; color:#334155;">Trạng thái hiện tại của mỗi submission. Read model cho Core API.</div>
+      </div>
+
+      <!-- learning_progress view -->
+      <div class="d-box d-info d-grow" style="text-align:center;">
+        <div class="d-title">learning_progress</div>
+        <div class="d-sub">tạo mới từ events</div>
+        <div class="d-sep" style="margin:6px 0;"></div>
+        <div style="font-size:11px; color:#334155;">Progress theo thời gian, tạo từ event stream. Không có trong traditional DB.</div>
+      </div>
+
+      <!-- teacher_dashboard -->
+      <div class="d-box d-event d-grow" style="text-align:center;">
+        <div class="d-title">teacher_dashboard</div>
+        <div class="d-sub">tạo mới từ events</div>
+        <div class="d-sep" style="margin:6px 0;"></div>
+        <div style="font-size:11px; color:#334155;">View dành cho giáo viên: student attempts, common errors, timing.</div>
+      </div>
+
+    </div>
+
+    <!-- Projection notes -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:16px; flex-wrap:wrap; align-items:flex-start;">
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">Projections</div>
+          <div class="d-sub">Đọc events và tạo read-model phù hợp cho từng use case. Projection có thể khác nhau hoàn toàn về schema.</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:#e2e8f0; margin:0;"></div>
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">Lợi ích chính</div>
+          <div class="d-sub">
+            Thêm projection mới <strong>không thay đổi event store</strong>.
+            Replay events để tạo projection bất kỳ lúc nào — kể cả retroactively.
+          </div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:#e2e8f0; margin:0;"></div>
+        <div style="flex:1; min-width:160px;">
+          <div class="d-title">Temporal Query</div>
+          <div class="d-sub">Có thể rebuild state <em>tại bất kỳ thời điểm nào</em> trong quá khứ bằng cách replay đến event đó.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

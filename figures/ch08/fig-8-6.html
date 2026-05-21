@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.6 - Gateway JWT Filter — Request Rejected</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Gateway JWT Filter — Request Rejected">
+    <div class="d-box d-service svg-box" style="left:90px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:340px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:614px;top:35px;width:132px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-danger svg-box" style="left:337.5px;top:140px;width:125px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-success svg-box" style="left:344.5px;top:305px;width:111px;height:28px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 150 90 L 400 90" class="arrow" />
+      <path d="M 400 190 L 150 190" class="arrow-dashed" />
+      <path d="M 150 255 L 400 255" class="arrow" />
+      <path d="M 400 350 L 680 350" class="arrow" />
+      <path d="M 680 395 L 400 395" class="arrow-dashed" />
+      <path d="M 400 435 L 150 435" class="arrow-dashed" />
+      <line x1="150" y1="75" x2="150" y2="420" class="lifeline" />
+      <line x1="400" y1="75" x2="400" y2="420" class="lifeline" />
+      <line x1="680" y1="75" x2="680" y2="420" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">Gateway JWT Filter — Request Rejected</div>
+    <div class="svg-text svg-title" style="left:150px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Client</div>
+    <div class="svg-text svg-title" style="left:400px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:680px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:275px;top:68px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">GET /api/core/admin (invalid token)</div>
+    <div class="svg-text svg-title" style="left:400px;top:144px;width:360px;transform:translateX(-50%);text-align:center;">[Token INVALID]</div>
+    <div class="svg-text svg-title" style="left:275px;top:168px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">401 Unauthorized</div>
+    <div class="svg-text svg-title" style="left:550px;top:191px;width:360px;transform:translateX(-50%);text-align:center;">Request KH&#212;NG đến Core Service</div>
+    <div class="svg-text svg-title" style="left:275px;top:233px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">GET /api/core/questions (valid token)</div>
+    <div class="svg-text svg-title" style="left:400px;top:309px;width:360px;transform:translateX(-50%);text-align:center;">[Token valid]</div>
+    <div class="svg-text svg-title" style="left:540px;top:328px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Forward + X-User-Id header</div>
+    <div class="svg-text svg-title" style="left:540px;top:373px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:275px;top:413px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response to client</div>
+  </div>
+</body>
+</html>
