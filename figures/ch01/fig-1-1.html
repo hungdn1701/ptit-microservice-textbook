@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.1 — Tiến hóa kiến trúc phần mềm doanh nghiệp
+    =========================================================
+    Tier 1 HTML migration từ fig-1-1.svg
+    Layout: Timeline 4 era cards (1990s → 2020s)
+    Capture: gen-diagrams.ps1 → fig-1-1.png → Typst image()
+  -->
+  <title>Fig 1.1 — Tiến hóa kiến trúc phần mềm doanh nghiệp | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    /* Timeline-specific overrides */
+    .timeline-axis {
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin: 0 20px 24px;
+      padding: 0 20px;
+    }
+    .timeline-axis::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, #94a3b8, #0f766e);
+      border-radius: 2px;
+    }
+    .timeline-axis::after {
+      content: '→';
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #0f766e;
+    }
+    .timeline-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid #0f766e;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    .timeline-spacer {
+      flex: 1;
+    }
+    .era-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 0 10px;
+    }
+    .era-card {
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .era-year {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 6px;
+    }
+    .era-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .era-detail {
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.55;
+      text-align: left;
+    }
+    .era-detail li {
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Tiến hóa kiến trúc phần mềm doanh nghiệp</div>
+
+    <!-- Timeline axis with dots -->
+    <div class="timeline-axis">
+      <div class="timeline-dot"></div>
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-spacer"></div>
+      <div class="timeline-dot"></div>
+    </div>
+
+    <!-- 4 era cards -->
+    <div class="era-cards">
+
+      <!-- 1990s — Monolith -->
+      <div class="era-card d-legacy">
+        <div class="era-year">1990s</div>
+        <div class="era-name" style="color:#374151">Monolith</div>
+        <ul class="era-detail">
+          <li>Ứng dụng nguyên khối</li>
+          <li>Đơn giản, nhanh, dễ debug</li>
+          <li>Giới hạn ở scale &amp; team size</li>
+        </ul>
+      </div>
+
+      <!-- 2000s — SOA -->
+      <div class="era-card d-event">
+        <div class="era-year">2000s</div>
+        <div class="era-name" style="color:#713f12">SOA</div>
+        <ul class="era-detail">
+          <li>Service-Oriented Architecture</li>
+          <li>ESB, WSDL, SOAP</li>
+          <li>Tái sử dụng ở cấp enterprise</li>
+          <li>Phức tạp, nặng middleware</li>
+        </ul>
+      </div>
+
+      <!-- 2010s — Microservices -->
+      <div class="era-card d-service">
+        <div class="era-year">2010s</div>
+        <div class="era-name" style="color:#085041">Microservices</div>
+        <ul class="era-detail">
+          <li>Kiến trúc vi dịch vụ</li>
+          <li>REST, messaging, containers</li>
+          <li>Independence-first</li>
+          <li>Netflix, Amazon, Spotify tiên phong</li>
+        </ul>
+      </div>
+
+      <!-- 2020s — Evolved MS -->
+      <div class="era-card d-info">
+        <div class="era-year">2020s</div>
+        <div class="era-name" style="color:#1e3a8a">Evolved MS</div>
+        <ul class="era-detail">
+          <li>Domain-oriented MS (DOMA)</li>
+          <li>Modular monolith comeback</li>
+          <li>Hybrid approaches phổ biến</li>
+          <li>Fast flow success triangle</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

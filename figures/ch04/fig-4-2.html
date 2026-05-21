@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.2 — Feign Proxy — Tự động hóa HTTP request
+    =========================================================
+    Tier 1 HTML migration từ fig-4-2.svg
+    Layout: Pipeline ngang + cluster chứa 4 capabilities + code note
+    Capture: gen-diagrams.ps1 → fig-4-2.png → Typst image()
+  -->
+  <title>Fig 4.2 — Feign Proxy — Tự động hóa HTTP request | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    /* Page-specific layout for the Feign pipeline */
+    .feign-pipeline {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 24px 0 20px;
+    }
+    .feign-pipeline > .d-box {
+      width: 140px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .feign-cluster {
+      flex: 1;
+    }
+    .feign-cluster .d-label {
+      font-size: 13px;
+    }
+    .capability-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .capability-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1.5px solid;
+    }
+    .capability-item .cap-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .capability-item .cap-desc {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .target-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 16px;
+    }
+    .code-note {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', 'Consolas', 'Fira Code', monospace;
+      font-size: 11.5px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+    .code-note .kw  { color: #93c5fd; }
+    .code-note .str { color: #86efac; }
+    .code-note .ann { color: #fca5a5; }
+    .code-note .cmt { color: #64748b; font-style: italic; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Feign Proxy — Tự động hóa HTTP request</div>
+
+    <!-- Main pipeline row -->
+    <div class="feign-pipeline">
+
+      <!-- Service Code box -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; align-self:center;">
+        <div class="d-box d-service" style="width:140px; text-align:center">
+          <div class="d-title">Service Code</div>
+          <div class="d-sub">gọi như local method</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="align-self:center;" class="d-arrow d-arrow-h"></div>
+
+      <!-- Feign Interface box -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; align-self:center;">
+        <div class="d-box d-event" style="width:140px; text-align:center">
+          <div class="d-title">Feign Interface</div>
+          <div class="d-sub">(khai báo)</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="align-self:center;" class="d-arrow d-arrow-h"></div>
+
+      <!-- Cluster: Tự động bởi Feign -->
+      <div class="d-cluster feign-cluster">
+        <span class="d-label">Tự động bởi Feign</span>
+        <div class="capability-grid">
+
+          <div class="capability-item d-info">
+            <div>
+              <div class="cap-label">HTTP Request</div>
+              <div class="cap-desc">GET/POST/PUT tự động</div>
+            </div>
+          </div>
+
+          <div class="capability-item d-service">
+            <div>
+              <div class="cap-label">JWT Header</div>
+              <div class="cap-desc">Authorization: Bearer ...</div>
+            </div>
+          </div>
+
+          <div class="capability-item d-success">
+            <div>
+              <div class="cap-label">Eureka Lookup</div>
+              <div class="cap-desc">Tìm instance healthy</div>
+            </div>
+          </div>
+
+          <div class="capability-item d-warning">
+            <div>
+              <div class="cap-label">Error Handling</div>
+              <div class="cap-desc">Decode + fallback</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Target Service (below cluster) -->
+        <div class="target-section">
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-service" style="width:180px; text-align:center">
+            <div class="d-title">Target Service</div>
+            <div class="d-sub">(Judge, Auth...)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Code example note -->
+    <div class="code-note">
+      <div><span class="ann">@FeignClient</span>(<span class="str">name = "judge-service"</span>)</div>
+      <div><span class="kw">public interface</span> JudgeClient {</div>
+      <div>    <span class="ann">@PostMapping</span>(<span class="str">"/api/judge/execute"</span>)</div>
+      <div>    JudgeResult <span class="kw">execute</span>(<span class="ann">@RequestBody</span> SubmitRequest req);</div>
+      <div>}</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

@@ -1,0 +1,434 @@
+/* ============================================================
+   diagram-style.css — Static Diagram Design System
+   SOA & Microservices Textbook · v1.0
+
+   USAGE:
+     Static figures (→ Playwright PNG → Typst):
+       <link rel="stylesheet" href="../../interactive/base-style.css">
+       <link rel="stylesheet" href="../../interactive/diagram-style.css">
+       <body class="diagram-mode">
+
+     Interactive demos (web):
+       <link rel="stylesheet" href="../interactive/base-style.css">
+       (diagram-style.css không cần thiết)
+
+   DESIGN TOKENS: tất cả lấy từ base-style.css (--primary, --success,
+   --danger, --warning, --info). Không hardcode hex trong file này.
+   ============================================================ */
+
+/* ── Diagram Mode Override ── */
+/* Force light bg, remove animations, remove star-field —
+   đảm bảo Playwright capture ra PNG sạch, print-safe.          */
+.diagram-mode {
+  background: #ffffff !important;
+  color: #1a202c !important;
+  min-height: unset;
+}
+
+/* Tắt star-field pseudo-element */
+.diagram-mode::before { display: none !important; }
+
+/* Diagram viewport — khớp với viewBox SVG cũ 960×540 */
+.diagram-canvas {
+  width: 960px;
+  min-height: 540px;
+  padding: 28px 32px;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1a202c;
+  position: relative;
+}
+
+/* ── Typography Scale ── */
+.d-title-page {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a202c;
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.d-title   { font-size: 13px; font-weight: 600; color: #1a202c; }
+.d-label   { font-size: 11px; font-weight: 600; color: #64748b;
+             text-transform: uppercase; letter-spacing: 0.05em; }
+.d-sub     { font-size: 11px; font-weight: 400; color: #64748b; margin-top: 2px; }
+.d-mono    { font-family: 'JetBrains Mono', 'Fira Code', monospace;
+             font-size: 11px; color: #475569; }
+
+/* ── Layout Primitives ── */
+.d-row     { display: flex; flex-direction: row;  align-items: center;  gap: 12px; }
+.d-col     { display: flex; flex-direction: column; gap: 8px; }
+.d-stack   { display: flex; flex-direction: column; gap: 6px; }
+.d-center  { align-items: center; justify-content: center; }
+.d-between { justify-content: space-between; }
+.d-wrap    { flex-wrap: wrap; }
+.d-grow    { flex: 1; }
+
+.d-grid-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.d-grid-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.d-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.d-auto    { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+
+/* ── Box Primitives — semantic types ── */
+/*
+  Map trực tiếp từ Python svg_design_system.py:
+    service   → .d-service
+    storage   → .d-storage
+    event     → .d-event
+    success   → .d-success
+    danger    → .d-danger
+    warning   → .d-warning
+    info      → .d-info
+    highlight → .d-highlight
+    legacy    → .d-legacy
+    cluster   → .d-cluster (container, dashed)
+    note      → .d-note    (footnote/callout)
+*/
+
+.d-box {
+  border-radius: 10px;
+  border: 1.5px solid;
+  padding: 10px 14px;
+  transition: none; /* no hover effects — print-safe */
+}
+
+/* Service — teal */
+.d-service {
+  background: #e6f4f3;
+  border-color: #0f766e;
+  color: #085041;
+}
+.d-service .d-title  { color: #085041; }
+.d-service .d-sub    { color: #0f766e; }
+
+/* Storage — blue */
+.d-storage {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1e3a8a;
+}
+.d-storage .d-title  { color: #1e3a8a; }
+.d-storage .d-sub    { color: #2563eb; }
+
+/* Event — amber */
+.d-event {
+  background: #fef9c3;
+  border-color: #ca8a04;
+  color: #713f12;
+}
+.d-event .d-title  { color: #713f12; }
+.d-event .d-sub    { color: #92400e; }
+
+/* Success — green */
+.d-success {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
+}
+
+/* Danger — red */
+.d-danger {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #7f1d1d;
+}
+
+/* Warning — orange */
+.d-warning {
+  background: #fff7ed;
+  border-color: #ea580c;
+  color: #7c2d12;
+}
+
+/* Info — blue */
+.d-info {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+/* Highlight — purple */
+.d-highlight {
+  background: #f5f3ff;
+  border-color: #7c3aed;
+  color: #3b0764;
+}
+
+/* Legacy — gray */
+.d-legacy {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* Note — light callout */
+.d-note {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+  border-style: dashed;
+}
+
+/* Cluster — outer container/grouping zone */
+.d-cluster {
+  background: #f8fafc;
+  border: 1.5px dashed #94a3b8;
+  border-radius: 12px;
+  padding: 14px 16px;
+  position: relative;
+}
+
+.d-cluster > .d-label {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: #ffffff;
+  padding: 0 6px;
+}
+
+/* ── Arrow & Connector Utilities ── */
+/* CSS-only arrows using flex separators */
+.d-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 16px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Horizontal arrow separator */
+.d-arrow-h::after { content: '→'; }
+.d-arrow-h-dashed::after { content: '⇢'; color: #94a3b8; }
+
+/* Vertical arrow separator */
+.d-arrow-v {
+  display: flex;
+  justify-content: center;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1;
+  margin: 2px 0;
+}
+.d-arrow-v::after { content: '↓'; }
+.d-arrow-v-dashed::after { content: '⇣'; color: #94a3b8; }
+
+/* Labeled arrow row: [box] —label→ [box] */
+.d-arrow-label {
+  font-size: 10px;
+  color: #64748b;
+  background: #ffffff;
+  padding: 1px 5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ── Sequence Diagram Primitives ── */
+.d-seq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.d-seq-participants {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid #cbd5e1;
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.d-seq-actor {
+  flex: 1;
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.d-seq-actor-box {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid;
+}
+
+.d-seq-messages {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+  gap: 0;
+}
+
+.d-seq-msg {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  position: relative;
+  font-size: 11px;
+}
+
+.d-seq-msg-line {
+  flex: 1;
+  height: 1.5px;
+  background: #64748b;
+  position: relative;
+}
+
+.d-seq-msg-line::after {
+  content: '▶';
+  position: absolute;
+  right: -6px;
+  top: -7px;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.d-seq-msg-line.dashed {
+  background: repeating-linear-gradient(
+    90deg, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+  );
+}
+
+.d-seq-msg-text {
+  font-size: 11px;
+  color: #334155;
+  background: #ffffff;
+  padding: 1px 6px;
+  white-space: nowrap;
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── Timeline Bar ── */
+.d-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.d-timeline-axis {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 16px 0;
+  height: 3px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.d-timeline-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.d-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0f766e;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #0f766e;
+}
+
+/* ── Highlighted Zone (activation, blocking) ── */
+.d-zone {
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.d-zone-danger  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.d-zone-warning { background: #fff7ed; color: #ea580c; border: 1px solid #fdba74; }
+.d-zone-info    { background: #eff6ff; color: #3b82f6; border: 1px solid #93c5fd; }
+.d-zone-success { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+
+/* ── Code Snippet (inline trong diagram) ── */
+.d-code {
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #e2e8f0;
+}
+
+.d-code .kw  { color: #93c5fd; }
+.d-code .str { color: #86efac; }
+.d-code .cmt { color: #64748b; font-style: italic; }
+.d-code .ann { color: #fca5a5; }
+
+/* ── Separator ── */
+.d-sep {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 10px 0;
+}
+
+.d-sep-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.d-sep-title::before,
+.d-sep-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+/* ── Metrics / Stats ── */
+.d-metric {
+  text-align: center;
+  padding: 10px 8px;
+}
+
+.d-metric-value {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.d-metric-label {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ── Figure Caption (below diagram) ── */
+.d-caption {
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+  margin-top: 12px;
+  font-style: italic;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+}
+
+/* ── Watermark / Debug aid (stripped at print) ── */
+@media screen {
+  .diagram-canvas {
+    outline: 1px dashed #e2e8f0; /* thấy boundary khi xem trong browser */
+  }
+}
