@@ -13,13 +13,12 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 
 ---
 
-## 📖 Đọc sách
+## 📖 Đọc sách & Trải nghiệm tương tác
 
-| Cách | Hướng dẫn |
+| Nền tảng | Hướng dẫn |
 |---|---|
-| **PDF** (khuyên dùng) | Tải bản mới nhất tại [Releases](https://github.com/hungdn1701/ptit-microservice-textbook/releases) |
-| **Online** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
-| **Tự build** | Xem mục [🏗️ Build](#️-build) bên dưới *(cần Typst + submodule `references/`)* |
+| **Online Portal** | Truy cập **[Unified Book Portal](https://hungdn1701.github.io/ptit-microservice-textbook)** để đọc sách hoàn chỉnh, xem sơ đồ tương tác (Companion Web) và tải PDF mới nhất. |
+| **Mã nguồn** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
 
 ---
 
@@ -47,106 +46,12 @@ Kèm theo: [Bài tập](manuscript/exercises.md) · [Glossary](manuscript/append
 
 ---
 
-## 🎮 Companion Web
+## 🔒 Dành cho Core Authors (Nhóm Tác giả)
 
-Giáo trình đi kèm một trang **Companion Web** (Web tiện ích) minh họa trực quan 14 interactive patterns. Mở [`companion-web/index.html`](companion-web/index.html) trong trình duyệt để trải nghiệm.
+Dự án này sử dụng mô hình **Dual-layer Repository**. Các kịch bản build sách, tài liệu hướng dẫn nội bộ (Git workflow, quy chuẩn định dạng), và mã nguồn Typst được lưu trữ trong Git Submodule riêng tư `references/`.
 
----
-
-## 📥 Tải Giáo Trình
-
-Phiên bản hoàn chỉnh (v1.0.2) đã được phát hành:
-- **[Tải toàn bộ sách PDF (SOA-Microservices-Book-v1.0.2.pdf)](release/v1.0.2/SOA-Microservices-Book-v1.0.2.pdf)**
-- **[Đọc bản HTML (SOA-Microservices-Book-v1.0.2.html)](release/v1.0.2/SOA-Microservices-Book-v1.0.2.html)**
-- [Xem từng chương rời](release/v1.0.2)
-
----
-
-## 🏗️ Build
-
-> [!NOTE]
-> Phần này dành cho **core author** có quyền truy cập submodule `references/`. Xem [AGENTS.md](AGENTS.md) để biết thêm.
-
-**Yêu cầu:** [Typst](https://typst.app/) cho compile PDF/HTML. Luồng phát hành hiện tại không dùng pipeline HTML/PDF cũ; PDF và HTML đều compile qua Typst.
-
-```powershell
-# Clone đầy đủ (bao gồm cả submodule)
-git clone --recurse-submodules https://github.com/hungdn1701/ptit-microservice-textbook.git
-
-# Build toàn bộ sách (dev mode — reset output/ rồi sinh PDF local)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all
-
-# Build một chương cụ thể (ví dụ: chương 3)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 03
-
-# Build HTML bằng Typst
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 html
-
-# Build PDF + HTML cùng lúc
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Html
-
-# Stable release build (PDF + HTML, artifact tracked trong release/<tag>/)
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.2 -Html
-
-# Pre-release build theo SemVer, dùng cho release candidate trước bản chính thức
-powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.2-rc.1 -PreRelease -Html
-```
-
-Output:
-- **Dev build:** `output/` (gitignored, disposable, được reset mỗi lần build) — `chapter-XX.pdf` + `book.pdf`; thêm `book.html` nếu chạy target `html` hoặc `all -Html`.
-- **Release build:** `release/<tag>/` (tracked) — tagged PDFs + `SOA-Microservices-Book-<tag>.html` + `RELEASE_NOTES.md` khi chạy `-Html`.
-
-Luồng nguồn hiện tại:
-- `manuscript/*.md` là nguồn nội dung public, thuận tiện để viết, review diff và cộng tác.
-- Build script đồng bộ `manuscript/*.md` sang `references/internal/typst/chapters/*.typ` trước khi compile.
-- `references/internal/typst/main.typ` là entry point PDF chính; `main-web.typ` là entry point HTML.
-
-Quy ước phiên bản:
-- **Stable release:** tag dạng `vX.Y.Z`, ví dụ `v1.0.2`.
-- **Pre-release:** dùng đúng thuật ngữ `pre-release`, tag dạng `vX.Y.Z-rc.N`, ví dụ `v1.0.2-rc.1`.
-
----
-
-## 🔄 Git Workflow cho Core Authors
-
-> [!CAUTION]
-> **Nguyên tắc bắt buộc:** Repo này sử dụng Git submodule (`references/`). Mọi thao tác pull/push **phải luôn bao gồm submodule**, nếu không sẽ gây mất đồng bộ giữa nội dung và hệ thống build.
-
-### Bắt đầu phiên làm việc — Pull
-
-```powershell
-# LUÔN dùng --recurse-submodules khi pull
-git pull --recurse-submodules
-
-# Nếu submodule bị rỗng hoặc lỗi
-git submodule update --init --recursive
-```
-
-### Kết thúc phiên — Commit & Push
-
-Quy trình **2 bước bắt buộc** — submodule trước, public repo sau:
-
-```powershell
-# Bước 1: Commit & push submodule (references/)
-cd references
-git add .
-git commit -m "docs: mô tả thay đổi"
-git push
-cd ..
-
-# Bước 2: Commit & push public repo (bao gồm submodule pointer)
-git add references manuscript figures AGENTS.md
-git commit -m "feat/fix: mô tả thay đổi"
-git push
-```
-
-> [!WARNING]
-> **Sai lầm thường gặp:**
-> - ❌ Push public repo mà **quên push submodule** → collaborator pull về thấy submodule trỏ vào commit chưa tồn tại trên remote
-> - ❌ Chỉ push submodule mà **quên bump pointer** ở public repo → public repo vẫn trỏ vào commit cũ
-> - ❌ Pull mà **không `--recurse-submodules`** → nội dung build scripts/typst bị cũ, gây conflict hoặc build lỗi
->
-> **Quy tắc vàng:** Luôn push submodule TRƯỚC, public repo SAU. Luôn pull với `--recurse-submodules`.
+- Nếu bạn là Core Author: Hãy vào mục `references/README.md` để xem cấu trúc và hướng dẫn toàn tập.
+- Lưu ý: Luôn sử dụng lệnh `git pull --recurse-submodules` để đồng bộ thư mục này.
 
 ---
 
