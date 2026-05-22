@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.5 — Fast Flow Success Triangle
+    =========================================================
+    Tier 1 HTML migration từ fig-1-5.svg
+    Layout: Triangular arrangement of 3 boxes + center label
+    Capture: gen-diagrams.ps1 → fig-1-5.png → Typst image()
+  -->
+  <title>Fig 1.5 — Fast Flow Success Triangle | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .triangle-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding: 10px 0 20px;
+    }
+    .triangle-top {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .triangle-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      width: 680px;
+      align-items: flex-start;
+    }
+    .corner-box {
+      width: 220px;
+      text-align: center;
+    }
+    .center-label {
+      position: relative;
+      text-align: center;
+      margin: 8px 0;
+    }
+    .arrows-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      margin: 6px 0;
+      font-size: 20px;
+      color: #0f766e;
+    }
+    .bidirectional {
+      font-size: 18px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">🎯 Fast Flow Success Triangle</div>
+
+    <div class="triangle-layout">
+
+      <!-- Top vertex: DevOps -->
+      <div class="triangle-top">
+        <div class="d-box d-service corner-box">
+          <div class="d-title">🔄 DevOps</div>
+          <div class="d-sub">Continuous Delivery</div>
+          <div class="d-sub">Small batch sizes</div>
+        </div>
+      </div>
+
+      <!-- Bidirectional arrows from top to bottom two -->
+      <div style="display:flex; justify-content:center; width:680px; gap:0; margin-bottom:4px;">
+        <div style="flex:1; display:flex; justify-content:flex-end; padding-right:50px;">
+          <span style="font-size:16px; color:#64748b;">↙</span>
+        </div>
+        <div style="flex:1; display:flex; justify-content:flex-start; padding-left:50px;">
+          <span style="font-size:16px; color:#64748b;">↘</span>
+        </div>
+      </div>
+
+      <!-- Center label -->
+      <div class="center-label">
+        <div class="d-box d-note" style="display:inline-block; padding: 12px 28px;">
+          <div style="font-size:16px; font-weight:700; color:#085041; text-align:center;">Fast Flow</div>
+          <div style="font-size:11px; color:#64748b; text-align:center;">Sustainable fast delivery</div>
+        </div>
+      </div>
+
+      <!-- Arrow going down from center to bottom -->
+      <div style="display:flex; justify-content:center; width:680px; gap:0; margin-top:4px;">
+        <div style="flex:1; display:flex; justify-content:flex-end; padding-right:50px;">
+          <span style="font-size:16px; color:#64748b;">↗</span>
+        </div>
+        <div style="flex:1; display:flex; justify-content:flex-start; padding-left:50px;">
+          <span style="font-size:16px; color:#64748b;">↖</span>
+        </div>
+      </div>
+
+      <!-- Bottom row: Team Topologies + Architecture -->
+      <div class="triangle-bottom-row" style="margin-top:8px;">
+
+        <div class="d-box d-info corner-box">
+          <div class="d-title">👥 Team Topologies</div>
+          <div class="d-sub">Stream-aligned teams</div>
+          <div class="d-sub">Minimal hand-offs</div>
+        </div>
+
+        <!-- Bidirectional bottom arrow -->
+        <div style="display:flex; align-items:center; font-size:20px; color:#64748b; padding: 0 10px;">
+          ↔
+        </div>
+
+        <div class="d-box d-event corner-box">
+          <div class="d-title">🏗️ Architecture</div>
+          <div class="d-sub">Loose coupling</div>
+          <div class="d-sub">Independent deployability</div>
+        </div>
+
+      </div>
+
+    </div><!-- /.triangle-layout -->
+
+    <div class="d-caption">Ba trụ cột phối hợp cùng nhau để đạt được luồng phân phối nhanh bền vững</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

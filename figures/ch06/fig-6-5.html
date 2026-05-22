@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.5 — Race Condition without Idempotency
+    =========================================================
+    Tier 1 HTML migration từ fig-6-5.svg
+    Layout: Side-by-side concurrent sagas → lost update; solution note below
+    Capture: gen-diagrams.ps1 → fig-6-5.png → Typst image()
+  -->
+  <title>Fig 6.5 — Race Condition — Thiếu Idempotency | Ch.6</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .saga-step {
+      font-size: 12.5px;
+      color: #334155;
+      padding: 4px 0;
+      border-bottom: 1px dashed #e2e8f0;
+      line-height: 1.5;
+    }
+    .saga-step:last-child { border-bottom: none; }
+    .saga-step .step-num { font-weight: 700; margin-right: 4px; }
+    .race-highlight { background: #fee2e2; border-radius: 4px; padding: 1px 4px;
+                      color: #7f1d1d; font-weight: 600; }
+    .solution-row { font-size: 12px; color: #334155; margin-bottom: 5px; line-height: 1.5; }
+    .solution-row strong { color: #0f766e; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 580px;">
+
+    <div class="d-title-page">Race Condition — Thiếu Idempotency</div>
+
+    <!-- Two concurrent sagas -->
+    <div class="d-grid-2" style="margin-bottom: 16px; align-items: start;">
+
+      <!-- Saga A -->
+      <div class="d-cluster">
+        <span class="d-label">Saga A — Submit #1</span>
+        <div class="d-stack" style="margin-top: 10px; gap: 2px;">
+          <div class="saga-step">
+            <span class="step-num">1.</span>Read score: <strong>100</strong>
+          </div>
+          <div class="saga-step">
+            <span class="step-num">2.</span>Add 10 points (correct answer)
+          </div>
+          <div class="saga-step">
+            <span class="step-num">3.</span>Write score: <strong>110</strong>
+            <span class="d-arrow-label" style="margin-left:4px; font-size:10px;">→ DB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Saga B -->
+      <div class="d-cluster">
+        <span class="d-label">Saga B — Submit #2 (concurrent)</span>
+        <div class="d-stack" style="margin-top: 10px; gap: 2px;">
+          <div class="saga-step">
+            <span class="step-num">1.</span>Read score: <strong>100</strong>
+            <span class="race-highlight" style="margin-left:4px;">⚡ cùng lúc!</span>
+          </div>
+          <div class="saga-step">
+            <span class="step-num">2.</span>Add 5 points (partial answer)
+          </div>
+          <div class="saga-step">
+            <span class="step-num">3.</span>Write score: <strong>105</strong>
+            <span class="d-arrow-label" style="margin-left:4px; font-size:10px;">→ DB</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- Shared DB — result of race -->
+    <div style="display:flex; justify-content:center; margin-bottom:4px;">
+      <div style="display:flex; gap:60px; color:#64748b; font-size:14px;">
+        <div>↙ Saga A writes 110</div>
+        <div>Saga B writes 105 ↘</div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:center; margin-bottom:16px;">
+      <div class="d-box d-danger" style="text-align:center; width:380px;">
+        <div class="d-title">Score DB — Final result</div>
+        <div style="font-size:16px; font-weight:800; color:#dc2626; margin: 6px 0;">
+          105 &nbsp;<span style="font-size:12px; font-weight:400;">(should be 115!)</span>
+        </div>
+        <div class="d-sub" style="color:#7f1d1d;">
+          ⛔ Lost update — Saga A's write bị ghi đè bởi Saga B
+        </div>
+      </div>
+    </div>
+
+    <!-- Solution note -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom: 8px;">Giải pháp</div>
+      <div class="solution-row">
+        <strong>1. Idempotency key:</strong> mỗi submission có unique ID, DB UNIQUE constraint ngăn xử lý trùng
+      </div>
+      <div class="solution-row">
+        <strong>2. Optimistic locking:</strong> version field — <code>UPDATE score SET value=? WHERE id=? AND version=N</code>
+      </div>
+      <div class="solution-row">
+        <strong>3. Database constraint:</strong> <code>UNIQUE(submission_id)</code> trong score table — lỗi nếu duplicate
+      </div>
+      <div class="d-sep"></div>
+      <div style="font-size:11.5px; color:#dc2626; font-style:italic;">
+        ⚠️ LMS hiện tại: Chưa có idempotency key → contest mode có thể bị duplicate submission khi network retry.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

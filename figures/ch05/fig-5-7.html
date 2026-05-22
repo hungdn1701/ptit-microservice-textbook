@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.7 — KBLab Contest Mode — Full Async Architecture
+    =========================================================
+    Tier 1 HTML migration từ fig-5-7.svg
+    Layout: Vertical fan-out — Core → Kafka → Judge + Leaderboard + Notification
+    Capture: gen-diagrams.ps1 → fig-5-7.png → Typst image()
+  -->
+  <title>Fig 5.7 — KBLab Contest Mode — Full Async Architecture | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .arch-center { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .fanout-row  { display: flex; justify-content: center; gap: 16px; margin-top: 4px; }
+    .benefit-row { font-size: 12px; color: #334155; margin-bottom: 5px; line-height: 1.5; }
+    .benefit-row strong { color: #0f766e; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Kiến trúc Async đầy đủ — LMS Contest Mode</div>
+
+    <div class="arch-center" style="margin: 8px 0 16px;">
+
+      <!-- Frontend -->
+      <div class="d-box d-highlight" style="text-align:center; width:240px;">
+        <div class="d-title">Frontend (Next.js)</div>
+        <div class="d-sub">gửi submission, nhận kết quả qua WebSocket</div>
+      </div>
+
+      <div class="d-arrow-v"></div>
+
+      <!-- Core Service -->
+      <div class="d-box d-service" style="text-align:center; width:300px;">
+        <div class="d-title">Core Service</div>
+        <div class="d-sub">Produce + Consume — điểm vào duy nhất</div>
+      </div>
+
+      <div class="d-arrow-v"></div>
+
+      <!-- Kafka -->
+      <div class="d-box d-event" style="text-align:center; width:360px;">
+        <div class="d-title">Apache Kafka</div>
+        <div class="d-sub">submission-topic · result-topic · notification-topic</div>
+      </div>
+
+      <!-- Three-way fan-out arrows -->
+      <div style="display:flex; width:360px; justify-content:space-between; padding:0 40px;">
+        <div style="color:#64748b; font-size:14px; margin-top:2px;">↙</div>
+        <div class="d-arrow-v"></div>
+        <div style="color:#64748b; font-size:14px; margin-top:2px;">↘</div>
+      </div>
+
+      <!-- Three downstream services -->
+      <div class="fanout-row">
+
+        <div class="d-cluster" style="text-align:center; width:200px;">
+          <span class="d-label">Consumer 1</span>
+          <div class="d-box d-service" style="margin-top:8px;">
+            <div class="d-title">Judge Service</div>
+            <div class="d-sub">Execute SQL on sandbox</div>
+          </div>
+        </div>
+
+        <div class="d-cluster" style="text-align:center; width:200px;">
+          <span class="d-label">Consumer 2</span>
+          <div class="d-box d-info" style="margin-top:8px;">
+            <div class="d-title">Leaderboard Service</div>
+            <div class="d-sub">Aggregate scores, rank</div>
+          </div>
+        </div>
+
+        <div class="d-cluster" style="text-align:center; width:200px;">
+          <span class="d-label">Consumer 3</span>
+          <div class="d-box d-warning" style="margin-top:8px;">
+            <div class="d-title">Notification Service</div>
+            <div class="d-sub">WebSocket push to student</div>
+          </div>
+        </div>
+
+      </div><!-- /.fanout-row -->
+
+    </div><!-- /.arch-center -->
+
+    <!-- Benefits note -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom:8px;">Lợi ích của kiến trúc Async này</div>
+      <div class="benefit-row"><strong>1. Non-blocking:</strong> Core Service không bị block khi Judge xử lý chậm</div>
+      <div class="benefit-row"><strong>2. Extensible:</strong> Thêm consumer mới (Analytics, Replay) không cần sửa code Core</div>
+      <div class="benefit-row"><strong>3. Resilient:</strong> Judge down → message chờ trong Kafka, không mất, xử lý lại khi recover</div>
+      <div class="benefit-row"><strong>4. Independent scaling:</strong> Scale Judge pods độc lập dựa theo contest load</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

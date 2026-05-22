@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.4 — Ubiquitous Language: "Submission" trong 3 Bounded Contexts
+    =========================================================
+    Tier 1 HTML migration từ fig-2-4.svg
+    Layout: 3-column bounded contexts, each with Submission + child entities
+    Capture: gen-diagrams.ps1 → fig-2-4.png → Typst image()
+  -->
+  <title>Fig 2.4 — Ubiquitous Language: Submission trong 3 Bounded Contexts | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .bc-cluster {
+      border-radius: 14px;
+      border: 1.5px dashed #94a3b8;
+      background: #f8fafc;
+      padding: 14px;
+      flex: 1;
+    }
+    .bc-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1a202c;
+    }
+    .entity-box {
+      border-radius: 8px;
+      border: 1.5px solid #b45309;
+      background: #fef3e2;
+      padding: 8px 10px;
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: #7c2d12;
+      font-weight: 500;
+    }
+    .root-box {
+      border-radius: 8px;
+      border: 1.5px solid #be185d;
+      background: #fdf2f8;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .same-word-badge {
+      font-size: 10px;
+      color: #be185d;
+      background: #fdf2f8;
+      border: 1px dashed #be185d;
+      border-radius: 4px;
+      padding: 2px 6px;
+      text-align: center;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Ubiquitous Language — "Submission" trong 3 Bounded Contexts</div>
+
+    <div class="d-row" style="align-items: flex-start; gap: 16px;">
+
+      <!-- BC: SQL Practice -->
+      <div class="bc-cluster">
+        <div class="bc-title">BC: SQL Practice</div>
+        <div class="root-box">
+          <div style="font-size:13px; font-weight:700; color:#be185d;">Submission</div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">= câu trả lời SQL</div>
+        </div>
+        <div class="entity-box">Question</div>
+        <div class="entity-box">Judgement</div>
+      </div>
+
+      <!-- Arrow with label -->
+      <div class="d-col" style="align-items:center; justify-content:center; gap:4px; padding-top:50px; flex-shrink:0;">
+        <div class="same-word-badge">Cùng từ 'Submission'</div>
+        <div style="font-size:11px; color:#be185d; text-align:center;">khác nghĩa</div>
+        <div style="font-size:18px; color:#be185d;">⇢</div>
+      </div>
+
+      <!-- BC: Assignment -->
+      <div class="bc-cluster">
+        <div class="bc-title">BC: Assignment</div>
+        <div class="root-box">
+          <div style="font-size:13px; font-weight:700; color:#be185d;">Submission</div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">= bài nộp theo rubric</div>
+        </div>
+        <div class="entity-box">Assignment</div>
+        <div class="entity-box">Grade</div>
+      </div>
+
+      <!-- Arrow with label -->
+      <div class="d-col" style="align-items:center; justify-content:center; gap:4px; padding-top:50px; flex-shrink:0;">
+        <div class="same-word-badge">Khác ngữ cảnh</div>
+        <div style="font-size:18px; color:#be185d;">⇢</div>
+      </div>
+
+      <!-- BC: Exam -->
+      <div class="bc-cluster">
+        <div class="bc-title">BC: Exam</div>
+        <div class="root-box">
+          <div style="font-size:13px; font-weight:700; color:#be185d;">Submission</div>
+          <div style="font-size:11px; color:#64748b; margin-top:2px;">= bài thi có time limit</div>
+        </div>
+        <div class="entity-box">Exam</div>
+        <div class="entity-box">Proctor (giám sát)</div>
+      </div>
+
+    </div><!-- /.d-row -->
+
+    <div class="d-caption">Cùng từ "Submission" nhưng mang ngữ nghĩa hoàn toàn khác trong mỗi Bounded Context — đây là lý do DDD đề cao Ubiquitous Language</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

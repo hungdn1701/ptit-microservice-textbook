@@ -22,7 +22,7 @@
 
 Trong monolith, bảo mật tập trung tại một điểm: một ứng dụng, một database, một authentication layer. Khi chuyển sang microservices, attack surface mở rộng theo số lượng services:
 
-![](../figures/ch09/fig-9-1.svg)
+![](../figures/ch09/fig-9-1.png)
 
 *Hình 9.1: Monolith (1 điểm bảo vệ) vs Microservices (N điểm bảo vệ)*
 
@@ -42,7 +42,7 @@ Newman trong [4a, Ch.9] liệt kê năm thách thức bảo mật đặc thù:
 
 Bảo mật microservices dựa trên nguyên tắc **defense in depth** — không dựa vào một lớp bảo vệ duy nhất:
 
-![](../figures/ch09/fig-9-2.svg)
+![](../figures/ch09/fig-9-2.png)
 
 *Hình 9.2: Defense in Depth — bảo vệ nhiều lớp từ network đến data*
 
@@ -105,7 +105,7 @@ SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c      ← Signature
 
 Ba phần của JWT:
 
-![](../figures/ch09/fig-9-3.svg)
+![](../figures/ch09/fig-9-3.png)
 
 *Hình 9.3: Cấu trúc JWT — Header, Payload, Signature*
 
@@ -132,7 +132,7 @@ Ba phần của JWT:
 
 ### JWT Flow trong KBLab
 
-![](../figures/ch09/fig-9-4.svg)
+![](../figures/ch09/fig-9-4.png)
 
 *Hình 9.4: JWT Flow trong KBLab — login, token generation, và subsequent requests*
 
@@ -144,7 +144,7 @@ Ba phần của JWT:
 
 JWT có thời hạn (`exp`). Khi access token hết hạn, user phải **re-authenticate** — kém trải nghiệm nếu session dài (giảng viên dùng suốt buổi giảng). **Refresh token** giải quyết: access token ngắn (15-60 phút), refresh token dài (7-30 ngày). Khi access token hết hạn, client dùng refresh token để nhận access token mới — không cần login lại.
 
-![](../figures/ch09/fig-9-5b.svg)
+![](../figures/ch09/fig-9-5b.png)
 
 *Hình 9.5b: Token Refresh & Rotation flow — access token mới + refresh token mới*
 
@@ -209,7 +209,7 @@ Hai cách tiếp cận trái ngược:
 
 LMS implement giải pháp **hybrid** — validation khác nhau tùy service:
 
-![](../figures/ch09/fig-9-5.svg)
+![](../figures/ch09/fig-9-5.png)
 
 *Hình 9.5: Dual Validation — full validation (Auth) vs claims-only (internal services)*
 
@@ -300,7 +300,7 @@ public void delete(@PathVariable UUID id) { ... }
 
 ### Role Hierarchy
 
-![](../figures/ch09/fig-9-6.svg)
+![](../figures/ch09/fig-9-6.png)
 
 *Hình 9.6: Role Hierarchy — ADMIN inherits LECTURER inherits STUDENT*
 
@@ -322,7 +322,7 @@ KBLab frontend sử dụng pattern khác biệt: **route permissions được fe
 
 ### Tổng quan
 
-![](../figures/ch09/fig-9-7.svg)
+![](../figures/ch09/fig-9-7.png)
 
 *Hình 9.7: Kiến trúc bảo mật tổng thể của KBLab*
 
@@ -412,7 +412,7 @@ services:
 
 Vault cung cấp **dynamic secrets** — database credentials được tạo tự động, có thời hạn, và auto-rotate. Không ai biết password database thực sự — kể cả developer.
 
-![](../figures/ch09/fig-9-8.svg)
+![](../figures/ch09/fig-9-8.png)
 
 *Hình 9.8: Vault Dynamic Secrets — credentials tạm thời, tự động xoay vòng*
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 3.6b — Hexagonal Architecture (Ports & Adapters)
+    =========================================================
+    Tier 1 HTML migration từ fig-3-6b.svg
+    Layout: Left adapters | Center business logic | Right adapters
+    Capture: gen-diagrams.ps1 → fig-3-6b.png → Typst image()
+  -->
+  <title>Fig 3.6b — Hexagonal Architecture (Ports &amp; Adapters) | Ch.3</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .hex-layout {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .hex-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hex-center {
+      flex: 1.4;
+    }
+    .hex-side {
+      flex: 1;
+    }
+    .center-inner {
+      border-radius: 12px;
+      border: 2px solid #0f766e;
+      background: #e6f4f3;
+      padding: 12px 14px;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .center-inner .d-title { color: #085041; font-size: 13px; text-align: center; font-weight: 700; }
+    .port-box {
+      border-radius: 8px;
+      border: 1.5px dashed #94a3b8;
+      background: #f8fafc;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      text-align: center;
+    }
+    .port-box .port-name { font-weight: 600; color: #334155; font-size: 11.5px; }
+    .port-box .port-sub  { color: #64748b; font-size: 10.5px; }
+    .domain-box {
+      border-radius: 8px;
+      border: 1.5px solid #ca8a04;
+      background: #fef9c3;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .connector-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 16px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Hexagonal Architecture (Ports &amp; Adapters)</div>
+
+    <div class="hex-layout">
+
+      <!-- Left: Inbound Adapters -->
+      <div class="hex-zone hex-side">
+        <div class="d-cluster" style="height:100%; box-sizing:border-box;">
+          <span class="d-label">Adapters (bên ngoài) — Inbound</span>
+          <div class="d-col" style="gap:10px; margin-top:8px;">
+            <div class="d-box d-info">
+              <div class="d-title">REST Controller</div>
+              <div class="d-sub">(inbound adapter)</div>
+            </div>
+            <div class="d-box d-warning">
+              <div class="d-title">Kafka Consumer</div>
+              <div class="d-sub">(inbound adapter)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrows inbound -->
+      <div style="display:flex; flex-direction:column; justify-content:center; gap:24px; flex-shrink:0;">
+        <div class="connector-row">→</div>
+        <div class="connector-row">→</div>
+      </div>
+
+      <!-- Center: Business Logic -->
+      <div class="hex-zone hex-center">
+        <div class="center-inner">
+          <div class="d-title">Business Logic (bên trong)</div>
+
+          <div class="port-box">
+            <div class="port-name">Inbound Port</div>
+            <div class="port-sub">(Service Interface)</div>
+          </div>
+
+          <div class="domain-box">
+            <div class="d-title" style="color:#713f12; margin-bottom:3px;">Domain Logic</div>
+            <div class="d-sub" style="color:#92400e;">(pure business rules)</div>
+          </div>
+
+          <div class="port-box">
+            <div class="port-name">Outbound Port</div>
+            <div class="port-sub">(Repository Interface)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrows outbound -->
+      <div style="display:flex; flex-direction:column; justify-content:center; gap:24px; flex-shrink:0;">
+        <div class="connector-row">→</div>
+        <div class="connector-row">→</div>
+      </div>
+
+      <!-- Right: Outbound Adapters -->
+      <div class="hex-zone hex-side">
+        <div class="d-cluster" style="height:100%; box-sizing:border-box;">
+          <span class="d-label">Adapters (bên ngoài) — Outbound</span>
+          <div class="d-col" style="gap:10px; margin-top:8px;">
+            <div class="d-box d-storage">
+              <div class="d-title">JPA Repository</div>
+              <div class="d-sub">(outbound adapter)</div>
+            </div>
+            <div class="d-box d-highlight">
+              <div class="d-title">Feign Client</div>
+              <div class="d-sub">(outbound adapter)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Key insight -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:12px; flex-wrap:wrap;">
+        <div>
+          <span class="d-title">Core principle: </span>
+          <span class="d-sub">Domain Logic không biết gì về HTTP, JPA, Kafka.</span>
+        </div>
+        <div>
+          <span class="d-title">Lợi ích: </span>
+          <span class="d-sub">Test business rules mà không cần infrastructure. Thay đổi adapter không ảnh hưởng domain.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

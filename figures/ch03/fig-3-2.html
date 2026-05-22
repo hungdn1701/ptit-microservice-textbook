@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 3.2 — Chiến lược versioning API
+    =========================================================
+    Tier 1 HTML migration từ fig-3-2.svg
+    Layout: Decision flowchart — safe vs breaking changes, versioning strategies
+    Capture: gen-diagrams.ps1 → fig-3-2.png → Typst image()
+  -->
+  <title>Fig 3.2 — Chiến lược versioning API | Ch.3</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .decision-box {
+      border-radius: 8px;
+      border: 2px solid #ca8a04;
+      background: #fef9c3;
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #713f12;
+      position: relative;
+      clip-path: polygon(16px 0%, calc(100% - 16px) 0%, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0% 50%);
+    }
+    .branch-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-align: center;
+    }
+    .strategy-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .strategy-item {
+      flex: 1;
+      border-radius: 8px;
+      border: 1.5px solid;
+      padding: 8px 10px;
+    }
+    .strategy-name {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .strategy-example {
+      font-size: 10.5px;
+      font-family: var(--diagram-font-mono);
+      color: #475569;
+      background: #f8fafc;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+    .change-list {
+      font-size: 11.5px;
+      color: #374151;
+      line-height: 1.7;
+      padding-left: 0;
+      list-style: none;
+      margin: 4px 0 0;
+    }
+    .change-list li::before { content: '• '; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Chiến lược versioning API</div>
+
+    <!-- Decision node -->
+    <div style="display:flex; justify-content:center; margin-bottom:8px;">
+      <div class="decision-box">Loại thay đổi?</div>
+    </div>
+
+    <!-- Branch arrows row -->
+    <div class="d-row" style="justify-content:space-around; align-items:flex-start; margin-bottom:6px;">
+      <div style="text-align:center;">
+        <div class="branch-label" style="color:#16a34a;">← An toàn</div>
+        <div style="font-size:18px; color:#94a3b8;">↙</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="branch-label" style="color:#dc2626;">Nguy hiểm →</div>
+        <div style="font-size:18px; color:#94a3b8;">↘</div>
+      </div>
+    </div>
+
+    <!-- Two branches -->
+    <div class="d-row" style="align-items:flex-start; gap:20px; margin-bottom:16px;">
+
+      <!-- Left: Backward Compatible -->
+      <div class="d-box d-success d-grow">
+        <div class="d-title" style="font-size:13px; margin-bottom:6px;">✅ Backward Compatible</div>
+        <ul class="change-list">
+          <li>Thêm field mới (optional)</li>
+          <li>Thêm endpoint mới</li>
+          <li>Thêm enum value mới</li>
+        </ul>
+        <div class="d-sub" style="margin-top:6px; font-style:italic;">Consumer cũ bỏ qua field mới</div>
+      </div>
+
+      <!-- Right: Breaking Change -->
+      <div class="d-box d-danger d-grow">
+        <div class="d-title" style="font-size:13px; color:#dc2626; margin-bottom:6px;">⚠️ Breaking Change!</div>
+        <ul class="change-list">
+          <li>Xóa field hiện có</li>
+          <li>Đổi tên field</li>
+          <li>Đổi kiểu dữ liệu field</li>
+          <li>Đổi URL endpoint</li>
+        </ul>
+        <div class="d-sub" style="margin-top:6px; font-style:italic; color:#dc2626;">Consumer cũ sẽ LỖI!</div>
+      </div>
+
+    </div>
+
+    <!-- Versioning strategies (bottom, under right branch) -->
+    <div class="d-cluster">
+      <span class="d-label">Chiến lược versioning khi có breaking change</span>
+
+      <div class="strategy-row">
+
+        <div class="strategy-item d-service">
+          <div class="strategy-name" style="color:#085041;">URL Path</div>
+          <div class="strategy-example">/api/v1/users → /api/v2/users</div>
+          <div class="d-sub" style="margin-top:4px;">Dễ test, rõ ràng, phổ biến nhất</div>
+        </div>
+
+        <div class="strategy-item d-info">
+          <div class="strategy-name" style="color:#1e3a8a;">Header</div>
+          <div class="strategy-example">Accept: application/vnd.lms.v2+json</div>
+          <div class="d-sub" style="margin-top:4px;">RESTful hơn, URL sạch</div>
+        </div>
+
+        <div class="strategy-item d-event">
+          <div class="strategy-name" style="color:#713f12;">Query Param</div>
+          <div class="strategy-example">/api/users?version=2</div>
+          <div class="d-sub" style="margin-top:4px;">Dễ test qua browser</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

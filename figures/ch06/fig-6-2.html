@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.2 — Choreography Saga — Steps & Compensation
+    =========================================================
+    Tier 1 HTML migration từ fig-6-2.svg
+    Layout: Happy path (4 boxes) + Compensation (2 boxes) + explanation note
+    Capture: gen-diagrams.ps1 → fig-6-2.png → Typst image()
+  -->
+  <title>Fig 6.2 — Choreography Saga — Steps và Compensation | Ch.6</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .step-row { display: flex; align-items: center; gap: 0; margin-bottom: 6px; }
+    .step-box { flex: 1; }
+    .saga-arrow { color: #64748b; font-size: 18px; padding: 0 4px; flex-shrink: 0; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .expl-row { font-size: 12px; color: #334155; line-height: 1.6; margin-bottom: 3px; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 600px;">
+
+    <div class="d-title-page">Choreography Saga — Submission Flow</div>
+
+    <!-- Happy path -->
+    <div style="margin-bottom: 14px;">
+      <div class="section-label" style="color:#16a34a;">✅ Happy Path</div>
+      <div class="step-row">
+
+        <div class="d-box d-service step-box" style="text-align:center;">
+          <div class="d-title">T1: Create Submission</div>
+          <div class="d-sub">Core Service</div>
+          <div class="d-sub">status = PENDING</div>
+        </div>
+
+        <div class="saga-arrow">→</div>
+
+        <div class="d-box d-event step-box" style="text-align:center;">
+          <div class="d-title">T2: Execute SQL</div>
+          <div class="d-sub">Judge Service</div>
+          <div class="d-sub">run on sandbox</div>
+        </div>
+
+        <div class="saga-arrow">→</div>
+
+        <div class="d-box d-service step-box" style="text-align:center;">
+          <div class="d-title">T3: Update Score</div>
+          <div class="d-sub">Core Service</div>
+          <div class="d-sub">status = JUDGED</div>
+        </div>
+
+        <div class="saga-arrow">→</div>
+
+        <div class="d-box d-info step-box" style="text-align:center;">
+          <div class="d-title">T4: Notify Student</div>
+          <div class="d-sub">Notification Svc</div>
+          <div class="d-sub">push result</div>
+        </div>
+
+      </div>
+    </div><!-- /.happy path -->
+
+    <div class="d-sep"></div>
+
+    <!-- Compensation path -->
+    <div style="margin: 10px 0 14px;">
+      <div class="section-label" style="color:#dc2626;">⛔ Compensation — khi T2 thất bại</div>
+      <div class="step-row">
+
+        <div class="d-box d-danger step-box" style="text-align:center; max-width: 240px;">
+          <div class="d-title">C1: Mark ERROR</div>
+          <div class="d-sub">Core Service</div>
+          <div class="d-sub">status = ERROR</div>
+        </div>
+
+        <div class="saga-arrow">→</div>
+
+        <div class="d-box d-warning step-box" style="text-align:center; max-width: 240px;">
+          <div class="d-title">CN: Error Notification</div>
+          <div class="d-sub">Notification Svc</div>
+          <div class="d-sub">Vui lòng thử lại</div>
+        </div>
+
+        <!-- Empty spacers to align with happy path -->
+        <div style="flex:2; display:flex; align-items:center; padding-left:12px;">
+          <div class="d-zone d-zone-warning" style="font-size:11px; padding:6px 10px;">
+            T3, T4 không thực hiện — saga dừng tại C1
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /.compensation -->
+
+    <div class="d-sep"></div>
+
+    <!-- Explanation note -->
+    <div class="d-box d-note" style="margin-top: 10px;">
+      <div class="d-label" style="margin-bottom: 8px;">Cơ chế Choreography</div>
+      <div class="expl-row"><strong>1.</strong> Core gửi <code>SubmissionCreated</code> event lên Kafka</div>
+      <div class="expl-row"><strong>2.</strong> Judge lắng nghe, execute SQL, gửi <code>SubmissionJudged</code> event</div>
+      <div class="expl-row"><strong>3.</strong> Core lắng nghe <code>SubmissionJudged</code>, update score, gửi <code>ScoreUpdated</code></div>
+      <div class="expl-row"><strong>4.</strong> Notification lắng nghe <code>ScoreUpdated</code>, gửi push notification cho student</div>
+      <div class="d-sep"></div>
+      <div style="font-size:11.5px; color:#64748b;">
+        <strong>Ưu điểm:</strong> đơn giản, không cần orchestrator trung tâm &nbsp;|&nbsp;
+        <strong>Nhược điểm:</strong> khó theo dõi toàn bộ flow, khó debug khi có lỗi
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

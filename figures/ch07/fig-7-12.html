@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.12 — Event Sourcing vs Traditional State
+    =========================================================
+    Tier 1 HTML migration từ fig-7-12.svg
+    Layout: d-grid-2 side-by-side — traditional (overwrite) vs event sourcing (full history)
+    Capture: gen-diagrams.ps1 → fig-7-12.png → Typst image()
+  -->
+  <title>Fig 7.12 — Event Sourcing vs Traditional State | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height:620px;">
+
+    <div class="d-title-page">Event Sourcing vs Truyền thống</div>
+
+    <div class="d-grid-2" style="gap:16px; margin-bottom:16px;">
+
+      <!-- LEFT: Traditional — store current state -->
+      <div class="d-cluster">
+        <span class="d-label">Truyền thống: Lưu State</span>
+
+        <div class="d-stack" style="margin-top:6px;">
+          <div class="d-box d-legacy">
+            <div class="d-title">Bảng submissions</div>
+            <div class="d-sub" style="margin-top:4px; font-family:monospace; font-size:11px;">
+              id=1, status=JUDGED, score=85
+            </div>
+          </div>
+
+          <div style="font-size:11px; color:#dc2626; text-align:center; padding: 4px;">
+            ← Ghi đè (overwrite) mỗi lần cập nhật
+          </div>
+
+          <div class="d-box d-danger" style="text-align:center;">
+            <div class="d-title">Chỉ biết trạng thái HIỆN TẠI</div>
+            <div class="d-sub">Mất toàn bộ lịch sử thay đổi</div>
+          </div>
+
+          <div style="padding: 6px 8px; background:#f3f4f6; border-radius:6px; font-size:11px; color:#64748b;">
+            ❓ "Tại sao score = 85?" → Không biết<br>
+            ❓ "Đã retry mấy lần?" → Không biết<br>
+            ❓ "Khi nào status thay đổi?" → Không biết
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Event Sourcing — store all events -->
+      <div class="d-cluster">
+        <span class="d-label">Event Sourcing: Lưu Events</span>
+
+        <div class="d-stack" style="margin-top:6px; gap:5px;">
+
+          <div class="d-box d-info" style="padding:6px 10px;">
+            <div class="d-title">1. SubmissionCreated</div>
+            <div class="d-sub">user=A, sql='SELECT ...'</div>
+          </div>
+
+          <div class="d-box d-danger" style="padding:6px 10px;">
+            <div class="d-title">2. SQLExecuted</div>
+            <div class="d-sub">result=timeout</div>
+          </div>
+
+          <div class="d-box d-event" style="padding:6px 10px;">
+            <div class="d-title">3. SubmissionRetried</div>
+            <div class="d-sub">user=A, attempt=2</div>
+          </div>
+
+          <div class="d-box d-success" style="padding:6px 10px;">
+            <div class="d-title">4. SQLExecuted</div>
+            <div class="d-sub">result=correct, score=85</div>
+          </div>
+
+          <div class="d-box d-success" style="padding:6px 10px;">
+            <div class="d-title">5. SubmissionJudged</div>
+            <div class="d-sub">status=CORRECT, finalScore=85</div>
+          </div>
+
+          <div class="d-box d-success" style="text-align:center; padding:6px 10px;">
+            <div class="d-title">✓ FULL HISTORY — Replay / Audit bất kỳ lúc nào</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Trade-off note -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:16px; flex-wrap:wrap; align-items:flex-start;">
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">🏫 LMS ứng dụng</div>
+          <div class="d-sub">Mỗi submission có nhiều events (created, executed, retried, judged). Replay để debug tại sao student bị sai.</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:#e2e8f0; margin:0;"></div>
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">⚠ Trade-off</div>
+          <div class="d-sub">Event store lớn hơn nhiều. Cần Snapshot (Hình 7.12b) để tránh replay quá nhiều events khi query state hiện tại.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

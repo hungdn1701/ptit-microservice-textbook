@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.3 - Centralized vs Distributed Logging</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Centralized vs Distributed Logging">
+    <div class="d-cluster svg-box" style="left:30px;top:55px;width:420px;height:250px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:60px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:60px;top:160px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-danger svg-box" style="left:60px;top:220px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:500px;top:55px;width:430px;height:250px;border-radius:12px;"></div>
+    <div class="d-box d-success svg-box" style="left:530px;top:100px;width:370px;height:120px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:30px;top:340px;width:900px;height:60px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <line x1="44" y1="93" x2="436" y2="93" class="separator" />
+      <line x1="514" y1="93" x2="916" y2="93" class="separator" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:6px;width:360px;transform:translateX(-50%);text-align:center;">Centralized vs Distributed Logging</div>
+    <div class="svg-text svg-title" style="left:240px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Logs ph&#226;n t&#225;n — Debug thủ c&#244;ng</div>
+    <div class="svg-text svg-title" style="left:140px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Gateway log</div>
+    <div class="svg-text svg-mono" style="left:240px;top:111px;width:850px;text-align:left;">10:03:01 - Request received</div>
+    <div class="svg-text svg-title" style="left:140px;top:179px;width:360px;transform:translateX(-50%);text-align:center;">Core log</div>
+    <div class="svg-text svg-mono" style="left:240px;top:171px;width:850px;text-align:left;">10:03:01 - Processing submit</div>
+    <div class="svg-text svg-title" style="left:140px;top:239px;width:360px;transform:translateX(-50%);text-align:center;">Judge log</div>
+    <div class="svg-text svg-mono" style="left:240px;top:231px;width:850px;text-align:left;">10:03:02 - SQL timeout</div>
+    <div class="svg-text svg-title" style="left:245px;top:266px;width:360px;transform:translateX(-50%);text-align:center;">Phải SSH v&#224;o từng server để xem log!</div>
+    <div class="svg-text svg-title" style="left:715px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Centralized Log — Search một nơi</div>
+    <div class="svg-text svg-title" style="left:715px;top:151px;width:360px;transform:translateX(-50%);text-align:center;">Central Log Store</div>
+    <div class="svg-text svg-mono" style="left:550px;top:126px;width:850px;text-align:left;">10:03:01 [gw] Request received [traceId=abc]</div>
+    <div class="svg-text svg-mono" style="left:550px;top:151px;width:850px;text-align:left;">10:03:01 [core] Processing submit [traceId=abc]</div>
+    <div class="svg-text svg-mono" style="left:550px;top:176px;width:850px;text-align:left;">10:03:02 [judge] SQL timeout [traceId=abc]</div>
+    <div class="svg-text svg-title" style="left:715px;top:256px;width:360px;transform:translateX(-50%);text-align:center;">Search bằng traceId: thấy to&#224;n bộ flow!</div>
+    <div class="svg-text svg-title" style="left:50px;top:351px;width:850px;text-align:left;">Stack:</div>
+    <div class="svg-text svg-title" style="left:110px;top:351px;width:850px;text-align:left;">ELK (Elasticsearch + Logstash + Kibana) hoặc Loki + Grafana</div>
+    <div class="svg-text svg-small" style="left:50px;top:371px;width:850px;text-align:left;">LMS:</div>
+    <div class="svg-text svg-title" style="left:100px;top:371px;width:850px;text-align:left;">Hiện đang console output (kh&#244;ng centralized). Cần migrate sang structured JSON + ELK.</div>
+  </div>
+</body>
+</html>

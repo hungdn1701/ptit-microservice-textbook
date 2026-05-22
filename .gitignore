@@ -29,6 +29,9 @@ scripts/audit-interactive-css.ps1
 # ----- Test/temporary figures -----
 figures/shared/test*
 
+# ----- Auto-generated diagram PNGs (gen-diagrams.ps1: HTML → PNG) -----
+figures/**/*.png
+
 # ----- Local build cache -----
 # output/ is disposable and reset by build-typst.ps1.
 output/

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.8 — SQL Judge — Dispatch to Database Workers
+    =========================================================
+    Tier 1 HTML migration từ fig-4-8.svg
+    Layout: Coordinator dispatch pipeline → 4 DBMS workers → databases
+    Capture: gen-diagrams.ps1 → fig-4-8.png → Typst image()
+  -->
+  <title>Fig 4.8 — SQL Judge — Dispatch to Database Workers | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .dispatch-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .worker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .worker-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .note-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .note-item {
+      font-size: 11.5px;
+      line-height: 1.55;
+    }
+    .note-item .label { font-weight: 700; color: #374151; }
+    .note-item .desc  { color: #64748b; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">SQL Judge — Coordinator Dispatch to DBMS Workers</div>
+
+    <!-- Top: Core Service → Judge Coordinator -->
+    <div class="dispatch-top">
+      <div class="d-box d-service" style="text-align:center; min-width:130px;">
+        <div class="d-title">Core Service</div>
+        <div class="d-sub">submit request</div>
+      </div>
+      <div class="d-arrow d-arrow-h"></div>
+      <div class="d-arrow-label">JudgeRequest</div>
+      <div class="d-arrow d-arrow-h"></div>
+      <div class="d-box d-highlight" style="text-align:center; min-width:150px;">
+        <div class="d-title">judge</div>
+        <div class="d-sub">coordinator</div>
+      </div>
+    </div>
+
+    <!-- Dispatch arrows (4 down) -->
+    <div style="display:flex; justify-content:center; margin-bottom:4px;">
+      <div class="d-row" style="gap:0; width:100%; justify-content:space-around;">
+        <div class="d-arrow-v"></div>
+        <div class="d-arrow-v"></div>
+        <div class="d-arrow-v"></div>
+        <div class="d-arrow-v"></div>
+      </div>
+    </div>
+
+    <!-- 4 workers row -->
+    <div class="worker-grid">
+
+      <div class="worker-col">
+        <div class="d-box d-info" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">judge-mysql</div>
+          <div class="d-sub">MySQL worker</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-storage" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">MySQL</div>
+          <div class="d-sub">:3306</div>
+        </div>
+      </div>
+
+      <div class="worker-col">
+        <div class="d-box d-event" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">judge-sqlserver</div>
+          <div class="d-sub">SQL Server worker</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-storage" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">SQL Server</div>
+          <div class="d-sub">:1433</div>
+        </div>
+      </div>
+
+      <div class="worker-col">
+        <div class="d-box d-service" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">judge-postgres</div>
+          <div class="d-sub">PostgreSQL worker</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-storage" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">:5432</div>
+        </div>
+      </div>
+
+      <div class="worker-col">
+        <div class="d-box d-legacy" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">judge-oracle</div>
+          <div class="d-sub">Oracle worker</div>
+        </div>
+        <div class="d-arrow-v"></div>
+        <div class="d-box d-storage" style="width:100%; text-align:center; box-sizing:border-box;">
+          <div class="d-title">Oracle</div>
+          <div class="d-sub">:1521</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Notes grid -->
+    <div class="d-box d-note" style="margin-top:10px;">
+      <div class="note-grid">
+        <div class="note-item">
+          <span class="label">Ownership: </span>
+          <span class="desc">Core gọi judge; judge sở hữu routing DBMS và worker contract.</span>
+        </div>
+        <div class="note-item">
+          <span class="label">Scale: </span>
+          <span class="desc">Thêm DBMS mới = thêm một worker judge-* + registry config.</span>
+        </div>
+        <div class="note-item">
+          <span class="label">Resilience: </span>
+          <span class="desc">Circuit Breaker riêng theo worker. MySQL down không ảnh hưởng SQL Server.</span>
+        </div>
+        <div class="note-item">
+          <span class="label">Migration: </span>
+          <span class="desc">Phase 2: Async queue cho job dài — không block Core khi worker chậm.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

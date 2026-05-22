@@ -39,7 +39,7 @@ Khi KBLab chuyển sang microservices, data nằm ở nhiều service/database k
 
 **Two-Phase Commit (2PC)** là cơ chế truyền thống để distributed transactions [7, Ch.9]:
 
-![](../figures/ch06/fig-6-1.svg)
+![](../figures/ch06/fig-6-1.png)
 
 *Hình 6.1: Two-Phase Commit — Coordinator điều phối prepare và commit*
 
@@ -73,7 +73,7 @@ Saga là chuỗi **local transactions**, mỗi transaction cập nhật database
 
 Áp dụng cho flow nộp bài SQL trong KBLab:
 
-![](../figures/ch06/fig-6-2.svg)
+![](../figures/ch06/fig-6-2.png)
 
 *Hình 6.2: KBLab Submit Saga — chuỗi local transactions và compensating transactions*
 
@@ -101,7 +101,7 @@ Cấu trúc saga luôn là: **Compensatable → Pivot → Retriable**. Sau khi T
 
 Trong choreography, **không có coordinator**. Mỗi service lắng nghe events và tự quyết định hành động tiếp theo [5, §4.2]. Đây là cách KBLab hiện đang hoạt động:
 
-![](../figures/ch06/fig-6-3.svg)
+![](../figures/ch06/fig-6-3.png)
 
 *Hình 6.3: Choreography — các service tự phối hợp qua events*
 
@@ -117,7 +117,7 @@ Trong choreography, **không có coordinator**. Mỗi service lắng nghe events
 
 Trong orchestration, **saga orchestrator** điều phối toàn bộ flow, gửi commands và nhận replies [2a, Ch.4]. Nếu KBLab dùng orchestration cho Submit Saga:
 
-![](../figures/ch06/fig-6-4.svg)
+![](../figures/ch06/fig-6-4.png)
 
 *Hình 6.4: Orchestration — saga orchestrator điều phối toàn bộ flow*
 
@@ -173,7 +173,7 @@ Ba anomalies chính:
 
 **1. Lost Updates** — Saga A ghi đè kết quả mà Saga B đã viết, mà không biết Saga B đã thay đổi data.
 
-![](../figures/ch06/fig-6-5.svg)
+![](../figures/ch06/fig-6-5.png)
 
 *Hình 6.5: Lost Updates anomaly — hai saga ghi đè kết quả của nhau*
 
@@ -302,7 +302,7 @@ Trong KBLab: sau khi sinh viên nộp bài, có consistency window trước khi 
 
 KBLab hiện có một implicit saga — choreography qua Kafka events, nhưng KHÔNG được định nghĩa rõ ràng như saga:
 
-![](../figures/ch06/fig-6-6.svg)
+![](../figures/ch06/fig-6-6.png)
 
 *Hình 6.6: Implicit Saga trong KBLab — choreography qua Kafka events*
 

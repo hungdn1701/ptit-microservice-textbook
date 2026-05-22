@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.2 - API Gateway — Single Entry Point</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="API Gateway — Single Entry Point">
+    <div class="d-box d-highlight svg-box" style="left:350px;top:50px;width:260px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:280px;top:120px;width:400px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:50px;top:240px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-highlight svg-box" style="left:230px;top:240px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:410px;top:240px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:590px;top:240px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-warning svg-box" style="left:770px;top:240px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-success svg-box" style="left:40px;top:330px;width:880px;height:110px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 480 90 L 480 120" class="arrow" />
+      <path d="M 480 175 L 125 240" class="arrow" />
+      <path d="M 480 175 L 305 240" class="arrow" />
+      <path d="M 480 175 L 485 240" class="arrow" />
+      <path d="M 480 175 L 665 240" class="arrow" />
+      <path d="M 480 175 L 845 240" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:6px;width:360px;transform:translateX(-50%);text-align:center;">API Gateway — Single Entry Point</div>
+    <div class="svg-text svg-title" style="left:480px;top:69px;width:360px;transform:translateX(-50%);text-align:center;">Frontend (React)</div>
+    <div class="svg-text svg-title" style="left:480px;top:130px;width:360px;transform:translateX(-50%);text-align:center;">API Gateway</div>
+    <div class="svg-text svg-title" style="left:480px;top:148px;width:360px;transform:translateX(-50%);text-align:center;">(Spring Cloud Gateway) :9001</div>
+    <div class="svg-text svg-title" style="left:130px;top:259px;width:360px;transform:translateX(-50%);text-align:center;">Core :8080</div>
+    <div class="svg-text svg-title" style="left:310px;top:259px;width:360px;transform:translateX(-50%);text-align:center;">Assignment :8088</div>
+    <div class="svg-text svg-title" style="left:490px;top:259px;width:360px;transform:translateX(-50%);text-align:center;">Auth :9005</div>
+    <div class="svg-text svg-title" style="left:670px;top:259px;width:360px;transform:translateX(-50%);text-align:center;">Judge :8082</div>
+    <div class="svg-text svg-title" style="left:850px;top:259px;width:360px;transform:translateX(-50%);text-align:center;">Notification :8084</div>
+    <div class="svg-text svg-title" style="left:60px;top:341px;width:850px;text-align:left;">Lợi &#237;ch:</div>
+    <div class="svg-text svg-title" style="left:60px;top:366px;width:850px;text-align:left;">1. Frontend chỉ biết 1 URL (:9001). Gateway route đến đ&#250;ng service.</div>
+    <div class="svg-text svg-title" style="left:60px;top:386px;width:850px;text-align:left;">2. JWT validation, CORS, logging TẬP TRUNG ở Gateway.</div>
+    <div class="svg-text svg-title" style="left:60px;top:406px;width:850px;text-align:left;">3. Đổi port/URL backend = chỉ sửa Gateway config, kh&#244;ng sửa Frontend.</div>
+  </div>
+</body>
+</html>

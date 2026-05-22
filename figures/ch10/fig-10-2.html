@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.2 - Strangler Fig — Gateway-based Routing</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Strangler Fig — Gateway-based Routing">
+    <div class="d-box d-service svg-box" style="left:60px;top:35px;width:120px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:288.5px;top:35px;width:123px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:491.5px;top:35px;width:177px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:748.5px;top:35px;width:123px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-event svg-box" style="left:235px;top:135px;width:230px;height:28px;border-radius:6px;"></div>
+    <div class="d-box d-success svg-box" style="left:270px;top:355px;width:160px;height:28px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 120 95 L 350 95" class="arrow" />
+      <path d="M 350 180 L 580 180" class="arrow" />
+      <path d="M 580 220 L 350 220" class="arrow-dashed" />
+      <path d="M 350 260 L 120 260" class="arrow-dashed" />
+      <path d="M 120 315 L 350 315" class="arrow" />
+      <path d="M 350 400 L 810 400" class="arrow" />
+      <path d="M 810 440 L 350 440" class="arrow-dashed" />
+      <path d="M 350 475 L 120 475" class="arrow-dashed" />
+      <line x1="120" y1="75" x2="120" y2="440" class="lifeline" />
+      <line x1="350" y1="75" x2="350" y2="440" class="lifeline" />
+      <line x1="580" y1="75" x2="580" y2="440" class="lifeline" />
+      <line x1="810" y1="75" x2="810" y2="440" class="lifeline" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:4px;width:360px;transform:translateX(-50%);text-align:center;">Strangler Fig — Gateway-based Routing</div>
+    <div class="svg-text svg-title" style="left:120px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Client</div>
+    <div class="svg-text svg-title" style="left:350px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">API Gateway</div>
+    <div class="svg-text svg-title" style="left:580px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">Monolith
+(legacy)</div>
+    <div class="svg-text svg-title" style="left:810px;top:46px;width:360px;transform:translateX(-50%);text-align:center;">New Service</div>
+    <div class="svg-text svg-title" style="left:235px;top:73px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">GET /api/users (old feature)</div>
+    <div class="svg-text svg-title" style="left:350px;top:139px;width:360px;transform:translateX(-50%);text-align:center;">Route rules quyet dinh traffic</div>
+    <div class="svg-text svg-title" style="left:465px;top:158px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Forward to Monolith</div>
+    <div class="svg-text svg-title" style="left:465px;top:198px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:235px;top:238px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:235px;top:293px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">POST /api/submissions (new feature)</div>
+    <div class="svg-text svg-title" style="left:350px;top:359px;width:360px;transform:translateX(-50%);text-align:center;">Route to NEW service</div>
+    <div class="svg-text svg-title" style="left:580px;top:378px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Forward to New Service</div>
+    <div class="svg-text svg-title" style="left:580px;top:418px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+    <div class="svg-text svg-title" style="left:235px;top:453px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">Response</div>
+  </div>
+</body>
+</html>

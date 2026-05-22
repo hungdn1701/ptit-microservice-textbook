@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.7 - Service Mesh — Sidecar Proxy</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Service Mesh — Sidecar Proxy">
+    <div class="d-cluster svg-box" style="left:60px;top:70px;width:380px;height:200px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:100px;top:120px;width:180px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:100px;top:195px;width:180px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:520px;top:70px;width:380px;height:200px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:560px;top:120px;width:180px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:560px;top:195px;width:180px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:310px;width:840px;height:140px;border-radius:10px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 280 222 L 560 222" class="arrow" />
+      <line x1="74" y1="108" x2="426" y2="108" class="separator" />
+      <line x1="190" y1="175" x2="190" y2="195" class="" />
+      <line x1="534" y1="108" x2="886" y2="108" class="separator" />
+      <line x1="650" y1="175" x2="650" y2="195" class="" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Service Mesh — Sidecar Proxy</div>
+    <div class="svg-text svg-title" style="left:250px;top:84px;width:360px;transform:translateX(-50%);text-align:center;">Service Instance</div>
+    <div class="svg-text svg-title" style="left:190px;top:130px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:190px;top:148px;width:360px;transform:translateX(-50%);text-align:center;">(Java)</div>
+    <div class="svg-text svg-title" style="left:190px;top:205px;width:360px;transform:translateX(-50%);text-align:center;">Sidecar Proxy</div>
+    <div class="svg-text svg-title" style="left:190px;top:223px;width:360px;transform:translateX(-50%);text-align:center;">(Envoy)</div>
+    <div class="svg-text svg-title" style="left:710px;top:84px;width:360px;transform:translateX(-50%);text-align:center;">Service Instance</div>
+    <div class="svg-text svg-title" style="left:650px;top:130px;width:360px;transform:translateX(-50%);text-align:center;">Judge Service</div>
+    <div class="svg-text svg-title" style="left:650px;top:148px;width:360px;transform:translateX(-50%);text-align:center;">(Java)</div>
+    <div class="svg-text svg-title" style="left:650px;top:205px;width:360px;transform:translateX(-50%);text-align:center;">Sidecar Proxy</div>
+    <div class="svg-text svg-title" style="left:650px;top:223px;width:360px;transform:translateX(-50%);text-align:center;">(Envoy)</div>
+    <div class="svg-text svg-small" style="left:420px;top:211px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">mTLS (encrypted)</div>
+    <div class="svg-text svg-title" style="left:80px;top:326px;width:850px;text-align:left;">Service Mesh (Istio/Linkerd) c&#249;ng cấp:</div>
+    <div class="svg-text svg-title" style="left:80px;top:356px;width:850px;text-align:left;">1. mTLS giữa services (zero-trust networking)</div>
+    <div class="svg-text svg-title" style="left:80px;top:379px;width:850px;text-align:left;">2. Load balancing, retry, circuit breaker (kh&#244;ng sửa code)</div>
+    <div class="svg-text svg-title" style="left:80px;top:402px;width:850px;text-align:left;">3. Observability tự động (metrics, traces)</div>
+    <div class="svg-text svg-title" style="left:80px;top:426px;width:850px;text-align:left;">KBLab: ưu ti&#234;n CI/CD + observability trước; service mesh chỉ khi mTLS/multi-host l&#224; bắt buộc.</div>
+  </div>
+</body>
+</html>

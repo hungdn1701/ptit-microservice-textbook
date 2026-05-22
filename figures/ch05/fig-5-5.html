@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.5 — Kafka Topic: Partitions và Consumer Group
+    =========================================================
+    Tier 1 HTML migration từ fig-5-5.svg (LEGACY — no gen script)
+    Layout: Producer → Kafka Cluster (Topic + 3 Partitions) → Consumer Group
+    Capture: gen-diagrams.ps1 → fig-5-5.png → Typst image()
+  -->
+  <title>Fig 5.5 — Kafka Topic: Partitions và Consumer Group | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .partition-box {
+      background: #ffffff;
+      border: 1.5px solid #94a3b8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      flex: 1;
+      text-align: center;
+    }
+    .partition-box .p-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+    .partition-box .p-msgs {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .partition-box .p-offset {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .consumer-box {
+      background: #ffffff;
+      border: 1.5px solid #16a34a;
+      border-radius: 8px;
+      padding: 8px 12px;
+      flex: 1;
+      text-align: center;
+    }
+    .consumer-box .c-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #14532d;
+    }
+    .consumer-box .c-sub {
+      font-size: 10px;
+      color: #16a34a;
+    }
+    .kafka-cluster-outer {
+      background: #f8fafc;
+      border: 1.5px dashed #94a3b8;
+      border-radius: 14px;
+      padding: 14px 16px;
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .kafka-cluster-outer > .cluster-label {
+      position: absolute; top: -9px; left: 14px;
+      background: #fff; padding: 0 6px;
+      font-size: 11px; font-weight: 600;
+      color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .topic-box {
+      background: #fef9c3;
+      border: 1.5px solid #ca8a04;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .topic-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #713f12;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .consumer-group-cluster {
+      background: #dcfce7;
+      border: 1.5px dashed #16a34a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      position: relative;
+    }
+    .consumer-group-cluster > .cg-label {
+      position: absolute; top: -9px; left: 14px;
+      background: #dcfce7; padding: 0 6px;
+      font-size: 11px; font-weight: 600;
+      color: #16a34a; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Kafka Topic: Partitions và Consumer Group</div>
+
+    <div class="d-row" style="align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+
+      <!-- Producer box -->
+      <div style="align-self: center;">
+        <div class="d-box d-storage" style="text-align:center; width:120px;">
+          <div class="d-title">Producer</div>
+          <div class="d-sub">Core Service</div>
+        </div>
+        <div style="font-size: 10px; color:#64748b; text-align:center; margin-top:4px;">key: userId</div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="align-self: center;"></div>
+
+      <!-- Kafka Cluster -->
+      <div class="kafka-cluster-outer" style="flex:1;">
+        <span class="cluster-label">Kafka Cluster</span>
+
+        <!-- Topic -->
+        <div class="topic-box">
+          <div class="topic-title">Topic: "submissions"</div>
+          <!-- Partitions -->
+          <div class="d-row" style="gap: 8px; align-items: stretch;">
+            <div class="partition-box">
+              <div class="p-title">Partition 0</div>
+              <div class="p-msgs">msg1, msg4, msg7…</div>
+              <div class="p-offset">offset →</div>
+            </div>
+            <div class="partition-box">
+              <div class="p-title">Partition 1</div>
+              <div class="p-msgs">msg2, msg5, msg8…</div>
+              <div class="p-offset">offset →</div>
+            </div>
+            <div class="partition-box">
+              <div class="p-title">Partition 2</div>
+              <div class="p-msgs">msg3, msg6, msg9…</div>
+              <div class="p-offset">offset →</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.d-row top -->
+
+    <!-- Arrows down from partitions -->
+    <div class="d-row" style="justify-content: flex-end; padding-right: 16px; gap: 0; margin-bottom: 4px;">
+      <div style="flex: 1; max-width: 120px; text-align: center; color:#64748b; font-size:16px;">↓</div>
+      <div style="flex: 1; max-width: 120px; text-align: center; color:#64748b; font-size:16px;">↓</div>
+      <div style="flex: 1; max-width: 120px; text-align: center; color:#64748b; font-size:16px;">↓</div>
+      <div style="flex: 0 0 12px;"></div>
+    </div>
+
+    <!-- Consumer Group -->
+    <div class="consumer-group-cluster" style="margin-left: 144px;">
+      <span class="cg-label">Consumer Group: "judge-group"</span>
+      <div class="d-row" style="gap: 10px; margin-top: 8px;">
+        <div class="consumer-box">
+          <div class="c-title">Consumer 1</div>
+          <div class="c-sub">Judge Instance 1</div>
+        </div>
+        <div class="consumer-box">
+          <div class="c-title">Consumer 2</div>
+          <div class="c-sub">Judge Instance 2</div>
+        </div>
+        <div class="consumer-box">
+          <div class="c-title">Consumer 3</div>
+          <div class="c-sub">Judge Instance 3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Caption -->
+    <div class="d-caption">
+      Mỗi partition được gán cho một consumer trong group — đảm bảo xử lý song song và ordering trong partition.
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

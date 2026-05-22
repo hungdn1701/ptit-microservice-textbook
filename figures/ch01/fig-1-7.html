@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.7 — Decision Framework — 3 câu hỏi trước khi áp dụng Microservices
+    =========================================================
+    Tier 1 HTML migration từ fig-1-7.svg
+    Layout: Vertical 3-question flowchart with left-side outcomes
+    Capture: gen-diagrams.ps1 → fig-1-7.png → Typst image()
+  -->
+  <title>Fig 1.7 — Decision Framework: 3 câu hỏi Microservices | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .decision-q {
+      border-radius: 10px;
+      border: 1.5px solid #ca8a04;
+      background: #fef9c3;
+      color: #713f12;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 300px;
+    }
+    .outcome-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: flex-end;
+    }
+    .badge-no {
+      font-size: 11px; font-weight: 600; color: #dc2626;
+      background: #fee2e2; border: 1px solid #fca5a5; border-radius: 4px; padding: 1px 6px;
+    }
+    .badge-yes {
+      font-size: 11px; font-weight: 600; color: #16a34a;
+      background: #dcfce7; border: 1px solid #86efac; border-radius: 4px; padding: 1px 6px;
+    }
+    .badge-clear {
+      font-size: 11px; font-weight: 600; color: #2563eb;
+      background: #eff6ff; border: 1px solid #93c5fd; border-radius: 4px; padding: 1px 6px;
+    }
+    .flow-center { display: flex; flex-direction: column; align-items: center; }
+    .flow-row-q { display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Decision Framework — 3 câu hỏi trước khi áp dụng Microservices</div>
+
+    <div class="flow-center" style="gap: 4px;">
+
+      <!-- Q1 -->
+      <div class="flow-row-q">
+        <div class="outcome-left">
+          <div class="d-box d-danger" style="max-width:200px; text-align:center; font-size:12px;">
+            <div class="d-title" style="font-size:12px;">❌ Không cần Microservices</div>
+            <div class="d-sub">Xem xét refactor trước</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <span class="badge-no">Không rõ</span>
+        </div>
+        <div class="decision-q">1. Vấn đề bạn đang giải quyết là gì?</div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div style="text-align:center; margin: 2px 0;">
+        <span class="badge-clear">Rõ ràng</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Q2 -->
+      <div class="flow-row-q">
+        <div class="outcome-left">
+          <div class="d-box d-info" style="max-width:200px; text-align:center; font-size:12px;">
+            <div class="d-title" style="font-size:12px;">👍 Thử Modular Monolith</div>
+            <div class="d-sub">Ít rủi ro hơn</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <span class="badge-yes">Có</span>
+        </div>
+        <div class="decision-q">2. Có thể giải quyết đơn giản hơn?</div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div style="text-align:center; margin: 2px 0;">
+        <span class="badge-no">Không</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Q3 -->
+      <div class="flow-row-q">
+        <div class="outcome-left">
+          <div class="d-box d-warning" style="max-width:200px; text-align:center; font-size:12px;">
+            <div class="d-title" style="font-size:12px;">📚 Đầu tư đào tạo</div>
+            <div class="d-sub">DevOps / Distributed systems</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <span class="badge-no">Không</span>
+        </div>
+        <div class="decision-q">3. Team có đủ năng lực vận hành?</div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div style="text-align:center; margin: 2px 0;">
+        <span class="badge-yes">Có</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Outcome: Go Microservices -->
+      <div class="d-box d-success" style="text-align:center; min-width:300px;">
+        <div class="d-title">✅ Xem xét Microservices</div>
+        <div class="d-sub">Bắt đầu từ 1–2 services, mở rộng dần</div>
+      </div>
+
+    </div><!-- /.flow-center -->
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

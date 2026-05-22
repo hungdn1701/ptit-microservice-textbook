@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.8 — Tách thư viện dùng chung (Shared Library Split)
+    =========================================================
+    Tier 1 HTML migration từ fig-2-8.svg
+    Layout: Before/After comparison + dependency table
+    Capture: gen-diagrams.ps1 → fig-2-8.png → Typst image()
+  -->
+  <title>Fig 2.8 — Tách thư viện dùng chung | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .lib-item {
+      font-size: 11px;
+      color: #64748b;
+      padding: 3px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .lib-item:last-child { border-bottom: none; }
+    .dep-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .dep-row:last-child { border-bottom: none; }
+    .dep-svc {
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 140px;
+      border-radius: 6px;
+      border: 1.5px solid;
+      padding: 4px 10px;
+      text-align: center;
+    }
+    .dep-list {
+      font-size: 11px;
+      color: #475569;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Hướng tách shared library</div>
+
+    <!-- Before / After comparison -->
+    <div class="d-row" style="align-items: flex-start; gap: 12px; margin-bottom: 14px;">
+
+      <!-- BEFORE -->
+      <div class="d-cluster" style="flex:1;">
+        <span class="d-label">Hiện tại: 1 shared library</span>
+        <div class="d-box d-danger" style="margin-top: 8px;">
+          <div class="d-title" style="text-align:center; margin-bottom:8px;">shared-library</div>
+          <div class="d-sub" style="text-align:center; margin-bottom:8px;">(23 files — tất cả)</div>
+          <div class="lib-item">BaseEntity, BaseResponse</div>
+          <div class="lib-item">JWT, Security Config</div>
+          <div class="lib-item">CompareUtil, SqlUtil</div>
+          <div class="lib-item">TypeQuestion, AnswerStatus</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="display:flex; align-items:center; padding-top:60px; flex-shrink:0; flex-direction:column; gap:4px;">
+        <div class="d-arrow d-arrow-h"></div>
+        <div class="d-arrow-label">tách</div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="d-cluster" style="flex:1.4;">
+        <span class="d-label">Hướng cải thiện</span>
+        <div class="d-stack" style="margin-top:8px; gap:8px;">
+
+          <div class="d-row" style="gap:8px; align-items:stretch;">
+            <div class="d-box d-info d-grow" style="text-align:center;">
+              <div class="d-title" style="font-size:12px;">lms-security</div>
+              <div class="d-sub">(JWT, auth)</div>
+            </div>
+            <div class="d-box d-service d-grow" style="text-align:center;">
+              <div class="d-title" style="font-size:12px;">lms-common</div>
+              <div class="d-sub">(base, response)</div>
+            </div>
+          </div>
+
+          <div class="d-box d-highlight">
+            <div class="d-title" style="font-size:12px; margin-bottom:4px;">Domain code → service riêng</div>
+            <div class="d-sub">CompareUtil → Judge</div>
+            <div class="d-sub">SqlUtil → Core</div>
+            <div class="d-sub">TypeQuestion → Core</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /.before-after -->
+
+    <!-- Dependencies result -->
+    <div class="d-box d-note">
+      <div class="d-title" style="margin-bottom:8px;">Kết quả: mỗi service chỉ depend những gì cần</div>
+
+      <div class="dep-row">
+        <div class="dep-svc d-info">Auth Service</div>
+        <span style="font-size:11px; color:#64748b;">deps:</span>
+        <div class="dep-list">lms-security</div>
+      </div>
+      <div class="dep-row">
+        <div class="dep-svc d-service">Core Service</div>
+        <span style="font-size:11px; color:#64748b;">deps:</span>
+        <div class="dep-list">lms-security, lms-common</div>
+      </div>
+      <div class="dep-row">
+        <div class="dep-svc d-event">Judge Service</div>
+        <span style="font-size:11px; color:#64748b;">deps:</span>
+        <div class="dep-list">lms-security, domain/judge</div>
+      </div>
+      <div class="dep-row">
+        <div class="dep-svc d-highlight">Assignment Svc</div>
+        <span style="font-size:11px; color:#64748b;">deps:</span>
+        <div class="dep-list">lms-security, lms-common</div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

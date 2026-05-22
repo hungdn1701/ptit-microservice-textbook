@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.4 — Cây quyết định chuyển đổi kiến trúc
+    =========================================================
+    Tier 1 HTML migration từ fig-1-4.svg
+    Layout: Vertical flowchart with decision diamonds and side branches
+    Capture: gen-diagrams.ps1 → fig-1-4.png → Typst image()
+  -->
+  <title>Fig 1.4 — Cây quyết định chuyển đổi kiến trúc | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .flow-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+      margin: 4px 0;
+    }
+    .decision-box {
+      border-radius: 8px;
+      border: 1.5px solid #ca8a04;
+      background: #fef9c3;
+      color: #713f12;
+      padding: 10px 18px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 240px;
+      position: relative;
+    }
+    .yes-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #16a34a;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .no-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #dc2626;
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .side-outcome {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Cây quyết định — Khi nào nên dùng Microservices?</div>
+
+    <div class="flow-center">
+
+      <!-- Start -->
+      <div class="d-box d-danger" style="text-align:center; min-width:240px;">
+        <div class="d-title">Monolith đạt giới hạn?</div>
+      </div>
+
+      <div class="d-arrow-v"></div>
+
+      <!-- Decision 1 -->
+      <div class="flow-row">
+        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px;">
+          <span class="yes-label">Có</span>
+          <div class="d-arrow d-arrow-h" style="transform: scaleX(-1);"></div>
+          <div class="d-box d-success side-outcome" style="max-width:200px; text-align:center;">
+            <div class="d-title" style="font-size:12px;">Vertical / Horizontal Scaling</div>
+            <div class="d-sub">Giữ monolith</div>
+          </div>
+        </div>
+        <div class="decision-box">Scaling truyền thống OK?</div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div class="d-row" style="justify-content:center; gap:4px; margin: 2px 0;">
+        <span class="no-label">Không</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Decision 2 -->
+      <div class="flow-row">
+        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:8px;">
+          <span class="no-label">Không</span>
+          <div class="d-arrow d-arrow-h" style="transform: scaleX(-1);"></div>
+          <div class="d-box d-info side-outcome" style="max-width:200px; text-align:center;">
+            <div class="d-title" style="font-size:12px;">Modular Monolith</div>
+          </div>
+        </div>
+        <div class="decision-box">Team &gt; 10 người?</div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div class="d-row" style="justify-content:center; gap:4px; margin: 2px 0;">
+        <span class="yes-label">Có</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Decision result -->
+      <div class="d-box d-service" style="text-align:center; min-width:240px;">
+        <div class="d-title">Microservices</div>
+        <div class="d-sub">(thường bắt đầu hybrid)</div>
+      </div>
+
+      <div class="d-arrow-v"></div>
+
+      <!-- Decision 3 -->
+      <div class="flow-row">
+        <div style="flex:1;"></div>
+        <div class="decision-box">Quá nhiều services nhỏ?</div>
+        <div style="flex:1; display:flex; justify-content:flex-start; align-items:center; gap:8px;">
+          <div class="d-arrow d-arrow-h"></div>
+          <span class="yes-label">Có</span>
+          <div class="d-box d-highlight side-outcome" style="max-width:200px; text-align:center;">
+            <div class="d-title" style="font-size:12px;">Domain-Oriented MS</div>
+            <div class="d-sub">(Uber's DOMA)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-row" style="justify-content:center; gap:4px; margin: 2px 0;">
+        <span class="no-label">Không</span>
+      </div>
+      <div class="d-arrow-v"></div>
+
+      <!-- Final -->
+      <div class="d-box d-success" style="text-align:center; min-width:240px;">
+        <div class="d-title">Tiếp tục tiến hóa</div>
+      </div>
+
+    </div><!-- /.flow-center -->
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

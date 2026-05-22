@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.4 - Centralized Log Aggregation Pipeline</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Centralized Log Aggregation Pipeline">
+    <div class="d-cluster svg-box" style="left:50px;top:60px;width:860px;height:120px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:95px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:285px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:475px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:665px;top:100px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:260px;top:215px;width:440px;height:120px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:300px;top:260px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:510px;top:260px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:95px;top:360px;width:770px;height:120px;border-radius:12px;"></div>
+    <div class="d-box d-storage svg-box" style="left:135px;top:405px;width:180px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-success svg-box" style="left:420px;top:405px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-warning svg-box" style="left:680px;top:405px;width:160px;height:56px;border-radius:12px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 175 148 L 480 225" class="arrow" />
+      <path d="M 365 148 L 480 225" class="arrow" />
+      <path d="M 555 148 L 480 225" class="arrow" />
+      <path d="M 745 148 L 480 225" class="arrow" />
+      <path d="M 460 284 L 500 284" class="arrow" />
+      <path d="M 585 308 L 585 360" class="arrow" />
+      <path d="M 315 429 L 420 429" class="arrow" />
+      <path d="M 580 429 L 680 429" class="arrow" />
+      <line x1="64" y1="98" x2="896" y2="98" class="separator" />
+      <line x1="274" y1="253" x2="686" y2="253" class="separator" />
+      <line x1="109" y1="398" x2="851" y2="398" class="separator" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:8px;width:360px;transform:translateX(-50%);text-align:center;">Centralized Log Aggregation Pipeline</div>
+    <div class="svg-text svg-title" style="left:480px;top:74px;width:360px;transform:translateX(-50%);text-align:center;">Application Services</div>
+    <div class="svg-text svg-title" style="left:175px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:365px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Auth Service</div>
+    <div class="svg-text svg-title" style="left:555px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:745px;top:119px;width:360px;transform:translateX(-50%);text-align:center;">Judge Service</div>
+    <div class="svg-text svg-title" style="left:480px;top:229px;width:360px;transform:translateX(-50%);text-align:center;">Log Pipeline</div>
+    <div class="svg-text svg-title" style="left:380px;top:270px;width:360px;transform:translateX(-50%);text-align:center;">Log Agent</div>
+    <div class="svg-text svg-title" style="left:380px;top:288px;width:360px;transform:translateX(-50%);text-align:center;">Promtail / Fluentd</div>
+    <div class="svg-text svg-small" style="left:480px;top:273px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">ship</div>
+    <div class="svg-text svg-title" style="left:590px;top:270px;width:360px;transform:translateX(-50%);text-align:center;">Parser</div>
+    <div class="svg-text svg-title" style="left:590px;top:288px;width:360px;transform:translateX(-50%);text-align:center;">JSON fields</div>
+    <div class="svg-text svg-title" style="left:480px;top:374px;width:360px;transform:translateX(-50%);text-align:center;">Storage &amp; Query</div>
+    <div class="svg-text svg-title" style="left:225px;top:415px;width:360px;transform:translateX(-50%);text-align:center;">Loki / Elasticsearch</div>
+    <div class="svg-text svg-title" style="left:225px;top:433px;width:360px;transform:translateX(-50%);text-align:center;">log storage</div>
+    <div class="svg-text svg-small" style="left:367.5px;top:418px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">query</div>
+    <div class="svg-text svg-title" style="left:500px;top:415px;width:360px;transform:translateX(-50%);text-align:center;">Grafana / Kibana</div>
+    <div class="svg-text svg-title" style="left:500px;top:433px;width:360px;transform:translateX(-50%);text-align:center;">search &amp; dashboards</div>
+    <div class="svg-text svg-small" style="left:630px;top:418px;width:360px;transform:translateX(-50%);text-align:center;color:#475569;">alert</div>
+    <div class="svg-text svg-title" style="left:760px;top:415px;width:360px;transform:translateX(-50%);text-align:center;">On-call</div>
+    <div class="svg-text svg-title" style="left:760px;top:433px;width:360px;transform:translateX(-50%);text-align:center;">triage</div>
+    <div class="svg-text svg-title" style="left:480px;top:498px;width:360px;transform:translateX(-50%);text-align:center;">Một traceId/correlationId gi&#250;p nối log từ Gateway -&gt; service -&gt; worker trong một truy vấn.</div>
+  </div>
+</body>
+</html>

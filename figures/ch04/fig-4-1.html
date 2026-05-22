@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.1 — Giao tiếp đồng bộ — blocking
+    =========================================================
+    Tier 1 HTML migration từ fig-4-1.svg
+    Layout: Sequence diagram 4 participants — Client, Gateway, Core Service, Judge
+    Capture: gen-diagrams.ps1 → fig-4-1.png → Typst image()
+  -->
+  <title>Fig 4.1 — Giao tiếp đồng bộ — blocking | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    /* Left-pointing arrow variant for responses */
+    .d-seq-msg-line.left-arrow::after { display: none; }
+    .d-seq-msg-line.left-arrow::before {
+      content: '◀';
+      position: absolute;
+      left: -7px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    /* Blocking zone row */
+    .blocking-row {
+      display: flex;
+      align-items: center;
+      min-height: 64px;
+      position: relative;
+    }
+    .blocked-box {
+      width: 72px;
+      border-radius: 6px;
+      background: #fee2e2;
+      border: 1.5px solid #dc2626;
+      color: #7f1d1d;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      padding: 6px 4px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Giao tiếp đồng bộ — Core Service blocked</div>
+
+    <div class="d-seq-container">
+
+      <!-- Participants row -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">API Gateway</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Judge Service</div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="d-seq-messages">
+
+        <!-- 1. Client → Gateway (0→1): left=1, line=2, right=5 -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text">POST /submissions</span>
+          </div>
+          <div style="flex:5"></div>
+        </div>
+
+        <!-- 2. Gateway → Core Service (1→2): left=3, line=2, right=3 -->
+        <div class="d-seq-msg">
+          <div style="flex:3"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text">Forward request</span>
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- 3. Core Service → Judge (2→3): left=5, line=2, right=1 -->
+        <div class="d-seq-msg">
+          <div style="flex:5"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text">POST /judge/execute [sync call]</span>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- BLOCKED zone — Core Service column (index 2, center at 5/8) -->
+        <div class="blocking-row">
+          <div style="flex:5"></div>
+          <div class="blocked-box">BLOCKED<br><span style="font-size:10px; font-weight:400;">(chờ Judge)</span></div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- 4. Judge → Core Service response (3→2): left=5, line=2, right=1, dashed, left arrow -->
+        <div class="d-seq-msg">
+          <div style="flex:5"></div>
+          <div class="d-seq-msg-line dashed left-arrow" style="flex:2">
+            <span class="d-seq-msg-text">Result: score=85</span>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- 5. Core Service → Gateway (2→1): left=3, line=2, right=3, left arrow -->
+        <div class="d-seq-msg">
+          <div style="flex:3"></div>
+          <div class="d-seq-msg-line left-arrow" style="flex:2">
+            <span class="d-seq-msg-text">200 OK + score</span>
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- 6. Gateway → Client (1→0): left=1, line=2, right=5, dashed, left arrow -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line dashed left-arrow" style="flex:2">
+            <span class="d-seq-msg-text">Response to client</span>
+          </div>
+          <div style="flex:5"></div>
+        </div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+    <!-- Warning note -->
+    <div class="d-box d-warning" style="margin-top:16px;">
+      <span class="d-title">⚠ Vấn đề: </span>
+      <span class="d-sub">Core bị block toàn bộ thời gian Judge xử lý (có thể vài giây). Thread bị giữ, không phục vụ request khác.</span>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

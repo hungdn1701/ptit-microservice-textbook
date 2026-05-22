@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.2 - Ba trụ cột Observability</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Ba trụ cột Observability">
+    <div class="d-box d-info svg-box" style="left:50px;top:70px;width:260px;height:110px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:350px;top:70px;width:260px;height:110px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:650px;top:70px;width:260px;height:110px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:50px;top:230px;width:860px;height:200px;border-radius:10px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Ba trụ cột Observability</div>
+    <div class="svg-text svg-title" style="left:180px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Logs</div>
+    <div class="svg-text svg-title" style="left:180px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Ghi lại SỰ KIỆN đ&#227; xảy ra</div>
+    <div class="svg-text svg-title" style="left:180px;top:136px;width:360px;transform:translateX(-50%);text-align:center;">(what happened)</div>
+    <div class="svg-text svg-title" style="left:480px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Metrics</div>
+    <div class="svg-text svg-title" style="left:480px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Đo lường HIỆU SUẤT theo thời gian</div>
+    <div class="svg-text svg-title" style="left:480px;top:136px;width:360px;transform:translateX(-50%);text-align:center;">(how is it performing)</div>
+    <div class="svg-text svg-title" style="left:780px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Traces</div>
+    <div class="svg-text svg-title" style="left:780px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Theo d&#245;i H&#192;NH TR&#204;NH của 1 request</div>
+    <div class="svg-text svg-title" style="left:780px;top:136px;width:360px;transform:translateX(-50%);text-align:center;">(where did it go)</div>
+    <div class="svg-text svg-title" style="left:480px;top:244px;width:360px;transform:translateX(-50%);text-align:center;">LMS v&#237; dụ cụ thể</div>
+    <div class="svg-text svg-title" style="left:70px;top:276px;width:850px;text-align:left;">Logs:</div>
+    <div class="svg-text svg-mono" style="left:155px;top:276px;width:850px;text-align:left;">10:03:02 [judge] SQL timeout for submission #123 [traceId=abc]</div>
+    <div class="svg-text svg-title" style="left:70px;top:316px;width:850px;text-align:left;">Metrics:</div>
+    <div class="svg-text svg-mono" style="left:155px;top:316px;width:850px;text-align:left;">submission_latency_p99 = 4.2s | judge_success_rate = 98.5%</div>
+    <div class="svg-text svg-title" style="left:70px;top:356px;width:850px;text-align:left;">Traces:</div>
+    <div class="svg-text svg-mono" style="left:155px;top:356px;width:850px;text-align:left;">Gateway(10ms) -&gt; Core(50ms) -&gt; Kafka(2ms) -&gt; Judge(3500ms) = TOTAL 3562ms</div>
+    <div class="svg-text svg-title" style="left:70px;top:396px;width:850px;text-align:left;">Kết hợp 3 trụ cột: Thấy latency cao (metrics) -&gt; T&#236;m trace cụ thể -&gt; Đọc log tại service lỗi</div>
+  </div>
+</body>
+</html>

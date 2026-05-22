@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.9 - Parallel Run Pattern</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Parallel Run Pattern">
+    <div class="d-box d-legacy svg-box" style="left:360px;top:60px;width:240px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:340px;top:140px;width:280px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-legacy svg-box" style="left:100px;top:240px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-service svg-box" style="left:660px;top:240px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:340px;top:340px;width:280px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-legacy svg-box" style="left:360px;top:420px;width:240px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-warning svg-box" style="left:750px;top:345px;width:160px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:40px;top:480px;width:880px;height:30px;border-radius:6px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 480 105 L 480 140" class="arrow" />
+      <path d="M 420 190 L 200 240" class="arrow" />
+      <path d="M 540 190 L 760 240" class="arrow" />
+      <path d="M 200 295 L 380 340" class="arrow" />
+      <path d="M 760 295 L 580 340" class="arrow" />
+      <path d="M 480 390 L 480 420" class="arrow" />
+      <path d="M 620 365 L 750 365" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Parallel Run Pattern</div>
+    <div class="svg-text svg-title" style="left:480px;top:79px;width:360px;transform:translateX(-50%);text-align:center;">Request</div>
+    <div class="svg-text svg-title" style="left:480px;top:159px;width:360px;transform:translateX(-50%);text-align:center;">Parallel Runner</div>
+    <div class="svg-text svg-title" style="left:200px;top:250px;width:360px;transform:translateX(-50%);text-align:center;">Old Logic</div>
+    <div class="svg-text svg-title" style="left:200px;top:268px;width:360px;transform:translateX(-50%);text-align:center;">(legacy code)</div>
+    <div class="svg-text svg-title" style="left:760px;top:250px;width:360px;transform:translateX(-50%);text-align:center;">New Logic</div>
+    <div class="svg-text svg-title" style="left:760px;top:268px;width:360px;transform:translateX(-50%);text-align:center;">(new service)</div>
+    <div class="svg-text svg-title" style="left:480px;top:359px;width:360px;transform:translateX(-50%);text-align:center;">Compare Responses</div>
+    <div class="svg-text svg-title" style="left:480px;top:439px;width:360px;transform:translateX(-50%);text-align:center;">Response (from Old)</div>
+    <div class="svg-text svg-title" style="left:830px;top:364px;width:360px;transform:translateX(-50%);text-align:center;">Mismatch Log</div>
+    <div class="svg-text svg-title" style="left:480px;top:486px;width:360px;transform:translateX(-50%);text-align:center;">User lu&#244;n nhận response từ Old. New chạy ngầm để so s&#225;nh. Khi tin tưởng, switch sang New.</div>
+  </div>
+</body>
+</html>

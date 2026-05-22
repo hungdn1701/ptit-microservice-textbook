@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.3 — The Scale Cube — 3 trục mở rộng
+    =========================================================
+    Tier 1 HTML migration từ fig-1-3.svg
+    Layout: Isometric-style 3-axis diagram with service boxes
+    Capture: gen-diagrams.ps1 → fig-1-3.png → Typst image()
+  -->
+  <title>Fig 1.3 — The Scale Cube | Ch.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .axis-section {
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 12px 14px;
+      flex: 1;
+    }
+    .axis-header {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .axis-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+    .mini-boxes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .mini-box {
+      border-radius: 6px;
+      border: 1.5px solid #0f766e;
+      background: #e6f4f3;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #085041;
+    }
+    .mini-box.info {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      color: #1e3a8a;
+    }
+    .mini-box.warning {
+      border-color: #ea580c;
+      background: #fff7ed;
+      color: #7c2d12;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">The Scale Cube — 3 trục mở rộng hệ thống</div>
+
+    <div class="d-row" style="align-items: stretch; gap: 16px; margin-bottom: 20px;">
+
+      <!-- X-axis -->
+      <div class="axis-section d-service">
+        <div class="axis-header">X — Horizontal Cloning</div>
+        <div class="axis-sub">Nhân bản instance để tăng throughput</div>
+        <div class="mini-boxes">
+          <div class="mini-box">Instance 1</div>
+          <div class="mini-box">Instance 2</div>
+          <div class="mini-box">Instance N</div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#64748b;">
+          Load Balancer phân phối request giữa các bản sao giống hệt nhau.
+        </div>
+      </div>
+
+      <!-- Y-axis -->
+      <div class="axis-section d-info">
+        <div class="axis-header">Y — Functional Decomposition</div>
+        <div class="axis-sub">Chia tách theo Microservices</div>
+        <div class="mini-boxes">
+          <div class="mini-box info">Auth</div>
+          <div class="mini-box info">Order</div>
+          <div class="mini-box info">Payment</div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#64748b;">
+          Mỗi service đảm nhận một domain riêng, deploy độc lập.
+        </div>
+      </div>
+
+      <!-- Z-axis -->
+      <div class="axis-section d-warning">
+        <div class="axis-header">Z — Data Partitioning</div>
+        <div class="axis-sub">Phân mảnh Database / Sharding</div>
+        <div class="mini-boxes">
+          <div class="mini-box warning">Users A–M</div>
+          <div class="mini-box warning">Users N–Z</div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#64748b;">
+          Mỗi shard phục vụ một tập con dữ liệu theo key (vd: user ID range).
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Summary matrix -->
+    <div class="d-cluster" style="margin-top: 4px;">
+      <span class="d-label">Khi nào dùng trục nào?</span>
+      <div class="d-grid-3" style="margin-top: 8px;">
+        <div class="d-box d-service" style="text-align:center;">
+          <div class="d-title">X-axis</div>
+          <div class="d-sub">Traffic tăng cao → scale nhanh bằng load balancer</div>
+        </div>
+        <div class="d-box d-info" style="text-align:center;">
+          <div class="d-title">Y-axis</div>
+          <div class="d-sub">Domain rõ ràng → tách service, team độc lập</div>
+        </div>
+        <div class="d-box d-warning" style="text-align:center;">
+          <div class="d-title">Z-axis</div>
+          <div class="d-sub">Dataset lớn → sharding DB theo tenant/region</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-caption">Kết hợp cả 3 trục cho hệ thống phân tán quy mô lớn</div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

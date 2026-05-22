@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    INTERACTIVE TEMPLATE — Pattern demo cho web/LMS
+    ================================================
+    Dùng cho:  references/interactive/[pattern-name].html
+    Quy tắc:
+      • Import base-style.css — KHÔNG override tokens có sẵn
+      • Mọi override style: trong <style> của file
+      • toggleTheme() — đã định nghĩa ở cuối body, KHÔNG cần viết lại
+      • Chapter badge: cập nhật data-chapter cho đúng
+      • Navbar links: cập nhật cho phù hợp chapter/nhóm
+  -->
+  <title>[Pattern Name] — Ch.N | [Book Title]</title>
+  <link rel="stylesheet" href="base-style.css">
+
+  <style>
+    /*
+      Page-specific styles — component layout riêng cho pattern này.
+      Giữ tối thiểu, dùng base-style classes trước khi thêm custom.
+
+      Naming convention:
+        .cb-*   circuit-breaker
+        .sd-*   service-discovery
+        .saga-* saga
+        .cqrs-* cqrs
+        ... etc.
+    -->
+    */
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">
+      <span class="logo">📐</span>
+      <span>SOA &amp; MS <span class="label">Patterns</span></span>
+    </a>
+    <ul class="navbar-links">
+      <li><a href="index.html">Tất cả</a></li>
+      <!-- Thêm links liên quan cùng chapter: -->
+      <li><a href="[related-1].html">[Related Pattern 1]</a></li>
+      <li><a href="[pattern-name].html" class="active">[Pattern Name]</a></li>
+    </ul>
+    <div class="navbar-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode">🌙</button>
+    </div>
+  </nav>
+
+  <!-- ── Main Content ── -->
+  <div class="page-container">
+
+    <!-- Page Header -->
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương N — [Tên Chương]</div>
+      <h1>[Icon] [Pattern Name]</h1>
+      <p class="subtitle">[Mô tả một dòng — what it is, why it matters]</p>
+    </header>
+
+    <!--
+      ╔═══════════════════════════════════════════════════════════╗
+      ║  PATTERN CONTENT — thay thế block này bằng nội dung thật  ║
+      ╠═══════════════════════════════════════════════════════════╣
+      ║                                                            ║
+      ║  Cấu trúc gợi ý (không bắt buộc):                         ║
+      ║    1. Visual diagram / animation area (card)               ║
+      ║    2. Controls (btn-group, controls)                       ║
+      ║    3. Metrics / state display (grid-2 hoặc grid-3)         ║
+      ║    4. Event log (log-panel)                                 ║
+      ║    5. Callout — KBLab context / "Thực tế trong dự án"      ║
+      ║    6. Code example (code-block)                             ║
+      ║                                                            ║
+      ╚═══════════════════════════════════════════════════════════╝
+    -->
+
+    <!-- 1. Visual Area -->
+    <div class="card animate-fadeIn" id="visual-area">
+      <div class="card-title">📊 [Tên section — e.g. State Machine]</div>
+      <!-- Nội dung visual, diagram, animation -->
+      <div class="flow-container" id="flow">
+        <div class="flow-node" id="node-a">
+          <div class="node-title">Step A</div>
+          <div class="node-desc">Mô tả</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" id="node-b">
+          <div class="node-title">Step B</div>
+          <div class="node-desc">Mô tả</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Controls -->
+    <div class="controls">
+      <button class="btn btn-primary" onclick="handleAction()">▶ Start</button>
+      <button class="btn" onclick="handleReset()">🔄 Reset</button>
+    </div>
+
+    <!-- 3. Metrics + State -->
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="card">
+        <div class="card-title">📈 Metrics</div>
+        <div class="grid-3">
+          <div class="metric">
+            <div class="metric-value" id="m-count" style="color: var(--primary)">0</div>
+            <div class="metric-label">Total</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value" id="m-success" style="color: var(--success)">0</div>
+            <div class="metric-label">Success</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value" id="m-error" style="color: var(--danger)">0</div>
+            <div class="metric-label">Error</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="card-title" style="font-size:13px;">⚙️ State</div>
+        <div class="config-row">
+          <span class="config-label">Trạng thái</span>
+          <span id="state-badge"><span class="badge badge-info">IDLE</span></span>
+        </div>
+      </div>
+
+      <!-- 4. Event Log -->
+      <div class="card">
+        <div class="card-title">📋 Event Log</div>
+        <div class="log-panel" id="log-panel">
+          <div><span class="log-info">[Pattern] initialized</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. KBLab Context Callout -->
+    <div style="margin-top: 24px;">
+      <div class="callout">
+        <strong>KBLab / Thực tế:</strong>
+        Giải thích cách pattern này được áp dụng trong hệ thống KBLab
+        hoặc một use case cụ thể trong thực tế.
+      </div>
+    </div>
+
+    <!-- 6. Code Example -->
+    <div style="margin-top: 24px;">
+      <div class="section-title">Ví dụ Implementation</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <div class="traffic-lights">
+            <div class="traffic-light red"></div>
+            <div class="traffic-light yellow"></div>
+            <div class="traffic-light green"></div>
+          </div>
+          <span class="code-block-title">PatternName.java</span>
+        </div>
+        <pre><span class="keyword">@Service</span>
+<span class="keyword">public class</span> <span class="type">PatternExample</span> {
+    <span class="comment">// TODO: implementation example</span>
+    <span class="keyword">public void</span> <span class="func">demonstrate</span>() {
+        <span class="comment">// ...</span>
+    }
+}</pre>
+      </div>
+    </div>
+
+  </div><!-- /.page-container -->
+
+  <!-- ── Theme Toggle Script (COPY Y CHANG sang mọi page) ── -->
+  <script>
+    // Restore saved theme
+    if (localStorage.getItem('theme') === 'light') {
+      document.documentElement.classList.add('light');
+      document.body.classList.add('light');
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light');
+      document.documentElement.classList.toggle('light', isLight);
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
+    }
+  </script>
+
+  <!-- ── Pattern Logic ── -->
+  <script>
+    // State
+    let count = 0, successes = 0, errors = 0;
+
+    function log(msg, type = 'info') {
+      const panel = document.getElementById('log-panel');
+      const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const entry = document.createElement('div');
+      entry.innerHTML = `<span class="log-time">${time}</span> <span class="log-${type}">${msg}</span>`;
+      panel.insertBefore(entry, panel.firstChild);
+      // Keep max 20 entries
+      while (panel.children.length > 20) panel.removeChild(panel.lastChild);
+    }
+
+    function updateMetrics() {
+      document.getElementById('m-count').textContent   = count;
+      document.getElementById('m-success').textContent = successes;
+      document.getElementById('m-error').textContent   = errors;
+    }
+
+    function handleAction() {
+      count++;
+      // TODO: pattern-specific logic
+      log('Action triggered', 'info');
+      updateMetrics();
+    }
+
+    function handleReset() {
+      count = successes = errors = 0;
+      updateMetrics();
+      log('Reset', 'warn');
+    }
+  </script>
+
+</body>
+</html>

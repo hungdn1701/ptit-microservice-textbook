@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.4 — Các chiến lược Cache
+    =========================================================
+    Legacy SVG migration (no gen script)
+    Source: figures/ch07/fig-7-4.svg
+    Layout: 3-column cache strategies (Cache-Aside, Read-Through, Write-Behind)
+    Capture: gen-diagrams.ps1 → fig-7-4.png → Typst image()
+  -->
+  <title>Fig 7.4 — Các chiến lược Cache | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .cache-col {
+      flex: 1;
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .cache-col-aside   { background: #E3F2FD; border-color: #2563eb; }
+    .cache-col-read    { background: #E8F5E9; border-color: #16a34a; }
+    .cache-col-write   { background: #FFF9C4; border-color: #ca8a04; }
+
+    .cache-col-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a202c;
+      text-align: center;
+      margin-bottom: 2px;
+    }
+    .cache-col-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .cache-step {
+      background: #ffffff;
+      border: 1.5px solid #94a3b8;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      text-align: center;
+      color: #1a202c;
+    }
+    .cache-arrow {
+      text-align: center;
+      font-size: 15px;
+      color: #64748b;
+      margin: 3px 0;
+      line-height: 1;
+    }
+    .cache-branch {
+      display: flex;
+      gap: 8px;
+      margin: 3px 0;
+    }
+    .cache-branch-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .cache-branch-label {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .cache-return {
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 4px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Các chiến lược Cache trong Microservices</div>
+
+    <div style="display:flex; gap:14px; align-items:flex-start;">
+
+      <!-- 1. Cache-Aside (Lazy Loading) -->
+      <div class="cache-col cache-col-aside">
+        <div class="cache-col-title">1. Cache-Aside</div>
+        <div class="cache-col-subtitle">(Lazy Loading)</div>
+
+        <div class="cache-step">App đọc Cache</div>
+        <div class="cache-arrow">↓</div>
+
+        <!-- Branch: HIT / MISS -->
+        <div class="cache-branch">
+          <div class="cache-branch-item">
+            <div class="cache-branch-label">hit ↙</div>
+            <div class="cache-step" style="background:#dcfce7; border-color:#16a34a;">Cache HIT</div>
+            <div class="cache-return">→ Trả về ngay</div>
+          </div>
+          <div class="cache-branch-item">
+            <div class="cache-branch-label">miss ↘</div>
+            <div class="cache-step" style="background:#fee2e2; border-color:#dc2626;">Cache MISS</div>
+            <div class="cache-arrow">↓</div>
+            <div class="cache-step">Đọc DB</div>
+            <div class="cache-arrow">↓</div>
+            <div class="cache-step">Ghi vào Cache</div>
+            <div class="cache-return">→ Trả về</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Read-Through -->
+      <div class="cache-col cache-col-read">
+        <div class="cache-col-title">2. Read-Through</div>
+        <div class="cache-col-subtitle">(Cache tự đọc DB)</div>
+
+        <div class="cache-step">App đọc Cache</div>
+        <div class="cache-arrow">↓ miss</div>
+        <div class="cache-step">Cache tự đọc DB</div>
+        <div class="cache-arrow">↓</div>
+        <div class="cache-step">Cache lưu + trả về</div>
+
+        <div style="margin-top:12px; padding:8px; background:#ffffff; border-radius:6px; border:1px dashed #94a3b8;">
+          <div style="font-size:11px; color:#334155; text-align:center;">
+            App chỉ làm việc với Cache<br>
+            Cache tự quản lý DB-sync<br>
+            <span style="color:#16a34a; font-weight:600;">Transparent to app layer</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Write-Behind (Async Write) -->
+      <div class="cache-col cache-col-write">
+        <div class="cache-col-title">3. Write-Behind</div>
+        <div class="cache-col-subtitle">(Async Write)</div>
+
+        <div class="cache-step">App ghi Cache</div>
+        <div class="cache-arrow">↓</div>
+        <div class="cache-step">Cache ghi DB async</div>
+        <div class="cache-arrow">↓ async / batch</div>
+        <div class="cache-step">Batch / Delayed write to DB</div>
+
+        <div style="margin-top:12px; padding:8px; background:#ffffff; border-radius:6px; border:1px dashed #94a3b8;">
+          <div style="font-size:11px; color:#334155; text-align:center;">
+            Ghi nhanh → trả về ngay<br>
+            DB sync sau (eventual)<br>
+            <span style="color:#ca8a04; font-weight:600;">⚠ Có thể mất data nếu crash</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /3-col -->
+
+    <!-- Bottom comparison note -->
+    <div class="d-box d-note" style="margin-top:14px;">
+      <div class="d-row" style="gap:20px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px;">
+          <div class="d-title" style="color:#2563eb;">Cache-Aside</div>
+          <div class="d-sub">App tự load khi cache miss. Dễ implement, phổ biến nhất (Redis + Spring Cache).</div>
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <div class="d-title" style="color:#16a34a;">Read-Through</div>
+          <div class="d-sub">Cache layer tự đọc DB. App không biết DB tồn tại. Cần cache hỗ trợ.</div>
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <div class="d-title" style="color:#ca8a04;">Write-Behind</div>
+          <div class="d-sub">Ghi cache trước, sync DB sau async. Throughput cao nhưng rủi ro mất data.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

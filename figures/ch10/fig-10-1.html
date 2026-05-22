@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.1 - Fig 10.1</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Fig 10.1">
+    <div class="d-cluster svg-box" style="left:50px;top:40px;width:260px;height:420px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:130px;top:100px;width:100px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-danger svg-box" style="left:90px;top:200px;width:180px;height:100px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:90px;top:330px;width:180px;height:40px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:350px;top:40px;width:260px;height:420px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:430px;top:100px;width:100px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:390px;top:200px;width:180px;height:60px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:390px;top:290px;width:180px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:390px;top:360px;width:180px;height:40px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:650px;top:40px;width:260px;height:420px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:730px;top:100px;width:100px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:690px;top:200px;width:180px;height:30px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:690px;top:260px;width:180px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:690px;top:330px;width:180px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:690px;top:400px;width:180px;height:40px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 180 140 L 180 200" class="arrow" />
+      <path d="M 180 140 L 180 330" class="arrow" />
+      <path d="M 480 140 L 480 200" class="arrow" />
+      <path d="M 480 140 L 480 290" class="arrow" />
+      <path d="M 480 140 L 480 360" class="arrow" />
+      <path d="M 780 140 L 780 200" class="arrow" />
+      <path d="M 780 140 L 780 260" class="arrow" />
+      <path d="M 780 140 L 780 330" class="arrow" />
+      <path d="M 780 140 L 780 400" class="arrow" />
+      <path d="M 310 250 L 350 250" class="arrow" />
+      <path d="M 610 250 L 650 250" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:180px;top:56px;width:360px;transform:translateX(-50%);text-align:center;">Phase 1: 90% Monolith</div>
+    <div class="svg-text svg-title" style="left:180px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:180px;top:241px;width:360px;transform:translateX(-50%);text-align:center;">Monolith</div>
+    <div class="svg-text svg-subtitle" style="left:180px;top:160px;width:850px;text-align:left;">90%</div>
+    <div class="svg-text svg-subtitle" style="left:180px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">New Service A</div>
+    <div class="svg-text svg-subtitle" style="left:180px;top:225px;width:850px;text-align:left;">10%</div>
+    <div class="svg-text svg-title" style="left:480px;top:56px;width:360px;transform:translateX(-50%);text-align:center;">Phase 2: 50/50</div>
+    <div class="svg-text svg-title" style="left:480px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-title" style="left:480px;top:221px;width:360px;transform:translateX(-50%);text-align:center;">Monolith</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:160px;width:850px;text-align:left;">50%</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:301px;width:360px;transform:translateX(-50%);text-align:center;">Service A</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:205px;width:850px;text-align:left;">30%</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:371px;width:360px;transform:translateX(-50%);text-align:center;">Service B</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:240px;width:850px;text-align:left;">20%</div>
+    <div class="svg-text svg-title" style="left:780px;top:56px;width:360px;transform:translateX(-50%);text-align:center;">Phase 3: 10% Monolith</div>
+    <div class="svg-text svg-title" style="left:780px;top:111px;width:360px;transform:translateX(-50%);text-align:center;">Gateway</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:206px;width:360px;transform:translateX(-50%);text-align:center;">Monolith</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:160px;width:850px;text-align:left;">10%</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:271px;width:360px;transform:translateX(-50%);text-align:center;">Service A</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:190px;width:850px;text-align:left;">routes</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">Service B</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:225px;width:850px;text-align:left;">routes</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">Service C</div>
+    <div class="svg-text svg-subtitle" style="left:780px;top:260px;width:850px;text-align:left;">routes</div>
+  </div>
+</body>
+</html>

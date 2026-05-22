@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.9 — Migration Path: Resilience → Ownership → Async
+    =========================================================
+    Tier 1 HTML migration từ fig-4-9.svg (LEGACY)
+    Layout: 3 phase clusters side by side with arrows
+    Capture: gen-diagrams.ps1 → fig-4-9.png → Typst image()
+  -->
+  <title>Fig 4.9 — Migration Path: 3 Phases | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .phases-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 12px;
+    }
+    .phase-cluster {
+      flex: 1;
+      border-radius: 14px;
+      border: 2px dashed;
+      padding: 16px 14px 14px;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .phase-cluster.p1 {
+      border-color: #16a34a;
+      background: #f0fdf4;
+    }
+    .phase-cluster.p2 {
+      border-color: #ca8a04;
+      background: #fefce8;
+      margin: 0 8px;
+    }
+    .phase-cluster.p3 {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+    .phase-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .phase-effort {
+      font-size: 10.5px;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .phase-items {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      padding: 8px 12px;
+    }
+    .phase-item {
+      font-size: 12px;
+      color: #374151;
+      padding: 3px 0;
+      line-height: 1.55;
+    }
+    .phase-item::before { content: '+ '; font-weight: 700; }
+    .phase-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      flex-shrink: 0;
+      font-size: 22px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Migration Path — 3 Phases cho LMS Judge</div>
+
+    <div class="phases-row">
+
+      <!-- Phase 1: Resilience -->
+      <div class="phase-cluster p1">
+        <div class="phase-title" style="color:#15803d;">Phase 1: Resilience</div>
+        <div class="phase-effort">(effort thấp)</div>
+        <div class="phase-items">
+          <div class="phase-item">Circuit Breaker</div>
+          <div class="phase-item">Retry + Timeout</div>
+          <div class="phase-item">Fallback message</div>
+        </div>
+      </div>
+
+      <!-- Arrow 1→2 -->
+      <div class="phase-arrow">→</div>
+
+      <!-- Phase 2: Ownership -->
+      <div class="phase-cluster p2">
+        <div class="phase-title" style="color:#a16207;">Phase 2: Ownership</div>
+        <div class="phase-effort">(effort trung bình)</div>
+        <div class="phase-items">
+          <div class="phase-item">Hợp nhất SQL executor về Judge Service</div>
+          <div class="phase-item">Single ownership</div>
+        </div>
+      </div>
+
+      <!-- Arrow 2→3 -->
+      <div class="phase-arrow">→</div>
+
+      <!-- Phase 3: Async -->
+      <div class="phase-cluster p3">
+        <div class="phase-title" style="color:#1d4ed8;">Phase 3: Async</div>
+        <div class="phase-effort">(effort cao)</div>
+        <div class="phase-items">
+          <div class="phase-item">Submit → Kafka</div>
+          <div class="phase-item">→ Judge → Result event</div>
+          <div class="phase-item">(non-blocking)</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom note -->
+    <div class="d-box d-note">
+      <div class="d-row" style="gap:16px; flex-wrap:wrap;">
+        <div>
+          <span class="d-title">Khuyến nghị: </span>
+          <span class="d-sub">Bắt đầu từ Phase 1 — ROI cao nhất, không cần thay đổi kiến trúc.</span>
+        </div>
+        <div>
+          <span class="d-title">Phase 3: </span>
+          <span class="d-sub">Chỉ thực hiện khi submission volume tăng và blocking trở thành bottleneck thực sự.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

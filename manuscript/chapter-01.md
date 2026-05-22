@@ -54,7 +54,7 @@ Tuy nhiên, SOA truyền thống thường đi kèm với Enterprise Service Bus
 
 Khoảng năm 2014, James Lewis và Martin Fowler đăng bài viết "Microservices" trên martinfowler.com, phổ biến rộng rãi thuật ngữ **microservices** để mô tả một phong cách kiến trúc đã tiến hóa từ SOA nhưng với triết lý khác biệt (thuật ngữ này được sử dụng trước đó tại các workshop phần mềm từ ~2011). Microservices không phải SOA phiên bản nhỏ — đây là sự chuyển dịch căn bản từ **tái sử dụng** (reuse) sang **tính độc lập** (independence) như ưu tiên số một.
 
-![](../figures/ch01/fig-1-1.svg)
+![](../figures/ch01/fig-1-1.png)
 
 *Hình 1.1: Tiến hóa kiến trúc phần mềm doanh nghiệp từ thập niên 1990 đến 2020*
 
@@ -99,7 +99,7 @@ Erl đúc kết 8 nguyên lý nền tảng cho mọi dịch vụ. **Bảng 1.2**
 
 SOA tồn tại ở nhiều cấp độ, từ nhỏ đến lớn:
 
-![](../figures/ch01/fig-1-2.svg)
+![](../figures/ch01/fig-1-2.png)
 
 *Hình 1.2: Bốn kiểu kiến trúc SOA — từ dịch vụ đơn lẻ đến quy mô doanh nghiệp*
 
@@ -124,7 +124,7 @@ Microservices là phong cách kiến trúc trong đó ứng dụng được cấ
 
 Để hiểu microservices trong bối cảnh scalability, chúng ta sử dụng mô hình **Scale Cube** — chia mở rộng hệ thống theo ba chiều:
 
-![](../figures/ch01/fig-1-3.svg)
+![](../figures/ch01/fig-1-3.png)
 
 *Hình 1.3: Scale Cube — ba chiều mở rộng hệ thống*
 
@@ -179,7 +179,7 @@ Uber phản ứng bằng cách giới thiệu **DOMA** (*Domain-Oriented Microse
 
 ### Bài học tổng hợp
 
-![](../figures/ch01/fig-1-4.svg)
+![](../figures/ch01/fig-1-4.png)
 
 *Hình 1.4: Cây quyết định chuyển đổi kiến trúc — từ monolith đến microservices*
 
@@ -201,7 +201,7 @@ Ba pattern chung nổi lên:
 
 Richardson trong phiên bản thứ hai (2025) giới thiệu một framework quan trọng: **Fast Flow Success Triangle** — mô tả ba yếu tố cần thiết để đạt được fast flow:
 
-![](../figures/ch01/fig-1-5.svg)
+![](../figures/ch01/fig-1-5.png)
 
 *Hình 1.5: Fast Flow Success Triangle — ba yếu tố cần thiết cho fast flow*
 
@@ -309,7 +309,7 @@ Không phải mọi monolith đều giống nhau. Sự khác biệt nằm ở **
 
 ### Con đường từ Monolith đến Microservices
 
-![](../figures/ch01/fig-1-6.svg)
+![](../figures/ch01/fig-1-6.png)
 
 *Hình 1.6: Con đường từ Patchwork Monolith đến Microservices*
 
@@ -339,7 +339,7 @@ Trong cuốn sách này, chúng ta tập trung phân tích **khía cạnh kỹ t
 
 Ba câu hỏi cần trả lời trước khi chọn microservices:
 
-![](../figures/ch01/fig-1-7.svg)
+![](../figures/ch01/fig-1-7.png)
 
 *Hình 1.7: Decision Framework — ba câu hỏi trước khi chọn microservices*
 
@@ -408,7 +408,7 @@ Xuyên suốt cuốn sách này, chúng ta sử dụng một case study thực t
 
 ### Kiến trúc tổng quan
 
-![](../figures/ch01/fig-1-8.svg)
+![](../figures/ch01/fig-1-8.png)
 
 *Hình 1.8: Kiến trúc tổng quan hệ thống KBLab LMS*
 

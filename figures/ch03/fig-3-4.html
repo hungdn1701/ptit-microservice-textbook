@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 3.4 — Kiến trúc Layered (Traditional)
+    =========================================================
+    Tier 1 HTML migration từ fig-3-4.svg
+    Layout: Stacked horizontal layers + side problem notes
+    Capture: gen-diagrams.ps1 → fig-3-4.png → Typst image()
+  -->
+  <title>Fig 3.4 — Kiến trúc Layered (Traditional) | Ch.3</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .layer-row {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .layers-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .layer-block {
+      width: 100%;
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 12px 16px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .layer-block .l-title { font-size: 13px; font-weight: 700; }
+    .layer-block .l-desc  { font-size: 11.5px; color: #64748b; margin-top: 3px; }
+    .problems-col {
+      width: 200px;
+      flex-shrink: 0;
+    }
+    .problem-item {
+      font-size: 11.5px;
+      color: #374151;
+      padding: 2px 0;
+      line-height: 1.55;
+    }
+    .problem-item::before { content: '⚠ '; color: #ea580c; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Kiến trúc phân lớp truyền thống (Layered)</div>
+
+    <div class="layer-row">
+
+      <!-- Left: Problem notes -->
+      <div class="problems-col">
+        <div class="d-box d-note" style="height:100%; box-sizing:border-box;">
+          <div class="d-title" style="margin-bottom:8px;">Vấn đề</div>
+          <div class="problem-item">Dependency 1 chiều (top-down)</div>
+          <div class="problem-item">Domain logic bị phụ thuộc vào framework (Spring, JPA, HTTP...)</div>
+          <div class="problem-item">Khó test business logic mà không cần database hoặc web server</div>
+        </div>
+      </div>
+
+      <!-- Center: Layers stacked -->
+      <div class="layers-col">
+
+        <!-- Client -->
+        <div class="layer-block d-legacy" style="width:360px; margin-bottom:6px;">
+          <div class="l-title">Client (Browser / Mobile)</div>
+        </div>
+
+        <div class="d-arrow-v"></div>
+
+        <!-- Controller -->
+        <div class="layer-block d-info" style="width:360px; margin: 4px 0;">
+          <div class="l-title">Controller Layer</div>
+          <div class="l-desc">Nhận request, validate input</div>
+        </div>
+
+        <div class="d-arrow-v"></div>
+
+        <!-- Service -->
+        <div class="layer-block d-service" style="width:360px; margin: 4px 0;">
+          <div class="l-title">Service Layer</div>
+          <div class="l-desc">Business logic, orchestration</div>
+        </div>
+
+        <div class="d-arrow-v"></div>
+
+        <!-- Repository -->
+        <div class="layer-block d-storage" style="width:360px; margin: 4px 0;">
+          <div class="l-title">Repository Layer</div>
+          <div class="l-desc">Data access, persistence</div>
+        </div>
+
+        <div class="d-arrow-v"></div>
+
+        <!-- Database -->
+        <div class="layer-block d-storage" style="width:360px; margin-top:4px; border-style:dashed;">
+          <div class="l-title">Database</div>
+          <div class="l-desc">PostgreSQL / MySQL / MongoDB</div>
+        </div>
+
+      </div>
+
+      <!-- Right: spacer for symmetry -->
+      <div style="width:200px; flex-shrink:0;">
+        <div class="d-box d-note" style="height:100%; box-sizing:border-box;">
+          <div class="d-title" style="margin-bottom:8px;">Luồng request</div>
+          <div style="font-size:11.5px; color:#374151; line-height:1.7;">
+            <div>① HTTP Request vào Controller</div>
+            <div>② Controller gọi Service</div>
+            <div>③ Service gọi Repository</div>
+            <div>④ Repository truy vấn DB</div>
+            <div>⑤ Kết quả trả ngược lên</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

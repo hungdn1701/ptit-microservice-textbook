@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.2 — Database-per-Service vs Shared Database
+    =========================================================
+    Tier 1 HTML migration từ fig-7-2.svg
+    Layout: d-grid-2 side-by-side comparison
+    Capture: gen-diagrams.ps1 → fig-7-2.png → Typst image()
+  -->
+  <title>Fig 7.2 — Database-per-Service vs Shared Database | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Database-per-Service vs Shared Database</div>
+
+    <div class="d-grid-2" style="gap:16px; margin-bottom:16px;">
+
+      <!-- LEFT: Database-per-Service (GOOD) -->
+      <div class="d-cluster">
+        <span class="d-label">Database-per-Service</span>
+
+        <!-- Service A -->
+        <div class="d-col" style="align-items:center; gap:4px; margin-bottom:10px;">
+          <div class="d-box d-service" style="width:160px; text-align:center;">
+            <div class="d-title">Service A</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-storage" style="width:160px; text-align:center;">
+            <div class="d-title">DB A</div>
+          </div>
+        </div>
+
+        <!-- Service B -->
+        <div class="d-col" style="align-items:center; gap:4px; margin-bottom:10px;">
+          <div class="d-box d-service" style="width:160px; text-align:center;">
+            <div class="d-title">Service B</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-storage" style="width:160px; text-align:center;">
+            <div class="d-title">DB B</div>
+          </div>
+        </div>
+
+        <!-- Service C -->
+        <div class="d-col" style="align-items:center; gap:4px; margin-bottom:10px;">
+          <div class="d-box d-service" style="width:160px; text-align:center;">
+            <div class="d-title">Service C</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-storage" style="width:160px; text-align:center;">
+            <div class="d-title">DB C</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:#64748b; text-align:center; margin-bottom:6px;">
+          Mỗi service own DB riêng<br>Deploy độc lập, scale độc lập
+        </div>
+        <div class="d-box d-success" style="text-align:center; padding:6px 14px;">
+          <div class="d-title">✓ BEST PRACTICE</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Shared Database (BAD) -->
+      <div class="d-cluster" style="border-color:#dc2626; background:#fff5f5;">
+        <span class="d-label" style="color:#dc2626; background:#fff5f5;">Shared Database</span>
+
+        <div class="d-row" style="justify-content:center; gap:8px; margin-bottom:8px; margin-top:4px;">
+          <div class="d-box d-danger" style="text-align:center; padding:8px 10px;">
+            <div class="d-title">Service A</div>
+          </div>
+          <div class="d-box d-danger" style="text-align:center; padding:8px 10px;">
+            <div class="d-title">Service B</div>
+          </div>
+          <div class="d-box d-danger" style="text-align:center; padding:8px 10px;">
+            <div class="d-title">Service C</div>
+          </div>
+        </div>
+
+        <!-- Arrows converging -->
+        <div style="text-align:center; font-size:20px; color:#dc2626; line-height:1.2; margin-bottom:4px;">↘ ↓ ↙</div>
+
+        <div style="display:flex; justify-content:center; margin-bottom:10px;">
+          <div class="d-box d-danger" style="width:200px; text-align:center;">
+            <div class="d-title">🗄️ Shared DB</div>
+            <div class="d-sub">tất cả dùng chung</div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:#dc2626; text-align:center; margin-bottom:6px;">
+          Schema coupling · Deploy coupling<br>Scale coupling · Performance bottleneck
+        </div>
+        <div class="d-box d-danger" style="text-align:center; padding:6px 14px;">
+          <div class="d-title">✗ ANTI-PATTERN</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LMS note -->
+    <div class="d-box d-note">
+      <div class="d-title">LMS hiện tại: Core và Assignment SHARED DB (app_db) — cần tách</div>
+      <div class="d-sub">Xem lộ trình: Hình 7.5 và Chương 10 (Strangler Fig)</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

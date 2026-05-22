@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.4 — RabbitMQ Architecture trong KBLab
+    =========================================================
+    Tier 1 HTML migration từ fig-5-4.svg
+    Layout: Producer → Exchange → 3 Queues → 3 Consumers
+    Capture: gen-diagrams.ps1 → fig-5-4.png → Typst image()
+  -->
+  <title>Fig 5.4 — RabbitMQ Architecture trong KBLab | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .queue-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .routing-key {
+      font-size: 10px;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">RabbitMQ Architecture trong KBLab</div>
+
+    <!-- Main pipeline -->
+    <div class="d-row" style="align-items: flex-start; margin: 20px 0 16px; gap: 12px;">
+
+      <!-- Producer -->
+      <div style="align-self: center;">
+        <div class="d-box d-service" style="text-align:center; width:130px;">
+          <div class="d-title">Producer</div>
+          <div class="d-sub">kblab-core-service</div>
+        </div>
+      </div>
+
+      <div class="d-arrow d-arrow-h" style="align-self:center;"></div>
+
+      <!-- Exchange -->
+      <div style="align-self: center;">
+        <div class="d-box d-event" style="text-align:center; width:130px;">
+          <div class="d-title">Exchange</div>
+          <div class="d-sub">type: topic routing</div>
+        </div>
+      </div>
+
+      <!-- Fan-out arrows + queues -->
+      <div class="d-col" style="gap: 10px; align-self: center; flex: 1;">
+
+        <!-- Queue 1 -->
+        <div class="queue-row">
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-warning" style="flex:1; text-align:center;">
+            <div class="d-title">judge-mysql-queue</div>
+            <div class="d-sub">routing: submission.mysql</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-info" style="min-width:110px; text-align:center;">
+            <div class="d-title">Consumer 1</div>
+            <div class="d-sub">Judge MySQL</div>
+          </div>
+        </div>
+
+        <!-- Queue 2 -->
+        <div class="queue-row">
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-warning" style="flex:1; text-align:center;">
+            <div class="d-title">judge-mssql-queue</div>
+            <div class="d-sub">routing: submission.mssql</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-info" style="min-width:110px; text-align:center;">
+            <div class="d-title">Consumer 2</div>
+            <div class="d-sub">Judge MSSQL</div>
+          </div>
+        </div>
+
+        <!-- Queue 3 -->
+        <div class="queue-row">
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-warning" style="flex:1; text-align:center;">
+            <div class="d-title">notifications-queue</div>
+            <div class="d-sub">routing: notification.#</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-info" style="min-width:110px; text-align:center;">
+            <div class="d-title">Consumer 3</div>
+            <div class="d-sub">Notification Svc</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.d-row main pipeline -->
+
+    <!-- Routing note -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom:8px;">Routing rules — Exchange type: topic</div>
+      <div style="font-size:12px; color:#334155; line-height:1.7;">
+        <div>
+          <span class="routing-key">submission.mysql</span>
+          → queue <code>judge-mysql-queue</code> → Consumer 1 xử lý SQL trên MySQL sandbox
+        </div>
+        <div>
+          <span class="routing-key">submission.mssql</span>
+          → queue <code>judge-mssql-queue</code> → Consumer 2 xử lý SQL trên MSSQL sandbox
+        </div>
+        <div>
+          <span class="routing-key">notification.#</span>
+          → queue <code>notifications-queue</code> → Consumer 3 gửi kết quả cho student
+        </div>
+        <div style="margin-top:6px; font-style:italic; color:#64748b;">
+          Mỗi queue chỉ nhận message phù hợp routing key — Consumer xử lý hoàn toàn độc lập.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

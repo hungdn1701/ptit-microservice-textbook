@@ -1,0 +1,227 @@
+/* ============================================================
+   diagram-book-theme.css — One-book visual language for figures
+   ============================================================ */
+
+:root {
+  /* Typography */
+  --diagram-font-heading: "Be Vietnam Pro", "Segoe UI Semibold", "Segoe UI", sans-serif;
+  --diagram-font-body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", sans-serif;
+  --diagram-font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+  /* Scale */
+  --diagram-size-title: 28px;
+  --diagram-size-section: 18px;
+  --diagram-size-node-title: 14px;
+  --diagram-size-node-body: 13px;
+  --diagram-size-meta: 12px;
+
+  /* Book palette */
+  --diagram-color-bg: #f8fafc;
+  --diagram-color-surface: #ffffff;
+  --diagram-color-line: #64748b;
+  --diagram-color-line-muted: #94a3b8;
+  --diagram-color-text: #0f172a;
+  --diagram-color-muted: #475569;
+
+  --diagram-color-service-bg: #e6f4f3;
+  --diagram-color-service-border: #0f766e;
+  --diagram-color-service-text: #0b4f49;
+
+  --diagram-color-database-bg: #dbeafe;
+  --diagram-color-database-border: #2563eb;
+  --diagram-color-database-text: #1e3a8a;
+
+  --diagram-color-queue-bg: #fef9c3;
+  --diagram-color-queue-border: #ca8a04;
+  --diagram-color-queue-text: #713f12;
+
+  --diagram-color-gateway-bg: #f5f3ff;
+  --diagram-color-gateway-border: #7c3aed;
+  --diagram-color-gateway-text: #3b0764;
+
+  --diagram-color-warning-bg: #fff7ed;
+  --diagram-color-warning-border: #ea580c;
+  --diagram-color-warning-text: #7c2d12;
+
+  --diagram-color-success-bg: #dcfce7;
+  --diagram-color-success-border: #16a34a;
+  --diagram-color-success-text: #14532d;
+
+  --diagram-color-danger-bg: #fee2e2;
+  --diagram-color-danger-border: #dc2626;
+  --diagram-color-danger-text: #7f1d1d;
+
+  --diagram-color-note-bg: #f8fafc;
+  --diagram-color-note-border: #cbd5e1;
+  --diagram-color-note-text: #334155;
+
+  /* Geometry + rhythm */
+  --diagram-space-1: 8px;
+  --diagram-space-2: 16px;
+  --diagram-space-3: 24px;
+  --diagram-space-4: 32px;
+  --diagram-space-5: 40px;
+  --diagram-space-6: 48px;
+
+  --diagram-radius-card: 14px;
+  --diagram-radius-pill: 999px;
+  --diagram-border-default: 1.5px;
+  --diagram-border-emphasis: 2px;
+
+  --diagram-shadow-elevation-1: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+  --diagram-motion-fast: 180ms;
+  --diagram-motion-normal: 280ms;
+  --diagram-motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.diagram-mode {
+  background: var(--diagram-color-bg) !important;
+  color: var(--diagram-color-text) !important;
+  font-family: var(--diagram-font-body) !important;
+}
+
+.diagram-mode .diagram-canvas {
+  background: var(--diagram-color-surface) !important;
+  color: var(--diagram-color-text) !important;
+  font-family: var(--diagram-font-body) !important;
+  padding: var(--diagram-space-4) !important;
+}
+
+.diagram-mode .d-title-page {
+  font-family: var(--diagram-font-heading) !important;
+  font-size: var(--diagram-size-section) !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .d-title,
+.diagram-mode .svg-title {
+  font-family: var(--diagram-font-heading) !important;
+  font-size: var(--diagram-size-node-title) !important;
+  font-weight: 600 !important;
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .d-sub,
+.diagram-mode .svg-subtitle,
+.diagram-mode .svg-small,
+.diagram-mode .d-label,
+.diagram-mode .d-arrow-label,
+.diagram-mode .d-caption {
+  font-family: var(--diagram-font-body) !important;
+  font-size: var(--diagram-size-meta) !important;
+  color: var(--diagram-color-muted) !important;
+}
+
+/* Enforce minimum readable text size on inline-styled labels */
+.diagram-mode [style*="font-size:10px"],
+.diagram-mode [style*="font-size: 10px"],
+.diagram-mode [style*="font-size:11px"],
+.diagram-mode [style*="font-size: 11px"] {
+  font-size: var(--diagram-size-meta) !important;
+}
+
+.diagram-mode .d-mono,
+.diagram-mode .svg-mono,
+.diagram-mode .d-code,
+.diagram-mode .code-note {
+  font-family: var(--diagram-font-mono) !important;
+}
+
+.diagram-mode .d-box,
+.diagram-mode .node,
+.diagram-mode .badge {
+  border-radius: var(--diagram-radius-card) !important;
+  border-width: var(--diagram-border-default) !important;
+  box-shadow: var(--diagram-shadow-elevation-1);
+  transition: transform var(--diagram-motion-fast) var(--diagram-motion-ease);
+}
+
+.diagram-mode .d-cluster,
+.diagram-mode .group {
+  border-radius: var(--diagram-radius-card) !important;
+  border-width: var(--diagram-border-default) !important;
+  box-shadow: none !important;
+}
+
+.diagram-mode .d-service,
+.diagram-mode .node-service {
+  background: var(--diagram-color-service-bg) !important;
+  border-color: var(--diagram-color-service-border) !important;
+  color: var(--diagram-color-service-text) !important;
+}
+
+.diagram-mode .d-storage,
+.diagram-mode .node-database {
+  background: var(--diagram-color-database-bg) !important;
+  border-color: var(--diagram-color-database-border) !important;
+  color: var(--diagram-color-database-text) !important;
+}
+
+.diagram-mode .d-event,
+.diagram-mode .node-queue {
+  background: var(--diagram-color-queue-bg) !important;
+  border-color: var(--diagram-color-queue-border) !important;
+  color: var(--diagram-color-queue-text) !important;
+}
+
+.diagram-mode .d-highlight,
+.diagram-mode .d-info,
+.diagram-mode .node-gateway {
+  background: var(--diagram-color-gateway-bg) !important;
+  border-color: var(--diagram-color-gateway-border) !important;
+  color: var(--diagram-color-gateway-text) !important;
+}
+
+.diagram-mode .d-warning {
+  background: var(--diagram-color-warning-bg) !important;
+  border-color: var(--diagram-color-warning-border) !important;
+  color: var(--diagram-color-warning-text) !important;
+}
+
+.diagram-mode .d-success {
+  background: var(--diagram-color-success-bg) !important;
+  border-color: var(--diagram-color-success-border) !important;
+  color: var(--diagram-color-success-text) !important;
+}
+
+.diagram-mode .d-danger {
+  background: var(--diagram-color-danger-bg) !important;
+  border-color: var(--diagram-color-danger-border) !important;
+  color: var(--diagram-color-danger-text) !important;
+}
+
+.diagram-mode .d-note {
+  background: var(--diagram-color-note-bg) !important;
+  border-color: var(--diagram-color-note-border) !important;
+  color: var(--diagram-color-note-text) !important;
+}
+
+.diagram-mode .d-arrow,
+.diagram-mode .edge,
+.diagram-mode .connector-layer .arrow {
+  color: var(--diagram-color-line) !important;
+  stroke: var(--diagram-color-line) !important;
+  stroke-width: var(--diagram-border-default) !important;
+}
+
+.diagram-mode .d-arrow-h-dashed,
+.diagram-mode .d-arrow-v-dashed,
+.diagram-mode .edge--async,
+.diagram-mode .connector-layer .arrow-dashed {
+  color: var(--diagram-color-line-muted) !important;
+  stroke: var(--diagram-color-line-muted) !important;
+  stroke-width: var(--diagram-border-default) !important;
+  stroke-dasharray: 6 3 !important;
+}
+
+.diagram-mode .connector-layer .separator,
+.diagram-mode .d-sep,
+.diagram-mode .d-sep-title::before,
+.diagram-mode .d-sep-title::after {
+  stroke: var(--diagram-color-line-muted) !important;
+  background: var(--diagram-color-line-muted) !important;
+}

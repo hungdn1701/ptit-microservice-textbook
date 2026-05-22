@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.6b — Erl's Service-Oriented Analysis áp dụng vào LMS
+    =========================================================
+    Tier 1 HTML migration từ fig-2-6b.svg
+    Layout: 2-step analysis pipeline + result mapping table
+    Capture: gen-diagrams.ps1 → fig-2-6b.png → Typst image()
+  -->
+  <title>Fig 2.6b — Erl's Service-Oriented Analysis | Ch.2</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Erl's Service-Oriented Analysis — LMS</div>
+
+    <!-- Steps 1 & 2 side by side -->
+    <div class="d-row" style="align-items: flex-start; gap: 12px; margin-bottom: 14px;">
+
+      <!-- Step 1: Automation Candidates -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Bước 1: Automation Candidates</span>
+        <div class="d-stack" style="margin-top:8px;">
+          <div class="d-box d-info"><div class="d-title" style="font-size:12px;">Xác thực người dùng</div></div>
+          <div class="d-box d-service"><div class="d-title" style="font-size:12px;">Quản lý câu hỏi SQL</div></div>
+          <div class="d-box d-event"><div class="d-title" style="font-size:12px;">Chấm bài tự động</div></div>
+          <div class="d-box d-highlight"><div class="d-title" style="font-size:12px;">Quản lý bài tập / khóa học</div></div>
+          <div class="d-box d-warning"><div class="d-title" style="font-size:12px;">Thông báo kết quả</div></div>
+        </div>
+      </div>
+
+      <!-- Arrow between steps -->
+      <div style="display:flex; align-items:center; padding-top:80px; flex-shrink:0;">
+        <div class="d-arrow d-arrow-h"></div>
+      </div>
+
+      <!-- Step 2: Service Layers -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Bước 2: Service Layers</span>
+        <div class="d-grid-2" style="margin-top:8px; gap:6px;">
+          <div class="d-box d-event" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Task: Submission</div>
+            <div class="d-sub">Orchestrator</div>
+          </div>
+          <div class="d-box d-info" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Entity: User</div>
+          </div>
+          <div class="d-box d-service" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Entity: Question</div>
+          </div>
+          <div class="d-box d-highlight" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Entity: Course</div>
+          </div>
+          <div class="d-box d-info" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Utility: Auth</div>
+          </div>
+          <div class="d-box d-warning" style="font-size:11px;">
+            <div class="d-title" style="font-size:11px;">Utility: Notification</div>
+          </div>
+          <div class="d-box d-event" style="font-size:11px; grid-column: span 2;">
+            <div class="d-title" style="font-size:11px;">Complicated: Judge</div>
+            <div class="d-sub">Sandbox</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.steps-row -->
+
+    <!-- Result mapping -->
+    <div class="d-cluster">
+      <span class="d-label">Kết quả: Ánh xạ sang Bounded Contexts</span>
+      <div class="d-stack" style="margin-top:10px; gap:6px;">
+
+        <div class="d-row" style="gap:8px; align-items:center;">
+          <div class="d-box d-info" style="min-width:160px; text-align:center; font-size:12px; flex-shrink:0;">
+            <div class="d-title" style="font-size:12px;">Identity &amp; Access</div>
+          </div>
+          <span style="font-size:12px; color:#64748b;">=</span>
+          <span style="font-size:12px; font-family:monospace; color:#334155;">kblab-auth</span>
+          <span class="d-sub" style="margin-left:8px;">← Utility Auth</span>
+        </div>
+
+        <div class="d-row" style="gap:8px; align-items:center;">
+          <div class="d-box d-service" style="min-width:160px; text-align:center; font-size:12px; flex-shrink:0;">
+            <div class="d-title" style="font-size:12px;">SQL Practice</div>
+          </div>
+          <span style="font-size:12px; color:#64748b;">=</span>
+          <span style="font-size:12px; font-family:monospace; color:#334155;">kblab-app + judge</span>
+          <span class="d-sub" style="margin-left:8px;">← Entity + Task</span>
+        </div>
+
+        <div class="d-row" style="gap:8px; align-items:center;">
+          <div class="d-box d-service" style="min-width:160px; text-align:center; font-size:12px; flex-shrink:0;">
+            <div class="d-title" style="font-size:12px;">Network Practice</div>
+          </div>
+          <span style="font-size:12px; color:#64748b;">=</span>
+          <span style="font-size:12px; font-family:monospace; color:#334155;">judge-network</span>
+          <span class="d-sub" style="margin-left:8px;">← Protocol Subsystem</span>
+        </div>
+
+        <div class="d-row" style="gap:8px; align-items:center;">
+          <div class="d-box d-highlight" style="min-width:160px; text-align:center; font-size:12px; flex-shrink:0;">
+            <div class="d-title" style="font-size:12px;">Academic</div>
+          </div>
+          <span style="font-size:12px; color:#64748b;">=</span>
+          <span style="font-size:12px; font-family:monospace; color:#334155;">kblab-assignment</span>
+          <span class="d-sub" style="margin-left:8px;">← Entity Course</span>
+        </div>
+
+        <div class="d-row" style="gap:8px; align-items:center;">
+          <div class="d-box d-event" style="min-width:160px; text-align:center; font-size:12px; flex-shrink:0;">
+            <div class="d-title" style="font-size:12px;">DevOps Practice</div>
+          </div>
+          <span style="font-size:12px; color:#64748b;">=</span>
+          <span style="font-size:12px; font-family:monospace; color:#334155;">dol-api</span>
+          <span class="d-sub" style="margin-left:8px;">← Task + Infra</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

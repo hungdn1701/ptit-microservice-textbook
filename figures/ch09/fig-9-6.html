@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.6 - Role-Based Access Control (RBAC)</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Role-Based Access Control (RBAC)">
+    <div class="d-box d-danger svg-box" style="left:50px;top:70px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-event svg-box" style="left:350px;top:70px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-info svg-box" style="left:650px;top:70px;width:200px;height:56px;border-radius:12px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:170px;width:840px;height:250px;border-radius:10px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 250 97 L 350 97" class="arrow" />
+      <path d="M 550 97 L 650 97" class="arrow" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Role-Based Access Control (RBAC)</div>
+    <div class="svg-text svg-title" style="left:150px;top:80px;width:360px;transform:translateX(-50%);text-align:center;">ADMIN</div>
+    <div class="svg-text svg-title" style="left:150px;top:98px;width:360px;transform:translateX(-50%);text-align:center;">moi quyen</div>
+    <div class="svg-text svg-title" style="left:450px;top:80px;width:360px;transform:translateX(-50%);text-align:center;">LECTURER</div>
+    <div class="svg-text svg-title" style="left:450px;top:98px;width:360px;transform:translateX(-50%);text-align:center;">tao/sua content</div>
+    <div class="svg-text svg-title" style="left:750px;top:80px;width:360px;transform:translateX(-50%);text-align:center;">STUDENT</div>
+    <div class="svg-text svg-title" style="left:750px;top:98px;width:360px;transform:translateX(-50%);text-align:center;">xem/submit</div>
+    <div class="svg-text svg-title" style="left:290px;top:73px;width:850px;text-align:left;">includes</div>
+    <div class="svg-text svg-title" style="left:590px;top:73px;width:850px;text-align:left;">includes</div>
+    <div class="svg-text svg-title" style="left:480px;top:181px;width:360px;transform:translateX(-50%);text-align:center;">Permissions Matrix</div>
+    <div class="svg-text svg-title" style="left:100px;top:211px;width:850px;text-align:left;">Endpoint</div>
+    <div class="svg-text svg-title" style="left:350px;top:211px;width:850px;text-align:left;">STUDENT</div>
+    <div class="svg-text svg-title" style="left:550px;top:211px;width:850px;text-align:left;">LECTURER</div>
+    <div class="svg-text svg-title" style="left:750px;top:211px;width:850px;text-align:left;">ADMIN</div>
+    <div class="svg-text svg-mono" style="left:100px;top:236px;width:850px;text-align:left;">GET /questions</div>
+    <div class="svg-text svg-title" style="left:380px;top:236px;width:360px;transform:translateX(-50%);text-align:center;">R</div>
+    <div class="svg-text svg-title" style="left:580px;top:236px;width:360px;transform:translateX(-50%);text-align:center;">R</div>
+    <div class="svg-text svg-title" style="left:780px;top:236px;width:360px;transform:translateX(-50%);text-align:center;">RW</div>
+    <div class="svg-text svg-mono" style="left:100px;top:261px;width:850px;text-align:left;">POST /submit</div>
+    <div class="svg-text svg-title" style="left:380px;top:261px;width:360px;transform:translateX(-50%);text-align:center;">W</div>
+    <div class="svg-text svg-title" style="left:580px;top:261px;width:360px;transform:translateX(-50%);text-align:center;">W</div>
+    <div class="svg-text svg-title" style="left:780px;top:261px;width:360px;transform:translateX(-50%);text-align:center;">RW</div>
+    <div class="svg-text svg-mono" style="left:100px;top:286px;width:850px;text-align:left;">POST /questions</div>
+    <div class="svg-text svg-title" style="left:380px;top:286px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:580px;top:286px;width:360px;transform:translateX(-50%);text-align:center;">W</div>
+    <div class="svg-text svg-title" style="left:780px;top:286px;width:360px;transform:translateX(-50%);text-align:center;">RW</div>
+    <div class="svg-text svg-mono" style="left:100px;top:311px;width:850px;text-align:left;">PUT /contests</div>
+    <div class="svg-text svg-title" style="left:380px;top:311px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:580px;top:311px;width:360px;transform:translateX(-50%);text-align:center;">W</div>
+    <div class="svg-text svg-title" style="left:780px;top:311px;width:360px;transform:translateX(-50%);text-align:center;">RW</div>
+    <div class="svg-text svg-mono" style="left:100px;top:336px;width:850px;text-align:left;">DELETE /users</div>
+    <div class="svg-text svg-title" style="left:380px;top:336px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:580px;top:336px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:780px;top:336px;width:360px;transform:translateX(-50%);text-align:center;">W</div>
+    <div class="svg-text svg-mono" style="left:100px;top:361px;width:850px;text-align:left;">GET /admin/stats</div>
+    <div class="svg-text svg-title" style="left:380px;top:361px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:580px;top:361px;width:360px;transform:translateX(-50%);text-align:center;">-</div>
+    <div class="svg-text svg-title" style="left:780px;top:361px;width:360px;transform:translateX(-50%);text-align:center;">R</div>
+    <div class="svg-text svg-title" style="left:100px;top:396px;width:850px;text-align:left;">LMS: @PreAuthorize(&quot;hasRole(&#39;ADMIN&#39;)&quot;) tren controller methods</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.1 — So sánh Giao tiếp Đồng bộ vs Bất đồng bộ
+    =========================================================
+    Tier 1 HTML migration từ fig-5-1.svg
+    Layout: Grid 2 cột (Sync/Async) + bảng so sánh
+    Capture: gen-diagrams.ps1 → fig-5-1.png → Typst image()
+  -->
+  <title>Fig 5.1 — So sánh Giao tiếp Đồng bộ vs Bất đồng bộ | Ch.5</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .cmp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .cmp-table th,
+    .cmp-table td { padding: 6px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .cmp-table th { font-weight: 600; color: #374151; background: #f8fafc;
+                    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cmp-table td:first-child { font-weight: 600; color: #475569; }
+    .cmp-table tr:last-child td { border-bottom: none; }
+    .sync-val  { color: #1e40af; }
+    .async-val { color: #14532d; }
+    .icon-row  { font-size: 11.5px; line-height: 1.7; padding: 0 4px; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">So sánh Giao tiếp Đồng bộ vs Bất đồng bộ</div>
+
+    <!-- Two-column overview -->
+    <div class="d-grid-2" style="margin-bottom: 16px; align-items: start;">
+
+      <!-- LEFT: Sync -->
+      <div class="d-cluster">
+        <span class="d-label">Đồng bộ (Sync) — Tight Coupling</span>
+        <div class="d-row" style="justify-content:center; margin: 14px 0 10px; flex-wrap: wrap; gap: 8px;">
+          <div class="d-box d-danger" style="text-align:center; min-width:90px;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">caller</div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; align-self:center;">
+            <div class="d-row" style="gap:4px;">
+              <div class="d-arrow d-arrow-h"></div>
+              <span class="d-arrow-label">HTTP call</span>
+              <div class="d-arrow d-arrow-h"></div>
+            </div>
+            <div class="d-row" style="gap:4px;">
+              <div class="d-arrow d-arrow-h-dashed d-arrow"></div>
+              <span class="d-arrow-label" style="color:#94a3b8;">response</span>
+              <div class="d-arrow d-arrow-h-dashed"></div>
+            </div>
+          </div>
+          <div class="d-box d-danger" style="text-align:center; min-width:90px;">
+            <div class="d-title">Service B</div>
+            <div class="d-sub">callee</div>
+          </div>
+        </div>
+        <div class="icon-row" style="color:#7f1d1d;">
+          <div>⛔ A bị <strong>blocked</strong> khi chờ B phản hồi</div>
+          <div>⛔ B down → A down (cascading failure)</div>
+          <div>⛔ Throughput giới hạn bởi B</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Async -->
+      <div class="d-cluster">
+        <span class="d-label">Bất đồng bộ (Async) — Loose Coupling</span>
+        <div class="d-row" style="justify-content:center; margin: 14px 0 10px; flex-wrap: wrap; gap: 8px;">
+          <div class="d-box d-success" style="text-align:center; min-width:90px;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">producer</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-event" style="text-align:center; min-width:100px;">
+            <div class="d-title">Broker</div>
+            <div class="d-sub">Kafka / RabbitMQ</div>
+          </div>
+          <div class="d-arrow d-arrow-h"></div>
+          <div class="d-box d-success" style="text-align:center; min-width:80px;">
+            <div class="d-title">Service B</div>
+            <div class="d-sub">consumer</div>
+          </div>
+        </div>
+        <div class="icon-row" style="color:#14532d;">
+          <div>✅ A gửi message và <strong>tiếp tục</strong> ngay lập tức</div>
+          <div>✅ B xử lý khi sẵn sàng — không phụ thuộc A</div>
+          <div>✅ Broker buffer → throughput cao hơn</div>
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- Comparison table -->
+    <div class="d-box d-note">
+      <div class="d-label" style="margin-bottom: 8px;">Bảng so sánh</div>
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th style="width:18%">Tiêu chí</th>
+            <th style="width:41%">Sync (REST / gRPC)</th>
+            <th style="width:41%">Async (Kafka / RabbitMQ)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Latency</td>
+            <td class="sync-val">Thấp — phản hồi trực tiếp</td>
+            <td class="async-val">Cao hơn — qua broker</td>
+          </tr>
+          <tr>
+            <td>Coupling</td>
+            <td class="sync-val">Cao — A phụ thuộc B trực tiếp</td>
+            <td class="async-val">Thấp — A không biết B</td>
+          </tr>
+          <tr>
+            <td>Failure Mode</td>
+            <td class="sync-val">Cascading — lỗi lan rộng</td>
+            <td class="async-val">Isolated — lỗi cô lập tại B</td>
+          </tr>
+          <tr>
+            <td>Throughput</td>
+            <td class="sync-val">Giới hạn bởi tốc độ của B</td>
+            <td class="async-val">Buffer bởi broker — scale độc lập</td>
+          </tr>
+          <tr>
+            <td>Complexity</td>
+            <td class="sync-val">Đơn giản — request/response rõ ràng</td>
+            <td class="async-val">Phức tạp hơn (idempotency, ordering)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

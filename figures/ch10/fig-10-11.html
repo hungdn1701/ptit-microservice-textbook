@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.11 - Fig 10.11</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Fig 10.11">
+    <div class="d-cluster svg-box" style="left:120px;top:80px;width:350px;height:200px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:120px;top:80px;width:350px;height:200px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:160px;top:170px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:160px;top:215px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:160px;top:260px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:490px;top:80px;width:350px;height:200px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:490px;top:80px;width:350px;height:200px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:530px;top:170px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:530px;top:215px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:530px;top:260px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:120px;top:300px;width:350px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:120px;top:300px;width:350px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:160px;top:390px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:160px;top:435px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:490px;top:300px;width:350px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:490px;top:300px;width:350px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:530px;top:390px;width:270px;height:35px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:530px;top:435px;width:270px;height:35px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:36px;width:360px;transform:translateX(-50%);text-align:center;">Decision Matrix — Ưu ti&#234;n Migration</div>
+    <div class="svg-text svg-title" style="left:295px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">🌟 High Impact, Low Effort</div>
+    <div class="svg-text svg-title" style="left:295px;top:126px;width:360px;transform:translateX(-50%);text-align:center;">(L&#192;M NGAY)</div>
+    <div class="svg-text svg-subtitle" style="left:295px;top:178px;width:360px;transform:translateX(-50%);text-align:center;">CORS restrict</div>
+    <div class="svg-text svg-subtitle" style="left:295px;top:223px;width:360px;transform:translateX(-50%);text-align:center;">JWT unify</div>
+    <div class="svg-text svg-subtitle" style="left:295px;top:268px;width:360px;transform:translateX(-50%);text-align:center;">Structured logs</div>
+    <div class="svg-text svg-title" style="left:665px;top:106px;width:360px;transform:translateX(-50%);text-align:center;">⚡ High Impact, High Effort</div>
+    <div class="svg-text svg-title" style="left:665px;top:126px;width:360px;transform:translateX(-50%);text-align:center;">(L&#202;N KẾ HOẠCH)</div>
+    <div class="svg-text svg-subtitle" style="left:665px;top:178px;width:360px;transform:translateX(-50%);text-align:center;">DB separation</div>
+    <div class="svg-text svg-subtitle" style="left:665px;top:223px;width:360px;transform:translateX(-50%);text-align:center;">CI/CD pipeline</div>
+    <div class="svg-text svg-subtitle" style="left:665px;top:268px;width:360px;transform:translateX(-50%);text-align:center;">Outbox pattern</div>
+    <div class="svg-text svg-title" style="left:295px;top:326px;width:360px;transform:translateX(-50%);text-align:center;">✅ Low Impact, Low Effort</div>
+    <div class="svg-text svg-title" style="left:295px;top:346px;width:360px;transform:translateX(-50%);text-align:center;">(L&#192;M KHI RẢNH)</div>
+    <div class="svg-text svg-subtitle" style="left:295px;top:398px;width:360px;transform:translateX(-50%);text-align:center;">API naming cleanup</div>
+    <div class="svg-text svg-subtitle" style="left:295px;top:443px;width:360px;transform:translateX(-50%);text-align:center;">DTO standardization</div>
+    <div class="svg-text svg-title" style="left:665px;top:326px;width:360px;transform:translateX(-50%);text-align:center;">❌ Low Impact, High Effort</div>
+    <div class="svg-text svg-title" style="left:665px;top:346px;width:360px;transform:translateX(-50%);text-align:center;">(SKIP/DEFER)</div>
+    <div class="svg-text svg-subtitle" style="left:665px;top:398px;width:360px;transform:translateX(-50%);text-align:center;">Full saga orchestrator</div>
+    <div class="svg-text svg-subtitle" style="left:665px;top:443px;width:360px;transform:translateX(-50%);text-align:center;">mTLS everywhere</div>
+  </div>
+</body>
+</html>

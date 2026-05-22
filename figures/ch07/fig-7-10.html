@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.10 — CQRS Architecture
+    =========================================================
+    Tier 1 HTML migration từ fig-7-10.svg
+    Layout: Write side (left) ↔ Kafka (center) ↔ Read side (right) with Client on top
+    Capture: gen-diagrams.ps1 → fig-7-10.png → Typst image()
+  -->
+  <title>Fig 7.10 — CQRS Architecture | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">CQRS — Command Query Responsibility Segregation</div>
+
+    <!-- Client at top -->
+    <div style="display:flex; justify-content:center; margin-bottom:8px;">
+      <div class="d-box d-legacy" style="width:220px; text-align:center;">
+        <div class="d-title">Client</div>
+        <div class="d-sub">Command (write) hoặc Query (read)</div>
+      </div>
+    </div>
+
+    <!-- Fork arrows -->
+    <div style="display:flex; justify-content:center; gap:200px; margin-bottom:4px;">
+      <div style="font-size:14px; color:#64748b;">↙ Command</div>
+      <div style="font-size:14px; color:#64748b;">Query ↘</div>
+    </div>
+
+    <!-- Three-column CQRS row -->
+    <div class="d-row" style="align-items:flex-start; gap:10px; margin-bottom:12px;">
+
+      <!-- WRITE SIDE -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Write Side</span>
+        <div class="d-stack" style="align-items:center; margin-top:4px;">
+          <div class="d-box d-service" style="width:100%; text-align:center;">
+            <div class="d-title">Command Model</div>
+            <div class="d-sub">write-optimized</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-storage" style="width:100%; text-align:center;">
+            <div class="d-title">Write DB</div>
+            <div class="d-sub">PostgreSQL — normalized</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Pipeline (Kafka) center -->
+      <div class="d-col" style="align-items:center; gap:6px; flex-shrink:0; padding-top:40px;">
+        <div style="font-size:11px; color:#94a3b8; white-space:nowrap;">→ events</div>
+        <div class="d-box d-event" style="width:130px; text-align:center;">
+          <div class="d-title">Kafka</div>
+          <div class="d-sub">Event Pipeline</div>
+        </div>
+        <div style="font-size:11px; color:#94a3b8; white-space:nowrap;">events →</div>
+      </div>
+
+      <!-- READ SIDE -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Read Side</span>
+        <div class="d-stack" style="align-items:center; margin-top:4px;">
+          <div class="d-box d-info" style="width:100%; text-align:center;">
+            <div class="d-title">Query Model</div>
+            <div class="d-sub">read-optimized</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-storage" style="width:100%; text-align:center;">
+            <div class="d-title">Read DB</div>
+            <div class="d-sub">có thể khác tech (Redis, ES…)</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LMS Application note -->
+    <div class="d-box d-note">
+      <div class="d-title" style="margin-bottom:6px;">🏫 LMS ứng dụng CQRS</div>
+      <div class="d-stack" style="gap:4px;">
+        <div style="font-size:12px; color:#334155;">
+          <span style="color:#0f766e; font-weight:600;">Write:</span>
+          Core Service ghi submissions vào PostgreSQL (normalized write model)
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="color:#3b82f6; font-weight:600;">Read:</span>
+          Leaderboard Aggregator đọc từ materialized view (pre-computed ranking)
+        </div>
+        <div style="font-size:12px; color:#334155;">
+          <span style="color:#ca8a04; font-weight:600;">Event:</span>
+          Kafka đồng bộ write → read. Eventual consistency (vài giây delay).
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

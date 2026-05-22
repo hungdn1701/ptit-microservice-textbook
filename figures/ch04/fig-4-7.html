@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.7 — Bulkhead Pattern
+    =========================================================
+    Tier 1 HTML migration từ fig-4-7.svg
+    Layout: Core Service cluster với 3 isolated thread pools
+    Capture: gen-diagrams.ps1 → fig-4-7.png → Typst image()
+  -->
+  <title>Fig 4.7 — Bulkhead Pattern | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .pool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .pool-box {
+      border-radius: 10px;
+      border: 2px solid;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .pool-box .pool-name { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .pool-box .pool-threads { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
+    .pool-box .pool-status { font-size: 10.5px; }
+    .thread-bar {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 6px;
+    }
+    .thread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Bulkhead Pattern — Thread Pool cách ly</div>
+
+    <!-- Core Service cluster -->
+    <div class="d-cluster" style="margin-bottom:14px;">
+      <span class="d-label">Core Service</span>
+
+      <!-- Incoming requests row -->
+      <div class="d-row" style="justify-content:center; margin-bottom:10px; gap:24px;">
+        <div class="d-box d-danger" style="padding:6px 14px; font-size:12px;">→ Judge requests</div>
+        <div class="d-box d-service" style="padding:6px 14px; font-size:12px;">→ Question requests</div>
+        <div class="d-box d-service" style="padding:6px 14px; font-size:12px;">→ Contest requests</div>
+      </div>
+
+      <!-- Arrows down -->
+      <div class="d-row" style="justify-content:space-around; margin-bottom:6px;">
+        <div class="d-arrow-v"></div>
+        <div class="d-arrow-v"></div>
+        <div class="d-arrow-v"></div>
+      </div>
+
+      <!-- Thread pools -->
+      <div class="pool-grid">
+
+        <!-- Judge pool — FULL (danger) -->
+        <div class="pool-box d-danger">
+          <div class="pool-name">Thread Pool: Judge</div>
+          <div class="pool-threads" style="color:#dc2626;">10 threads</div>
+          <div class="pool-status" style="color:#dc2626; font-weight:600;">⚠ ĐẦY!</div>
+          <!-- Thread dots: all red (full) -->
+          <div class="thread-bar">
+            <div class="thread-dot" style="background:#dc2626;" title="busy"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+            <div class="thread-dot" style="background:#dc2626;"></div>
+          </div>
+        </div>
+
+        <!-- Question pool — OK (success) -->
+        <div class="pool-box d-success">
+          <div class="pool-name">Thread Pool: Question</div>
+          <div class="pool-threads" style="color:#16a34a;">20 threads</div>
+          <div class="pool-status" style="color:#16a34a;">✓ Bình thường</div>
+          <div class="thread-bar">
+            <div class="thread-dot" style="background:#16a34a;"></div>
+            <div class="thread-dot" style="background:#16a34a;"></div>
+            <div class="thread-dot" style="background:#16a34a;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+          </div>
+        </div>
+
+        <!-- Contest pool — OK (success) -->
+        <div class="pool-box d-success">
+          <div class="pool-name">Thread Pool: Contest</div>
+          <div class="pool-threads" style="color:#16a34a;">15 threads</div>
+          <div class="pool-status" style="color:#16a34a;">✓ Bình thường</div>
+          <div class="thread-bar">
+            <div class="thread-dot" style="background:#16a34a;"></div>
+            <div class="thread-dot" style="background:#16a34a;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+            <div class="thread-dot" style="background:#dcfce7; border:1px solid #86efac;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Isolation insight -->
+      <div class="d-box d-warning" style="text-align:center;">
+        <span class="d-title">Judge pool đầy → chỉ Judge bị ảnh hưởng.</span>
+        <span class="d-sub"> Question và Contest vẫn hoạt động bình thường = Cách ly failure, không lan truyền.</span>
+      </div>
+
+    </div>
+
+    <!-- Comparison: without vs with -->
+    <div class="comparison-grid">
+      <div class="d-box d-danger">
+        <div class="d-title" style="margin-bottom:4px;">❌ Không có Bulkhead</div>
+        <div class="d-sub">1 pool chung 45 threads. Judge chậm → tất cả block.</div>
+      </div>
+      <div class="d-box d-success">
+        <div class="d-title" style="margin-bottom:4px;">✅ Có Bulkhead</div>
+        <div class="d-sub">Pool riêng. Judge chậm → chỉ Judge bị ảnh hưởng, Question/Contest vẫn OK.</div>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <div class="d-code" style="margin-top:10px; font-size:11px;">
+      <span class="ann">@Bulkhead</span>(<span class="kw">name</span> = <span class="str">"judge"</span>, <span class="kw">type</span> = THREADPOOL, <span class="kw">maxConcurrentCalls</span> = <span class="str">10</span>)
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

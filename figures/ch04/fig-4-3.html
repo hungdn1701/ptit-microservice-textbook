@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.3 — Client-side Discovery
+    =========================================================
+    Tier 1 HTML migration từ fig-4-3.svg
+    Layout: Sequence diagram — Core Service queries Eureka, round-robin to Judge instances
+    Capture: gen-diagrams.ps1 → fig-4-3.png → Typst image()
+  -->
+  <title>Fig 4.3 — Client-side Discovery | Ch.4</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .d-seq-msg-line.left-arrow::after { display: none; }
+    .d-seq-msg-line.left-arrow::before {
+      content: '◀';
+      position: absolute;
+      left: -7px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .seq-note-row {
+      display: flex;
+      align-items: center;
+      min-height: 36px;
+    }
+    .seq-note-box {
+      border-radius: 6px;
+      border: 1.5px solid #ca8a04;
+      background: #fef9c3;
+      color: #713f12;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas">
+
+    <div class="d-title-page">Client-side Discovery — Service tự query Eureka</div>
+
+    <div class="d-seq-container">
+
+      <!-- Participants: Core Service (0), Eureka Registry (1), Judge #1 (2), Judge #2 (3) -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-success">Eureka Registry</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Judge #1<br><span style="font-size:10px; font-weight:400;">:8081</span></div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Judge #2<br><span style="font-size:10px; font-weight:400;">:8082</span></div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- 1. Core Service → Eureka (0→1): left=1, line=2, right=5 -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line" style="flex:2">
+            <span class="d-seq-msg-text">1. Query: judge-service instances?</span>
+          </div>
+          <div style="flex:5"></div>
+        </div>
+
+        <!-- 2. Eureka → Core Service (1→0): dashed, left arrow: left=1, line=2, right=5 -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line dashed left-arrow" style="flex:2">
+            <span class="d-seq-msg-text">2. [judge:8081, judge:8082]</span>
+          </div>
+          <div style="flex:5"></div>
+        </div>
+
+        <!-- 3. Note: Client-side LB at Core Service (index 0) -->
+        <div class="seq-note-row">
+          <div style="flex:0; padding-right:8px;">
+            <div class="seq-note-box">3. Client-side LB<br><span style="font-size:10px;">Round-Robin chọn instance</span></div>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- 4. Core Service → Judge #1 (0→2): left=1, line=4, right=3 -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line" style="flex:4">
+            <span class="d-seq-msg-text">4. POST /judge/execute</span>
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+        <!-- 5. Judge #1 → Core Service (2→0): dashed, left arrow: left=1, line=4, right=3 -->
+        <div class="d-seq-msg">
+          <div style="flex:1"></div>
+          <div class="d-seq-msg-line dashed left-arrow" style="flex:4">
+            <span class="d-seq-msg-text">5. Result (score=85)</span>
+          </div>
+          <div style="flex:3"></div>
+        </div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+    <!-- Note -->
+    <div class="d-box d-note" style="margin-top:14px;">
+      <span class="d-title">Client-side LB: </span>
+      <span class="d-sub">Core Service chọn instance (Round-Robin). Spring Cloud LoadBalancer / Ribbon thực hiện điều này.
+      Ưu điểm: Không có hop trung gian. Nhược điểm: Client cần tích hợp thư viện LB.</span>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.11 — CQRS Flow (Sequence Diagram)
+    =========================================================
+    Tier 1 HTML migration từ fig-7-11.svg
+    Layout: 4-actor sequence diagram — Client, Write Side, Kafka, Read Side
+    Capture: gen-diagrams.ps1 → fig-7-11.png → Typst image()
+  -->
+  <title>Fig 7.11 — CQRS Flow | Ch.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    /* 4-actor sequence: actor centers at 12.5% | 37.5% | 62.5% | 87.5% */
+    .seq-line {
+      position: absolute;
+      top: 50%;
+      height: 1.5px;
+      background: #64748b;
+    }
+    .seq-line.dashed {
+      background: repeating-linear-gradient(
+        90deg, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+      );
+    }
+    .seq-arrow-r::after {
+      content: '▶';
+      position: absolute;
+      right: -6px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .seq-arrow-l::before {
+      content: '◀';
+      position: absolute;
+      left: -6px;
+      top: -7px;
+      font-size: 10px;
+      color: #64748b;
+    }
+    .seq-msg-text {
+      position: absolute;
+      left: 50%;
+      top: -13px;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #334155;
+      background: #ffffff;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+    .seq-note {
+      position: absolute;
+      border-radius: 6px;
+      border: 1.5px solid;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      top: 4px;
+    }
+    .seq-row { position: relative; height: 44px; }
+  </style>
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height:600px;">
+
+    <div class="d-title-page">CQRS Sequence — Leaderboard Update</div>
+
+    <div class="d-seq-container">
+
+      <!-- 4 Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Write Side<br><small style="font-weight:400; font-size:10px;">(Core Service)</small></div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-info">Read Side<br><small style="font-weight:400; font-size:10px;">(Leaderboard)</small></div>
+        </div>
+      </div>
+
+      <!-- Messages area — centers: 12.5% | 37.5% | 62.5% | 87.5% -->
+      <div style="position:relative; padding-top:8px; min-height:420px;">
+
+        <!-- Row 1: Client(0) → Write(1) -->
+        <div class="seq-row">
+          <div class="seq-line seq-arrow-r" style="left:12.5%; width:25%;">
+            <span class="seq-msg-text">POST /submit (write command)</span>
+          </div>
+        </div>
+
+        <!-- Row 2: Note at Write(1) — Save to Write DB -->
+        <div class="seq-row" style="height:50px; margin-top:2px;">
+          <div class="seq-note" style="left:calc(25% + 5px); width:calc(25% - 10px);
+               background:#e6f4f3; border-color:#0f766e; color:#085041;">
+            Save to Write DB<br>
+            <span style="font-size:10px; font-weight:400;">PostgreSQL — commit</span>
+          </div>
+        </div>
+
+        <!-- Row 3: Write(1) → Kafka(2) — publish event -->
+        <div class="seq-row" style="margin-top:4px;">
+          <div class="seq-line seq-arrow-r" style="left:37.5%; width:25%;">
+            <span class="seq-msg-text">Pub: SubmissionJudged</span>
+          </div>
+        </div>
+
+        <!-- Row 4: Kafka(2) → Read(3) — consume -->
+        <div class="seq-row" style="margin-top:4px;">
+          <div class="seq-line seq-arrow-r" style="left:62.5%; width:25%;">
+            <span class="seq-msg-text">Consume: SubmissionJudged</span>
+          </div>
+        </div>
+
+        <!-- Row 5: Note at Read(3) — update ranking -->
+        <div class="seq-row" style="height:50px; margin-top:2px;">
+          <div class="seq-note" style="left:calc(75% + 5px); width:calc(25% - 10px);
+               background:#eff6ff; border-color:#3b82f6; color:#1e3a8a;">
+            Update ranking table<br>
+            <span style="font-size:10px; font-weight:400;">materialized view</span>
+          </div>
+        </div>
+
+        <!-- Row 6: Client(0) → Read(3) — query leaderboard -->
+        <div class="seq-row" style="margin-top:12px;">
+          <div class="seq-line seq-arrow-r" style="left:12.5%; width:75%;">
+            <span class="seq-msg-text">GET /leaderboard (read query)</span>
+          </div>
+        </div>
+
+        <!-- Row 7: Read(3) → Client(0) dashed — sorted ranking -->
+        <div class="seq-row" style="margin-top:4px;">
+          <div class="seq-line dashed seq-arrow-l" style="left:12.5%; width:75%;">
+            <span class="seq-msg-text">Sorted ranking (pre-computed)</span>
+          </div>
+        </div>
+
+        <!-- Vertical lifelines -->
+        <div style="position:absolute; top:0; left:12.5%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+        <div style="position:absolute; top:0; left:37.5%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+        <div style="position:absolute; top:0; left:62.5%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+        <div style="position:absolute; top:0; left:87.5%; width:1px; height:100%; background:#e2e8f0; z-index:-1;"></div>
+
+      </div><!-- /messages area -->
+
+    </div><!-- /seq-container -->
+
+    <!-- Key benefit note -->
+    <div class="d-box d-note" style="margin-top:12px;">
+      <div class="d-title">Read và Write tách biệt — không block nhau</div>
+      <div class="d-sub">
+        Write không block Read. Read có thể scale độc lập. Leaderboard read model cực nhanh vì pre-computed.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

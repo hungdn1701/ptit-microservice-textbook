@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.7 - Fig 9.7</title>
+  <link rel="stylesheet" href="../../code/interactive/base-style.css">
+  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
+  <style>
+    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
+    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
+    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
+    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
+    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
+    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
+    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
+    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
+    .svg-title { font-size: 16px; font-weight: 700; }
+    .svg-subtitle { font-size: 13px; color: #64748b; }
+    .svg-small { font-size: 12px; color: #475569; }
+    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" role="img" aria-label="Fig 9.7">
+    <div class="d-cluster svg-box" style="left:280px;top:20px;width:400px;height:90px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:320px;top:55px;width:140px;height:40px;border-radius:8px;"></div>
+    <div class="d-box d-note svg-box" style="left:500px;top:55px;width:140px;height:40px;border-radius:8px;"></div>
+    <div class="d-cluster svg-box" style="left:280px;top:140px;width:400px;height:150px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:320px;top:175px;width:320px;height:100px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:40px;top:320px;width:320px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-note svg-box" style="left:60px;top:355px;width:280px;height:130px;border-radius:12px;"></div>
+    <div class="d-cluster svg-box" style="left:380px;top:320px;width:540px;height:180px;border-radius:16px;"></div>
+    <div class="d-box d-service svg-box" style="left:400px;top:355px;width:230px;height:60px;border-radius:8px;"></div>
+    <div class="d-box d-service svg-box" style="left:400px;top:425px;width:230px;height:60px;border-radius:8px;"></div>
+    <div class="d-box d-danger svg-box" style="left:650px;top:355px;width:250px;height:130px;border-radius:8px;"></div>
+    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
+        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
+      </defs>
+      <path d="M 390 95 L 480 175" class="arrow" />
+      <path d="M 570 95 L 480 175" class="arrow" />
+      <path d="M 480 275 L 200 355" class="arrow" />
+      <path d="M 480 275 L 515 355" class="arrow" />
+      <path d="M 480 275 L 515 425" class="arrow" />
+      <path d="M 480 275 L 775 355" class="arrow-dash" />
+    </svg>
+    <div class="svg-text svg-title" style="left:480px;top:31px;width:360px;transform:translateX(-50%);text-align:center;">Internet</div>
+    <div class="svg-text svg-subtitle" style="left:390px;top:66px;width:360px;transform:translateX(-50%);text-align:center;">Student App</div>
+    <div class="svg-text svg-subtitle" style="left:570px;top:66px;width:360px;transform:translateX(-50%);text-align:center;">Admin CMS</div>
+    <div class="svg-text svg-title" style="left:480px;top:151px;width:360px;transform:translateX(-50%);text-align:center;">Edge Layer</div>
+    <div class="svg-text svg-title" style="left:480px;top:181px;width:360px;transform:translateX(-50%);text-align:center;">Gateway :9001</div>
+    <div class="svg-text svg-subtitle" style="left:340px;top:206px;width:850px;text-align:left;">✅ JWT validation</div>
+    <div class="svg-text svg-subtitle" style="left:340px;top:226px;width:850px;text-align:left;">✅ CORS</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:206px;width:850px;text-align:left;">❌ Rate limiting</div>
+    <div class="svg-text svg-subtitle" style="left:480px;top:226px;width:850px;text-align:left;">❌ Correlation ID</div>
+    <div class="svg-text svg-title" style="left:200px;top:331px;width:360px;transform:translateX(-50%);text-align:center;">Auth Bounded Context</div>
+    <div class="svg-text svg-title" style="left:200px;top:361px;width:360px;transform:translateX(-50%);text-align:center;">Auth Service :9005</div>
+    <div class="svg-text svg-subtitle" style="left:80px;top:386px;width:850px;text-align:left;">✅ Login (3 methods)</div>
+    <div class="svg-text svg-subtitle" style="left:80px;top:406px;width:850px;text-align:left;">✅ JWT generation (HS256)</div>
+    <div class="svg-text svg-subtitle" style="left:80px;top:426px;width:850px;text-align:left;">✅ Full token validation</div>
+    <div class="svg-text svg-subtitle" style="left:80px;top:446px;width:850px;text-align:left;">✅ User management</div>
+    <div class="svg-text svg-title" style="left:650px;top:331px;width:360px;transform:translateX(-50%);text-align:center;">Internal Services</div>
+    <div class="svg-text svg-title" style="left:515px;top:361px;width:360px;transform:translateX(-50%);text-align:center;">Core Service</div>
+    <div class="svg-text svg-title" style="left:515px;top:381px;width:360px;transform:translateX(-50%);text-align:center;">⚠️ Claims-only | ✅ @PreAuthorize</div>
+    <div class="svg-text svg-title" style="left:515px;top:431px;width:360px;transform:translateX(-50%);text-align:center;">Assignment Service</div>
+    <div class="svg-text svg-title" style="left:515px;top:451px;width:360px;transform:translateX(-50%);text-align:center;">⚠️ Claims-only | ✅ @PreAuthorize</div>
+    <div class="svg-text svg-title" style="left:775px;top:386px;width:360px;transform:translateX(-50%);text-align:center;">Judge Service</div>
+    <div class="svg-text svg-title" style="left:775px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">⚠️ No auth check</div>
+  </div>
+</body>
+</html>
