@@ -342,6 +342,8 @@ Services: `kblab-auth`, `kblab-assignment`, `kblab-app`, `kblab-judge`, `kblab-n
 
 ## ⚠️ Key Conventions
 
+- **UTF-8 Encoding Rule**: Khi sử dụng PowerShell hoặc script để tự động xử lý, chỉnh sửa hàng loạt file nội dung (Markdown, Typst), **LUÔN LUÔN** sử dụng các API hỗ trợ đọc/ghi UTF-8 (ví dụ: `[System.IO.File]::ReadAllText` và `[System.IO.File]::WriteAllText(..., [System.Text.UTF8Encoding]::new($false))`). **TUYỆT ĐỐI KHÔNG** dùng lệnh `Get-Content` / `Set-Content` mặc định của PowerShell trên Windows vì nó sẽ tự động convert sang ANSI và làm hỏng toàn bộ text tiếng Việt (gây ra lỗi font/mojibake).
+
 - All manuscript files are in **Vietnamese**. Keep language consistent.
 - Figures are SVG files sourced from `figures/`. Do not embed images as base64 in markdown.
 - Code examples use **Java + Spring Boot** unless stated otherwise.
