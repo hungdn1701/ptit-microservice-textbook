@@ -6,269 +6,277 @@
   <title>Saga Pattern — Ch.6 | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .mode-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); }
-    .mode-tab { flex: 1; padding: 10px 16px; text-align: center; font-size: 13px; font-weight: 500; cursor: pointer; background: var(--surface); border: none; color: var(--text-muted); transition: all 0.2s; font-family: var(--font-sans); }
-    .mode-tab.active { background: var(--primary); color: white; }
-    .mode-tab:hover:not(.active) { background: var(--surface-hover); }
-    .saga-flow { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding: 24px 0; }
-    .saga-step { flex-shrink: 0; width: 140px; text-align: center; position: relative; }
-    .saga-circle { width: 56px; height: 56px; border-radius: 50%; border: 2.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px; transition: all 0.4s ease; background: var(--surface); }
-    .saga-circle.active { border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
-    .saga-circle.done { border-color: var(--success); background: rgba(39,201,63,0.08); }
-    .saga-circle.error { border-color: var(--danger); background: rgba(255,95,86,0.08); }
-    .saga-circle.compensating { border-color: var(--warning); background: rgba(255,189,46,0.08); animation: pulse 1s ease-in-out infinite; }
-    .saga-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-    .saga-service { font-size: 11px; color: var(--text-muted); }
-    .saga-type { margin-top: 6px; }
-    .saga-arrow { flex-shrink: 0; display: flex; align-items: center; padding: 0 4px; margin-top: 20px; color: var(--text-muted); font-size: 18px; transition: color 0.3s; }
-    .saga-arrow.active { color: var(--primary); }
-    .saga-arrow.error { color: var(--danger); }
-    .comp-flow { margin-top: 8px; }
-    .comp-step { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: rgba(255,95,86,0.08); border: 1px solid rgba(255,95,86,0.2); border-radius: var(--radius-sm); font-size: 11px; color: var(--danger); }
-    .bottom-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
-    @media (max-width: 768px) { .bottom-panel { grid-template-columns: 1fr; } }
-    .timeline { position: relative; padding-left: 20px; }
-    .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
-    .timeline-item { position: relative; margin-bottom: 12px; padding-left: 16px; }
-    .timeline-dot { position: absolute; left: -17px; top: 5px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); background: var(--surface); }
-    .timeline-dot.active { border-color: var(--primary); background: var(--primary); }
-    .timeline-dot.done { border-color: var(--success); background: var(--success); }
-    .timeline-dot.error { border-color: var(--danger); background: var(--danger); }
-    .timeline-text { font-size: 12px; line-height: 1.5; }
-    .timeline-time { font-size: 11px; color: var(--text-muted); }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; margin-top: 32px; }
+    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+
+    .saga-canvas {
+      height: 350px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .service-row { display: flex; justify-content: space-around; position: relative; z-index: 2; }
+    
+    .node {
+      background: var(--bg-card); border: 2px solid var(--border);
+      padding: 12px 16px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
+      text-align: center; width: 140px; box-shadow: var(--shadow-soft);
+      transition: all 0.3s;
+    }
+    
+    .node-core { border-color: var(--primary); }
+    .node-judge { border-color: var(--info); }
+    .node-db { border-color: var(--warning); border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 24px; }
+    
+    .saga-step {
+      position: absolute; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-family: var(--font-mono);
+      background: var(--bg-elevated); border: 1px solid var(--border); opacity: 0.3; transition: all 0.3s;
+    }
+    
+    .step-active { opacity: 1; border-color: var(--success); box-shadow: 0 0 15px rgba(16,185,129,0.3); transform: scale(1.05); }
+    .step-fail { opacity: 1; border-color: var(--danger); box-shadow: 0 0 15px rgba(239,68,68,0.3); transform: scale(1.05); }
+    .step-compensate { opacity: 1; border-color: var(--warning); box-shadow: 0 0 15px rgba(245,158,11,0.3); }
+
+    /* Absolute positioning for saga steps */
+    #step-t1 { top: 120px; left: 10%; width: 140px; }
+    #step-t2 { top: 120px; right: 10%; width: 140px; }
+    #step-t3 { bottom: 40px; left: 10%; width: 140px; }
+    #step-c1 { top: 180px; left: 10%; width: 140px; border-style: dashed; }
+
+    .step-type { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; font-weight: 700;}
+
+    /* Connection Lines */
+    .saga-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .saga-lines path { fill: none; stroke: var(--border-hover); stroke-width: 2; stroke-dasharray: 4 4; }
+    .path-active { stroke: var(--success) !important; animation: dashFlow 1s linear infinite; }
+    .path-fail { stroke: var(--danger) !important; stroke-dasharray: none !important; }
+    .path-compensate { stroke: var(--warning) !important; animation: dashFlow reverse 1s linear infinite; }
+    @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+
+    .log-panel {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
+      height: 350px; overflow-y: auto; border: 1px solid var(--border);
+    }
+    .log-panel div { margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .log-sys { color: var(--text-main); font-weight: bold; }
+    .log-ok { color: var(--success); }
+    .log-err { color: var(--danger); }
+    .log-comp { color: var(--warning); }
+    
+    .transaction-types { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .tx-badge { font-size: 10px; font-family: var(--font-mono); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-secondary); }
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 6 — Saga Pattern</div>
+      <div class="chapter-badge">Chương 6 — Giao dịch Phân tán</div>
       <h1>🔄 KBLab Submit Saga</h1>
-      <p class="subtitle">Chuỗi local transactions + compensation — flow nộp bài SQL</p>
+      <p class="subtitle">Mô phỏng quy trình chấm bài: Compensatable → Pivot → Retriable</p>
     </header>
 
-    <!-- Mode Tabs -->
-    <div class="mode-tabs">
-      <button class="mode-tab active" onclick="setMode('choreography')">🎭 Choreography</button>
-      <button class="mode-tab" onclick="setMode('orchestration')">🎬 Orchestration</button>
-    </div>
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <!-- Visualization -->
+      <div class="architecture-box">
+        <div class="card-title">🗺️ Saga Topology (Choreography)</div>
+        <div class="saga-canvas">
+          
+          <svg class="saga-lines">
+            <!-- T1 to T2 (Core -> Judge) -->
+            <path id="path-t1-t2" d="M 180 60 C 300 60, 400 60, 600 60" />
+            <!-- T2 to T3 (Judge -> Core) -->
+            <path id="path-t2-t3" d="M 600 80 C 400 200, 300 200, 180 200" />
+            <!-- T1 to DB -->
+            <path id="path-t1-db" d="M 180 60 L 180 120" />
+            <!-- T3 to DB -->
+            <path id="path-t3-db" d="M 180 200 L 180 250" />
+          </svg>
 
-    <!-- Saga Flow Visualization -->
-    <div class="card animate-fadeIn">
-      <div class="card-title" id="flow-title">🎭 Choreography — Các service tự phối hợp qua events</div>
-      <div class="saga-flow" id="saga-flow">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <button class="btn btn-primary" onclick="runSaga('success')">▶️ Run Happy Path</button>
-      <button class="btn btn-danger" onclick="runSaga('judge-error')">💥 Judge Error</button>
-      <button class="btn" style="border-color:var(--warning);color:#c99100;" onclick="runSaga('timeout')">⏱️ Judge Timeout</button>
-      <button class="btn" onclick="resetSaga()">🔄 Reset</button>
-    </div>
-
-    <!-- Bottom Panels -->
-    <div class="bottom-panel">
-      <!-- Transaction Types -->
-      <div class="card">
-        <div class="card-title">📋 Transaction Types</div>
-        <table>
-          <thead>
-            <tr><th>Step</th><th>Type</th><th>Compensation</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>T1</strong> Create Submission</td>
-              <td><span class="badge badge-info">Compensatable</span></td>
-              <td>→ Mark ERROR</td>
-            </tr>
-            <tr>
-              <td><strong>T2</strong> Execute SQL</td>
-              <td><span class="badge badge-danger">Pivot</span></td>
-              <td>— (go/no-go)</td>
-            </tr>
-            <tr>
-              <td><strong>T3</strong> Update Score</td>
-              <td><span class="badge badge-success">Retriable</span></td>
-              <td>— (must succeed)</td>
-            </tr>
-            <tr>
-              <td><strong>T4</strong> Notify Student</td>
-              <td><span class="badge badge-success">Retriable</span></td>
-              <td>— (must succeed)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Timeline -->
-      <div class="card">
-        <div class="card-title">⏱️ Saga Timeline</div>
-        <div class="timeline" id="timeline">
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-text" style="color:var(--text-muted);">Click a button to start the saga</div>
+          <div class="service-row">
+            <div class="node node-core" style="z-index: 10;">Core Service<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">kblab-app</span></div>
+            <div class="node node-db" style="z-index: 10;">🛢️</div>
+            <div class="node node-judge" style="z-index: 10;">Judge Service<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">judge-mysql</span></div>
           </div>
+
+          <!-- Saga Steps -->
+          <div class="saga-step" id="step-t1">
+            <div class="step-type" style="color:var(--success)">T1: Compensatable</div>
+            Create Submission (Status: PENDING)
+          </div>
+
+          <div class="saga-step" id="step-t2">
+            <div class="step-type" style="color:var(--primary)">T2: Pivot</div>
+            Execute SQL
+          </div>
+          
+          <div class="saga-step" id="step-c1" style="display: none;">
+            <div class="step-type" style="color:var(--warning)">C1: Compensation</div>
+            Mark ERROR (Undo T1)
+          </div>
+
+          <div class="saga-step" id="step-t3">
+            <div class="step-type" style="color:var(--info)">T3: Retriable</div>
+            Update Score & Notify
+          </div>
+
+        </div>
+        
+        <div class="controls">
+          <button class="btn btn-success btn-sm" onclick="runSaga('happy')">▶ Run Happy Path</button>
+          <button class="btn btn-danger btn-sm" onclick="runSaga('fail_pivot')">❌ Fail at Pivot (T2)</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSaga()">🔄 Reset</button>
+        </div>
+        
+        <div class="transaction-types">
+          <div class="tx-badge"><strong style="color:var(--success)">Compensatable:</strong> Có thể undo (T1)</div>
+          <div class="tx-badge"><strong style="color:var(--primary)">Pivot:</strong> Điểm go/no-go (T2)</div>
+          <div class="tx-badge"><strong style="color:var(--info)">Retriable:</strong> Bắt buộc thành công (T3)</div>
+        </div>
+
+      </div>
+
+      <!-- Log Panel -->
+      <div class="architecture-box">
+        <div class="card-title">📋 Saga Execution Log</div>
+        <div class="log-panel" id="saga-log">
+          <div style="font-style:italic">Waiting to start Saga...</div>
         </div>
       </div>
+
     </div>
 
-    <!-- Callout -->
-    <div style="margin-top: 24px;">
+    <!-- Context -->
+    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Hệ thống sử dụng implicit saga (choreography via Kafka). Submit flow gồm 3-4 steps: Core Service tạo submission → Kafka → Judge Service chấm SQL → Kafka → Core Service cập nhật score → WebSocket notification. Khi Judge gặp lỗi, compensation = đổi status thành ERROR + thông báo "vui lòng thử lại".
+        <strong>🔍 Từ Sách (Chương 6):</strong> <i>"Saga là chuỗi local transactions... Nếu Judge gặp lỗi, chúng ta không 'undo' việc nhận bài — ta cập nhật trạng thái thành ERROR. Đây chính là tư duy compensation — hành động nghiệp vụ ngược thay vì database rollback... Với submit flow hiện tại (3 steps), choreography là đủ — thêm orchestrator sẽ over-engineering."</i>
       </div>
     </div>
 
-    </div>
+  </div>
 
   <script>
-    let mode = 'choreography';
-    let animating = false;
-
-    const steps = [
-      { id: 'T1', icon: '📝', name: 'Create Submission', service: 'Core Service', type: 'compensatable' },
-      { id: 'T2', icon: '⚖️', name: 'Execute SQL', service: 'Judge Service', type: 'pivot' },
-      { id: 'T3', icon: '📊', name: 'Update Score', service: 'Core Service', type: 'retriable' },
-      { id: 'T4', icon: '🔔', name: 'Notify Student', service: 'Notification', type: 'retriable' },
-    ];
-
-    function renderFlow() {
-      const flow = document.getElementById('saga-flow');
-      flow.innerHTML = '';
-      steps.forEach((step, i) => {
-        const typeColors = { compensatable: 'info', pivot: 'danger', retriable: 'success' };
-        flow.innerHTML += `
-          <div class="saga-step" id="step-${step.id}">
-            <div class="saga-circle" id="circle-${step.id}">${step.icon}</div>
-            <div class="saga-name">${step.id}: ${step.name}</div>
-            <div class="saga-service">${step.service}</div>
-            <div class="saga-type"><span class="badge badge-${typeColors[step.type]}">${step.type}</span></div>
-          </div>
-        `;
-        if (i < steps.length - 1) {
-          flow.innerHTML += `<div class="saga-arrow" id="arrow-${i}">→</div>`;
-        }
-      });
-    }
-
-    function setMode(m) {
-      mode = m;
-      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      const title = m === 'choreography'
-        ? '🎭 Choreography — Các service tự phối hợp qua events'
-        : '🎬 Orchestration — Saga Orchestrator điều phối tập trung';
-      document.getElementById('flow-title').textContent = title;
-      resetSaga();
-    }
-
-    async function runSaga(scenario) {
-      if (animating) return;
-      animating = true;
-      resetSaga();
-      const tl = document.getElementById('timeline');
-      tl.innerHTML = '';
-
-      // T1: Create Submission
-      await animateStep('T1', 'active', 800);
-      addTimeline('T1: Create Submission (status=PENDING)', 'done');
-      await animateStep('T1', 'done', 400);
-      if (steps.length > 1) setArrow(0, 'active');
-
-      // T2: Execute SQL
-      await animateStep('T2', 'active', 1200);
-
-      if (scenario === 'judge-error') {
-        addTimeline('T2: Execute SQL — ❌ Runtime Error!', 'error');
-        await animateStep('T2', 'error', 500);
-        // Compensation
-        addTimeline('↩️ Compensation: C1 — Mark status=ERROR', 'error');
-        document.getElementById('circle-T1').className = 'saga-circle compensating';
-        await delay(800);
-        document.getElementById('circle-T1').className = 'saga-circle error';
-        addTimeline('↩️ Compensation: Send error notification', 'error');
-        addTimeline('✅ Saga completed (with compensation)', 'done');
-        animating = false;
-        return;
-      }
-
-      if (scenario === 'timeout') {
-        addTimeline('T2: Execute SQL — ⏱️ Timeout after 30s!', 'error');
-        await animateStep('T2', 'error', 500);
-        addTimeline('↩️ Compensation: C1 — Mark status=TIMEOUT', 'error');
-        document.getElementById('circle-T1').className = 'saga-circle compensating';
-        await delay(800);
-        document.getElementById('circle-T1').className = 'saga-circle error';
-        addTimeline('🔄 Re-queue for retry via Kafka', 'active');
-        addTimeline('✅ Saga completed (timeout + retry queued)', 'done');
-        animating = false;
-        return;
-      }
-
-      // Happy path
-      addTimeline('T2: Execute SQL — ✅ Correct!', 'done');
-      await animateStep('T2', 'done', 400);
-      setArrow(1, 'active');
-
-      // T3: Update Score
-      await animateStep('T3', 'active', 600);
-      addTimeline('T3: Update Score (+10 points)', 'done');
-      await animateStep('T3', 'done', 400);
-      setArrow(2, 'active');
-
-      // T4: Notify
-      await animateStep('T4', 'active', 500);
-      addTimeline('T4: Push notification ✅ "Correct!"', 'done');
-      await animateStep('T4', 'done', 400);
-
-      addTimeline('✅ Saga completed successfully', 'done');
-      animating = false;
-    }
-
-    function animateStep(id, cls, duration) {
-      return new Promise(resolve => {
-        document.getElementById(`circle-${id}`).className = `saga-circle ${cls}`;
-        setTimeout(resolve, duration);
-      });
-    }
-
-    function setArrow(i, cls) {
-      const arrow = document.getElementById(`arrow-${i}`);
-      if (arrow) arrow.className = `saga-arrow ${cls}`;
-    }
-
-    function addTimeline(text, type) {
-      const tl = document.getElementById('timeline');
-      const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-      tl.innerHTML += `
-        <div class="timeline-item animate-fadeIn">
-          <div class="timeline-dot ${type}"></div>
-          <div class="timeline-time">${time}</div>
-          <div class="timeline-text">${text}</div>
-        </div>
-      `;
-      tl.scrollTop = tl.scrollHeight;
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    
+    function log(msg, cls='log-sys') {
+      const p = document.getElementById('saga-log');
+      const time = new Date().toLocaleTimeString();
+      p.innerHTML += `<div><span style="color:var(--text-dim)">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+      p.scrollTop = p.scrollHeight;
     }
 
     function resetSaga() {
-      animating = false;
-      renderFlow();
-      document.getElementById('timeline').innerHTML =
-        '<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text" style="color:var(--text-muted);">Click a button to start the saga</div></div>';
+      document.getElementById('saga-log').innerHTML = '<div style="font-style:italic">Waiting to start Saga...</div>';
+      ['t1','t2','t3','c1'].forEach(id => {
+        const el = document.getElementById(`step-${id}`);
+        if(el) {
+          el.className = 'saga-step';
+          if(id==='c1') el.style.display = 'none';
+        }
+      });
+      ['t1-t2','t2-t3','t1-db','t3-db'].forEach(id => {
+        document.getElementById(`path-${id}`).className.baseVal = '';
+      });
     }
 
-    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+    async function runSaga(scenario) {
+      resetSaga();
+      log('--- SAGA STARTED ---', 'log-sys');
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+      // T1
+      log('Executing T1 (Compensatable): Create Submission...', 'log-sys');
+      document.getElementById('step-t1').classList.add('step-active');
+      document.getElementById('path-t1-db').classList.add('path-active');
+      await sleep(1000);
+      log('T1 Success. State: PENDING. Publishing Event...', 'log-ok');
+      document.getElementById('step-t1').classList.remove('step-active');
+      document.getElementById('path-t1-db').classList.remove('path-active');
+
+      // Path to T2
+      document.getElementById('path-t1-t2').classList.add('path-active');
+      await sleep(500);
+
+      // T2
+      log('Executing T2 (Pivot): Judge executing SQL...', 'log-sys');
+      document.getElementById('step-t2').classList.add('step-active');
+      await sleep(1500);
+
+      if (scenario === 'happy') {
+        log('T2 Success. Saga is now GUARANTEED to finish.', 'log-ok');
+        document.getElementById('step-t2').classList.remove('step-active');
+        document.getElementById('path-t1-t2').classList.remove('path-active');
+        
+        // Path to T3
+        document.getElementById('path-t2-t3').classList.add('path-active');
+        await sleep(500);
+
+        // T3
+        log('Executing T3 (Retriable): Update Score...', 'log-sys');
+        document.getElementById('step-t3').classList.add('step-active');
+        document.getElementById('path-t3-db').classList.add('path-active');
+        await sleep(1000);
+        log('T3 Success. Status -> GRADED.', 'log-ok');
+        
+        // Cleanup
+        document.getElementById('step-t3').classList.remove('step-active');
+        document.getElementById('path-t2-t3').classList.remove('path-active');
+        document.getElementById('path-t3-db').classList.remove('path-active');
+        log('--- SAGA COMPLETED SUCCESSFULLY ---', 'log-ok');
+
+      } else if (scenario === 'fail_pivot') {
+        log('T2 FAILED: Judge container crashed!', 'log-err');
+        document.getElementById('step-t2').classList.replace('step-active', 'step-fail');
+        document.getElementById('path-t1-t2').classList.replace('path-active', 'path-fail');
+        await sleep(1000);
+        
+        log('Saga aborting... Triggering Compensations.', 'log-comp');
+        
+        // Path back to Core
+        document.getElementById('path-t1-t2').classList.replace('path-fail', 'path-compensate');
+        await sleep(800);
+
+        // C1
+        document.getElementById('step-c1').style.display = 'block';
+        document.getElementById('step-c1').classList.add('step-compensate');
+        document.getElementById('path-t1-db').classList.add('path-compensate');
+        log('Executing C1 (Compensation): Marking Submission as ERROR', 'log-comp');
+        await sleep(1000);
+        log('C1 Success. DB updated.', 'log-comp');
+
+        // Cleanup
+        document.getElementById('path-t1-t2').className.baseVal = '';
+        document.getElementById('path-t1-db').className.baseVal = '';
+        log('--- SAGA ABORTED & ROLLED BACK ---', 'log-err');
+      }
     }
 
-    // Init
-    renderFlow();
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

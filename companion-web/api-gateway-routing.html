@@ -6,269 +6,301 @@
   <title>API Gateway Routing — Ch.8 | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .pipeline { display: flex; flex-direction: column; gap: 0; }
-    .pipeline-stage { display: flex; align-items: stretch; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; transition: all 0.3s; }
-    .pipeline-stage + .pipeline-stage { margin-top: -1px; }
-    .pipeline-stage.active { border-color: var(--primary); z-index: 1; box-shadow: var(--shadow-warm); }
-    .pipeline-stage.pass { border-color: var(--success); }
-    .pipeline-stage.fail { border-color: var(--danger); }
-    .stage-icon { width: 50px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--bg-alt); border-right: 1px solid var(--border); flex-shrink: 0; }
-    .stage-body { flex: 1; padding: 12px 16px; background: var(--surface); }
-    .stage-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .stage-desc { font-size: 11px; color: var(--text-muted); }
-    .stage-result { width: 60px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
-    .endpoint-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin: 20px 0; }
-    .endpoint-btn { padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; text-align: left; transition: all 0.2s; font-family: var(--font-sans); }
-    .endpoint-btn:hover { border-color: var(--primary); box-shadow: var(--shadow-warm); }
-    .endpoint-btn.selected { border-color: var(--primary); background: var(--primary-light); }
-    .endpoint-method { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 3px; margin-right: 6px; }
-    .endpoint-method.get { background: rgba(39,201,63,0.15); color: #1fa834; }
-    .endpoint-method.post { background: rgba(74,158,255,0.15); color: #3a8ae5; }
-    .endpoint-path { font-size: 12px; font-family: var(--font-mono); color: var(--text-main); }
-    .endpoint-target { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-    .rate-info { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-    .rate-bar { flex: 1; min-width: 150px; }
-    .rate-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .result-panel { margin-top: 24px; }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+
+    .gateway-canvas {
+      height: 350px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+    }
+
+    .node {
+      background: var(--bg-card); border: 2px solid var(--border);
+      padding: 14px 20px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
+      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+    }
+    
+    .node-client { border-color: var(--primary); color: var(--primary); }
+    .node-gateway { border-color: var(--warning); border-width: 3px; border-style: dashed; padding: 20px; min-width: 320px; display: flex; flex-direction: column; gap: 12px; margin: 0 auto; position: relative;}
+    .node-gateway::before { content: 'Spring Cloud Gateway'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--bg-surface); padding: 2px 8px; font-size: 11px; font-family: var(--font-mono); color: var(--warning); border: 1px solid var(--warning); border-radius: 4px; }
+    
+    .filter-box {
+      background: rgba(245,158,11,0.05); border: 1px solid var(--warning); border-radius: 4px;
+      padding: 8px; font-size: 11px; font-family: var(--font-mono); color: var(--text-main);
+      display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
+    }
+    .filter-box.active { background: var(--warning); color: #000; font-weight: bold; box-shadow: 0 0 15px rgba(245,158,11,0.4); transform: scale(1.05); }
+    .filter-box.error { background: var(--danger); color: #fff; border-color: var(--danger); box-shadow: 0 0 15px rgba(239,68,68,0.4); transform: scale(1.05); }
+
+    .node-services { display: flex; flex-direction: column; gap: 16px; }
+    .service { background: var(--bg-card); border: 2px solid var(--info); padding: 10px; border-radius: var(--radius-md); font-size: 12px; color: var(--info); text-align: center; font-weight: bold; transition: all 0.3s;}
+    .service.active { box-shadow: 0 0 15px var(--info); background: var(--info-dim); }
+
+    /* Animated Packet */
+    .packet {
+      position: absolute; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px;
+      background: var(--success); color: #000; font-weight: bold; box-shadow: 0 0 10px var(--success);
+      z-index: 10; opacity: 0; transition: all 0.5s ease-in-out; white-space: nowrap;
+    }
+
+    .log-panel {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
+      height: 200px; overflow-y: auto; border: 1px solid var(--border);
+    }
+    .log-entry { margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    
+    .controls-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 8 — API Gateway</div>
-      <h1>🚪 API Gateway — Request Pipeline</h1>
-      <p class="subtitle">JWT validation → Routing → Rate Limiting → Backend Service</p>
+      <h1>🚪 Gateway Routing Pipeline</h1>
+      <p class="subtitle">Mô phỏng chuỗi xử lý: CORS → JWT Validation → StripPrefix → Route</p>
     </header>
 
-    <!-- Endpoint Picker -->
-    <div class="card animate-fadeIn">
-      <div class="card-title">🎯 Select Endpoint</div>
-      <div class="endpoint-picker" id="endpoints">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <div class="architecture-box">
+        <div class="card-title">🗺️ Request Pipeline</div>
+        <div class="gateway-canvas" id="canvas">
+          
+          <div class="node node-client">Client<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">Browser/App</span></div>
+          
+          <div class="node-gateway">
+            <div class="filter-box" id="f-cors"><span>1. CORS Check</span> <span id="s-cors">⏳</span></div>
+            <div class="filter-box" id="f-jwt"><span>2. JwtRequestFilter</span> <span id="s-jwt">⏳</span></div>
+            <div class="filter-box" id="f-route"><span>3. Route Match</span> <span id="s-route">⏳</span></div>
+            <div class="filter-box" id="f-strip"><span>4. StripPrefix=2</span> <span id="s-strip">⏳</span></div>
+          </div>
 
-    <!-- Pipeline Visualization -->
-    <div class="card animate-fadeIn" style="margin-top:20px;">
-      <div class="card-title">⛓️ Request Pipeline</div>
-      <div class="pipeline" id="pipeline">
-        <div class="pipeline-stage" id="stage-jwt">
-          <div class="stage-icon">🔑</div>
-          <div class="stage-body">
-            <div class="stage-name">JWT Validation</div>
-            <div class="stage-desc">Verify token signature (RS256), check expiry, extract roles</div>
+          <div class="node-services">
+            <div class="service" id="svc-core">core-service<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">/questions</span></div>
+            <div class="service" id="svc-auth">auth-service<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">/login</span></div>
           </div>
-          <div class="stage-result" id="result-jwt">—</div>
+
+          <!-- The moving request packet -->
+          <div class="packet" id="req-packet"></div>
+
         </div>
-        <div class="pipeline-stage" id="stage-cors">
-          <div class="stage-icon">🌐</div>
-          <div class="stage-body">
-            <div class="stage-name">CORS Filter</div>
-            <div class="stage-desc">Check origin whitelist, set Access-Control headers</div>
-          </div>
-          <div class="stage-result" id="result-cors">—</div>
+        
+        <div class="controls-row">
+          <button class="btn btn-primary btn-sm" onclick="runPipeline('happy')">▶ Core API (Happy Path)</button>
+          <button class="btn btn-danger btn-sm" onclick="runPipeline('no-token')">❌ Core API (No JWT)</button>
+          <button class="btn btn-info btn-sm" onclick="runPipeline('public')">🌐 Auth API (Public Route)</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
         </div>
-        <div class="pipeline-stage" id="stage-rate">
-          <div class="stage-icon">⏱️</div>
-          <div class="stage-body">
-            <div class="stage-name">Rate Limiting</div>
-            <div class="stage-desc">Token bucket — <span id="rate-current">10</span>/<span id="rate-max">10</span> remaining</div>
-          </div>
-          <div class="stage-result" id="result-rate">—</div>
-        </div>
-        <div class="pipeline-stage" id="stage-route">
-          <div class="stage-icon">🔀</div>
-          <div class="stage-body">
-            <div class="stage-name">Route to Backend</div>
-            <div class="stage-desc" id="route-target">Select an endpoint above</div>
-          </div>
-          <div class="stage-result" id="result-route">—</div>
-        </div>
-        <div class="pipeline-stage" id="stage-response">
-          <div class="stage-icon">📦</div>
-          <div class="stage-body">
-            <div class="stage-name">Response</div>
-            <div class="stage-desc" id="response-desc">Waiting for request...</div>
-          </div>
-          <div class="stage-result" id="result-response">—</div>
+
+      </div>
+
+      <!-- Log Panel -->
+      <div class="architecture-box">
+        <div class="card-title">📋 Gateway Log</div>
+        <div class="log-panel" id="sys-log">
+          <div style="font-style:italic">Waiting for incoming requests...</div>
         </div>
       </div>
+
     </div>
 
-    <!-- Controls -->
-    <div class="controls">
-      <button class="btn btn-primary" onclick="sendRequest('valid')">🔑 Send with Valid JWT</button>
-      <button class="btn btn-danger" onclick="sendRequest('invalid')">🚫 Send Invalid JWT</button>
-      <button class="btn" style="border-color:var(--warning);color:#c99100;" onclick="sendRequest('no-token')">❓ Send No Token</button>
-      <button class="btn" onclick="resetPipeline()">🔄 Reset</button>
-    </div>
-
-    <!-- Rate Limit Info -->
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title">📊 Rate Limit Status</div>
-      <div class="rate-info">
-        <div class="rate-bar">
-          <div class="rate-label">
-            <span>Remaining Tokens</span>
-            <span id="rate-display">10 / 10</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="rate-bar-fill" style="width:100%"></div>
-          </div>
-        </div>
-        <div class="metric">
-          <div class="metric-value" id="m-total" style="color:var(--primary)">0</div>
-          <div class="metric-label">Total Requests</div>
-        </div>
-        <div class="metric">
-          <div class="metric-value" id="m-blocked" style="color:var(--danger)">0</div>
-          <div class="metric-label">Rate Limited</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:24px;">
+    <!-- Context -->
+    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Spring Cloud Gateway xử lý tất cả requests. Contest Mode cần rate limiting nghiêm ngặt (tránh spam submit), trong khi Practice Mode có thể thoải mái hơn. Gateway cũng rewrite paths: <code>/api/v1/submissions</code> → <code>core-service/submissions</code>.
+        <strong>🔍 Từ Sách (Chương 8):</strong> <i>"Cross-cutting concerns tại Gateway: Thay vì mỗi service tự validate JWT, tự xử lý CORS... Gateway tập trung xử lý tại một điểm duy nhất. Gateway giải mã JWT, sau đó truyền thông tin user xuống downstream service thông qua HTTP Headers (<code>X-User-Id</code>). Spring Cloud Gateway dùng <code>StripPrefix=2</code> để biến <code>/api/core/questions</code> thành <code>/questions</code> trước khi forward tới Core Service."</i>
       </div>
     </div>
 
-    </div>
+  </div>
 
   <script>
-    const endpoints = [
-      { method: 'POST', path: '/api/v1/submissions', target: 'core-service:8082', auth: true, desc: 'Submit SQL (Contest)' },
-      { method: 'GET', path: '/api/v1/problems', target: 'core-service:8082', auth: false, desc: 'List problems (public)' },
-      { method: 'POST', path: '/api/v1/auth/login', target: 'auth-service:8081', auth: false, desc: 'Login' },
-      { method: 'GET', path: '/api/v1/assignments', target: 'assignment-service:8083', auth: true, desc: 'My assignments' },
-      { method: 'POST', path: '/api/v1/judge', target: 'judge-service:8084', auth: true, desc: 'Execute SQL' },
-    ];
-
-    let selectedEndpoint = null;
-    let rateTokens = 10;
-    let totalRequests = 0;
-    let blockedRequests = 0;
-
-    function renderEndpoints() {
-      const container = document.getElementById('endpoints');
-      container.innerHTML = endpoints.map((ep, i) => `
-        <div class="endpoint-btn ${selectedEndpoint === i ? 'selected' : ''}" onclick="selectEndpoint(${i})">
-          <div><span class="endpoint-method ${ep.method.toLowerCase()}">${ep.method}</span><span class="endpoint-path">${ep.path}</span></div>
-          <div class="endpoint-target">→ ${ep.target} ${ep.auth ? '🔒' : '🔓'}</div>
-        </div>
-      `).join('');
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    function logSys(msg, color='var(--text-main)') {
+      const log = document.getElementById('sys-log');
+      log.innerHTML += `<div class="log-entry"><span style="color:var(--text-dim)">[${new Date().toLocaleTimeString()}]</span> <span style="color:${color}">${msg}</span></div>`;
+      log.scrollTop = log.scrollHeight;
     }
 
-    function selectEndpoint(i) {
-      selectedEndpoint = i;
-      renderEndpoints();
-      document.getElementById('route-target').textContent = `→ ${endpoints[i].target}`;
-    }
-
-    async function sendRequest(tokenType) {
-      if (selectedEndpoint === null) { alert('Vui lòng chọn endpoint trước!'); return; }
-      resetStages();
-      totalRequests++;
-      const ep = endpoints[selectedEndpoint];
-
-      // Stage 1: JWT
-      await highlight('stage-jwt', 600);
-      if (tokenType === 'no-token' && ep.auth) {
-        setResult('jwt', '❌', 'fail');
-        setResult('response', '401', 'fail');
-        document.getElementById('response-desc').textContent = '401 Unauthorized — Missing token';
-        document.getElementById('stage-response').classList.add('fail');
-        updateMetrics(); return;
-      }
-      if (tokenType === 'invalid' && ep.auth) {
-        setResult('jwt', '❌', 'fail');
-        setResult('response', '403', 'fail');
-        document.getElementById('response-desc').textContent = '403 Forbidden — Invalid JWT signature';
-        document.getElementById('stage-response').classList.add('fail');
-        updateMetrics(); return;
-      }
-      setResult('jwt', '✅', 'pass');
-
-      // Stage 2: CORS
-      await highlight('stage-cors', 400);
-      setResult('cors', '✅', 'pass');
-
-      // Stage 3: Rate Limit
-      await highlight('stage-rate', 400);
-      if (rateTokens <= 0) {
-        setResult('rate', '❌', 'fail');
-        setResult('response', '429', 'fail');
-        document.getElementById('response-desc').textContent = '429 Too Many Requests — Rate limit exceeded';
-        document.getElementById('stage-response').classList.add('fail');
-        blockedRequests++;
-        updateMetrics(); return;
-      }
-      rateTokens--;
-      document.getElementById('rate-current').textContent = rateTokens;
-      setResult('rate', '✅', 'pass');
-
-      // Stage 4: Route
-      await highlight('stage-route', 500);
-      setResult('route', '✅', 'pass');
-
-      // Stage 5: Response
-      await highlight('stage-response', 300);
-      setResult('response', '200', 'pass');
-      document.getElementById('response-desc').textContent = `200 OK — Routed to ${ep.target}`;
-      document.getElementById('stage-response').classList.add('pass');
-
-      updateMetrics();
-    }
-
-    function highlight(stageId, ms) {
-      return new Promise(resolve => {
-        document.getElementById(stageId).classList.add('active');
-        setTimeout(() => {
-          document.getElementById(stageId).classList.remove('active');
-          resolve();
-        }, ms);
+    function resetSim() {
+      document.getElementById('sys-log').innerHTML = '<div style="font-style:italic">Waiting for incoming requests...</div>';
+      ['cors','jwt','route','strip'].forEach(id => {
+        document.getElementById(`f-${id}`).className = 'filter-box';
+        document.getElementById(`s-${id}`).textContent = '⏳';
       });
+      document.getElementById('svc-core').className = 'service';
+      document.getElementById('svc-auth').className = 'service';
+      
+      const pkt = document.getElementById('req-packet');
+      pkt.style.opacity = 0;
+      pkt.style.transform = 'translate(0, 0)';
     }
 
-    function setResult(stage, text, cls) {
-      const el = document.getElementById(`result-${stage}`);
-      el.textContent = text;
-      el.style.color = cls === 'pass' ? 'var(--success)' : 'var(--danger)';
-      document.getElementById(`stage-${stage}`).classList.add(cls);
+    async function runPipeline(scenario) {
+      resetSim();
+      const pkt = document.getElementById('req-packet');
+      pkt.style.opacity = 1;
+      
+      if(scenario === 'happy') {
+        logSys('--- NEW REQUEST: GET /api/core/questions ---', 'var(--info)');
+        pkt.innerHTML = "GET /api/core/questions<br>[Auth: Bearer valid.jwt]";
+        pkt.style.left = '120px'; pkt.style.top = '160px';
+        
+        await sleep(600);
+        
+        // 1. CORS
+        pkt.style.left = '280px'; pkt.style.top = '100px';
+        document.getElementById('f-cors').classList.add('active');
+        document.getElementById('s-cors').textContent = '✅';
+        logSys('1. CORS Check: Passed (Origin allowed)', 'var(--success)');
+        await sleep(800);
+        document.getElementById('f-cors').classList.remove('active');
+
+        // 2. JWT
+        pkt.style.top = '145px';
+        document.getElementById('f-jwt').classList.add('active');
+        document.getElementById('s-jwt').textContent = '✅';
+        logSys('2. JwtRequestFilter: Token Valid. Extracting claims...', 'var(--success)');
+        await sleep(600);
+        pkt.innerHTML = "GET /api/core/questions<br>[X-User-Id: SV001]";
+        logSys('→ Injecting Header: X-User-Id: SV001', 'var(--primary)');
+        await sleep(600);
+        document.getElementById('f-jwt').classList.remove('active');
+
+        // 3. Route Match
+        pkt.style.top = '190px';
+        document.getElementById('f-route').classList.add('active');
+        document.getElementById('s-route').textContent = 'core-svc';
+        logSys('3. Route Match: Matched predicate Path=/api/core/**', 'var(--warning)');
+        await sleep(800);
+        document.getElementById('f-route').classList.remove('active');
+
+        // 4. StripPrefix
+        pkt.style.top = '235px';
+        document.getElementById('f-strip').classList.add('active');
+        document.getElementById('s-strip').textContent = '✅';
+        logSys('4. StripPrefix=2: Removing /api/core', 'var(--warning)');
+        await sleep(600);
+        pkt.innerHTML = "GET /questions<br>[X-User-Id: SV001]";
+        await sleep(600);
+        document.getElementById('f-strip').classList.remove('active');
+
+        // Forward to Core
+        pkt.style.left = '70%'; pkt.style.top = '110px';
+        document.getElementById('svc-core').classList.add('active');
+        logSys('🚀 Forwarding to lb://core-service/questions', 'var(--info)');
+        await sleep(1000);
+        pkt.style.opacity = 0;
+        document.getElementById('svc-core').classList.remove('active');
+        logSys('✅ Request completed successfully.', 'var(--success)');
+
+      } else if (scenario === 'no-token') {
+        logSys('--- NEW REQUEST: GET /api/core/questions ---', 'var(--info)');
+        pkt.innerHTML = "GET /api/core/questions<br>[Auth: None]";
+        pkt.style.left = '120px'; pkt.style.top = '160px';
+        
+        await sleep(600);
+        
+        // 1. CORS
+        pkt.style.left = '280px'; pkt.style.top = '100px';
+        document.getElementById('f-cors').classList.add('active');
+        document.getElementById('s-cors').textContent = '✅';
+        logSys('1. CORS Check: Passed', 'var(--success)');
+        await sleep(800);
+        document.getElementById('f-cors').classList.remove('active');
+
+        // 2. JWT Fails
+        pkt.style.top = '145px';
+        document.getElementById('f-jwt').classList.add('error');
+        document.getElementById('s-jwt').textContent = '❌';
+        pkt.style.background = 'var(--danger)'; pkt.style.color = '#fff';
+        logSys('2. JwtRequestFilter: Missing/Invalid Token!', 'var(--danger)');
+        await sleep(800);
+        
+        logSys('⛔ Short-circuiting request. Returning 401 UNAUTHORIZED.', 'var(--danger)');
+        pkt.innerHTML = "401 UNAUTHORIZED";
+        pkt.style.left = '120px'; pkt.style.top = '160px';
+        await sleep(1000);
+        pkt.style.opacity = 0;
+        
+      } else if (scenario === 'public') {
+        logSys('--- NEW REQUEST: POST /api/auth/login ---', 'var(--info)');
+        pkt.innerHTML = "POST /api/auth/login<br>body: {user, pass}";
+        pkt.style.left = '120px'; pkt.style.top = '160px';
+        
+        await sleep(600);
+        
+        // 1. CORS
+        pkt.style.left = '280px'; pkt.style.top = '100px';
+        document.getElementById('f-cors').classList.add('active');
+        document.getElementById('s-cors').textContent = '✅';
+        logSys('1. CORS Check: Passed', 'var(--success)');
+        await sleep(800);
+        document.getElementById('f-cors').classList.remove('active');
+
+        // 2. JWT Skipped
+        pkt.style.top = '145px';
+        document.getElementById('f-jwt').classList.add('active');
+        document.getElementById('s-jwt').textContent = 'SKIP';
+        logSys('2. JwtRequestFilter: Route is public. Bypassing validation.', 'var(--warning)');
+        await sleep(800);
+        document.getElementById('f-jwt').classList.remove('active');
+
+        // 3. Route Match
+        pkt.style.top = '190px';
+        document.getElementById('f-route').classList.add('active');
+        document.getElementById('s-route').textContent = 'auth-svc';
+        logSys('3. Route Match: Matched predicate Path=/api/auth/**', 'var(--warning)');
+        await sleep(800);
+        document.getElementById('f-route').classList.remove('active');
+
+        // 4. StripPrefix
+        pkt.style.top = '235px';
+        document.getElementById('f-strip').classList.add('active');
+        document.getElementById('s-strip').textContent = '✅';
+        logSys('4. StripPrefix=2: Removing /api/auth', 'var(--warning)');
+        await sleep(600);
+        pkt.innerHTML = "POST /login<br>body: {user, pass}";
+        await sleep(600);
+        document.getElementById('f-strip').classList.remove('active');
+
+        // Forward to Auth
+        pkt.style.left = '70%'; pkt.style.top = '200px'; // lower position for auth svc
+        document.getElementById('svc-auth').classList.add('active');
+        logSys('🚀 Forwarding to lb://auth-service/login', 'var(--info)');
+        await sleep(1000);
+        pkt.style.opacity = 0;
+        document.getElementById('svc-auth').classList.remove('active');
+        logSys('✅ Request completed successfully.', 'var(--success)');
+      }
     }
 
-    function resetStages() {
-      ['jwt','cors','rate','route','response'].forEach(s => {
-        document.getElementById(`stage-${s}`).className = 'pipeline-stage';
-        document.getElementById(`result-${s}`).textContent = '—';
-        document.getElementById(`result-${s}`).style.color = '';
-      });
-      document.getElementById('response-desc').textContent = 'Processing...';
-    }
-
-    function resetPipeline() {
-      resetStages();
-      rateTokens = 10; totalRequests = 0; blockedRequests = 0;
-      document.getElementById('rate-current').textContent = '10';
-      document.getElementById('response-desc').textContent = 'Waiting for request...';
-      updateMetrics();
-    }
-
-    function updateMetrics() {
-      document.getElementById('m-total').textContent = totalRequests;
-      document.getElementById('m-blocked').textContent = blockedRequests;
-      document.getElementById('rate-display').textContent = `${rateTokens} / 10`;
-      document.getElementById('rate-bar-fill').style.width = `${(rateTokens / 10) * 100}%`;
-    }
-
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
-    }
-
-    renderEndpoints();
-    selectEndpoint(0);
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

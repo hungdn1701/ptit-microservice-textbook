@@ -6,129 +6,274 @@
   <title>Context Map — Ch.2 DDD | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .context-canvas { position: relative; min-height: 420px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; overflow: hidden; }
-    .bc-node { position: absolute; border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 14px; min-width: 140px; cursor: grab; transition: box-shadow 0.2s; background: var(--bg-elevated); }
-    .bc-node:hover { box-shadow: var(--shadow-glow); }
-    .bc-node.selected { border-color: var(--primary); box-shadow: var(--shadow-glow-strong); }
-    .bc-node .bc-icon { font-size: 24px; margin-bottom: 6px; }
-    .bc-node .bc-name { font-size: 13px; font-weight: 700; }
-    .bc-node .bc-type { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
-    .bc-node .entities { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 3px; }
-    .bc-node .entity-tag { font-size: 9px; padding: 2px 6px; border-radius: 8px; background: var(--primary-dim); color: var(--primary); }
-    .relation-type { display: inline-block; padding: 3px 8px; font-size: 10px; border-radius: 4px; font-weight: 600; }
-    .rel-sk { background: var(--warning-dim); color: var(--warning); }
-    .rel-cs { background: var(--info-dim); color: var(--info); }
-    .rel-acl { background: var(--danger-dim); color: var(--danger); }
-    .rel-ohs { background: var(--success-dim); color: var(--success); }
-    .detail-panel { margin-top: 20px; }
-    .rel-list { list-style: none; padding: 0; }
-    .rel-list li { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 13px; }
-    .rel-list li:last-child { border-bottom: none; }
-    .rel-arrow { color: var(--primary); font-weight: 700; }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .map-wrapper {
+      position: relative;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin: 32px 0;
+      overflow: hidden;
+    }
+
+    .context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Span the Identity node across the top */
+    .ctx-top { grid-column: 1 / -1; display: flex; justify-content: center; margin-bottom: 20px; }
+    
+    .bc-node {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .bc-node.upstream { width: 300px; border-color: var(--success); }
+    .bc-node.core { border-color: var(--primary); }
+    .bc-node.support { border-color: var(--info); }
+    .bc-node.polyglot { border-color: var(--warning); }
+
+    .bc-node:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+      border-color: var(--text-main);
+    }
+    
+    .bc-node.selected {
+      box-shadow: 0 0 20px rgba(255, 122, 0, 0.2);
+    }
+    .bc-node.upstream.selected { border-color: var(--success); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+    .bc-node.core.selected { border-color: var(--primary); }
+    .bc-node.support.selected { border-color: var(--info); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+    .bc-node.polyglot.selected { border-color: var(--warning); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+
+    .bc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .bc-title { font-size: 15px; font-weight: 700; font-family: var(--font-sans); color: var(--text-main); }
+    .bc-type { font-size: 9px; font-family: var(--font-mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 4px; }
+    
+    .upstream .bc-type { background: var(--success-dim); color: var(--success); }
+    .core .bc-type { background: var(--primary-dim); color: var(--primary); }
+    .support .bc-type { background: var(--info-dim); color: var(--info); }
+    .polyglot .bc-type { background: var(--warning-dim); color: var(--warning); }
+
+    .bc-entities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .entity-tag { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid var(--border); color: var(--text-dim); }
+
+    .bc-services { font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--border); padding-top: 12px; font-family: var(--font-mono); }
+
+    /* SVG Lines Container */
+    .connection-svg {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
+    }
+    .connection-svg path {
+      fill: none; stroke: var(--border-hover); stroke-width: 2; stroke-dasharray: 6 6;
+      animation: dashFlow 30s linear infinite;
+    }
+    .connection-svg .line-upstream { stroke: var(--success); opacity: 0.5; }
+    .connection-svg .line-shared { stroke: var(--primary); stroke-dasharray: none; opacity: 0.5; }
+    
+    @keyframes dashFlow { to { stroke-dashoffset: -1000; } }
+
+    /* Detail Panel */
+    .detail-panel {
+      display: grid; grid-template-columns: 1fr 2fr; gap: 24px;
+      margin-top: 24px; padding: 24px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: none;
+    }
+    @media (max-width: 768px) { 
+      .context-grid { grid-template-columns: 1fr; }
+      .detail-panel { grid-template-columns: 1fr; } 
+      .bc-node.upstream { width: 100%; }
+    }
+    
+    .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; font-family: var(--font-sans); }
+    .detail-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    
+    .rel-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 4px; background: var(--bg-elevated); border: 1px solid var(--border); margin-top: 12px; font-family: var(--font-mono);}
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 2 — DDD & Bounded Contexts</div>
-      <h1>🗺️ Context Map — KBLab LMS</h1>
-      <p class="subtitle">Bản đồ quan hệ giữa các bounded contexts — click vào mỗi context để xem chi tiết</p>
+      <div class="chapter-badge">Chương 2 — Strategic DDD</div>
+      <h1>🗺️ Context Map (KBLab LMS)</h1>
+      <p class="subtitle">Bản đồ 5 Bounded Contexts hoàn chỉnh của hệ thống — không còn chồng chéo, phản ánh đúng kiến trúc trong sách.</p>
     </header>
 
-    <!-- Context Map Canvas -->
-    <div class="context-canvas" id="canvas">
-      <svg width="100%" height="100%" style="position:absolute; top:0; left:0; pointer-events:none;" id="svg-lines"></svg>
-      <div class="bc-node" id="bc-auth" style="top:30px; left:50px;" onclick="selectBC('auth')">
-        <div class="bc-icon">🔑</div>
-        <div class="bc-name">Identity & Access</div>
-        <div class="bc-type">Supporting Domain</div>
-        <div class="entities"><span class="entity-tag">User</span><span class="entity-tag">Role</span><span class="entity-tag">Token</span></div>
+    <div class="animate-fadeIn" style="animation-delay: 0.1s">
+      <div class="map-wrapper">
+        
+        <!-- Background Connections (Visual only) -->
+        <svg class="connection-svg">
+          <!-- Central Hub to Nodes -->
+          <path d="M 50% 150 C 50% 200, 25% 250, 25% 250" class="line-upstream" />
+          <path d="M 50% 150 C 50% 200, 75% 250, 75% 250" class="line-upstream" />
+          <!-- Horizontal Shared Kernel between SQL and Academic -->
+          <path d="M 25% 350 L 75% 350" class="line-shared" />
+        </svg>
+
+        <div class="context-grid">
+          
+          <!-- TOP ROW: Identity -->
+          <div class="ctx-top">
+            <div class="bc-node upstream" id="ctx-identity" onclick="selectBC('identity')">
+              <div class="bc-header">
+                <div class="bc-title">Identity & Access</div>
+                <div class="bc-type">Upstream</div>
+              </div>
+              <div class="bc-entities">
+                <span class="entity-tag">User</span><span class="entity-tag">Role</span><span class="entity-tag">Token</span>
+              </div>
+              <div class="bc-services">Service: kblab-auth</div>
+            </div>
+          </div>
+
+          <!-- MIDDLE ROW: Core & Academic -->
+          <div class="bc-node core" id="ctx-sql" onclick="selectBC('sql')">
+            <div class="bc-header">
+              <div class="bc-title">SQL Practice</div>
+              <div class="bc-type">Core Domain</div>
+            </div>
+            <div class="bc-entities">
+              <span class="entity-tag">Question</span><span class="entity-tag">Submission</span><span class="entity-tag">Contest</span>
+            </div>
+            <div class="bc-services">Service: kblab-app, judge-*</div>
+          </div>
+
+          <div class="bc-node support" id="ctx-academic" onclick="selectBC('academic')">
+            <div class="bc-header">
+              <div class="bc-title">Academic Mgmt</div>
+              <div class="bc-type">Support</div>
+            </div>
+            <div class="bc-entities">
+              <span class="entity-tag">Course</span><span class="entity-tag">Assignment</span><span class="entity-tag">Grade</span>
+            </div>
+            <div class="bc-services">Service: kblab-assignment</div>
+          </div>
+
+          <!-- BOTTOM ROW: Network & DevOps -->
+          <div class="bc-node support" id="ctx-network" onclick="selectBC('network')">
+            <div class="bc-header">
+              <div class="bc-title">Network Practice</div>
+              <div class="bc-type">Support</div>
+            </div>
+            <div class="bc-entities">
+              <span class="entity-tag">TCP/UDP Client</span><span class="entity-tag">RMI</span>
+            </div>
+            <div class="bc-services">Service: kblab-judge-network</div>
+          </div>
+
+          <div class="bc-node polyglot" id="ctx-devops" onclick="selectBC('devops')">
+            <div class="bc-header">
+              <div class="bc-title">DevOps Practice</div>
+              <div class="bc-type">Polyglot</div>
+            </div>
+            <div class="bc-entities">
+              <span class="entity-tag">Lab Env</span><span class="entity-tag">Terminal</span><span class="entity-tag">Validator</span>
+            </div>
+            <div class="bc-services">Service: dol-api, dol-infra</div>
+          </div>
+
+        </div>
       </div>
-      <div class="bc-node" id="bc-core" style="top:180px; left:200px;" onclick="selectBC('core')">
-        <div class="bc-icon">📝</div>
-        <div class="bc-name">SQL Practice</div>
-        <div class="bc-type">Core Domain ⭐</div>
-        <div class="entities"><span class="entity-tag">Question</span><span class="entity-tag">Submission</span><span class="entity-tag">Contest</span></div>
+
+      <!-- Detail Panel -->
+      <div class="detail-panel animate-fadeIn" id="detail-panel">
+        <div>
+          <div class="detail-title" id="detail-title">Title</div>
+          <div class="bc-type" id="detail-type" style="display:inline-block;">Type</div>
+          <div id="detail-rel"></div>
+        </div>
+        <div class="detail-text" id="detail-desc">Description</div>
       </div>
-      <div class="bc-node" id="bc-judge" style="top:30px; right:50px;" onclick="selectBC('judge')">
-        <div class="bc-icon">⚖️</div>
-        <div class="bc-name">Evaluation</div>
-        <div class="bc-type">Complicated Subsystem</div>
-        <div class="entities"><span class="entity-tag">JudgeRequest</span><span class="entity-tag">Sandbox</span><span class="entity-tag">Result</span></div>
+
+      <!-- Book Context -->
+      <div style="margin-top:24px;">
+        <div class="callout">
+          <strong>🔍 Từ Sách (Chương 2):</strong> <i>"KBLab phục vụ giảng dạy, thực hành, đánh giá. Từ góc nhìn DDD, chúng ta xác định 5 bounded contexts chính... Các service hỗ trợ như Gateway, Registry không phải là domain context độc lập."</i> Bản đồ này phản ánh chính xác kiến trúc 5 Domain (Identity, SQL, Academic, Network, DevOps) được mô tả trong bản thảo.
+        </div>
       </div>
-      <div class="bc-node" id="bc-acad" style="top:320px; left:80px;" onclick="selectBC('acad')">
-        <div class="bc-icon">📚</div>
-        <div class="bc-name">Academic Mgmt</div>
-        <div class="bc-type">Supporting Domain</div>
-        <div class="entities"><span class="entity-tag">Course</span><span class="entity-tag">Assignment</span><span class="entity-tag">Grade</span></div>
-      </div>
-      <div class="bc-node" id="bc-notify" style="top:320px; right:80px;" onclick="selectBC('notify')">
-        <div class="bc-icon">🔔</div>
-        <div class="bc-name">Notification</div>
-        <div class="bc-type">Generic Subdomain</div>
-        <div class="entities"><span class="entity-tag">Alert</span><span class="entity-tag">Channel</span></div>
-      </div>
+
     </div>
 
-    <!-- Context Detail -->
-    <div id="context-detail" class="card detail-panel animate-fadeIn" style="display:none;">
-      <div class="card-title" id="detail-title">—</div>
-      <div id="detail-body"></div>
-    </div>
-
-    <!-- Relations List -->
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title">🔗 Context Map Relations</div>
-      <ul class="rel-list">
-        <li><strong>Auth</strong> <span class="rel-arrow">→</span> <strong>Core</strong> <span class="relation-type rel-cs">Customer-Supplier</span> <span style="color:var(--text-dim); font-size:12px; margin-left:auto;">JWT Token</span></li>
-        <li><strong>Core</strong> <span class="rel-arrow">→</span> <strong>Judge</strong> <span class="relation-type rel-acl">ACL (Kafka)</span> <span style="color:var(--text-dim); font-size:12px; margin-left:auto;">Published Language</span></li>
-        <li><strong>Core</strong> <span class="rel-arrow">↔</span> <strong>Academic</strong> <span class="relation-type rel-sk">Shared Kernel</span> <span style="color:var(--text-dim); font-size:12px; margin-left:auto;">Shared DB ⚠️</span></li>
-        <li><strong>Core</strong> <span class="rel-arrow">→</span> <strong>Notification</strong> <span class="relation-type rel-ohs">Open Host Service</span> <span style="color:var(--text-dim); font-size:12px; margin-left:auto;">REST API</span></li>
-      </ul>
-    </div>
-
-    <!-- KBLab Callout -->
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> SQL Practice là Core Domain — nơi tạo giá trị chính. Evaluation (Judge) là Complicated Subsystem đòi hỏi chuyên môn sâu (multi-DBMS sandboxing). Academic Management hiện vẫn sharing database với Core — đây là Shared Kernel cần tách khi team mở rộng.
-      </div>
-    </div>
-
-    </div>
+  </div>
 
   <script>
     const bcData = {
-      auth: { title: '🔑 Identity & Access', desc: 'Quản lý danh tính, xác thực (JWT), phân quyền RBAC.', service: 'auth-service', team: 'Platform', entities: ['User', 'Role', 'Token', 'Permission'], notes: 'Upstream — mọi context phụ thuộc vào kết quả authentication.' },
-      core: { title: '📝 SQL Practice (Core Domain)', desc: 'Quy trình thực hành SQL: xem câu hỏi → viết SQL → nộp bài → nhận kết quả.', service: 'core-service', team: 'Stream-aligned (SQL)', entities: ['Question', 'Submission', 'Contest', 'Statistic', 'UserContest'], notes: 'Core Domain — phần tạo giá trị chính. Context lớn nhất và phức tạp nhất.' },
-      judge: { title: '⚖️ Evaluation (Judge)', desc: 'Thực thi SQL trên sandbox DB, so sánh kết quả, tính điểm, AI feedback.', service: 'judge-service', team: 'Complicated Subsystem', entities: ['JudgeRequest', 'JudgeResult', 'Sandbox', 'AIFeedback'], notes: 'Giao tiếp qua Kafka (ACL). Multi-DBMS: MySQL, SQL Server, PostgreSQL.' },
-      acad: { title: '📚 Academic Management', desc: 'Quản lý khóa học, bài tập rubric, đăng ký môn, luận văn.', service: 'assignment-service', team: 'Stream-aligned (Academic)', entities: ['Course', 'Assignment', 'Enrollment', 'Grade', 'Thesis'], notes: '⚠️ Shared Database với Core — coupling cần tách khi team > 5 người.' },
-      notify: { title: '🔔 Notification', desc: 'Gửi thông báo kết quả chấm bài qua nhiều kênh.', service: 'notification-service', team: 'Generic', entities: ['Alert', 'Channel', 'Template'], notes: 'Nhận events từ Core/Judge qua REST. Generic Subdomain — có thể thay thế bằng SaaS.' }
+      'identity': {
+        title: '🔑 Identity & Access', type: 'UPSTREAM', color: 'var(--success)',
+        desc: 'Domain rõ ràng nhất — quản lý danh tính người dùng, xác thực, phân quyền. Đây là context <strong>upstream</strong>: mọi context khác đều phụ thuộc vào kết quả authentication. Tách thành service riêng <code>kblab-auth</code> sớm nhất vì thay đổi cơ chế đăng nhập (SSO, Email) không ảnh hưởng logic chấm bài.',
+        rel: '<div class="rel-badge"><span style="color:var(--success)">Customer-Supplier:</span> Cấp phát JWT cho toàn hệ thống</div>'
+      },
+      'sql': {
+        title: '📝 SQL Practice', type: 'CORE DOMAIN', color: 'var(--primary)',
+        desc: 'Đây là <strong>core domain</strong> ban đầu — phần tạo ra giá trị chính cho hệ thống. Toàn bộ quy trình từ "xem câu hỏi → viết SQL → nộp bài → nhận kết quả" nằm ở đây. Kiến trúc bên trong phức tạp, bao gồm một coordinator (<code>kblab-app</code>) và nhiều processor (<code>judge-mysql</code>, <code>judge-sqlserver</code>).',
+        rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chia sẻ Database với Academic Mgmt</div>'
+      },
+      'academic': {
+        title: '📚 Academic Management', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
+        desc: 'Quản lý khóa học, bài tập dạng rubric, đăng ký môn, điểm số, điểm danh, và Github Classroom. Context này đã được tách mã nguồn ra khỏi Core Service (<code>kblab-assignment</code>) nhưng <strong>vẫn chia sẻ database (app_db)</strong>. Đây là một trade-off quan trọng được phân tích trong sách.',
+        rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chung DB với SQL Practice</div>'
+      },
+      'network': {
+        title: '🌐 Network Practice', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
+        desc: 'Domain chuyên biệt cho bài thực hành lập trình mạng (TCP, UDP, RMI, REST, gRPC). Khác với SQL Practice, sinh viên viết client trên IDE cá nhân và kết nối trực tiếp đến server. Ranh giới domain ở đây được xác định bởi <strong>Protocol Semantics</strong>, không chỉ là entities hay database.',
+        rel: '<div class="rel-badge"><span style="color:var(--text-dim)">Isolated:</span> Độc lập hoàn toàn với SQL Judge</div>'
+      },
+      'devops': {
+        title: '🐳 DevOps Practice', type: 'POLYGLOT DOMAIN', color: 'var(--warning)',
+        desc: 'Domain mới phục vụ thực hành Docker/Kubernetes (tạo lab environment cô lập, web terminal, validator). Context này dùng ngôn ngữ <strong>Go, k3s, Sysbox</strong>, khác biệt hoàn toàn với stack Java/Spring Boot của LMS chính, nhưng vẫn dùng chung hệ thống Identity.',
+        rel: '<div class="rel-badge"><span style="color:var(--warning)">Polyglot:</span> Sử dụng Go & k3s thay vì Java</div>'
+      }
     };
 
     function selectBC(id) {
       document.querySelectorAll('.bc-node').forEach(n => n.classList.remove('selected'));
-      document.getElementById(`bc-${id}`).classList.add('selected');
+      document.getElementById(`ctx-${id}`).classList.add('selected');
+      
       const d = bcData[id];
       document.getElementById('detail-title').textContent = d.title;
-      document.getElementById('detail-body').innerHTML = `
-        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">${d.desc}</p>
-        <div class="grid-2" style="gap:12px;">
-          <div><span style="font-size:11px; color:var(--text-dim);">Service</span><div style="font-weight:600; font-family:var(--font-mono); font-size:13px;">${d.service}</div></div>
-          <div><span style="font-size:11px; color:var(--text-dim);">Team Type</span><div style="font-weight:600; font-size:13px;">${d.team}</div></div>
-        </div>
-        <div style="margin-top:12px;"><span style="font-size:11px; color:var(--text-dim);">Entities</span>
-          <div style="margin-top:4px;">${d.entities.map(e => `<span class="badge badge-primary" style="margin:2px;">${e}</span>`).join('')}</div>
-        </div>
-        <div style="margin-top:12px; font-size:12px; color:var(--text-secondary); padding:10px; background:var(--bg-elevated); border-radius:var(--radius-sm);">💡 ${d.notes}</div>
-      `;
-      document.getElementById('context-detail').style.display = 'block';
+      document.getElementById('detail-title').style.color = d.color;
+      
+      const typeEl = document.getElementById('detail-type');
+      typeEl.textContent = d.type;
+      typeEl.style.color = d.color;
+      typeEl.style.backgroundColor = d.color.replace(')', ', 0.1)').replace('var(--', 'rgba('); // approximation for fallback, best to just use borders
+      typeEl.style.border = `1px solid ${d.color}`;
+      
+      document.getElementById('detail-rel').innerHTML = d.rel;
+      document.getElementById('detail-desc').innerHTML = d.desc;
+      
+      document.getElementById('detail-panel').style.display = 'grid';
+      
+      // Scroll to detail on mobile
+      if(window.innerWidth <= 768) {
+        document.getElementById('detail-panel').scrollIntoView({behavior: 'smooth', block: 'nearest'});
+      }
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
-    }
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

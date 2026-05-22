@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GraphQL vs REST Pattern — Ch.3 | SOA & Microservices</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+    @media (max-width: 768px) { .sim-container { grid-template-columns: 1fr; } }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+    
+    .network-canvas {
+      height: 200px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .client-node {
+      position: absolute; top: 50%; left: 20px; transform: translateY(-50%);
+      background: var(--primary-dim); border: 2px solid var(--primary);
+      padding: 10px 16px; border-radius: 8px; font-weight: bold; color: var(--primary);
+      z-index: 2;
+    }
+
+    .server-node {
+      position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
+      background: var(--info-dim); border: 2px solid var(--info);
+      padding: 10px 16px; border-radius: 8px; font-weight: bold; color: var(--info);
+      z-index: 2;
+    }
+    
+    .db-node {
+      position: absolute; top: 50%; right: -60px; transform: translateY(-50%);
+      background: var(--warning-dim); border: 2px solid var(--warning);
+      padding: 10px; border-radius: 50%; font-size: 20px;
+      z-index: 2;
+    }
+
+    .request-packet {
+      position: absolute; top: 50%; left: 100px; transform: translateY(-50%);
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      opacity: 0;
+    }
+    
+    @keyframes flyToBackend {
+      0% { left: 100px; opacity: 1; }
+      100% { left: calc(100% - 120px); opacity: 1; }
+    }
+    
+    @keyframes flyToClient {
+      0% { left: calc(100% - 120px); opacity: 1; background: var(--info); box-shadow: 0 0 10px var(--info); }
+      100% { left: 100px; opacity: 1; background: var(--info); box-shadow: 0 0 10px var(--info); }
+    }
+
+    @keyframes flyToDb {
+      0% { right: 80px; top: 50%; opacity: 1; background: var(--warning); box-shadow: 0 0 10px var(--warning); }
+      50% { right: 0px; top: 50%; opacity: 1; }
+      100% { right: 80px; top: 50%; opacity: 1; background: var(--success); box-shadow: 0 0 10px var(--success); }
+    }
+
+    .anim-req { animation: flyToBackend 0.5s ease-in forwards; }
+    .anim-res { animation: flyToClient 0.5s ease-out forwards; }
+    .anim-db { animation: flyToDb 0.4s ease-in-out forwards; }
+
+    .query-log {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      background: #0d1117;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      height: 120px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+    
+    .query-log div { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
+    .query-log .req { color: var(--success); }
+    .query-log .db { color: var(--warning); }
+
+    .metric-box { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .metric-box:last-child { border-bottom: none; }
+    .metric-value { font-weight: 700; font-family: var(--font-mono); color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <header class="page-header animate-fadeIn">
+      <div class="chapter-badge">Chương 3 — Thiết kế API</div>
+      <h1>🕸️ GraphQL vs REST</h1>
+      <p class="subtitle">Mô phỏng bài toán N+1 Queries khi lấy dữ liệu phân cấp (Questions & Submissions)</p>
+    </header>
+
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <!-- REST Approach -->
+      <div class="architecture-box">
+        <div class="card-title"><span class="badge badge-info">REST</span> The N+1 Problem</div>
+        <div class="network-canvas" id="canvas-rest">
+          <div class="client-node">Client</div>
+          <div class="request-packet" id="pkt-rest"></div>
+          <div class="server-node">API Server</div>
+          <div class="db-node">🛢️</div>
+        </div>
+        
+        <div class="controls" style="margin: 12px 0;">
+          <button class="btn btn-ghost btn-sm" onclick="runRest()">▶ Run REST Flow</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLogs('rest')">🔄 Clear</button>
+        </div>
+
+        <div class="query-log" id="log-rest">
+          <div style="color: var(--text-dim); font-style: italic;">Waiting to execute: GET /api/questions...</div>
+        </div>
+        
+        <div style="margin-top: 16px;">
+          <div class="metric-box"><span>Network Requests</span><span class="metric-value" id="m-rest-net">0</span></div>
+          <div class="metric-box"><span>Database Queries</span><span class="metric-value" id="m-rest-db">0</span></div>
+          <div class="metric-box"><span>Data Over-fetching</span><span class="metric-value" style="color: var(--danger)">High</span></div>
+        </div>
+      </div>
+
+      <!-- GraphQL Approach -->
+      <div class="architecture-box">
+        <div class="card-title"><span class="badge badge-primary">GraphQL</span> Single Endpoint</div>
+        <div class="network-canvas" id="canvas-gql">
+          <div class="client-node">Client</div>
+          <div class="request-packet" id="pkt-gql"></div>
+          <div class="server-node">GraphQL Server</div>
+          <div class="db-node">🛢️</div>
+        </div>
+        
+        <div class="controls" style="margin: 12px 0;">
+          <button class="btn btn-primary btn-sm" onclick="runGraphql()">▶ Run GraphQL Flow</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLogs('gql')">🔄 Clear</button>
+        </div>
+
+        <div class="query-log" id="log-gql">
+          <div style="color: var(--text-dim); font-style: italic;">Waiting to execute: POST /graphql...</div>
+        </div>
+        
+        <div style="margin-top: 16px;">
+          <div class="metric-box"><span>Network Requests</span><span class="metric-value" id="m-gql-net">0</span></div>
+          <div class="metric-box"><span>Database Queries</span><span class="metric-value" id="m-gql-db">0</span></div>
+          <div class="metric-box"><span>Data Over-fetching</span><span class="metric-value" style="color: var(--success)">Zero</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KBLab Context -->
+    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
+      <div class="callout">
+        <strong>🔍 Vấn đề N+1 trong thực tế:</strong> Khi lấy danh sách 10 câu hỏi, và cần lấy thêm số lượt nộp bài (submissions) cho MỖI câu hỏi. Với REST ngây thơ, bạn tốn 1 request lấy questions, và N=10 requests lấy submissions. GraphQL giải quyết bằng 1 network request duy nhất, nhưng cần cẩn thận tối ưu DB (dùng DataLoader) để tránh chuyển N+1 từ Network xuống Database.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const N_QUESTIONS = 5;
+
+    function clearLogs(type) {
+      document.getElementById(`log-${type}`).innerHTML = '';
+      document.getElementById(`m-${type}-net`).textContent = '0';
+      document.getElementById(`m-${type}-db`).textContent = '0';
+      const pkt = document.getElementById(`pkt-${type}`);
+      pkt.className = 'request-packet';
+    }
+
+    function addLog(type, msg, cssClass) {
+      const log = document.getElementById(`log-${type}`);
+      log.innerHTML += `<div class="${cssClass}">${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function animatePacket(type, animClass) {
+      return new Promise(resolve => {
+        const pkt = document.getElementById(`pkt-${type}`);
+        pkt.className = 'request-packet'; // reset
+        void pkt.offsetWidth; // trigger reflow
+        pkt.classList.add(animClass);
+        setTimeout(resolve, 500);
+      });
+    }
+
+    async function runRest() {
+      clearLogs('rest');
+      let netCount = 0;
+      let dbCount = 0;
+      const updateMetrics = () => {
+        document.getElementById('m-rest-net').textContent = netCount;
+        document.getElementById('m-rest-db').textContent = dbCount;
+      };
+
+      // 1. Get Questions
+      addLog('rest', 'Client: GET /api/questions', 'req');
+      await animatePacket('rest', 'anim-req');
+      netCount++; updateMetrics();
+      
+      addLog('rest', 'Server: SELECT * FROM questions LIMIT 5', 'db');
+      await animatePacket('rest', 'anim-db');
+      dbCount++; updateMetrics();
+
+      addLog('rest', 'Server -> Client: [Q1, Q2, Q3, Q4, Q5]', 'req');
+      await animatePacket('rest', 'anim-res');
+
+      // 2. N+1 Problem: Get Submissions for EACH question
+      for (let i = 1; i <= N_QUESTIONS; i++) {
+        addLog('rest', `Client: GET /api/questions/${i}/submissions`, 'req');
+        await animatePacket('rest', 'anim-req');
+        netCount++; updateMetrics();
+
+        addLog('rest', `Server: SELECT * FROM submissions WHERE q_id=${i}`, 'db');
+        await animatePacket('rest', 'anim-db');
+        dbCount++; updateMetrics();
+
+        addLog('rest', `Server -> Client: [Submissions for Q${i}]`, 'req');
+        await animatePacket('rest', 'anim-res');
+      }
+      addLog('rest', '✅ Done (N+1 bottleneck illustrated)', '');
+    }
+
+    async function runGraphql() {
+      clearLogs('gql');
+      let netCount = 0;
+      let dbCount = 0;
+      const updateMetrics = () => {
+        document.getElementById('m-gql-net').textContent = netCount;
+        document.getElementById('m-gql-db').textContent = dbCount;
+      };
+
+      // 1. Single Graph Request
+      addLog('gql', 'Client: POST /graphql { questions { id submissions { id } } }', 'req');
+      await animatePacket('gql', 'anim-req');
+      netCount++; updateMetrics();
+      
+      // 2. Server processes (Optimized with DataLoader)
+      addLog('gql', 'Server: SELECT * FROM questions LIMIT 5', 'db');
+      await animatePacket('gql', 'anim-db');
+      dbCount++; updateMetrics();
+
+      addLog('gql', 'Server (DataLoader): SELECT * FROM submissions WHERE q_id IN (1,2,3,4,5)', 'db');
+      await animatePacket('gql', 'anim-db');
+      dbCount++; updateMetrics();
+
+      // 3. Single Response
+      addLog('gql', 'Server -> Client: Graph Tree Assembled', 'req');
+      await animatePacket('gql', 'anim-res');
+      
+      addLog('gql', '✅ Done (1 Network Request, Optimized DB)', '');
+    }
+
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+  </script>
+</body>
+</html>

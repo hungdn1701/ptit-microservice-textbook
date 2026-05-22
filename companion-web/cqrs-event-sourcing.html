@@ -6,215 +6,267 @@
   <title>CQRS & Event Sourcing — Ch.7 | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .cqrs-layout { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 0; align-items: start; }
-    @media (max-width: 768px) { .cqrs-layout { grid-template-columns: 1fr; } .cqrs-divider { display: none; } }
-    .cqrs-divider { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding-top: 60px; }
-    .cqrs-divider .arrow { font-size: 20px; color: var(--primary); }
-    .cqrs-divider .divider-label { writing-mode: vertical-lr; font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
-    .event-store { margin-top: 24px; }
-    .event-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 4px; font-size: 12px; font-family: var(--font-mono); transition: background 0.2s; }
-    .event-row:hover { background: var(--surface-hover); }
-    .event-row.new { animation: fadeIn 0.4s ease-out; background: var(--primary-light); }
-    .event-seq { color: var(--text-muted); width: 30px; text-align: right; }
-    .event-type { font-weight: 600; color: var(--primary); }
-    .event-data { color: var(--text-muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .event-time { color: var(--text-muted); font-size: 11px; }
-    .read-model { margin-top: 16px; }
-    .read-row { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
-    .read-row:last-child { border-bottom: none; }
-    .read-key { color: var(--text-muted); }
-    .read-val { font-weight: 600; font-variant-numeric: tabular-nums; }
-    .write-form { display: flex; flex-direction: column; gap: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-    .form-select, .form-input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); color: var(--text-main); font-family: var(--font-sans); font-size: 13px; outline: none; }
-    .form-select:focus, .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-    .replay-progress { margin-top: 12px; }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+
+    .cqrs-canvas {
+      height: 380px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .node {
+      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
+      padding: 10px 14px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
+      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+    }
+    
+    .node-command { top: 20px; left: 20px; border-color: var(--warning); color: var(--warning); }
+    .node-query { top: 20px; right: 20px; border-color: var(--info); color: var(--info); }
+    
+    .db {
+      position: absolute; border: 2px solid; border-radius: 8px; padding: 10px;
+      text-align: center; font-family: var(--font-mono); font-size: 11px; z-index: 2;
+      background: var(--bg-elevated);
+    }
+    .db-write { top: 90px; left: 20px; border-color: var(--warning); width: 140px; }
+    .db-read { top: 90px; right: 20px; border-color: var(--info); width: 140px; }
+
+    .event-bus {
+      position: absolute; top: 180px; left: 50%; transform: translateX(-50%);
+      width: 80%; height: 40px; border: 2px dashed var(--success);
+      border-radius: 20px; display: flex; align-items: center; justify-content: center;
+      color: var(--success); font-family: var(--font-mono); font-size: 12px; font-weight: bold;
+      background: rgba(16,185,129,0.1); z-index: 1;
+    }
+
+    /* Event Particles */
+    .event-dot {
+      position: absolute; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--success); box-shadow: 0 0 10px var(--success);
+      z-index: 3; opacity: 0;
+    }
+
+    @keyframes writeToBus {
+      0% { top: 140px; left: 80px; opacity: 1; }
+      100% { top: 190px; left: calc(50% - 6px); opacity: 1; }
+    }
+    @keyframes busToRead {
+      0% { top: 190px; left: calc(50% - 6px); opacity: 1; }
+      100% { top: 140px; left: calc(100% - 90px); opacity: 1; }
+    }
+
+    /* Leaderboard Projection */
+    .projection-table {
+      position: absolute; bottom: 20px; right: 20px; width: 220px;
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
+      background: var(--bg); border: 1px solid var(--border); padding: 4px;
+    }
+    .projection-table table { width: 100%; border-collapse: collapse; }
+    .projection-table th { border-bottom: 1px solid var(--border); padding: 4px; text-align: left; color: var(--info); }
+    .projection-table td { padding: 4px; border-bottom: 1px dotted rgba(255,255,255,0.1); }
+    .row-update { animation: flashRow 1s ease-out; }
+    @keyframes flashRow { 0% { background: rgba(59,130,246,0.3); } 100% { background: transparent; } }
+
+    /* Event Store Log */
+    .event-store {
+      position: absolute; bottom: 20px; left: 20px; width: 200px;
+      font-family: var(--font-mono); font-size: 9px; color: var(--warning);
+      background: var(--bg); border: 1px solid var(--warning); padding: 6px;
+      height: 120px; overflow-y: hidden;
+    }
+    .es-entry { padding: 2px 0; border-bottom: 1px solid rgba(245,158,11,0.2); margin-bottom: 2px; }
+
+    .query-log {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
+      height: 150px; overflow-y: auto; border: 1px solid var(--border);
+    }
+    .log-sys { color: var(--text-main); }
+    .log-cmd { color: var(--warning); }
+    .log-evt { color: var(--success); }
+    .log-qry { color: var(--info); }
+
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 7 — Data Management</div>
+      <div class="chapter-badge">Chương 7 — Quản lý Dữ liệu</div>
       <h1>📊 CQRS & Event Sourcing</h1>
-      <p class="subtitle">Write Model (Command) → Event Store → Read Model (Query) — tách biệt ghi / đọc</p>
+      <p class="subtitle">Mô phỏng Leaderboard Contest: Tách biệt Write Model (Command) và Read Model (Query)</p>
     </header>
 
-    <div class="cqrs-layout">
-      <!-- Write Side -->
-      <div class="card animate-fadeIn">
-        <div class="card-title">✏️ Write Model (Command)</div>
-        <div class="write-form">
-          <div class="form-group">
-            <label class="form-label">Action</label>
-            <select class="form-select" id="cmd-action">
-              <option value="SubmissionCreated">Submit SQL</option>
-              <option value="SubmissionJudged">Judge Result</option>
-              <option value="ScoreUpdated">Update Score</option>
-              <option value="ContestStarted">Start Contest</option>
-              <option value="ContestEnded">End Contest</option>
-            </select>
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <!-- Visualization -->
+      <div class="architecture-box">
+        <div class="card-title">🗺️ Kiến trúc CQRS + ES</div>
+        <div class="cqrs-canvas">
+          
+          <!-- Nodes -->
+          <div class="node node-command">Command API (Write)</div>
+          <div class="node node-query">Query API (Read)</div>
+          
+          <!-- Databases -->
+          <div class="db db-write">
+            Event Store (Source of Truth)
           </div>
-          <div class="form-group">
-            <label class="form-label">Student</label>
-            <select class="form-select" id="cmd-student">
-              <option value="SV001">SV001 — Nguyễn Văn A</option>
-              <option value="SV002">SV002 — Trần Thị B</option>
-              <option value="SV003">SV003 — Lê Minh C</option>
-            </select>
+          <div class="db db-read">
+            Leaderboard DB (Redis/Materialized)
           </div>
-          <div class="form-group">
-            <label class="form-label">Details</label>
-            <input class="form-input" id="cmd-detail" placeholder="SELECT * FROM students" value="SELECT * FROM students">
+
+          <!-- Bus -->
+          <div class="event-bus">Kafka Event Bus</div>
+
+          <!-- Particles -->
+          <div class="event-dot" id="dot1"></div>
+          <div class="event-dot" id="dot2"></div>
+
+          <!-- Event Store Log -->
+          <div class="event-store" id="es-log">
+            <div style="color:var(--text-dim); font-style:italic">Event Store Empty</div>
           </div>
-          <button class="btn btn-primary" onclick="executeCommand()" style="width:100%;">▶️ Execute Command</button>
+
+          <!-- Projection Table -->
+          <div class="projection-table">
+            <table>
+              <thead><tr><th>User</th><th>Score</th></tr></thead>
+              <tbody id="leaderboard">
+                <tr id="row-u1"><td>user_01</td><td>0</td></tr>
+                <tr id="row-u2"><td>user_02</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        
+        <div class="controls">
+          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u1', 10)">▶ Nộp bài User_01 (+10)</button>
+          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u2', 20)">▶ Nộp bài User_02 (+20)</button>
+          <button class="btn btn-sm" style="border-color:var(--info); color:var(--info)" onclick="sendQuery()">🔍 Lấy Leaderboard</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+        </div>
+
+      </div>
+
+      <!-- Log Panel -->
+      <div class="architecture-box">
+        <div class="card-title">📋 System Log</div>
+        <div class="query-log" id="sys-log">
+          <div class="log-sys">Hệ thống sẵn sàng...</div>
+        </div>
+
+        <!-- Book Context -->
+        <div style="margin-top: 16px;">
+          <div class="callout" style="font-size: 11px;">
+            <strong>🔍 Từ Sách (Chương 7):</strong> <i>"Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách. Với CQRS, leaderboard có read model riêng: write side publish <code>ScoreUpdatedEvent</code>, read side consume event và cập nhật <code>LeaderboardEntry</code> denormalized. Query leaderboard chỉ cần <code>findByContestId()</code> — đơn giản, nhanh, không cần JOIN."</i>
+          </div>
         </div>
       </div>
 
-      <!-- Divider -->
-      <div class="cqrs-divider">
-        <div class="arrow">→</div>
-        <div class="divider-label">Event Bus</div>
-        <div class="arrow">→</div>
-      </div>
-
-      <!-- Read Side -->
-      <div class="card animate-fadeIn">
-        <div class="card-title">👁️ Read Model (Query)</div>
-        <div class="read-model" id="read-model">
-          <div class="read-row"><span class="read-key">Total Submissions</span><span class="read-val" id="rm-submissions">0</span></div>
-          <div class="read-row"><span class="read-key">Correct Answers</span><span class="read-val" id="rm-correct" style="color:var(--success)">0</span></div>
-          <div class="read-row"><span class="read-key">Active Contests</span><span class="read-val" id="rm-contests">0</span></div>
-          <div class="read-row"><span class="read-key">Top Scorer</span><span class="read-val" id="rm-top">—</span></div>
-          <div class="read-row"><span class="read-key">Last Event</span><span class="read-val" id="rm-last" style="color:var(--primary)">—</span></div>
-        </div>
-        <div class="replay-progress" style="margin-top:16px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <span style="font-size:12px;color:var(--text-muted);">Projection Sync</span>
-            <span style="font-size:12px;font-weight:600;" id="sync-status">Up to date</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="sync-bar" style="width:100%;"></div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Event Store -->
-    <div class="card event-store animate-fadeIn">
-      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>📚 Event Store</span>
-        <div class="btn-group">
-          <button class="btn btn-sm" onclick="replayEvents()">🔄 Replay All</button>
-          <button class="btn btn-sm" onclick="clearEvents()">🗑️ Clear</button>
-        </div>
-      </div>
-      <div id="event-list" style="max-height:240px;overflow-y:auto;margin-top:12px;">
-        <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No events yet. Execute a command above.</div>
-      </div>
-    </div>
-
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Hiện tại hệ thống dùng shared database (anti-pattern). Với CQRS: write model xử lý submissions/scoring (consistency cao), read model phục vụ leaderboard + statistics (eventual consistency, cache-friendly). Event Sourcing cho phép rebuild leaderboard từ event history — rất hữu ích khi cần kiểm tra gian lận cuộc thi.
-      </div>
-    </div>
-
-    </div>
+  </div>
 
   <script>
-    let events = [];
-    let seqNo = 0;
-    let scores = { SV001: 0, SV002: 0, SV003: 0 };
-    let submissions = 0, correct = 0, activeContests = 0;
+    let scores = { 'u1': 0, 'u2': 0 };
+    let seq = 1;
 
-    function executeCommand() {
-      const action = document.getElementById('cmd-action').value;
-      const student = document.getElementById('cmd-student').value;
-      const detail = document.getElementById('cmd-detail').value;
-
-      const event = {
-        seq: ++seqNo,
-        type: action,
-        student: student,
-        data: detail,
-        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      };
-      events.push(event);
-
-      // Apply to read model
-      applyEvent(event);
-      renderEventList();
-      updateReadModel();
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    function logSys(msg, cls) {
+      const log = document.getElementById('sys-log');
+      log.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
     }
 
-    function applyEvent(event) {
-      switch (event.type) {
-        case 'SubmissionCreated': submissions++; break;
-        case 'SubmissionJudged':
-          const isCorrect = Math.random() > 0.4;
-          event.result = isCorrect ? 'CORRECT' : 'WRONG';
-          if (isCorrect) { correct++; scores[event.student] = (scores[event.student] || 0) + 10; }
-          break;
-        case 'ScoreUpdated': scores[event.student] = (scores[event.student] || 0) + 5; break;
-        case 'ContestStarted': activeContests++; break;
-        case 'ContestEnded': activeContests = Math.max(0, activeContests - 1); break;
-      }
+    function logEs(msg) {
+      const es = document.getElementById('es-log');
+      if(seq === 1) es.innerHTML = ''; // clear placeholder
+      es.innerHTML = `<div class="es-entry">${seq}. ${msg}</div>` + es.innerHTML;
+      seq++;
     }
 
-    function updateReadModel() {
-      document.getElementById('rm-submissions').textContent = submissions;
-      document.getElementById('rm-correct').textContent = correct;
-      document.getElementById('rm-contests').textContent = activeContests;
-      const topEntry = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
-      document.getElementById('rm-top').textContent = topEntry[1] > 0 ? `${topEntry[0]} (${topEntry[1]}pts)` : '—';
-      document.getElementById('rm-last').textContent = events.length ? events[events.length-1].type : '—';
+    function anim(elId, animName, dur) {
+      return new Promise(r => {
+        const el = document.getElementById(elId);
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = `${animName} ${dur}s forwards`;
+        setTimeout(r, dur * 1000);
+      });
     }
 
-    function renderEventList() {
-      const container = document.getElementById('event-list');
-      container.innerHTML = events.map((e, i) => `
-        <div class="event-row ${i === events.length - 1 ? 'new' : ''}">
-          <span class="event-seq">#${e.seq}</span>
-          <span class="event-type">${e.type}</span>
-          <span class="event-data">${e.student} — ${e.data}${e.result ? ` → ${e.result}` : ''}</span>
-          <span class="event-time">${e.time}</span>
-        </div>
-      `).join('');
-      container.scrollTop = container.scrollHeight;
+    async function sendCommand(user, points) {
+      logSys(`Command: Submit Answer (${user})`, 'log-cmd');
+      
+      // 1. Write to Event Store
+      logSys(`Event Store: Appending ScoreUpdatedEvent(+${points})`, 'log-evt');
+      logEs(`ScoreUpdated(user=${user}, pts=${points})`);
+      
+      // 2. Publish to Bus
+      await anim('dot1', 'writeToBus', 0.5);
+      logSys(`Kafka: Event Published`, 'log-evt');
+      document.getElementById('dot1').style.opacity = 0;
+
+      // 3. Projector reads from bus
+      await sleep(200);
+      await anim('dot2', 'busToRead', 0.5);
+      document.getElementById('dot2').style.opacity = 0;
+
+      // 4. Update Read Model
+      scores[user] += points;
+      logSys(`Projector: Updating Leaderboard DB (${user} = ${scores[user]})`, 'log-sys');
+      
+      const row = document.getElementById(`row-${user}`);
+      row.innerHTML = `<td>user_0${user.replace('u','')}</td><td style="color:var(--info); font-weight:bold">${scores[user]}</td>`;
+      row.classList.remove('row-update');
+      void row.offsetWidth;
+      row.classList.add('row-update');
     }
 
-    async function replayEvents() {
-      // Reset read model
-      submissions = 0; correct = 0; activeContests = 0;
-      scores = { SV001: 0, SV002: 0, SV003: 0 };
-      updateReadModel();
-      document.getElementById('sync-status').textContent = 'Replaying...';
-      document.getElementById('sync-bar').style.width = '0%';
-
-      for (let i = 0; i < events.length; i++) {
-        await new Promise(r => setTimeout(r, 200));
-        applyEvent(events[i]);
-        updateReadModel();
-        const pct = ((i + 1) / events.length) * 100;
-        document.getElementById('sync-bar').style.width = `${pct}%`;
-      }
-      document.getElementById('sync-status').textContent = 'Up to date';
+    async function sendQuery() {
+      logSys(`Query: GET /api/leaderboard`, 'log-qry');
+      await sleep(300);
+      logSys(`Read DB: SELECT * FROM leaderboard_view (NO JOINS!)`, 'log-qry');
+      await sleep(300);
+      logSys(`Response: [user_02: ${scores['u2']}, user_01: ${scores['u1']}] (Ultra Fast ⚡)`, 'log-qry');
     }
 
-    function clearEvents() {
-      events = []; seqNo = 0; submissions = 0; correct = 0; activeContests = 0;
-      scores = { SV001: 0, SV002: 0, SV003: 0 };
-      document.getElementById('event-list').innerHTML =
-        '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No events yet. Execute a command above.</div>';
-      updateReadModel();
+    function resetSim() {
+      scores = { 'u1': 0, 'u2': 0 };
+      seq = 1;
+      document.getElementById('es-log').innerHTML = '<div style="color:var(--text-dim); font-style:italic">Event Store Empty</div>';
+      document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
+      document.getElementById('row-u1').innerHTML = `<td>user_01</td><td>0</td>`;
+      document.getElementById('row-u2').innerHTML = `<td>user_02</td><td>0</td>`;
+      document.getElementById('dot1').style.opacity = 0;
+      document.getElementById('dot2').style.opacity = 0;
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
-    }
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

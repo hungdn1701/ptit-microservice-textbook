@@ -6,207 +6,276 @@
   <title>OAuth2 / JWT Flow — Ch.9 | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .jwt-display { font-family: var(--font-mono); font-size: 11px; word-break: break-all; padding: 12px; background: #0d1117; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.06); }
-    .jwt-header { color: #ff7b72; }
-    .jwt-payload { color: #7ee787; }
-    .jwt-signature { color: #79c0ff; }
-    .token-lifecycle { display: flex; gap: 12px; align-items: center; overflow-x: auto; padding: 16px 0; }
-    .lc-step { flex-shrink: 0; padding: 14px; background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius-md); text-align: center; min-width: 110px; transition: all 0.3s; }
-    .lc-step.active { border-color: var(--primary); box-shadow: var(--shadow-glow); }
-    .lc-step.done { border-color: var(--success); }
-    .lc-step.error { border-color: var(--danger); }
-    .lc-step .step-icon { font-size: 24px; margin-bottom: 4px; }
-    .lc-step .step-label { font-size: 11px; font-weight: 600; }
-    .lc-arrow { color: var(--text-dim); font-size: 18px; flex-shrink: 0; }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 32px; }
+    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+
+    .flow-canvas {
+      height: 380px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .node {
+      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
+      padding: 10px 14px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
+      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+    }
+    
+    .node-client { top: 150px; left: 20px; border-color: var(--primary); color: var(--primary); }
+    .node-auth { top: 20px; right: 20px; border-color: var(--success); color: var(--success); width: 160px; }
+    .node-api { bottom: 20px; right: 20px; border-color: var(--info); color: var(--info); width: 160px; }
+
+    /* Animated Messages */
+    .msg-bubble {
+      position: absolute; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px;
+      background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border);
+      z-index: 10; opacity: 0; white-space: nowrap; font-weight: bold;
+    }
+    .msg-req { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
+    .msg-token { background: var(--success-dim); border-color: var(--success); color: var(--success); }
+    .msg-err { background: var(--danger-dim); border-color: var(--danger); color: var(--danger); }
+
+    /* Animations */
+    @keyframes loginReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 40px; left: calc(100% - 250px); opacity: 1; } }
+    @keyframes tokenRes { 0% { top: 40px; left: calc(100% - 250px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
+    
+    @keyframes apiReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 320px; left: calc(100% - 250px); opacity: 1; } }
+    @keyframes apiRes { 0% { top: 320px; left: calc(100% - 250px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
+
+    /* Token Visualizer */
+    .token-viz {
+      font-family: var(--font-mono); font-size: 10px; word-break: break-all;
+      background: var(--bg); padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    }
+    .t-header { color: #ff7b72; }
+    .t-payload { color: #d2a8ff; }
+    .t-sign { color: #79c0ff; }
+    
+    .token-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; }
+
+    .query-log {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
+      height: 280px; overflow-y: auto; border: 1px solid var(--border);
+    }
+    .log-sys { color: var(--text-main); }
+    .log-ok { color: var(--success); }
+    .log-err { color: var(--danger); }
+    .log-warn { color: var(--warning); }
+
+    .algo-switch { display: flex; gap: 8px; margin-bottom: 16px; }
+    .algo-btn { flex: 1; padding: 6px; font-size: 11px; font-weight: bold; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text-muted); }
+    .algo-btn.active { background: var(--primary-dim); color: var(--primary); border-color: var(--primary); }
+
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 9 — Security</div>
-      <h1>🔐 OAuth2 / JWT Flow</h1>
-      <p class="subtitle">Token lifecycle — Login → Issue → Validate → Refresh → Revoke</p>
+      <div class="chapter-badge">Chương 9 — Bảo mật hệ thống</div>
+      <h1>🔐 JWT & OAuth2 Flow</h1>
+      <p class="subtitle">Mô phỏng vòng đời Token (Access/Refresh) và thuật toán ký (HS256 vs RS256)</p>
     </header>
 
-    <!-- Lifecycle -->
-    <div class="card">
-      <div class="card-title">🔄 Token Lifecycle</div>
-      <div class="token-lifecycle" id="lifecycle">
-        <div class="lc-step" id="lc-login"><div class="step-icon">🔑</div><div class="step-label">Login</div></div>
-        <div class="lc-arrow">→</div>
-        <div class="lc-step" id="lc-issue"><div class="step-icon">📜</div><div class="step-label">Issue JWT</div></div>
-        <div class="lc-arrow">→</div>
-        <div class="lc-step" id="lc-validate"><div class="step-icon">✅</div><div class="step-label">Validate</div></div>
-        <div class="lc-arrow">→</div>
-        <div class="lc-step" id="lc-refresh"><div class="step-icon">🔄</div><div class="step-label">Refresh</div></div>
-        <div class="lc-arrow">→</div>
-        <div class="lc-step" id="lc-revoke"><div class="step-icon">🚫</div><div class="step-label">Revoke</div></div>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <button class="btn btn-primary" onclick="doLogin()">🔑 Login</button>
-      <button class="btn btn-success" onclick="doValidate()">✅ Validate Token</button>
-      <button class="btn" onclick="doRefresh()">🔄 Refresh</button>
-      <button class="btn btn-danger" onclick="doRevoke()">🚫 Revoke</button>
-      <button class="btn" onclick="resetFlow()">Reset</button>
-    </div>
-
-    <div class="grid-2" style="margin-top: 20px;">
-      <!-- JWT Display -->
-      <div class="card">
-        <div class="card-title">📜 Current Token</div>
-        <div id="token-display" class="jwt-display" style="min-height:80px;">
-          <span style="color:var(--text-dim);">No token — click Login to authenticate</span>
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <!-- Visualization -->
+      <div class="architecture-box">
+        
+        <div class="algo-switch">
+          <button class="algo-btn active" id="btn-hs256" onclick="setAlgo('HS256')">HS256 (Symmetric Key)</button>
+          <button class="algo-btn" id="btn-rs256" onclick="setAlgo('RS256')">RS256 (Asymmetric Key)</button>
         </div>
-        <div style="margin-top:12px;">
-          <div class="config-row"><span class="config-label">Status</span><span id="token-status"><span class="badge badge-info">NO TOKEN</span></span></div>
-          <div class="config-row"><span class="config-label">Issued at</span><span class="config-value" id="token-iat">—</span></div>
-          <div class="config-row"><span class="config-label">Expires</span><span class="config-value" id="token-exp">—</span></div>
-          <div class="config-row"><span class="config-label">User</span><span class="config-value" id="token-user">—</span></div>
-          <div class="config-row"><span class="config-label">Roles</span><span id="token-roles">—</span></div>
+
+        <div class="flow-canvas" id="canvas">
+          
+          <div class="node node-client">Client App</div>
+          
+          <div class="node node-auth">Auth Service<br>
+            <span style="font-size:9px; font-weight:normal; color:var(--text-dim)" id="lbl-auth-key">Secret Key: 'kblab-secret'</span>
+          </div>
+          
+          <div class="node node-api">Resource API (Gateway)<br>
+            <span style="font-size:9px; font-weight:normal; color:var(--text-dim)" id="lbl-api-key">Secret Key: 'kblab-secret'</span>
+          </div>
+
+          <!-- Animated Messages -->
+          <div class="msg-bubble" id="msg-anim"></div>
+
         </div>
+        
+        <div class="controls" style="margin-top: 16px;">
+          <button class="btn btn-success btn-sm" onclick="runFlow('login')">1. Login</button>
+          <button class="btn btn-primary btn-sm" onclick="runFlow('api-ok')">2. Call API (Valid)</button>
+          <button class="btn btn-danger btn-sm" onclick="runFlow('api-exp')">3. Call API (Expired)</button>
+          <button class="btn btn-warning btn-sm" onclick="runFlow('refresh')">4. Refresh Token</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+        </div>
+
       </div>
 
-      <!-- Event Log -->
-      <div class="card">
-        <div class="card-title">📋 Auth Events</div>
-        <div class="log-panel" id="auth-log" style="max-height:280px;">
-          <div><span class="log-info">Auth system ready</span></div>
+      <!-- Logs & State -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        
+        <div class="architecture-box">
+          <div class="card-title">Token State</div>
+          <div class="token-status">
+            <span>Access Token (15m):</span>
+            <span class="badge badge-success" id="acc-status">Active</span>
+          </div>
+          <div class="token-viz">
+            <span class="t-header">eyJhbGciOiJIUzI1Ni...</span>.<br/>
+            <span class="t-payload">eyJ1c2VySWQiOiJTVjAw...</span>.<br/>
+            <span class="t-sign">SflKxwRJSMeKKF2QT4f...</span>
+          </div>
+          
+          <div class="token-status" style="margin-top: 12px;">
+            <span>Refresh Token (7d):</span>
+            <span class="badge badge-success" id="ref-status">Active</span>
+          </div>
         </div>
+
+        <div class="architecture-box" style="flex: 1;">
+          <div class="card-title">📋 Flow Log</div>
+          <div class="query-log" id="sys-log">
+            <div class="log-sys">Hệ thống sẵn sàng...</div>
+          </div>
+        </div>
+
       </div>
+
     </div>
 
-    <!-- JWT Structure -->
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title">🧩 JWT Structure (3 phần)</div>
-      <div class="grid-3">
-        <div style="padding:12px; background:var(--danger-dim); border-radius:var(--radius-sm);">
-          <div style="font-weight:700; font-size:13px; color:var(--danger);">Header</div>
-          <pre style="font-size:11px; font-family:var(--font-mono); margin-top:6px; color:var(--text-secondary);">{ "alg": "HS256", "typ": "JWT" }</pre>
-        </div>
-        <div style="padding:12px; background:var(--success-dim); border-radius:var(--radius-sm);">
-          <div style="font-weight:700; font-size:13px; color:var(--success);">Payload</div>
-          <pre style="font-size:11px; font-family:var(--font-mono); margin-top:6px; color:var(--text-secondary);">{ "sub": "user123", "role": "STUDENT", "exp": 1712678400 }</pre>
-        </div>
-        <div style="padding:12px; background:var(--info-dim); border-radius:var(--radius-sm);">
-          <div style="font-weight:700; font-size:13px; color:var(--info);">Signature</div>
-          <pre style="font-size:11px; font-family:var(--font-mono); margin-top:6px; color:var(--text-secondary);">HMACSHA256(header + "." + payload, secret)</pre>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:24px;">
+    <!-- Context -->
+    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Auth Service generates JWT on login → client stores in localStorage → mọi request gửi kèm <code>Authorization: Bearer &lt;token&gt;</code> → Gateway (hoặc mỗi service) validates JWT bằng shared secret. Refresh token cho phép gia hạn mà không cần re-login.
+        <strong>🔍 Từ Sách (Chương 9):</strong> <i>"KBLab hiện dùng HS256 (Symmetric) — các services chia sẻ cùng secret key. Trong production, rủi ro là nếu một service bị hack, attacker có thể tạo token giả. Giải pháp là chuyển sang RS256 (Asymmetric) — Auth Service giữ Private Key để ký, các service khác chỉ có Public Key để verify... JWT có thời hạn (exp). Khi Access Token (ngắn hạn) hết hạn, client dùng Refresh Token (dài hạn) gọi Auth Service để lấy cặp token mới mà không bắt user login lại."</i>
       </div>
     </div>
 
-    </div>
+  </div>
 
   <script>
-    let tokenState = 'none'; // none, active, expired, revoked
-    let tokenIat = null, tokenExp = null;
+    let algo = 'HS256';
+    let isExpired = false;
 
-    function doLogin() {
-      setStep('lc-login', 'active');
-      log('🔑 POST /auth/login { username: "sv001", password: "***" }', 'info');
-      setTimeout(() => {
-        setStep('lc-login', 'done');
-        setStep('lc-issue', 'active');
-        tokenState = 'active';
-        tokenIat = new Date();
-        tokenExp = new Date(Date.now() + 30 * 60000); // 30 min
-        log('✅ Login success — issuing JWT...', 'success');
-        setTimeout(() => {
-          setStep('lc-issue', 'done');
-          renderToken();
-          log(`📜 JWT issued — expires ${tokenExp.toLocaleTimeString()}`, 'success');
-        }, 500);
-      }, 600);
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    
+    function logSys(msg, cls) {
+      const log = document.getElementById('sys-log');
+      log.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
     }
 
-    function doValidate() {
-      if (tokenState !== 'active') { log('❌ No valid token to validate', 'error'); return; }
-      setStep('lc-validate', 'active');
-      log('✅ GET /api/questions — Authorization: Bearer eyJ...', 'info');
-      setTimeout(() => {
-        setStep('lc-validate', 'done');
-        log('✅ Token valid — request authorized (role: STUDENT)', 'success');
-      }, 400);
-    }
-
-    function doRefresh() {
-      if (tokenState === 'none') { log('❌ No token to refresh — login first', 'error'); return; }
-      setStep('lc-refresh', 'active');
-      log('🔄 POST /auth/refresh { refreshToken: "rt-..." }', 'info');
-      setTimeout(() => {
-        setStep('lc-refresh', 'done');
-        tokenState = 'active';
-        tokenIat = new Date();
-        tokenExp = new Date(Date.now() + 30 * 60000);
-        renderToken();
-        log(`📜 New JWT issued — expires ${tokenExp.toLocaleTimeString()}`, 'success');
-      }, 500);
-    }
-
-    function doRevoke() {
-      if (tokenState === 'none') { log('⚠️ No token to revoke', 'warn'); return; }
-      setStep('lc-revoke', 'active');
-      log('🚫 POST /auth/revoke', 'info');
-      setTimeout(() => {
-        setStep('lc-revoke', 'error');
-        tokenState = 'revoked';
-        renderToken();
-        log('🚫 Token revoked — user logged out', 'warn');
-      }, 400);
-    }
-
-    function resetFlow() {
-      tokenState = 'none'; tokenIat = null; tokenExp = null;
-      document.querySelectorAll('.lc-step').forEach(el => { el.classList.remove('active', 'done', 'error'); });
-      renderToken();
-      document.getElementById('auth-log').innerHTML = '<div><span class="log-info">Auth system ready</span></div>';
-    }
-
-    function setStep(id, cls) {
-      const el = document.getElementById(id);
-      el.classList.remove('active', 'done', 'error');
-      el.classList.add(cls);
-    }
-
-    function renderToken() {
-      const disp = document.getElementById('token-display');
-      if (tokenState === 'none') {
-        disp.innerHTML = '<span style="color:var(--text-dim);">No token — click Login to authenticate</span>';
-      } else if (tokenState === 'revoked') {
-        disp.innerHTML = '<span style="color:var(--danger);">TOKEN REVOKED</span>';
+    function setAlgo(a) {
+      algo = a;
+      document.querySelectorAll('.algo-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-${a.toLowerCase()}`).classList.add('active');
+      
+      if (a === 'HS256') {
+        document.getElementById('lbl-auth-key').textContent = "Secret Key: 'kblab-secret'";
+        document.getElementById('lbl-api-key').textContent = "Secret Key: 'kblab-secret'";
+        logSys('Switched to HS256 (Symmetric). Both services share the same secret.', 'log-warn');
       } else {
-        disp.innerHTML = '<span class="jwt-header">eyJhbGciOiJIUzI1NiJ9</span>.<span class="jwt-payload">eyJzdWIiOiJzdjAwMSIsInJvbGUiOiJTVFVERU5UIiwiZXhwIjoxNzEyNjc4NDAwfQ</span>.<span class="jwt-signature">SflKxwRJSMeKKF2QT4fwp</span>';
+        document.getElementById('lbl-auth-key').textContent = "Private Key (Keep safe!)";
+        document.getElementById('lbl-api-key').textContent = "Public Key (Safe to share)";
+        logSys('Switched to RS256 (Asymmetric). Auth signs with Private, API verifies with Public.', 'log-ok');
       }
-      const statuses = { none: '<span class="badge badge-info">NO TOKEN</span>', active: '<span class="badge badge-success">ACTIVE</span>', revoked: '<span class="badge badge-danger">REVOKED</span>' };
-      document.getElementById('token-status').innerHTML = statuses[tokenState] || '';
-      document.getElementById('token-iat').textContent = tokenIat ? tokenIat.toLocaleTimeString() : '—';
-      document.getElementById('token-exp').textContent = tokenExp ? tokenExp.toLocaleTimeString() : '—';
-      document.getElementById('token-user').textContent = tokenState !== 'none' ? 'sv001 (Nguyễn Văn A)' : '—';
-      document.getElementById('token-roles').innerHTML = tokenState !== 'none' ? '<span class="badge badge-primary">STUDENT</span>' : '—';
     }
 
-    function log(msg, type) {
-      const el = document.getElementById('auth-log');
-      const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-      el.innerHTML += `<div><span class="log-time">[${time}]</span> <span class="log-${type}">${msg}</span></div>`;
-      el.scrollTop = el.scrollHeight;
+    async function animMsg(text, cls, animName) {
+      const msg = document.getElementById('msg-anim');
+      msg.textContent = text;
+      msg.className = `msg-bubble ${cls}`;
+      msg.style.animation = 'none';
+      void msg.offsetWidth;
+      msg.style.animation = `${animName} 0.8s ease-in-out forwards`;
+      await sleep(800);
+      msg.style.opacity = 0;
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+    async function runFlow(scenario) {
+      const accBadge = document.getElementById('acc-status');
+      
+      if (scenario === 'login') {
+        logSys('--- LOGIN FLOW ---', 'log-sys');
+        await animMsg('POST /login {user,pass}', 'msg-req', 'loginReq');
+        logSys('Auth Service: Validating credentials...', 'log-sys');
+        await sleep(400);
+        logSys(`Auth Service: Signing JWT with ${algo === 'HS256' ? 'Secret Key' : 'Private Key'}`, 'log-ok');
+        await animMsg('200 OK + {Access, Refresh}', 'msg-token', 'tokenRes');
+        
+        isExpired = false;
+        accBadge.className = 'badge badge-success'; accBadge.textContent = 'Active';
+        logSys('Client: Saved Access & Refresh tokens.', 'log-ok');
+
+      } else if (scenario === 'api-ok') {
+        if (isExpired) { logSys('Cannot run Happy Path while token is forced EXPIRED.', 'log-err'); return; }
+        
+        logSys('--- API CALL (VALID TOKEN) ---', 'log-sys');
+        await animMsg('GET /api/data + Bearer Token', 'msg-req', 'apiReq');
+        logSys(`API Gateway: Verifying JWT signature with ${algo === 'HS256' ? 'Secret Key' : 'Public Key'}`, 'log-sys');
+        await sleep(400);
+        logSys('API Gateway: Signature valid, exp>now. Allowing request.', 'log-ok');
+        await animMsg('200 OK + Data', 'msg-token', 'apiRes');
+
+      } else if (scenario === 'api-exp') {
+        logSys('--- API CALL (EXPIRED TOKEN) ---', 'log-sys');
+        isExpired = true;
+        accBadge.className = 'badge badge-danger'; accBadge.textContent = 'Expired';
+        
+        await animMsg('GET /api/data + Bearer Token', 'msg-req', 'apiReq');
+        logSys(`API Gateway: Verifying JWT signature...`, 'log-sys');
+        await sleep(400);
+        logSys('API Gateway: Token expired (exp < now)! Rejecting.', 'log-err');
+        await animMsg('401 Unauthorized (Token Expired)', 'msg-err', 'apiRes');
+
+      } else if (scenario === 'refresh') {
+        logSys('--- REFRESH TOKEN FLOW ---', 'log-sys');
+        await animMsg('POST /refresh + Refresh Token', 'msg-req', 'loginReq');
+        logSys('Auth Service: Validating long-lived Refresh Token...', 'log-sys');
+        await sleep(400);
+        logSys(`Auth Service: Generating NEW Access Token (signing with ${algo === 'HS256' ? 'Secret Key' : 'Private Key'})`, 'log-ok');
+        await animMsg('200 OK + {New Access Token}', 'msg-token', 'tokenRes');
+        
+        isExpired = false;
+        accBadge.className = 'badge badge-success'; accBadge.textContent = 'Active (Refreshed)';
+        logSys('Client: Replaced old Access Token with new one. Can call API again.', 'log-ok');
+      }
     }
 
-    renderToken();
+    function resetSim() {
+      setAlgo('HS256');
+      isExpired = false;
+      document.getElementById('acc-status').className = 'badge badge-success';
+      document.getElementById('acc-status').textContent = 'Active';
+      document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
+      document.getElementById('msg-anim').style.opacity = 0;
+    }
+
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

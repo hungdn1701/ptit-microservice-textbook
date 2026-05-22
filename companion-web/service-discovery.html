@@ -204,6 +204,13 @@
     }
 
     renderAll();
+  
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') {
+        document.documentElement.classList.toggle('light', e.data.isLight);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

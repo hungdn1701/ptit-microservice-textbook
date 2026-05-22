@@ -17,106 +17,246 @@
       display: flex;
       flex-direction: column;
       z-index: 10;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.4);
     }
+    
+    /* Sleek Scrollbar for Sidebar */
+    .sidebar-content::-webkit-scrollbar { width: 6px; }
+    .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    .sidebar-content::-webkit-scrollbar-thumb:hover { background: rgba(255,122,0,0.5); }
+    .light .sidebar-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+    .light .sidebar-content::-webkit-scrollbar-thumb:hover { background: rgba(255,122,0,0.5); }
+
     .sidebar-header {
-      padding: 16px;
+      padding: 24px 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: var(--bg-surface); /* sticky header effect */
     }
     .sidebar-header h1 {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
       margin: 0;
       color: var(--text-main);
     }
     .sidebar-content {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
     
     /* Portal Links */
-    .portal-links { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .portal-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .portal-link { 
-      display: flex; align-items: center; justify-content: center; gap: 8px; 
-      padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; 
-      text-decoration: none; transition: all 0.2s; font-family: var(--font-sans);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
+      padding: 14px 10px; border-radius: var(--radius-md); font-size: 11px; font-weight: 600; 
+      text-decoration: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-family: var(--font-sans);
+      border: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .portal-link.primary { background: var(--primary); color: white; }
-    .portal-link.primary:hover { filter: brightness(1.1); }
-    .portal-link.secondary { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border); }
-    .portal-link.secondary:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.1); }
+    .portal-link::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    }
+    .portal-link:hover::after { opacity: 1; }
+    .portal-link.primary { background: var(--primary-dim); color: var(--primary); border-color: rgba(255, 122, 0, 0.3); }
+    .portal-link.primary:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+    .portal-link.secondary { background: rgba(255,255,255,0.02); color: var(--text-secondary); }
+    .portal-link.secondary:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); color: var(--text-main); transform: translateY(-2px); }
     
-    /* Filters */
-    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .filter-btn { 
-      padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; 
-      border: 1px solid var(--border); background: transparent; color: var(--text-secondary); 
-      cursor: pointer; transition: all 0.15s; font-family: var(--font-sans);
+    .portal-link .icon { font-size: 20px; margin-bottom: 2px; }
+
+    /* Filter Section */
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
-    .filter-btn:hover { border-color: var(--border-hover); color: var(--text-main); }
-    .filter-btn.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.3); color: var(--primary); }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Filters */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { 
+      padding: 6px 14px; font-size: 10px; font-weight: 700; border-radius: 20px; 
+      border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--text-secondary); 
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    .filter-btn:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.05); }
+    .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 2px 10px rgba(255,122,0,0.3); }
     
     /* Pattern List */
-    .pattern-list { display: flex; flex-direction: column; gap: 8px; }
+    .pattern-list { display: flex; flex-direction: column; gap: 12px; }
     .pattern-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px;
-      border-radius: 8px; border: 1px solid var(--border);
-      background: transparent; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 16px; padding: 16px;
+      border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg-card); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-decoration: none; color: inherit;
+      animation: slideIn 0.4s ease forwards;
+      opacity: 0;
+      transform: translateX(-10px);
+      position: relative;
+      overflow: hidden;
     }
-    .pattern-item:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .pattern-item::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--primary); transform: scaleY(0); transition: transform 0.2s ease-out;
+      transform-origin: center;
+    }
+    .pattern-item:hover { background: var(--bg-card-hover); border-color: var(--border-hover); transform: translateX(4px); box-shadow: var(--shadow-soft); }
     .pattern-item.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.4); }
+    .pattern-item.active::before { transform: scaleY(1); }
     
-    .pattern-item-icon { font-size: 20px; }
+    .pattern-item-icon { font-size: 22px; filter: grayscale(1) brightness(1.2); transition: all 0.3s; opacity: 0.7; }
+    .pattern-item.active .pattern-item-icon, .pattern-item:hover .pattern-item-icon { filter: none; opacity: 1; transform: scale(1.1); }
+
     .pattern-item-info { flex: 1; min-width: 0; }
-    .pattern-item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pattern-item-ch { font-size: 11px; color: var(--text-dim); }
+    .pattern-item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-family: var(--font-sans); }
+    .pattern-item-ch { font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); font-weight: 500; display: inline-block; padding: 2px 6px; background: rgba(255,255,255,0.05); border-radius: 4px; }
     
     /* Main Content (Iframe) */
     .main-content {
       flex: 1;
-      background: var(--bg-body);
+      background: var(--bg);
       position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 20px 0 40px rgba(0,0,0,0.2); /* inner depth */
     }
     iframe#viewer {
       width: 100%; height: 100%; border: none; background: transparent;
+      z-index: 2;
     }
     
-    /* Welcome Screen */
+    /* Welcome Screen - Brutalist Blueprint */
     .welcome-screen {
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; pointer-events: none;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+      text-align: left; pointer-events: none;
+      z-index: 1;
+      padding: 80px;
+      overflow: hidden;
     }
-    .welcome-screen h2 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; }
-    .welcome-screen p { color: var(--text-secondary); max-width: 400px; line-height: 1.5; }
+    .welcome-screen .blueprint-bg {
+      position: absolute;
+      top: -10%; left: -10%;
+      width: 120%; height: 120%;
+      opacity: 0.03;
+      background-image: 
+        repeating-linear-gradient(45deg, var(--primary) 0, var(--primary) 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(-45deg, var(--primary) 0, var(--primary) 1px, transparent 1px, transparent 20px);
+      transform: rotate(5deg);
+    }
+    .welcome-screen h2 { 
+      font-size: 48px; color: var(--text-main); margin-bottom: 24px; 
+      font-weight: 800; letter-spacing: -0.05em; 
+      text-transform: uppercase;
+      line-height: 1.1;
+      border-left: 8px solid var(--primary);
+      padding-left: 24px;
+    }
+    .welcome-screen p { 
+      color: var(--text-secondary); max-width: 500px; 
+      line-height: 1.8; font-size: 16px; 
+      font-family: var(--font-mono);
+      margin-left: 32px;
+    }
+    .welcome-screen .decoration {
+      position: absolute;
+      right: 80px; bottom: 80px;
+      font-family: var(--font-mono);
+      color: var(--primary);
+      opacity: 0.5;
+      font-size: 12px;
+      text-align: right;
+    }
+
     
     @media (max-width: 768px) {
       .app-layout { flex-direction: column; }
-      .sidebar { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar { 
+        width: 100%; 
+        height: auto; 
+        border-right: none; 
+        border-bottom: 1px solid var(--border); 
+        position: relative;
+      }
+      .sidebar-content {
+        display: none; /* Hidden by default on mobile */
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--bg-surface);
+        max-height: calc(100vh - 80px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+      }
+      .sidebar-content.open { display: flex; }
+      .mobile-menu-btn { display: block !important; }
+      .welcome-screen h2 { font-size: 32px; }
+      .welcome-screen p { font-size: 14px; margin-left: 0; }
     }
+
+    /* Formal Book Info */
+    .book-meta {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .mobile-menu-btn { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; display: none; padding: 0; }
   </style>
 </head>
 <body class="dark">
   <div class="app-layout">
     <div class="sidebar">
       <div class="sidebar-header">
-        <h1>📐 SOA & Microservices</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+        <div>
+          <h1>📐 SOA & Microservices</h1>
+          <div class="book-meta">Tác giả: KBLab • Phiên bản 1.0</div>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+          <button class="mobile-menu-btn" onclick="toggleMobileMenu()" title="Menu">☰</button>
+        </div>
       </div>
-      <div class="sidebar-content">
+      <div class="sidebar-content" id="sidebar-content">
         <div class="portal-links">
-          <a href="book.html" target="_blank" class="portal-link primary">📖 Đọc Sách Online</a>
-          <a href="book.pdf" download class="portal-link secondary">📥 Tải Sách (PDF)</a>
+          <a href="#" onclick="alert('⚠️ Hệ thống đang biên dịch bản thảo. Vui lòng quay lại sau!'); return false;" class="portal-link primary">📖 Đọc Sách Online</a>
+          <a href="#" onclick="alert('⚠️ Bản PDF đang được render từ Typst. Vui lòng chờ phiên bản Release!'); return false;" class="portal-link secondary">📥 Tải Sách (PDF)</a>
         </div>
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="all">Tất cả</button>
-          <button class="filter-btn" data-filter="communication">🔗 Comm</button>
-          <button class="filter-btn" data-filter="data">💾 Data</button>
-          <button class="filter-btn" data-filter="infrastructure">🏗️ Infra</button>
+          <button class="filter-btn" data-filter="architecture">🏗️ Kiến trúc</button>
+          <button class="filter-btn" data-filter="api">🔗 API & Comm</button>
+          <button class="filter-btn" data-filter="data">💾 Data & Sync</button>
+          <button class="filter-btn" data-filter="security">🛡️ Security & Resilience</button>
+          <button class="filter-btn" data-filter="ops">🚀 Ops & Observability</button>
         </div>
         <div class="pattern-list" id="pattern-list">
           <!-- Rendered via JS -->
@@ -135,27 +275,29 @@
 
   <script>
     const patterns = [
-      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'monolith-vs-microservices.html', cat: 'infrastructure', tags: ['architecture', 'overview'] },
-      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'context-map.html', cat: 'data', tags: ['DDD', 'bounded-context'] },
-      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'rest-api-explorer.html', cat: 'communication', tags: ['REST', 'API-design'] },
-      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'circuit-breaker.html', cat: 'communication', tags: ['resilience', 'fault-tolerance'] },
-      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'service-discovery.html', cat: 'communication', tags: ['eureka', 'registry'] },
-      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'message-broker.html', cat: 'communication', tags: ['kafka', 'async'] },
+      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
+      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
+      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'rest-api-explorer.html', cat: 'api', tags: ['REST', 'API-design'] },
+      { ch: 3, icon: '🕸️', name: 'GraphQL vs REST', desc: 'So sánh N+1 problem và schema-first approach', file: 'graphql-vs-rest.html', cat: 'api', tags: ['GraphQL', 'API-design'] },
+      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'circuit-breaker.html', cat: 'security', tags: ['resilience', 'fault-tolerance'] },
+      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'service-discovery.html', cat: 'api', tags: ['eureka', 'registry'] },
+      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'message-broker.html', cat: 'data', tags: ['kafka', 'async'] },
       { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
       { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
-      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'api-gateway-routing.html', cat: 'communication', tags: ['gateway', 'routing'] },
-      { ch: 8, icon: '⚙️', name: 'Config Server', desc: 'Central configuration — hot reload, environment profiles', file: 'config-server.html', cat: 'infrastructure', tags: ['config', 'spring-cloud'] },
-      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'oauth2-jwt-flow.html', cat: 'infrastructure', tags: ['security', 'JWT'] },
-      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'strangler-fig-migration.html', cat: 'infrastructure', tags: ['migration', 'strangler-fig'] },
-      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'distributed-tracing.html', cat: 'infrastructure', tags: ['tracing', 'observability'] },
-      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'deployment-strategies.html', cat: 'infrastructure', tags: ['deployment', 'CI-CD'] },
+      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
+      { ch: 8, icon: '⏱️', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
+      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
+      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
+      { ch: 10, icon: '📦', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
+      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'distributed-tracing.html', cat: 'ops', tags: ['tracing', 'observability'] },
+      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'deployment-strategies.html', cat: 'ops', tags: ['deployment', 'CI-CD'] },
     ];
 
     function renderList(filter = 'all') {
       const list = document.getElementById('pattern-list');
       const filtered = filter === 'all' ? patterns : patterns.filter(p => p.cat === filter);
-      list.innerHTML = filtered.map(p => `
-        <div class="pattern-item" data-file="${p.file}">
+      list.innerHTML = filtered.map((p, index) => `
+        <div class="pattern-item" data-file="${p.file}" style="animation-delay: ${index * 0.05}s">
           <div class="pattern-item-icon">${p.icon}</div>
           <div class="pattern-item-info">
             <div class="pattern-item-name">${p.name}</div>
@@ -173,6 +315,22 @@
       renderList(e.target.dataset.filter);
     });
 
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      const isLight = document.documentElement.classList.contains('light');
+      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
+      
+      const iframe = document.getElementById('viewer');
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
+      }
+    }
+
+    function toggleMobileMenu() {
+      const sidebar = document.getElementById('sidebar-content');
+      sidebar.classList.toggle('open');
+    }
+    
     // Pattern click
     document.getElementById('pattern-list').addEventListener('click', e => {
       const item = e.target.closest('.pattern-item');
@@ -184,19 +342,13 @@
       const file = item.dataset.file;
       document.getElementById('viewer').src = file;
       document.getElementById('welcome-screen').style.display = 'none';
+      
+      // Auto-close menu on mobile after selection
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar-content').classList.remove('open');
+      }
     });
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      const isLight = document.documentElement.classList.contains('light');
-      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
-      
-      const iframe = document.getElementById('viewer');
-      if (iframe.contentWindow) {
-        iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
-      }
-    }
-    
     window.addEventListener('message', (e) => {
       if (e.data.type === 'GET_THEME') {
         const isLight = document.documentElement.classList.contains('light');

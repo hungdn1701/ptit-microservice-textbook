@@ -6,218 +6,251 @@
   <title>Strangler Fig Migration — Ch.10 | KBLab LMS</title>
   <link rel="stylesheet" href="base-style.css">
   <style>
-    .migration-viz { position: relative; padding: 24px 0; }
-    .arch-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: stretch; }
-    @media (max-width: 768px) { .arch-row { flex-direction: column; } }
-    .arch-block { flex: 1; min-height: 80px; border-radius: var(--radius-md); border: 2px solid var(--border); padding: 16px; display: flex; flex-direction: column; justify-content: center; transition: all 0.5s ease; position: relative; overflow: hidden; }
-    .arch-block.monolith { background: linear-gradient(135deg, rgba(255,95,86,0.08), rgba(255,95,86,0.02)); border-color: rgba(255,95,86,0.3); }
-    .arch-block.microservice { background: linear-gradient(135deg, rgba(39,201,63,0.08), rgba(39,201,63,0.02)); border-color: rgba(39,201,63,0.3); }
-    .arch-block.facade { background: linear-gradient(135deg, rgba(74,158,255,0.08), rgba(74,158,255,0.02)); border-color: rgba(74,158,255,0.3); }
-    .arch-block.shrinking { opacity: 0.4; transform: scaleY(0.7); }
-    .arch-block.growing { box-shadow: 0 0 20px rgba(39,201,63,0.15); }
-    .block-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .block-modules { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .module-chip { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid var(--border); background: var(--surface); transition: all 0.3s; }
-    .module-chip.migrated { background: rgba(39,201,63,0.12); border-color: rgba(39,201,63,0.3); color: #1fa834; text-decoration: line-through; opacity: 0.6; }
-    .module-chip.active { background: rgba(39,201,63,0.15); border-color: var(--success); color: #1fa834; }
-    .slider-container { margin: 32px 0; text-align: center; }
-    .phase-slider { width: 100%; max-width: 600px; margin: 0 auto; -webkit-appearance: none; height: 8px; border-radius: 4px; background: var(--bg-alt); outline: none; }
-    .phase-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-warm); }
-    .phase-labels { display: flex; justify-content: space-between; max-width: 600px; margin: 10px auto 0; font-size: 12px; color: var(--text-muted); }
-    .phase-title { text-align: center; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-    .phase-desc { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-    .traffic-split { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin: 16px 0; }
-    .traffic-monolith { background: var(--danger); transition: width 0.5s; }
-    .traffic-micro { background: var(--success); transition: width 0.5s; }
-    .split-labels { display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; }
-    .timeline-phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
-    @media (max-width: 768px) { .timeline-phases { grid-template-columns: 1fr 1fr; } }
-    .phase-card { padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface); transition: all 0.3s; cursor: pointer; }
-    .phase-card.active { border-color: var(--primary); box-shadow: var(--shadow-warm); }
-    .phase-card.done { border-color: var(--success); }
-    .phase-num { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
-    .phase-card-title { font-size: 13px; font-weight: 600; margin: 6px 0 4px; }
-    .phase-card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+    body {
+      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    
+    .sim-container { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
+    
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      padding: 20px;
+      position: relative;
+    }
+
+    .slider-container { margin: 20px 0 40px; padding: 0 20px; }
+    .slider-labels { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 11px; font-weight: bold; color: var(--text-dim); }
+    .slider-labels span { cursor: pointer; transition: color 0.3s; }
+    .slider-labels span.active { color: var(--primary); }
+    
+    input[type=range] {
+      -webkit-appearance: none; width: 100%; background: transparent; height: 4px; border-radius: 2px;
+      background: var(--border); outline: none; transition: background 0.3s;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+      background: var(--primary); cursor: pointer; box-shadow: 0 0 10px var(--primary-glow);
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .migration-canvas {
+      height: 380px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .node {
+      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
+      padding: 12px 16px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
+      text-align: center; box-shadow: var(--shadow-soft); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .client-node { top: 20px; left: 50%; transform: translateX(-50%); border-color: var(--info); color: var(--info); width: 120px;}
+    .gateway-node { top: 100px; left: 50%; transform: translateX(-50%); border-color: var(--warning); color: var(--warning); width: 180px; border-style: dashed;}
+    
+    /* Monolith */
+    .monolith-node {
+      top: 200px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 140px; border-color: var(--text-dim); color: var(--text-secondary);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+    .m-module { padding: 8px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; font-size: 11px; transition: all 0.5s; opacity: 1; transform: scale(1); }
+    .m-module.extracted { opacity: 0.2; transform: scale(0.9); border-style: dashed; }
+
+    /* Microservices */
+    .ms-node { font-size: 11px; width: 120px; opacity: 0; transform: translateY(20px); pointer-events: none; border-color: var(--primary); }
+    .ms-node.visible { opacity: 1; transform: translateY(0); pointer-events: auto; box-shadow: 0 0 15px rgba(255,122,0,0.2); }
+    
+    #ms-auth { top: 220px; left: 40px; }
+    #ms-core { top: 220px; right: 40px; }
+    #ms-judge { top: 300px; right: 40px; border-color: var(--success); }
+
+    /* Routing Lines */
+    .routing-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .routing-lines path { fill: none; stroke: var(--border-hover); stroke-width: 2; transition: all 0.5s; }
+    .route-active { stroke: var(--warning) !important; stroke-dasharray: 4 4; animation: dashFlow 1s linear infinite; }
+    @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+
+    .route-label { position: absolute; font-size: 9px; font-family: var(--font-mono); color: var(--warning); background: var(--bg-surface); padding: 2px 4px; border: 1px solid var(--border); border-radius: 3px; opacity: 0; transition: opacity 0.5s; }
+    .route-label.visible { opacity: 1; }
+
+    #lbl-r-mono { top: 160px; left: 50%; transform: translateX(-50%); }
+    #lbl-r-auth { top: 170px; left: 25%; transform: translateX(-50%); }
+    #lbl-r-core { top: 170px; left: 75%; transform: translateX(-50%); }
+
+    .desc-panel { font-size: 13px; color: var(--text-secondary); line-height: 1.6; min-height: 80px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 16px; }
+
   </style>
 </head>
 <body>
   <div class="page-container">
     <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 10 — Migration Thực tế</div>
+      <div class="chapter-badge">Chương 10 — Migration & Dữ liệu</div>
       <h1>🌿 Strangler Fig Migration</h1>
-      <p class="subtitle">Dần thay thế monolith bằng microservices — như cây đa bóp nghẹt cây chủ</p>
+      <p class="subtitle">Thay thế hệ thống cũ một cách tăng dần (Incremental), không Big Bang Rewrite.</p>
     </header>
 
-    <!-- Phase Slider -->
-    <div class="card animate-fadeIn">
-      <div class="slider-container">
-        <div class="phase-title" id="current-phase-title">Phase 0: Monolith hiện tại</div>
-        <div class="phase-desc" id="current-phase-desc">Tất cả modules nằm trong một ứng dụng, shared database, shared library</div>
-        <input type="range" class="phase-slider" id="phase-slider" min="0" max="4" value="0" step="1" oninput="setPhase(this.value)">
-        <div class="phase-labels">
-          <span>Monolith</span>
-          <span>Phase 1</span>
-          <span>Phase 2</span>
-          <span>Phase 3</span>
-          <span>Phase 4</span>
+    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
+      
+      <div class="architecture-box">
+        <div class="card-title">🗺️ Migration Timeline</div>
+        
+        <div class="slider-container">
+          <div class="slider-labels">
+            <span id="l-0" class="active" onclick="setPhase(0)">Phase 0: Monolith</span>
+            <span id="l-1" onclick="setPhase(1)">Phase 1: Gateway Seam</span>
+            <span id="l-2" onclick="setPhase(2)">Phase 2: Extract Auth</span>
+            <span id="l-3" onclick="setPhase(3)">Phase 3: Core & Judge</span>
+          </div>
+          <input type="range" id="phase-slider" min="0" max="3" value="0" step="1" oninput="setPhase(this.value)">
         </div>
+
+        <div class="migration-canvas">
+          
+          <svg class="routing-lines">
+            <!-- Client to Gateway -->
+            <path d="M 50% 64 L 50% 100" class="route-active" />
+            <!-- Gateway to Monolith -->
+            <path id="path-mono" d="M 50% 154 L 50% 200" class="route-active" />
+            <!-- Gateway to Auth -->
+            <path id="path-auth" d="M 35% 154 C 20% 170, 20% 190, 20% 220" />
+            <!-- Gateway to Core -->
+            <path id="path-core" d="M 65% 154 C 80% 170, 80% 190, 80% 220" />
+            <!-- Core to Judge -->
+            <path id="path-judge" d="M 80% 268 L 80% 300" />
+          </svg>
+
+          <!-- Route Labels -->
+          <div class="route-label visible" id="lbl-r-mono">/* → Monolith</div>
+          <div class="route-label" id="lbl-r-auth">/api/auth/** → auth-svc</div>
+          <div class="route-label" id="lbl-r-core">/api/core/** → core-svc</div>
+
+          <div class="node client-node">Client (Web)</div>
+          <div class="node gateway-node" id="gateway" style="opacity:0">API Gateway (Proxy)</div>
+          
+          <!-- Monolith -->
+          <div class="node monolith-node" id="monolith">
+            <div style="width: 100%; text-align: center; margin-bottom: 8px;">Legacy Monolith</div>
+            <div class="m-module" id="m-auth" style="border-left: 3px solid var(--success)">Identity Module</div>
+            <div class="m-module" id="m-core" style="border-left: 3px solid var(--primary)">LMS Core Module</div>
+            <div class="m-module" id="m-judge" style="border-left: 3px solid var(--info)">Judge Engine</div>
+            <div class="m-module" id="m-assign">Assignment Module</div>
+          </div>
+
+          <!-- Microservices -->
+          <div class="node ms-node" id="ms-auth" style="border-color:var(--success); color:var(--success)">Auth Service</div>
+          <div class="node ms-node" id="ms-core" style="border-color:var(--primary); color:var(--primary)">Core Service</div>
+          <div class="node ms-node" id="ms-judge" style="border-color:var(--info); color:var(--info)">Judge Service</div>
+
+        </div>
+
+        <div class="desc-panel" id="desc-panel">
+          <strong>Phase 0: Hệ thống nguyên khối.</strong> Client kết nối trực tiếp đến Monolith (hoặc qua một proxy đơn giản). Tất cả module (Auth, Core, Judge) nằm chung một codebase và chung một database. Bất kỳ thay đổi nào cũng yêu cầu deploy lại toàn bộ.
+        </div>
+
       </div>
 
-      <!-- Traffic Split -->
-      <div style="max-width:600px;margin:24px auto 0;">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Traffic Split</div>
-        <div class="traffic-split">
-          <div class="traffic-monolith" id="traffic-mono" style="width:100%"></div>
-          <div class="traffic-micro" id="traffic-micro" style="width:0%"></div>
-        </div>
-        <div class="split-labels">
-          <span style="color:var(--danger);" id="split-mono">Monolith: 100%</span>
-          <span style="color:var(--success);" id="split-micro">Microservices: 0%</span>
-        </div>
-      </div>
     </div>
 
-    <!-- Architecture Visualization -->
-    <div class="card animate-fadeIn" style="margin-top:20px;">
-      <div class="card-title">🏗️ Architecture</div>
-      <div class="migration-viz" id="arch-viz">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-
-    <!-- Phase Timeline -->
-    <div class="timeline-phases" id="phase-cards">
-      <!-- Rendered by JS -->
-    </div>
-
-    <div style="margin-top:24px;">
+    <!-- Context -->
+    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Migration thực tế của KBLab bắt đầu bằng việc tách Auth Service (ít coupling nhất), tiếp theo là Judge Service (cần scale độc lập cho Contest Mode). Shared database giữa Core và Assignment là bước khó nhất — cần database decomposition dần dần (schema separation → API access → full split).
+        <strong>🔍 Từ Sách (Chương 10):</strong> <i>"Never do a big bang rewrite. Strangle the monolith incrementally — each step delivers value, each step is reversible. API Gateway đóng vai trò tự nhiên làm seam cho Strangler Fig... Dùng route-based strategy: Gateway route paths khác nhau đến monolith/services."</i>
       </div>
     </div>
 
-    </div>
+  </div>
 
   <script>
-    const allModules = ['Auth', 'Core', 'Judge', 'Assignment', 'Notification'];
-
-    const phases = [
-      {
-        id: 0, title: 'Phase 0: Monolith hiện tại',
-        desc: 'Tất cả modules nằm trong một ứng dụng, shared database, shared library',
-        mono: 100, migrated: [], microservices: [],
-        card: { title: 'Current State', desc: 'Shared DB, shared lib, single deploy unit' }
-      },
-      {
-        id: 1, title: 'Phase 1: Tách Auth Service',
-        desc: 'Auth Service tách ra → JWT RS256, database riêng. API Facade điều hướng traffic.',
-        mono: 80, migrated: ['Auth'], microservices: ['Auth'],
-        card: { title: 'Auth Service', desc: 'Tách database → JWT RS256 → API Facade route' }
-      },
-      {
-        id: 2, title: 'Phase 2: Tách Judge Service',
-        desc: 'Judge Service tách ra → scale độc lập cho Contest Mode. Kafka message queue.',
-        mono: 55, migrated: ['Auth', 'Judge'], microservices: ['Auth', 'Judge'],
-        card: { title: 'Judge Service', desc: 'Independent scaling → Kafka queue → sandbox isolation' }
-      },
-      {
-        id: 3, title: 'Phase 3: Tách Assignment Service',
-        desc: 'Assignment Service tách ra → database decomposition từ shared DB. Anti-corruption layer.',
-        mono: 25, migrated: ['Auth', 'Judge', 'Assignment'], microservices: ['Auth', 'Judge', 'Assignment'],
-        card: { title: 'Assignment Service', desc: 'DB decomposition → ACL → API-based data access' }
-      },
-      {
-        id: 4, title: 'Phase 4: Full Microservices',
-        desc: 'Monolith thu nhỏ → chỉ còn Core Service + Notification. Database-per-service hoàn tất.',
-        mono: 0, migrated: ['Auth', 'Judge', 'Assignment', 'Notification'], microservices: ['Auth', 'Judge', 'Assignment', 'Core', 'Notification'],
-        card: { title: 'Complete', desc: 'DB-per-service ✅ Independent deploy ✅ Full monitoring ✅' }
-      }
+    const descriptions = [
+      "<strong>Phase 0: Hệ thống nguyên khối.</strong> Tất cả module (Auth, Core, Judge) nằm chung một codebase. Bất kỳ thay đổi nào cũng yêu cầu deploy lại toàn bộ. Chưa có API Gateway rõ ràng.",
+      "<strong>Phase 1: API Gateway (The Seam).</strong> Đưa Spring Cloud Gateway vào đứng trước Monolith. Lúc này Gateway chỉ làm reverse proxy: forward toàn bộ traffic (<code>/*</code>) về hệ thống cũ. Việc này tạo ra điểm cắt (seam) an toàn.",
+      "<strong>Phase 2: Extract Identity (Upstream).</strong> Tách Auth Module thành <code>kblab-auth</code> service độc lập. Cập nhật Gateway: route <code>/api/auth/**</code> tới service mới, các route khác vẫn về Monolith. Identity Module trong Monolith chính thức bị 'strangled' (chết yểu).",
+      "<strong>Phase 3: Extract Core & Judge.</strong> Tách tiếp Core Domain. Gateway route <code>/api/core/**</code> tới <code>core-service</code>. Đồng thời tách Judge ra khỏi Core để xử lý riêng biệt. Monolith bây giờ chỉ còn lại Assignment Module."
     ];
 
-    function setPhase(val) {
-      const phase = phases[parseInt(val)];
-      document.getElementById('current-phase-title').textContent = phase.title;
-      document.getElementById('current-phase-desc').textContent = phase.desc;
+    function setPhase(p) {
+      p = parseInt(p);
+      document.getElementById('phase-slider').value = p;
+      
+      // Update Labels
+      for(let i=0; i<=3; i++) {
+        document.getElementById(`l-${i}`).className = i === p ? 'active' : '';
+      }
+      
+      document.getElementById('desc-panel').innerHTML = descriptions[p];
 
-      // Traffic split
-      document.getElementById('traffic-mono').style.width = `${phase.mono}%`;
-      document.getElementById('traffic-micro').style.width = `${100 - phase.mono}%`;
-      document.getElementById('split-mono').textContent = `Monolith: ${phase.mono}%`;
-      document.getElementById('split-micro').textContent = `Microservices: ${100 - phase.mono}%`;
+      // Reset
+      document.getElementById('m-auth').className = 'm-module';
+      document.getElementById('m-core').className = 'm-module';
+      document.getElementById('m-judge').className = 'm-module';
+      document.getElementById('ms-auth').className = 'node ms-node';
+      document.getElementById('ms-core').className = 'node ms-node';
+      document.getElementById('ms-judge').className = 'node ms-node';
+      
+      document.getElementById('path-mono').className.baseVal = '';
+      document.getElementById('path-auth').className.baseVal = '';
+      document.getElementById('path-core').className.baseVal = '';
+      document.getElementById('path-judge').className.baseVal = '';
 
-      // Architecture
-      renderArch(phase);
+      document.getElementById('lbl-r-mono').className = 'route-label';
+      document.getElementById('lbl-r-auth').className = 'route-label';
+      document.getElementById('lbl-r-core').className = 'route-label';
 
-      // Phase cards
-      document.querySelectorAll('.phase-card').forEach((card, i) => {
-        card.className = 'phase-card';
-        if (i < val) card.classList.add('done');
-        if (i == val - 1 || (val == 0 && i == 0)) card.classList.add('active');
-      });
-    }
-
-    function renderArch(phase) {
-      const viz = document.getElementById('arch-viz');
-      const monoModules = allModules.filter(m => !phase.migrated.includes(m));
-      const migratedModules = phase.migrated;
-      const phaseIdx = phase.id;
-
-      let html = '';
-
-      // Facade (if migrating)
-      if (phaseIdx > 0 && phaseIdx < 4) {
-        html += `<div class="arch-row"><div class="arch-block facade" style="text-align:center;">
-          <div class="block-title">🔀 API Facade (Strangler Fig Proxy)</div>
-          <div style="font-size:11px;color:var(--text-muted);">Routes traffic: ${phase.mono}% Monolith ↔ ${100-phase.mono}% Microservices</div>
-        </div></div>`;
+      // Apply state
+      if (p >= 0) {
+        document.getElementById('path-mono').classList.add('route-active');
+        document.getElementById('lbl-r-mono').classList.add('visible');
+      }
+      
+      if (p >= 1) {
+        document.getElementById('gateway').style.opacity = '1';
+        document.getElementById('gateway').style.borderColor = 'var(--warning)';
+        document.getElementById('gateway').style.color = 'var(--text-main)';
+      } else {
+        document.getElementById('gateway').style.opacity = '0';
       }
 
-      html += '<div class="arch-row">';
-
-      // Monolith
-      if (monoModules.length > 0) {
-        html += `<div class="arch-block monolith ${phaseIdx >= 4 ? 'shrinking' : ''}">
-          <div class="block-title">🏢 Monolith</div>
-          <div class="block-modules">${allModules.map(m =>
-            `<span class="module-chip ${migratedModules.includes(m) ? 'migrated' : ''}">${m}</span>`
-          ).join('')}</div>
-        </div>`;
+      if (p >= 2) {
+        document.getElementById('m-auth').classList.add('extracted');
+        document.getElementById('ms-auth').classList.add('visible');
+        document.getElementById('path-auth').classList.add('route-active');
+        document.getElementById('lbl-r-auth').classList.add('visible');
       }
 
-      // Microservices
-      if (migratedModules.length > 0) {
-        html += `<div class="arch-block microservice ${phaseIdx >= 3 ? 'growing' : ''}">
-          <div class="block-title">🧩 Microservices</div>
-          <div class="block-modules">${phase.microservices.map(m =>
-            `<span class="module-chip active">${m}</span>`
-          ).join('')}</div>
-        </div>`;
+      if (p >= 3) {
+        document.getElementById('m-core').classList.add('extracted');
+        document.getElementById('m-judge').classList.add('extracted');
+        document.getElementById('ms-core').classList.add('visible');
+        document.getElementById('ms-judge').classList.add('visible');
+        document.getElementById('path-core').classList.add('route-active');
+        document.getElementById('path-judge').classList.add('route-active');
+        document.getElementById('lbl-r-core').classList.add('visible');
+        
+        // Shrink monolith visual slightly
+        document.getElementById('monolith').style.opacity = '0.5';
+      } else {
+        document.getElementById('monolith').style.opacity = '1';
       }
-
-      html += '</div>';
-      viz.innerHTML = html;
-    }
-
-    function renderPhaseCards() {
-      const container = document.getElementById('phase-cards');
-      container.innerHTML = phases.slice(1).map((p, i) => `
-        <div class="phase-card" onclick="document.getElementById('phase-slider').value=${i+1};setPhase(${i+1});">
-          <div class="phase-num">Phase ${i + 1}</div>
-          <div class="phase-card-title">${p.card.title}</div>
-          <div class="phase-card-desc">${p.card.desc}</div>
-        </div>
-      `).join('');
-    }
-
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
     }
 
     // Init
-    renderPhaseCards();
     setPhase(0);
+
+    // Theme integration
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
   </script>
 </body>
 </html>

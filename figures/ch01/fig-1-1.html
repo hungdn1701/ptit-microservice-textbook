@@ -88,28 +88,28 @@
 </head>
 <body class="diagram-mode">
 
-  <div class="diagram-canvas">
+  <div class="diagram-canvas" data-fig-id="FIG-1.1" data-ref="CH01-INTRO">
 
-    <div class="d-title-page">Tiến hóa kiến trúc phần mềm doanh nghiệp</div>
+    <div class="d-title-page">Sự Tiến Hóa Của Kiến Trúc Phần Mềm</div>
 
     <!-- Timeline axis with dots -->
     <div class="timeline-axis">
-      <div class="timeline-dot"></div>
+      <div class="timeline-dot" style="background: #9ca3af; border-color: #374151;"></div>
       <div class="timeline-spacer"></div>
-      <div class="timeline-dot"></div>
+      <div class="timeline-dot" style="background: #ca8a04; border-color: #713f12;"></div>
       <div class="timeline-spacer"></div>
-      <div class="timeline-dot"></div>
+      <div class="timeline-dot" style="background: #0d9488; border-color: #0f766e;"></div>
       <div class="timeline-spacer"></div>
-      <div class="timeline-dot"></div>
+      <div class="timeline-dot" style="background: #2563eb; border-color: #1e3a8a;"></div>
     </div>
 
     <!-- 4 era cards -->
     <div class="era-cards">
 
       <!-- 1990s — Monolith -->
-      <div class="era-card d-legacy">
+      <div class="era-card d-box d-legacy">
         <div class="era-year">1990s</div>
-        <div class="era-name" style="color:#374151">Monolith</div>
+        <div class="d-title">MONOLITH</div>
         <ul class="era-detail">
           <li>Ứng dụng nguyên khối</li>
           <li>Đơn giản, nhanh, dễ debug</li>
@@ -118,9 +118,9 @@
       </div>
 
       <!-- 2000s — SOA -->
-      <div class="era-card d-event">
+      <div class="era-card d-box d-event">
         <div class="era-year">2000s</div>
-        <div class="era-name" style="color:#713f12">SOA</div>
+        <div class="d-title">SOA</div>
         <ul class="era-detail">
           <li>Service-Oriented Architecture</li>
           <li>ESB, WSDL, SOAP</li>
@@ -130,21 +130,21 @@
       </div>
 
       <!-- 2010s — Microservices -->
-      <div class="era-card d-service">
+      <div class="era-card d-box d-service">
         <div class="era-year">2010s</div>
-        <div class="era-name" style="color:#085041">Microservices</div>
+        <div class="d-title">MICROSERVICES</div>
         <ul class="era-detail">
           <li>Kiến trúc vi dịch vụ</li>
           <li>REST, messaging, containers</li>
           <li>Independence-first</li>
-          <li>Netflix, Amazon, Spotify tiên phong</li>
+          <li>Netflix, Amazon tiên phong</li>
         </ul>
       </div>
 
       <!-- 2020s — Evolved MS -->
-      <div class="era-card d-info">
+      <div class="era-card d-box d-storage">
         <div class="era-year">2020s</div>
-        <div class="era-name" style="color:#1e3a8a">Evolved MS</div>
+        <div class="d-title">EVOLVED MS</div>
         <ul class="era-detail">
           <li>Domain-oriented MS (DOMA)</li>
           <li>Modular monolith comeback</li>
@@ -154,6 +154,8 @@
       </div>
 
     </div>
+
+    <div class="d-caption">Hình 1.1: Lộ trình tiến hóa từ Monolith đến các kiến trúc phân tán hiện đại.</div>
 
   </div><!-- /.diagram-canvas -->
 

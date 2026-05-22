@@ -19,177 +19,131 @@
    ============================================================ */
 
 /* ── Diagram Mode Override ── */
-/* Force light bg, remove animations, remove star-field —
-   đảm bảo Playwright capture ra PNG sạch, print-safe.          */
 .diagram-mode {
   background: var(--diagram-color-bg, #ffffff) !important;
-  color: var(--diagram-color-text, #1a202c) !important;
+  color: var(--diagram-color-text, #0a0a0a) !important;
   min-height: unset;
 }
 
-/* Tắt star-field pseudo-element */
-.diagram-mode::before { display: none !important; }
-
-/* Diagram viewport — khớp với viewBox SVG cũ 960×540 */
+/* Diagram viewport — optimized for high-quality capture */
 .diagram-canvas {
   width: 960px;
   min-height: 540px;
-  padding: var(--diagram-space-4, 32px);
-  background: var(--diagram-color-surface, #ffffff);
+  padding: 40px;
+  background: #ffffff;
+  background-image: radial-gradient(#e5e7eb 1px, transparent 0);
+  background-size: 24px 24px;
   box-sizing: border-box;
-  font-family: var(--diagram-font-body, 'Inter', -apple-system, system-ui, sans-serif);
-  font-size: var(--diagram-size-node-body, 13px);
+  font-family: var(--font-body);
+  font-size: 13px;
   line-height: 1.5;
-  color: var(--diagram-color-text, #1a202c);
+  color: #1a1a1a;
   position: relative;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* Technical decorations */
+.diagram-canvas::before {
+  content: 'FIG. ID: ' attr(data-fig-id) ' // REF: ' attr(data-ref);
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #9ca3af;
+  letter-spacing: 0.1em;
+}
+
+.diagram-canvas::after {
+  content: '+ 0.00';
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #9ca3af;
 }
 
 /* ── Typography Scale ── */
 .d-title-page {
-  font-size: var(--diagram-size-section, 18px);
+  font-family: var(--font-sans);
+  font-size: 20px;
   font-weight: 700;
-  color: var(--diagram-color-text, #1a202c);
+  color: #000;
   text-align: center;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
-.d-title   { font-size: var(--diagram-size-node-title, 14px); font-weight: 600; color: var(--diagram-color-text, #1a202c); }
-.d-label   { font-size: var(--diagram-size-meta, 12px); font-weight: 600; color: var(--diagram-color-muted, #64748b);
-             text-transform: uppercase; letter-spacing: 0.05em; }
-.d-sub     { font-size: var(--diagram-size-meta, 12px); font-weight: 400; color: var(--diagram-color-muted, #64748b); margin-top: 2px; }
-.d-mono    { font-family: var(--diagram-font-mono, 'JetBrains Mono', 'Fira Code', monospace);
-             font-size: var(--diagram-size-meta, 12px); color: var(--diagram-color-muted, #475569); }
+.d-title { 
+  font-family: var(--font-sans);
+  font-size: 14px; 
+  font-weight: 700; 
+  color: #000; 
+}
 
-/* ── Layout Primitives ── */
-.d-row     { display: flex; flex-direction: row;  align-items: center;  gap: 12px; }
-.d-col     { display: flex; flex-direction: column; gap: 8px; }
-.d-stack   { display: flex; flex-direction: column; gap: 6px; }
-.d-center  { align-items: center; justify-content: center; }
-.d-between { justify-content: space-between; }
-.d-wrap    { flex-wrap: wrap; }
-.d-grow    { flex: 1; }
+.d-label { 
+  font-family: var(--font-mono);
+  font-size: 10px; 
+  font-weight: 600; 
+  color: #6b7280;
+  text-transform: uppercase; 
+  letter-spacing: 0.1em; 
+}
 
-.d-grid-2  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.d-grid-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.d-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.d-auto    { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.d-mono { 
+  font-family: var(--font-mono);
+  font-size: 11px; 
+  color: #4b5563; 
+}
 
-/* ── Box Primitives — semantic types ── */
-/*
-  Map trực tiếp từ Python svg_design_system.py:
-    service   → .d-service
-    storage   → .d-storage
-    event     → .d-event
-    success   → .d-success
-    danger    → .d-danger
-    warning   → .d-warning
-    info      → .d-info
-    highlight → .d-highlight
-    legacy    → .d-legacy
-    cluster   → .d-cluster (container, dashed)
-    note      → .d-note    (footnote/callout)
-*/
-
+/* ── Box Primitives — Refined ── */
 .d-box {
-  border-radius: var(--diagram-radius-card, 14px);
-  border: 1.5px solid;
-  padding: 10px 14px;
-  transition: none; /* no hover effects — print-safe */
+  border-radius: 4px; /* More industrial/technical */
+  border: 1.5px solid #000;
+  padding: 12px 16px;
+  background: #fff;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
 }
 
-/* Service — teal */
+/* Service — High Contrast Teal */
 .d-service {
-  background: #e6f4f3;
-  border-color: #0f766e;
-  color: #085041;
+  background: #f0fdfa;
+  border-color: #0d9488;
+  border-left-width: 6px;
 }
-.d-service .d-title  { color: #085041; }
-.d-service .d-sub    { color: #0f766e; }
+.d-service .d-title { color: #0f766e; }
 
-/* Storage — blue */
+/* Storage — Blueprint Blue */
 .d-storage {
-  background: #dbeafe;
-  border-color: #2563eb;
-  color: #1e3a8a;
-}
-.d-storage .d-title  { color: #1e3a8a; }
-.d-storage .d-sub    { color: #2563eb; }
-
-/* Event — amber */
-.d-event {
-  background: #fef9c3;
-  border-color: #ca8a04;
-  color: #713f12;
-}
-.d-event .d-title  { color: #713f12; }
-.d-event .d-sub    { color: #92400e; }
-
-/* Success — green */
-.d-success {
-  background: #dcfce7;
-  border-color: #16a34a;
-  color: #14532d;
-}
-
-/* Danger — red */
-.d-danger {
-  background: #fee2e2;
-  border-color: #dc2626;
-  color: #7f1d1d;
-}
-
-/* Warning — orange */
-.d-warning {
-  background: #fff7ed;
-  border-color: #ea580c;
-  color: #7c2d12;
-}
-
-/* Info — blue */
-.d-info {
   background: #eff6ff;
-  border-color: #3b82f6;
-  color: #1e3a8a;
+  border-color: #2563eb;
+  border-style: solid;
+}
+.d-storage .d-title { color: #1e40af; }
+
+/* Event — Warning Yellow */
+.d-event {
+  background: #fffbeb;
+  border-color: #d97706;
+  border-radius: 20px; /* Distinct shape for events */
 }
 
-/* Highlight — purple */
-.d-highlight {
-  background: #f5f3ff;
-  border-color: #7c3aed;
-  color: #3b0764;
-}
-
-/* Legacy — gray */
+/* Legacy — Industrial Gray */
 .d-legacy {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+  background: #f9fafb;
+  border-color: #4b5563;
   color: #374151;
 }
 
-/* Note — light callout */
-.d-note {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #334155;
-  border-style: dashed;
-}
-
-/* Cluster — outer container/grouping zone */
+/* Cluster — dashed zone */
 .d-cluster {
-  background: #f8fafc;
-  border: 1.5px dashed #94a3b8;
-  border-radius: 12px;
-  padding: 14px 16px;
-  position: relative;
-}
-
-.d-cluster > .d-label {
-  position: absolute;
-  top: -9px;
-  left: 14px;
-  background: #ffffff;
-  padding: 0 6px;
+  background: rgba(243, 244, 246, 0.3);
+  border: 1px dashed #9ca3af;
+  border-radius: 8px;
+  padding: 20px;
 }
 
 /* ── Arrow & Connector Utilities ── */
