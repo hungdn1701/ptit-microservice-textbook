@@ -31,33 +31,19 @@ jobs:
           echo "Assembling Unified Portal..."
           mkdir -p public
           cp -R companion-web/* public/
-          
-          # Find latest release tag by sorting directory names in release/
-          LATEST_DIR=$(ls -d release/v* 2>/dev/null | sort -V | tail -n 1)
-          if [ -z "$LATEST_DIR" ]; then
-            echo "No release directory found in release/v*"
-            exit 1
-          fi
-          
-          LATEST_TAG=$(basename "$LATEST_DIR")
-          echo "Found latest release: $LATEST_TAG"
-          
-          # Copy HTML and PDF to public root
-          HTML_FILE="$LATEST_DIR/SOA-Microservices-Book-${LATEST_TAG}.html"
-          PDF_FILE="$LATEST_DIR/SOA-Microservices-Book-${LATEST_TAG}.pdf"
-          
-          if [ -f "$HTML_FILE" ]; then
-            cp "$HTML_FILE" public/book.html
+
+          if [ -f "release/book.html" ]; then
+            cp release/book.html public/book.html
             echo "Copied book.html"
           else
-            echo "Warning: HTML file not found at $HTML_FILE"
+            echo "Warning: release/book.html not found"
           fi
-          
-          if [ -f "$PDF_FILE" ]; then
-            cp "$PDF_FILE" public/book.pdf
+
+          if [ -f "release/book.pdf" ]; then
+            cp release/book.pdf public/book.pdf
             echo "Copied book.pdf"
           else
-            echo "Warning: PDF file not found at $PDF_FILE"
+            echo "Warning: release/book.pdf not found"
           fi
       
       - name: Setup Pages
