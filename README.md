@@ -47,9 +47,9 @@ Kèm theo: [Bài tập](manuscript/exercises.md) · [Glossary](manuscript/append
 
 ---
 
-## 🎮 Interactive Demos
+## 🎮 Companion Web
 
-Giáo trình đi kèm **14 interactive HTML demos** minh họa trực quan các pattern. Mở [`code/interactive/index.html`](code/interactive/index.html) trong trình duyệt để trải nghiệm.
+Giáo trình đi kèm một trang **Companion Web** (Web tiện ích) minh họa trực quan 14 interactive patterns. Mở [`companion-web/index.html`](companion-web/index.html) trong trình duyệt để trải nghiệm.
 
 ---
 
@@ -165,7 +165,7 @@ git checkout -b fix/chapter-03-typo
 ## 📜 License
 
 - **📖 Nội dung** (`manuscript/`, `figures/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **💻 Code** (`code/`): [MIT License](https://opensource.org/licenses/MIT)
+- **💻 Code** (`code/`, `companion-web/`): [MIT License](https://opensource.org/licenses/MIT)
 
 ---
 

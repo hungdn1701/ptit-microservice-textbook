@@ -617,3 +617,29 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
 .mt-24 { margin-top: 24px; }
 .mb-16 { margin-bottom: 16px; }
 .gap-20 { gap: 20px; }
+
+/* ── Print Mode (For Diagram Snapshots) ── */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  .navbar, .controls, .theme-toggle, .btn, .page-header, .page-footer {
+    display: none !important;
+  }
+  .page-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  .card, .flow-node, .pattern-card {
+    background: #ffffff !important;
+    border-color: rgba(0,0,0,0.1) !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+  }
+  .text-secondary, .text-dim {
+    color: #64748b !important;
+  }
+}
+

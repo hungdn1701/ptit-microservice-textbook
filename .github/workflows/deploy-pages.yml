@@ -1,0 +1,77 @@
+name: Deploy Unified Portal to GitHub Pages
+
+on:
+  push:
+    branches: ["master", "main"]
+    paths:
+      - 'companion-web/**'
+      - 'release/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Assemble Unified Portal
+        run: |
+          echo "Assembling Unified Portal..."
+          mkdir -p public
+          cp -R companion-web/* public/
+          
+          # Find latest release tag by sorting directory names in release/
+          LATEST_DIR=$(ls -d release/v* 2>/dev/null | sort -V | tail -n 1)
+          if [ -z "$LATEST_DIR" ]; then
+            echo "No release directory found in release/v*"
+            exit 1
+          fi
+          
+          LATEST_TAG=$(basename "$LATEST_DIR")
+          echo "Found latest release: $LATEST_TAG"
+          
+          # Copy HTML and PDF to public root
+          HTML_FILE="$LATEST_DIR/SOA-Microservices-Book-${LATEST_TAG}.html"
+          PDF_FILE="$LATEST_DIR/SOA-Microservices-Book-${LATEST_TAG}.pdf"
+          
+          if [ -f "$HTML_FILE" ]; then
+            cp "$HTML_FILE" public/book.html
+            echo "Copied book.html"
+          else
+            echo "Warning: HTML file not found at $HTML_FILE"
+          fi
+          
+          if [ -f "$PDF_FILE" ]; then
+            cp "$PDF_FILE" public/book.pdf
+            echo "Copied book.pdf"
+          else
+            echo "Warning: PDF file not found at $PDF_FILE"
+          fi
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

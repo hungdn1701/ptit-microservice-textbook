@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Companion Web — SOA & Microservices Textbook</title>
+  <link rel="stylesheet" href="base-style.css">
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    .app-layout { display: flex; height: 100vh; width: 100vw; }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-main);
+    }
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    /* Portal Links */
+    .portal-links { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .portal-link { 
+      display: flex; align-items: center; justify-content: center; gap: 8px; 
+      padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; 
+      text-decoration: none; transition: all 0.2s; font-family: var(--font-sans);
+    }
+    .portal-link.primary { background: var(--primary); color: white; }
+    .portal-link.primary:hover { filter: brightness(1.1); }
+    .portal-link.secondary { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border); }
+    .portal-link.secondary:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.1); }
+    
+    /* Filters */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-btn { 
+      padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; 
+      border: 1px solid var(--border); background: transparent; color: var(--text-secondary); 
+      cursor: pointer; transition: all 0.15s; font-family: var(--font-sans);
+    }
+    .filter-btn:hover { border-color: var(--border-hover); color: var(--text-main); }
+    .filter-btn.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.3); color: var(--primary); }
+    
+    /* Pattern List */
+    .pattern-list { display: flex; flex-direction: column; gap: 8px; }
+    .pattern-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px;
+      border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; cursor: pointer; transition: all 0.2s;
+      text-decoration: none; color: inherit;
+    }
+    .pattern-item:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+    .pattern-item.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.4); }
+    
+    .pattern-item-icon { font-size: 20px; }
+    .pattern-item-info { flex: 1; min-width: 0; }
+    .pattern-item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pattern-item-ch { font-size: 11px; color: var(--text-dim); }
+    
+    /* Main Content (Iframe) */
+    .main-content {
+      flex: 1;
+      background: var(--bg-body);
+      position: relative;
+    }
+    iframe#viewer {
+      width: 100%; height: 100%; border: none; background: transparent;
+    }
+    
+    /* Welcome Screen */
+    .welcome-screen {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; pointer-events: none;
+    }
+    .welcome-screen h2 { font-size: 24px; color: var(--text-main); margin-bottom: 8px; }
+    .welcome-screen p { color: var(--text-secondary); max-width: 400px; line-height: 1.5; }
+    
+    @media (max-width: 768px) {
+      .app-layout { flex-direction: column; }
+      .sidebar { width: 100%; height: 300px; border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body class="dark">
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h1>📐 SOA & Microservices</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+      </div>
+      <div class="sidebar-content">
+        <div class="portal-links">
+          <a href="book.html" target="_blank" class="portal-link primary">📖 Đọc Sách Online</a>
+          <a href="book.pdf" download class="portal-link secondary">📥 Tải Sách (PDF)</a>
+        </div>
+        <div class="filters" id="filters">
+          <button class="filter-btn active" data-filter="all">Tất cả</button>
+          <button class="filter-btn" data-filter="communication">🔗 Comm</button>
+          <button class="filter-btn" data-filter="data">💾 Data</button>
+          <button class="filter-btn" data-filter="infrastructure">🏗️ Infra</button>
+        </div>
+        <div class="pattern-list" id="pattern-list">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="welcome-screen" id="welcome-screen">
+        <h2>Interactive Pattern Library</h2>
+        <p>Chọn một pattern ở thanh bên trái để xem mô phỏng tương tác.</p>
+      </div>
+      <iframe id="viewer" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const patterns = [
+      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'monolith-vs-microservices.html', cat: 'infrastructure', tags: ['architecture', 'overview'] },
+      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'context-map.html', cat: 'data', tags: ['DDD', 'bounded-context'] },
+      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'rest-api-explorer.html', cat: 'communication', tags: ['REST', 'API-design'] },
+      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'circuit-breaker.html', cat: 'communication', tags: ['resilience', 'fault-tolerance'] },
+      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'service-discovery.html', cat: 'communication', tags: ['eureka', 'registry'] },
+      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'message-broker.html', cat: 'communication', tags: ['kafka', 'async'] },
+      { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
+      { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
+      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'api-gateway-routing.html', cat: 'communication', tags: ['gateway', 'routing'] },
+      { ch: 8, icon: '⚙️', name: 'Config Server', desc: 'Central configuration — hot reload, environment profiles', file: 'config-server.html', cat: 'infrastructure', tags: ['config', 'spring-cloud'] },
+      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'oauth2-jwt-flow.html', cat: 'infrastructure', tags: ['security', 'JWT'] },
+      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'strangler-fig-migration.html', cat: 'infrastructure', tags: ['migration', 'strangler-fig'] },
+      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'distributed-tracing.html', cat: 'infrastructure', tags: ['tracing', 'observability'] },
+      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'deployment-strategies.html', cat: 'infrastructure', tags: ['deployment', 'CI-CD'] },
+    ];
+
+    function renderList(filter = 'all') {
+      const list = document.getElementById('pattern-list');
+      const filtered = filter === 'all' ? patterns : patterns.filter(p => p.cat === filter);
+      list.innerHTML = filtered.map(p => `
+        <div class="pattern-item" data-file="${p.file}">
+          <div class="pattern-item-icon">${p.icon}</div>
+          <div class="pattern-item-info">
+            <div class="pattern-item-name">${p.name}</div>
+            <div class="pattern-item-ch">Chương ${p.ch}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filter buttons
+    document.getElementById('filters').addEventListener('click', e => {
+      if (!e.target.classList.contains('filter-btn')) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      renderList(e.target.dataset.filter);
+    });
+
+    // Pattern click
+    document.getElementById('pattern-list').addEventListener('click', e => {
+      const item = e.target.closest('.pattern-item');
+      if (!item) return;
+      
+      document.querySelectorAll('.pattern-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      
+      const file = item.dataset.file;
+      document.getElementById('viewer').src = file;
+      document.getElementById('welcome-screen').style.display = 'none';
+    });
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('light');
+      const isLight = document.documentElement.classList.contains('light');
+      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
+      
+      const iframe = document.getElementById('viewer');
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
+      }
+    }
+    
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'GET_THEME') {
+        const isLight = document.documentElement.classList.contains('light');
+        const iframe = document.getElementById('viewer');
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
+        }
+      }
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
