@@ -12,9 +12,13 @@ This is a **dual-layer repository**: a public-facing textbook and a private inte
 ```
 ptit-microservice-textbook/        ← PUBLIC repo (this one)
 │
-├── manuscript/                    ← Book chapters (.md) — PUBLIC
+├── manuscript/                    ← Archive: v1.0.2 book chapters (.md) — PUBLIC
 ├── figures/                       ← Diagrams & SVGs — PUBLIC
-├── code/                          ← Interactive HTML demos — PUBLIC
+├── web/                           ← Interactive pattern demos & GitHub Pages portal — PUBLIC
+│   ├── index.html                 ← App shell (sidebar + iframe viewer)
+│   ├── styles/                    ← Shared CSS (base-style, diagram-style)
+│   └── patterns/                  ← Pattern demos grouped by category
+├── release/                       ← Tracked release artifacts (flat: book.pdf, chapter-NN.pdf)
 ├── output/                        ← Disposable local build cache (gitignored; reset by build)
 │
 └── references/                    ← Git SUBMODULE → ptit-microservice-textbook-internal (PRIVATE)
@@ -90,7 +94,7 @@ git push
 cd ..
 
 # Step B: THEN push public repo (includes submodule pointer bump)
-git add references manuscript figures AGENTS.md
+git add references manuscript figures web AGENTS.md
 git commit -m "feat/fix: description of changes"
 git push
 ```
@@ -111,7 +115,7 @@ ls references/internal/docs/
 ```
 
 - **Files exist** → You are a **core author**. Proceed to Step 2.
-- **Directory is empty or missing** → You are in **public mode**. Do not attempt to recreate internal files — they are private by design. Only work on `manuscript/`, `figures/`, and `code/`.
+- **Directory is empty or missing** → You are in **public mode**. Do not attempt to recreate internal files — they are private by design. Only work on `manuscript/`, `figures/`, and `web/`.
 
 ### Step 2 — Read internal state before touching anything (Core Author)
 
@@ -161,7 +165,7 @@ Files currently known to be in the private submodule (not in public repo):
 
 Build scripts live inside the submodule. Run from the **repo root**.
 
-Current source flow: `manuscript/*.md` remains the public authoring source. The build syncs manuscript content into generated Typst chapters, then compiles PDF through `main.typ` and HTML through `main-web.typ`. Do not reintroduce the retired HTML/PDF pipeline or the old public `templates/` workflow.
+Current source flow: Content is authored **directly in `references/internal/typst/chapters/*.typ`**. `manuscript/*.md` is a read-only archive of the v1.0.2 pandoc-era content and is **not** compiled. `bulk-convert.ps1` and the pandoc pipeline have been removed. Compile PDF through `main.typ` and HTML through `main-web.typ`.
 
 Commands:
 
@@ -185,7 +189,7 @@ powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typ
 powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Release v1.0.1-rc.1 -PreRelease -Html
 ```
 
-Output: `output/` is a disposable dev build cache and is reset by the build script. `release/<tag>/` is the tracked publication artifact directory. HTML is generated as `output/book.html` with target `html` or with `all -Html`; release HTML is copied to `release/<tag>/SOA-Microservices-Book-<tag>.html`.
+Output: `output/` is a disposable dev build cache and is reset by the build script. `release/` (flat, no version subfolders) is the tracked publication artifact directory — git tags handle version tracking. Release files: `release/book.pdf`, `release/book.html`, `release/chapter-NN.pdf`.
 
 ---
 
@@ -263,8 +267,10 @@ START OF SESSION:
   → note your work in ONBOARDING.md    ← claim your chapters
 
 DURING SESSION:
-  edit manuscript/ files                ← public content
-  edit references/internal/docs/        ← internal docs (CHANGELOG, PROGRESS, ONBOARDING)
+  edit references/internal/typst/chapters/ ← book content (.typ files)
+  edit web/                                ← interactive demos
+  edit figures/                            ← HTML diagram sources
+  edit references/internal/docs/          ← internal docs (CHANGELOG, PROGRESS, ONBOARDING)
 
 END OF SESSION:
   1. Update CHANGELOG.md with [Unreleased] entries for your changes

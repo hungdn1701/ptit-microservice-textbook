@@ -24,7 +24,6 @@ manuscript/appendices/
 # ----- Gen scripts & build tools (private submodule) -----
 scripts/gen_svg_*.py
 scripts/pdf_to_md.py
-scripts/audit-interactive-css.ps1
 
 # ----- Test/temporary figures -----
 figures/shared/test*
@@ -81,6 +80,7 @@ build/
 docker-compose.override.yml
 
 # ----- Temporary / local -----
+implementation_plan.md
 *.tmp
 *.bak
 *.log

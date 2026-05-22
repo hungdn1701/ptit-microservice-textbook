@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "Assembling Unified Portal..."
           mkdir -p public
-          cp -R companion-web/* public/
+          cp -R web/* public/
 
           if [ -f "release/book.html" ]; then
             cp release/book.html public/book.html

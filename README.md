@@ -70,7 +70,7 @@ git checkout -b fix/chapter-03-typo
 ## 📜 License
 
 - **📖 Nội dung** (`manuscript/`, `figures/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **💻 Code** (`code/`, `companion-web/`): [MIT License](https://opensource.org/licenses/MIT)
+- **💻 Code** (`web/`): [MIT License](https://opensource.org/licenses/MIT)
 
 ---
 
