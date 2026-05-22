@@ -1,69 +1,46 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.4 - Fig 12.4</title>
-  <link rel="stylesheet" href="../../code/interactive/base-style.css">
-  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
-  <style>
-    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
-    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
-    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
-    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
-    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
-    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
-    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
-    .svg-title { font-size: 16px; font-weight: 700; }
-    .svg-subtitle { font-size: 13px; color: #64748b; }
-    .svg-small { font-size: 12px; color: #475569; }
-    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
-  </style>
+  <title>Fig 12.4 — Rolling Update | Ch.12</title>
+  <link rel="stylesheet" href="../../companion-web/base-style.css">
+  <link rel="stylesheet" href="../../companion-web/diagram-style.css">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" role="img" aria-label="Fig 12.4">
-    <div class="d-cluster svg-box" style="left:50px;top:100px;width:260px;height:300px;border-radius:16px;"></div>
-    <div class="d-box d-note svg-box" style="left:90px;top:160px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:90px;top:240px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:90px;top:320px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-cluster svg-box" style="left:350px;top:100px;width:260px;height:300px;border-radius:16px;"></div>
-    <div class="d-box d-note svg-box" style="left:390px;top:160px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:390px;top:240px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:390px;top:320px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-cluster svg-box" style="left:650px;top:100px;width:260px;height:300px;border-radius:16px;"></div>
-    <div class="d-box d-note svg-box" style="left:690px;top:160px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:690px;top:240px;width:180px;height:60px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:690px;top:320px;width:180px;height:60px;border-radius:8px;"></div>
-    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
-        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
-      </defs>
-      <path d="M 310 250 L 350 250" class="arrow" />
-      <path d="M 610 250 L 650 250" class="arrow" />
-    </svg>
-    <div class="svg-text svg-title" style="left:180px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Trạng th&#225;i ban đầu</div>
-    <div class="svg-text svg-title" style="left:180px;top:171px;width:360px;transform:translateX(-50%);text-align:center;">Instance 1</div>
-    <div class="svg-text svg-title" style="left:180px;top:191px;width:360px;transform:translateX(-50%);text-align:center;">v1.0</div>
-    <div class="svg-text svg-title" style="left:180px;top:251px;width:360px;transform:translateX(-50%);text-align:center;">Instance 2</div>
-    <div class="svg-text svg-title" style="left:180px;top:271px;width:360px;transform:translateX(-50%);text-align:center;">v1.0</div>
-    <div class="svg-text svg-title" style="left:180px;top:331px;width:360px;transform:translateX(-50%);text-align:center;">Instance 3</div>
-    <div class="svg-text svg-title" style="left:180px;top:351px;width:360px;transform:translateX(-50%);text-align:center;">v1.0</div>
-    <div class="svg-text svg-title" style="left:480px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Đang update</div>
-    <div class="svg-text svg-title" style="left:480px;top:171px;width:360px;transform:translateX(-50%);text-align:center;">Instance 1</div>
-    <div class="svg-text svg-title" style="left:480px;top:191px;width:360px;transform:translateX(-50%);text-align:center;">✅ v2.0</div>
-    <div class="svg-text svg-title" style="left:480px;top:251px;width:360px;transform:translateX(-50%);text-align:center;">Instance 2</div>
-    <div class="svg-text svg-title" style="left:480px;top:271px;width:360px;transform:translateX(-50%);text-align:center;">🔄 updating...</div>
-    <div class="svg-text svg-title" style="left:480px;top:331px;width:360px;transform:translateX(-50%);text-align:center;">Instance 3</div>
-    <div class="svg-text svg-title" style="left:480px;top:351px;width:360px;transform:translateX(-50%);text-align:center;">v1.0</div>
-    <div class="svg-text svg-title" style="left:780px;top:116px;width:360px;transform:translateX(-50%);text-align:center;">Ho&#224;n th&#224;nh</div>
-    <div class="svg-text svg-title" style="left:780px;top:171px;width:360px;transform:translateX(-50%);text-align:center;">Instance 1</div>
-    <div class="svg-text svg-title" style="left:780px;top:191px;width:360px;transform:translateX(-50%);text-align:center;">v2.0</div>
-    <div class="svg-text svg-title" style="left:780px;top:251px;width:360px;transform:translateX(-50%);text-align:center;">Instance 2</div>
-    <div class="svg-text svg-title" style="left:780px;top:271px;width:360px;transform:translateX(-50%);text-align:center;">v2.0</div>
-    <div class="svg-text svg-title" style="left:780px;top:331px;width:360px;transform:translateX(-50%);text-align:center;">Instance 3</div>
-    <div class="svg-text svg-title" style="left:780px;top:351px;width:360px;transform:translateX(-50%);text-align:center;">v2.0</div>
+  <div class="diagram-canvas">
+    <div class="d-title-page">Rolling Update — Cập nhật từng instance</div>
+    <div class="d-grid-3" style="gap:14px; align-items:start;">
+      <!-- State 1 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Trạng thái ban đầu</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v1.0</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+        </div>
+      </div>
+      <!-- State 2 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Đang cập nhật</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 ✅</div></div>
+          <div class="d-box d-warning" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0 → v2.0 🔄</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+        </div>
+      </div>
+      <!-- State 3 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Hoàn thành</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 ✅</div></div>
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v2.0 ✅</div></div>
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v2.0 ✅</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="d-box d-note" style="margin-top:12px; padding:10px 18px;">
+      <div class="d-sub" style="text-align:center;">Zero-downtime: luôn có instance sẵn sàng phục vụ traffic trong quá trình update.</div>
+    </div>
   </div>
 </body>
 </html>

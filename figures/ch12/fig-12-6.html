@@ -1,66 +1,61 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.6 - Fig 12.6</title>
-  <link rel="stylesheet" href="../../code/interactive/base-style.css">
-  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
-  <style>
-    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
-    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
-    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
-    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
-    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
-    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
-    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
-    .svg-title { font-size: 16px; font-weight: 700; }
-    .svg-subtitle { font-size: 13px; color: #64748b; }
-    .svg-small { font-size: 12px; color: #475569; }
-    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
-  </style>
+  <title>Fig 12.6 — Kubernetes Architecture | Ch.12</title>
+  <link rel="stylesheet" href="../../companion-web/base-style.css">
+  <link rel="stylesheet" href="../../companion-web/diagram-style.css">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" role="img" aria-label="Fig 12.6">
-    <div class="d-box d-note svg-box" style="left:280px;top:20px;width:400px;height:180px;border-radius:16px;"></div>
-    <div class="d-box d-service svg-box" style="left:320px;top:70px;width:160px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:500px;top:70px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:320px;top:130px;width:160px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:500px;top:130px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:80px;top:280px;width:360px;height:220px;border-radius:16px;"></div>
-    <div class="d-box d-service svg-box" style="left:100px;top:330px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:100px;top:400px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:260px;top:330px;width:160px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:260px;top:400px;width:160px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-note svg-box" style="left:520px;top:280px;width:360px;height:220px;border-radius:16px;"></div>
-    <div class="d-box d-service svg-box" style="left:540px;top:330px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:540px;top:400px;width:140px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:700px;top:330px;width:160px;height:50px;border-radius:8px;"></div>
-    <div class="d-box d-service svg-box" style="left:700px;top:400px;width:160px;height:50px;border-radius:8px;"></div>
-    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
-        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
-      </defs>
-      <path d="M 360 120 L 170 330" class="arrow" />
-      <path d="M 440 120 L 610 330" class="arrow" />
-    </svg>
-    <div class="svg-text svg-title" style="left:480px;top:36px;width:360px;transform:translateX(-50%);text-align:center;">Control Plane</div>
-    <div class="svg-text svg-subtitle" style="left:400px;top:81px;width:360px;transform:translateX(-50%);text-align:center;">API Server</div>
-    <div class="svg-text svg-subtitle" style="left:570px;top:81px;width:360px;transform:translateX(-50%);text-align:center;">etcd</div>
-    <div class="svg-text svg-subtitle" style="left:400px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">Scheduler</div>
-    <div class="svg-text svg-subtitle" style="left:570px;top:141px;width:360px;transform:translateX(-50%);text-align:center;">Controller Mgr</div>
-    <div class="svg-text svg-title" style="left:260px;top:296px;width:360px;transform:translateX(-50%);text-align:center;">Worker Node 1</div>
-    <div class="svg-text svg-subtitle" style="left:170px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">Kubelet</div>
-    <div class="svg-text svg-subtitle" style="left:170px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">Kube-proxy</div>
-    <div class="svg-text svg-subtitle" style="left:340px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">Pod: Core Service</div>
-    <div class="svg-text svg-subtitle" style="left:340px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">Pod: Auth Service</div>
-    <div class="svg-text svg-title" style="left:700px;top:296px;width:360px;transform:translateX(-50%);text-align:center;">Worker Node 2</div>
-    <div class="svg-text svg-subtitle" style="left:610px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">Kubelet</div>
-    <div class="svg-text svg-subtitle" style="left:610px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">Kube-proxy</div>
-    <div class="svg-text svg-subtitle" style="left:780px;top:341px;width:360px;transform:translateX(-50%);text-align:center;">Pod: Judge Service</div>
-    <div class="svg-text svg-subtitle" style="left:780px;top:411px;width:360px;transform:translateX(-50%);text-align:center;">Pod: Gateway</div>
+  <div class="diagram-canvas">
+    <div class="d-title-page">Kubernetes Architecture</div>
+    <div class="d-grid-2" style="gap:16px; align-items:start;">
+      <!-- Control Plane -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Control Plane (Master)</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-highlight" style="text-align:center; padding:10px;">
+            <div class="d-title">API Server</div>
+            <div class="d-sub">REST API entry point</div>
+          </div>
+          <div class="d-row" style="gap:6px;">
+            <div class="d-box d-storage" style="flex:1; text-align:center; padding:10px;">
+              <div class="d-title" style="font-size:11px;">etcd</div>
+              <div class="d-sub">Config store</div>
+            </div>
+            <div class="d-box d-event" style="flex:1; text-align:center; padding:10px;">
+              <div class="d-title" style="font-size:11px;">Scheduler</div>
+              <div class="d-sub">Pod placement</div>
+            </div>
+          </div>
+          <div class="d-box d-info" style="text-align:center; padding:10px;">
+            <div class="d-title">Controller Manager</div>
+            <div class="d-sub">Desired state → actual state</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Worker Nodes -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Worker Nodes</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-service" style="padding:10px;">
+            <div class="d-title" style="text-align:center; margin-bottom:4px;">Node 1</div>
+            <div class="d-row" style="gap:4px;">
+              <div class="d-box d-service" style="flex:1; text-align:center; padding:6px;"><div class="d-sub">Pod A</div></div>
+              <div class="d-box d-service" style="flex:1; text-align:center; padding:6px;"><div class="d-sub">Pod B</div></div>
+            </div>
+          </div>
+          <div class="d-box d-service" style="padding:10px;">
+            <div class="d-title" style="text-align:center; margin-bottom:4px;">Node 2</div>
+            <div class="d-row" style="gap:4px;">
+              <div class="d-box d-service" style="flex:1; text-align:center; padding:6px;"><div class="d-sub">Pod C</div></div>
+              <div class="d-box d-service" style="flex:1; text-align:center; padding:6px;"><div class="d-sub">Pod D</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>

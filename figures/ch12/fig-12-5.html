@@ -1,54 +1,49 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.5 - Blue-Green Deployment</title>
-  <link rel="stylesheet" href="../../code/interactive/base-style.css">
-  <link rel="stylesheet" href="../../code/interactive/diagram-style.css">
-  <style>
-    .diagram-canvas { height: 540px; min-height: 540px; padding: 0; overflow: hidden; }
-    .svg-box { position: absolute; box-sizing: border-box; z-index: 1; }
-    .connector-layer { position: absolute; inset: 0; width: 960px; height: 540px; z-index: 2; pointer-events: none; }
-    .connector-layer .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-dashed { stroke: #64748b; stroke-width: 1.5; fill: none; stroke-dasharray: 6 3; marker-end: url(#arrowhead); }
-    .connector-layer .arrow-danger { stroke: #dc2626; stroke-width: 2; fill: none; marker-end: url(#arrowhead-danger); }
-    .connector-layer .lifeline { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4 3; fill: none; }
-    .connector-layer .separator { stroke: #cbd5e1; stroke-width: 1; }
-    .svg-text { position: absolute; z-index: 3; box-sizing: border-box; font-family: var(--diagram-font-body); line-height: 1.25; color: #1a202c; white-space: normal; }
-    .svg-title { font-size: 16px; font-weight: 700; }
-    .svg-subtitle { font-size: 13px; color: #64748b; }
-    .svg-small { font-size: 12px; color: #475569; }
-    .svg-mono { font: 12px/1.35 var(--diagram-font-mono); color: #475569; }
-  </style>
+  <title>Fig 12.5 — Blue-Green Deployment | Ch.12</title>
+  <link rel="stylesheet" href="../../companion-web/base-style.css">
+  <link rel="stylesheet" href="../../companion-web/diagram-style.css">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" role="img" aria-label="Blue-Green Deployment">
-    <div class="d-box d-event svg-box" style="left:330px;top:60px;width:300px;height:56px;border-radius:12px;"></div>
-    <div class="d-box d-info svg-box" style="left:60px;top:170px;width:280px;height:100px;border-radius:12px;"></div>
-    <div class="d-box d-success svg-box" style="left:60px;top:280px;width:280px;height:25px;border-radius:5px;"></div>
-    <div class="d-box d-success svg-box" style="left:620px;top:170px;width:280px;height:100px;border-radius:12px;"></div>
-    <div class="d-box d-event svg-box" style="left:620px;top:280px;width:280px;height:25px;border-radius:5px;"></div>
-    <div class="d-box d-note svg-box" style="left:200px;top:340px;width:560px;height:100px;border-radius:10px;"></div>
-    <svg class="connector-layer" viewBox="0 0 960 540" aria-hidden="true">
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b" /></marker>
-        <marker id="arrowhead-danger" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" /></marker>
-      </defs>
-      <path d="M 430 105 L 200 170" class="arrow" />
-      <path d="M 530 105 L 760 170" class="arrow" />
-    </svg>
-    <div class="svg-text svg-title" style="left:480px;top:11px;width:360px;transform:translateX(-50%);text-align:center;">Blue-Green Deployment</div>
-    <div class="svg-text svg-title" style="left:480px;top:79px;width:360px;transform:translateX(-50%);text-align:center;">Load Balancer</div>
-    <div class="svg-text svg-title" style="left:200px;top:202px;width:360px;transform:translateX(-50%);text-align:center;">Blue (v1.0)</div>
-    <div class="svg-text svg-title" style="left:200px;top:220px;width:360px;transform:translateX(-50%);text-align:center;">Dang serve users</div>
-    <div class="svg-text svg-small" style="left:200px;top:284px;width:360px;transform:translateX(-50%);text-align:center;">LIVE TRAFFIC</div>
-    <div class="svg-text svg-title" style="left:760px;top:202px;width:360px;transform:translateX(-50%);text-align:center;">Green (v2.0)</div>
-    <div class="svg-text svg-title" style="left:760px;top:220px;width:360px;transform:translateX(-50%);text-align:center;">Da deploy, dang test</div>
-    <div class="svg-text svg-small" style="left:760px;top:284px;width:360px;transform:translateX(-50%);text-align:center;">TESTING</div>
-    <div class="svg-text svg-title" style="left:480px;top:351px;width:360px;transform:translateX(-50%);text-align:center;">Quy tr&#236;nh:</div>
-    <div class="svg-text svg-title" style="left:480px;top:376px;width:360px;transform:translateX(-50%);text-align:center;">1. Deploy v2.0 l&#234;n Green (kh&#244;ng ảnh hưởng users)</div>
-    <div class="svg-text svg-title" style="left:480px;top:396px;width:360px;transform:translateX(-50%);text-align:center;">2. Test Green. Khi OK: switch LB từ Blue -&gt; Green.</div>
-    <div class="svg-text svg-title" style="left:480px;top:416px;width:360px;transform:translateX(-50%);text-align:center;">3. Rollback: switch lai Blue. Zero downtime!</div>
+  <div class="diagram-canvas">
+    <div class="d-title-page">Blue-Green Deployment</div>
+    <div class="d-col" style="align-items:center; gap:6px;">
+      <div class="d-box d-event" style="min-width:280px; text-align:center; padding:12px;">
+        <div class="d-title">Load Balancer</div>
+        <div class="d-sub">Switch traffic instantly</div>
+      </div>
+
+      <div class="d-row" style="justify-content:center; gap:0;">
+        <div class="d-arrow" style="flex:1; text-align:center; font-size:14px; color:#2563eb; font-weight:700;">↙ 100%</div>
+        <div class="d-arrow" style="flex:1; text-align:center; font-size:14px; color:#94a3b8;">↘ 0%</div>
+      </div>
+
+      <div class="d-row" style="gap:20px; align-items:stretch;">
+        <div class="d-box d-info" style="flex:1; text-align:center; padding:16px;">
+          <div class="d-title" style="font-size:16px;">🔵 Blue (v1.0)</div>
+          <div class="d-sub" style="color:#1e3a8a;">Currently serving traffic</div>
+          <div class="d-sep"></div>
+          <div class="d-col" style="gap:4px;">
+            <div class="d-box d-info" style="padding:6px; text-align:center;"><div class="d-sub">Instance 1</div></div>
+            <div class="d-box d-info" style="padding:6px; text-align:center;"><div class="d-sub">Instance 2</div></div>
+          </div>
+        </div>
+        <div class="d-box d-service" style="flex:1; text-align:center; padding:16px;">
+          <div class="d-title" style="font-size:16px;">🟢 Green (v2.0)</div>
+          <div class="d-sub" style="color:#085041;">Ready, waiting for switch</div>
+          <div class="d-sep"></div>
+          <div class="d-col" style="gap:4px;">
+            <div class="d-box d-service" style="padding:6px; text-align:center;"><div class="d-sub">Instance 1</div></div>
+            <div class="d-box d-service" style="padding:6px; text-align:center;"><div class="d-sub">Instance 2</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-box d-note" style="margin-top:12px; padding:10px 18px;">
+      <div class="d-sub" style="text-align:center;">Rollback = chuyển LB quay lại Blue. Instant, zero-downtime.</div>
+    </div>
   </div>
 </body>
 </html>

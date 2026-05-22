@@ -620,10 +620,7 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
 
 /* ── Print Mode (For Diagram Snapshots) ── */
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #0f172a !important;
-  }
+  /* Only hide UI elements and reset layout constraints, but PRESERVE colors/styles */
   .navbar, .controls, .theme-toggle, .btn, .page-header, .page-footer {
     display: none !important;
   }
@@ -632,14 +629,9 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
     margin: 0 !important;
     max-width: none !important;
   }
-  .card, .flow-node, .pattern-card {
-    background: #ffffff !important;
-    border-color: rgba(0,0,0,0.1) !important;
-    box-shadow: none !important;
-    color: #0f172a !important;
-  }
-  .text-secondary, .text-dim {
-    color: #64748b !important;
+  /* Optional: we can force a transparent background for the body so it blends with Typst PDF */
+  body {
+    background: transparent !important;
   }
 }
 
