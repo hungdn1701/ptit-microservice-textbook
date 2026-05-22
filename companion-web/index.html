@@ -247,8 +247,8 @@
       </div>
       <div class="sidebar-content" id="sidebar-content">
         <div class="portal-links">
-          <a href="#" onclick="alert('⚠️ Hệ thống đang biên dịch bản thảo. Vui lòng quay lại sau!'); return false;" class="portal-link primary">📖 Đọc Sách Online</a>
-          <a href="#" onclick="alert('⚠️ Bản PDF đang được render từ Typst. Vui lòng chờ phiên bản Release!'); return false;" class="portal-link secondary">📥 Tải Sách (PDF)</a>
+          <a href="book.html" class="portal-link primary">📖 Đọc Sách Online</a>
+          <a href="book.pdf" class="portal-link secondary">📥 Tải Sách (PDF)</a>
         </div>
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="all">Tất cả</button>
@@ -275,22 +275,22 @@
 
   <script>
     const patterns = [
-      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
-      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
-      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'rest-api-explorer.html', cat: 'api', tags: ['REST', 'API-design'] },
-      { ch: 3, icon: '🕸️', name: 'GraphQL vs REST', desc: 'So sánh N+1 problem và schema-first approach', file: 'graphql-vs-rest.html', cat: 'api', tags: ['GraphQL', 'API-design'] },
-      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'circuit-breaker.html', cat: 'security', tags: ['resilience', 'fault-tolerance'] },
-      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'service-discovery.html', cat: 'api', tags: ['eureka', 'registry'] },
-      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'message-broker.html', cat: 'data', tags: ['kafka', 'async'] },
-      { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
-      { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
-      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
-      { ch: 8, icon: '⏱️', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
-      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
-      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
-      { ch: 10, icon: '📦', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
-      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'distributed-tracing.html', cat: 'ops', tags: ['tracing', 'observability'] },
-      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'deployment-strategies.html', cat: 'ops', tags: ['deployment', 'CI-CD'] },
+      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'patterns/architecture/monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
+      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'patterns/architecture/context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
+      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'patterns/api/rest-api-explorer.html', cat: 'api', tags: ['REST', 'API-design'] },
+      { ch: 3, icon: '🕸️', name: 'GraphQL vs REST', desc: 'So sánh N+1 problem và schema-first approach', file: 'patterns/api/graphql-vs-rest.html', cat: 'api', tags: ['GraphQL', 'API-design'] },
+      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'patterns/security/circuit-breaker.html', cat: 'security', tags: ['resilience', 'fault-tolerance'] },
+      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'patterns/api/service-discovery.html', cat: 'api', tags: ['eureka', 'registry'] },
+      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'patterns/data/message-broker.html', cat: 'data', tags: ['kafka', 'async'] },
+      { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'patterns/data/saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
+      { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
+      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'patterns/api/api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
+      { ch: 8, icon: '⏱️', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'patterns/security/rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
+      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'patterns/security/oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
+      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
+      { ch: 10, icon: '📦', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'patterns/data/outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
+      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'patterns/ops/distributed-tracing.html', cat: 'ops', tags: ['tracing', 'observability'] },
+      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'patterns/ops/deployment-strategies.html', cat: 'ops', tags: ['deployment', 'CI-CD'] },
     ];
 
     function renderList(filter = 'all') {
