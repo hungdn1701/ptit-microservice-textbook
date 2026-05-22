@@ -3,10 +3,6 @@ name: Deploy Unified Portal to GitHub Pages
 on:
   push:
     branches: ["master", "main"]
-    paths:
-      - 'companion-web/**'
-      - 'release/**'
-      - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages

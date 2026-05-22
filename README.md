@@ -17,7 +17,7 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 
 | Nền tảng | Hướng dẫn |
 |---|---|
-| **Online Portal** | Truy cập **[Unified Book Portal](https://hungdn1701.github.io/ptit-microservice-textbook)** để đọc sách hoàn chỉnh, xem sơ đồ tương tác (Companion Web) và tải PDF mới nhất. |
+| **Online Portal** | Truy cập **[Trang Web Giáo Trình](https://hungdn1701.github.io/ptit-microservice-textbook)** để đọc sách hoàn chỉnh, xem sơ đồ tương tác và tải PDF mới nhất. |
 | **Mã nguồn** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
 
 ---
