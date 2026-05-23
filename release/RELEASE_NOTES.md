@@ -1,6 +1,6 @@
 # Release v1.0.2
 
-> **Date**: 2026-05-22
+> **Date**: 2026-05-23
 > **Author**: Đặng Ngọc Hùng — PTIT
 
 ---
