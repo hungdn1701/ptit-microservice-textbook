@@ -77,6 +77,33 @@
     
     .portal-link .icon { font-size: 16px; margin-bottom: 2px; line-height: 1; }
 
+    /* Diagram Library Link (full-width portal row) */
+    .portal-diagram-link {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 14px 16px; border-radius: var(--radius-md); font-size: 11px; font-weight: 600;
+      text-decoration: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-family: var(--font-sans);
+      border: 1px solid rgba(16, 185, 129, 0.25); color: var(--success);
+      background: rgba(16, 185, 129, 0.06);
+      position: relative; overflow: hidden;
+    }
+    .portal-diagram-link::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(90deg, rgba(16,185,129,0.08) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    }
+    .portal-diagram-link:hover::after { opacity: 1; }
+    .portal-diagram-link:hover {
+      border-color: rgba(16, 185, 129, 0.5); background: rgba(16, 185, 129, 0.12);
+      transform: translateX(3px); box-shadow: 0 0 16px rgba(16,185,129,0.12);
+    }
+    .portal-diagram-link .link-left { display: flex; align-items: center; gap: 10px; }
+    .portal-diagram-link .link-icon { font-size: 15px; line-height: 1; }
+    .portal-diagram-link .link-text { display: flex; flex-direction: column; gap: 2px; }
+    .portal-diagram-link .link-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .portal-diagram-link .link-sub { font-size: 9px; font-weight: 500; opacity: 0.7; letter-spacing: 0.05em; text-transform: uppercase; font-family: var(--font-mono); }
+    .portal-diagram-link .link-arrow { font-size: 10px; opacity: 0.6; transition: transform 0.2s, opacity 0.2s; }
+    .portal-diagram-link:hover .link-arrow { transform: translateX(2px); opacity: 1; }
+
     /* Filter Section */
     .filter-section {
       display: flex;
@@ -274,6 +301,18 @@
             Tải Sách (PDF)
           </a>
         </div>
+        <a id="diagram-library-link" href="#" class="portal-diagram-link" target="_blank" rel="noopener">
+          <span class="link-left">
+            <span class="link-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </span>
+            <span class="link-text">
+              <span class="link-title">Thư viện Hình</span>
+              <span class="link-sub">Diagram Library · 85 figures</span>
+            </span>
+          </span>
+          <span class="link-arrow">&#8599;</span>
+        </a>
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="all">Tất cả</button>
           <button class="filter-btn" data-filter="architecture">Kiến trúc</button>
@@ -357,6 +396,12 @@
       const sidebar = document.getElementById('sidebar-content');
       sidebar.classList.toggle('open');
     }
+
+    function getDiagramLibraryUrl() {
+      const path = window.location.pathname || '';
+      const inWebFolder = path.includes('/web/') || path.includes('\\web\\');
+      return inWebFolder ? '../figures/diagram-library.html' : 'figures/diagram-library.html';
+    }
     
     // Pattern click
     document.getElementById('pattern-list').addEventListener('click', e => {
@@ -385,6 +430,11 @@
         }
       }
     });
+
+    const diagramLibraryLink = document.getElementById('diagram-library-link');
+    if (diagramLibraryLink) {
+      diagramLibraryLink.href = getDiagramLibraryUrl();
+    }
 
     renderList();
   </script>

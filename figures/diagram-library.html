@@ -78,6 +78,34 @@
       text-transform: uppercase;
     }
 
+    .sidebar-nav {
+      margin-top: 12px;
+    }
+
+    .back-portal-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--slate-300);
+      background: #ffffff;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .back-portal-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(15, 118, 110, 0.06);
+      transform: translateX(-1px);
+    }
+
     .sidebar-search {
       padding: 16px 20px;
       border-bottom: 1px solid var(--slate-200);
@@ -432,6 +460,12 @@
       <div class="sidebar-header">
         <div class="sidebar-title">Diagram Library</div>
         <div class="sidebar-subtitle">SOA Microservices Book</div>
+        <div class="sidebar-nav">
+          <a class="back-portal-link" href="../index.html">
+            <span aria-hidden="true">&larr;</span>
+            <span>Back to Pattern Portal</span>
+          </a>
+        </div>
       </div>
 
       <div class="sidebar-search">
