@@ -96,13 +96,13 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 4 — Giao tiếp Đồng bộ</div>
-      <h1>⚡ Circuit Breaker Pattern</h1>
+      <h1>Circuit Breaker Pattern</h1>
       <p class="subtitle">Resilience4j — Ngăn cascade failure giữa Core Service và Judge Service</p>
     </header>
 
     <!-- State Diagram -->
     <div class="card animate-fadeIn" style="background: rgba(0,0,0,0.2)">
-      <div class="card-title"><span class="icon">📊</span> State Machine Simulation</div>
+      <div class="card-title"><span class="icon"></span> State Machine Simulation</div>
       <div class="state-diagram">
         <div class="state-item" id="state-closed" onclick="forceState('CLOSED')">
           <div class="state-circle closed" id="circle-closed">C</div>
@@ -127,13 +127,13 @@
     <!-- Controls -->
     <div class="controls animate-fadeIn" style="animation-delay: 0.1s">
       <button class="btn btn-primary" style="background: var(--success); border-color: var(--success);" onclick="sendRequest(true)">
-        ✅ Judge Trả Về SUCCESS
+        Judge Trả Về SUCCESS
       </button>
       <button class="btn btn-primary" style="background: var(--danger); border-color: var(--danger);" onclick="sendRequest(false)">
-        💥 Judge Trả Về TIMEOUT
+        Judge Trả Về TIMEOUT
       </button>
       <button class="btn btn-ghost" onclick="resetSimulation()">
-        🔄 Reset Cầu Dao
+        Reset Cầu Dao
       </button>
     </div>
 
@@ -141,7 +141,7 @@
     <div class="sim-panel animate-fadeIn" style="animation-delay: 0.2s">
       <!-- Metrics -->
       <div class="card">
-        <div class="card-title">📈 Metrics (Resilience4j)</div>
+        <div class="card-title">Metrics (Resilience4j)</div>
         <div class="metric-grid">
           <div class="metric-item">
             <div class="metric-value" id="m-success" style="color: var(--success)">0</div>
@@ -174,7 +174,7 @@
 
       <!-- Event Log -->
       <div class="card">
-        <div class="card-title">📋 Execution Log</div>
+        <div class="card-title">Execution Log</div>
         <div class="log-panel" id="log-panel">
           <div class="log-entry"><span class="log-info">Resilience4j Circuit Breaker initialized — state: CLOSED</span></div>
         </div>
@@ -184,7 +184,7 @@
     <!-- KBLab Context & Code -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.3s">
       <div class="callout" style="margin-bottom: 24px;">
-        <strong>🔍 Từ Sách (Chương 4):</strong> <i>"Khi circuit ở trạng thái Open, mọi request được reject ngay lập tức — không gửi tới service downstream. Điều này bảo vệ cả caller (không block threads chờ timeout) và callee (không bị overwhelm khi đang recovery)... Trong KBLab, Core Service gọi Judge Service qua OpenFeign. Nếu Judge sập, ta trả về Fallback message thay vì để toàn bộ LMS bị treo theo."</i>
+        <strong>Từ Sách (Chương 4):</strong> <i>"Khi circuit ở trạng thái Open, mọi request được reject ngay lập tức — không gửi tới service downstream. Điều này bảo vệ cả caller (không block threads chờ timeout) và callee (không bị overwhelm khi đang recovery)... Trong KBLab, Core Service gọi Judge Service qua OpenFeign. Nếu Judge sập, ta trả về Fallback message thay vì để toàn bộ LMS bị treo theo."</i>
       </div>
       
       <div class="code-block">
@@ -238,14 +238,14 @@
             log(`Core → Judge: TIMEOUT/ERROR (${failureCount}/${THRESHOLD})`, 'error');
             if (failureCount >= THRESHOLD) {
               transition('OPEN');
-              log('⚡ THRESHOLD REACHED — CIRCUIT OPENED!', 'error');
-              log('⚡ Core Service is now protected from cascading failure.', 'info');
+              log('THRESHOLD REACHED — CIRCUIT OPENED!', 'error');
+              log('Core Service is now protected from cascading failure.', 'info');
               
               // Auto half-open after 4 seconds
               setTimeout(() => {
                 if (state === 'OPEN') {
                   transition('HALF_OPEN');
-                  log('⚠️ WaitDuration elapsed — Circuit HALF-OPEN (testing recovery)', 'warn');
+                  log('WaitDuration elapsed — Circuit HALF-OPEN (testing recovery)', 'warn');
                 }
               }, 4000);
             }
@@ -264,17 +264,17 @@
             log(`Core → Judge: Probe ${halfOpenProbes}/${HALF_OPEN_MAX_PROBES} succeeded`, 'success');
             if (halfOpenProbes >= HALF_OPEN_MAX_PROBES) {
               transition('CLOSED');
-              log('✅ All probes passed — Judge recovered. Circuit CLOSED.', 'success');
+              log('All probes passed — Judge recovered. Circuit CLOSED.', 'success');
             }
           } else {
             failureTotal++;
             log('Core → Judge: Probe failed. Judge still down.', 'error');
             transition('OPEN');
-            log('⚡ Circuit reverted to OPEN.', 'error');
+            log('Circuit reverted to OPEN.', 'error');
             setTimeout(() => {
               if (state === 'OPEN') {
                 transition('HALF_OPEN');
-                log('⚠️ WaitDuration elapsed — Circuit HALF-OPEN (testing recovery)', 'warn');
+                log('WaitDuration elapsed — Circuit HALF-OPEN (testing recovery)', 'warn');
               }
             }, 4000);
           }
@@ -293,7 +293,7 @@
 
     function forceState(s) {
       transition(s);
-      log(`🔧 Manually forced state: ${s}`, 'info');
+      log(`Manually forced state: ${s}`, 'info');
     }
 
     function resetSimulation() {

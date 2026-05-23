@@ -75,7 +75,7 @@
     .portal-link.secondary { background: rgba(255,255,255,0.02); color: var(--text-secondary); }
     .portal-link.secondary:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); color: var(--text-main); transform: translateY(-2px); }
     
-    .portal-link .icon { font-size: 20px; margin-bottom: 2px; }
+    .portal-link .icon { font-size: 16px; margin-bottom: 2px; line-height: 1; }
 
     /* Filter Section */
     .filter-section {
@@ -129,8 +129,18 @@
     .pattern-item.active { background: var(--primary-dim); border-color: rgba(255,122,0,0.4); }
     .pattern-item.active::before { transform: scaleY(1); }
     
-    .pattern-item-icon { font-size: 22px; filter: grayscale(1) brightness(1.2); transition: all 0.3s; opacity: 0.7; }
-    .pattern-item.active .pattern-item-icon, .pattern-item:hover .pattern-item-icon { filter: none; opacity: 1; transform: scale(1.1); }
+    .pattern-item-icon { 
+      width: 36px; height: 36px; border-radius: var(--radius-sm); 
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; font-family: var(--font-mono); 
+      color: var(--text-dim); letter-spacing: -0.02em; flex-shrink: 0;
+      transition: all 0.3s; 
+    }
+    .pattern-item.active .pattern-item-icon, .pattern-item:hover .pattern-item-icon { 
+      background: var(--primary-dim); border-color: rgba(255,122,0,0.3); 
+      color: var(--primary); 
+    }
 
     .pattern-item-info { flex: 1; min-width: 0; }
     .pattern-item-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-family: var(--font-sans); }
@@ -229,7 +239,7 @@
       letter-spacing: 0.05em;
     }
     .header-actions { display: flex; align-items: center; gap: 12px; }
-    .mobile-menu-btn { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; display: none; padding: 0; }
+    .mobile-menu-btn { background: transparent; border: none; color: var(--text-main); cursor: pointer; display: none; padding: 4px; line-height: 1; }
   </style>
 </head>
 <body class="dark">
@@ -237,26 +247,40 @@
     <div class="sidebar">
       <div class="sidebar-header">
         <div>
-          <h1>📐 SOA & Microservices</h1>
+          <h1>SOA & Microservices</h1>
           <div class="book-meta">Tác giả: KBLab • Phiên bản 1.0</div>
         </div>
         <div class="header-actions">
-          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
-          <button class="mobile-menu-btn" onclick="toggleMobileMenu()" title="Menu">☰</button>
+          <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
+            <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+          </button>
+          <button class="mobile-menu-btn" onclick="toggleMobileMenu()" title="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
         </div>
       </div>
       <div class="sidebar-content" id="sidebar-content">
         <div class="portal-links">
-          <a href="book.html" class="portal-link primary">📖 Đọc Sách Online</a>
-          <a href="book.pdf" class="portal-link secondary">📥 Tải Sách (PDF)</a>
+          <a href="book.html" class="portal-link primary">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+            Đọc Sách Online
+          </a>
+          <a href="book.pdf" class="portal-link secondary">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            Tải Sách (PDF)
+          </a>
         </div>
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="all">Tất cả</button>
-          <button class="filter-btn" data-filter="architecture">🏗️ Kiến trúc</button>
-          <button class="filter-btn" data-filter="api">🔗 API & Comm</button>
-          <button class="filter-btn" data-filter="data">💾 Data & Sync</button>
-          <button class="filter-btn" data-filter="security">🛡️ Security & Resilience</button>
-          <button class="filter-btn" data-filter="ops">🚀 Ops & Observability</button>
+          <button class="filter-btn" data-filter="architecture">Kiến trúc</button>
+          <button class="filter-btn" data-filter="api">API & Comm</button>
+          <button class="filter-btn" data-filter="data">Data & Sync</button>
+          <button class="filter-btn" data-filter="security">Security</button>
+          <button class="filter-btn" data-filter="ops">Ops</button>
         </div>
         <div class="pattern-list" id="pattern-list">
           <!-- Rendered via JS -->
@@ -275,22 +299,22 @@
 
   <script>
     const patterns = [
-      { ch: 1, icon: '🏢', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'patterns/architecture/monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
-      { ch: 2, icon: '🗺️', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'patterns/architecture/context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
-      { ch: 3, icon: '📋', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'patterns/api/rest-api-explorer.html', cat: 'api', tags: ['REST', 'API-design'] },
-      { ch: 3, icon: '🕸️', name: 'GraphQL vs REST', desc: 'So sánh N+1 problem và schema-first approach', file: 'patterns/api/graphql-vs-rest.html', cat: 'api', tags: ['GraphQL', 'API-design'] },
-      { ch: 4, icon: '⚡', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'patterns/security/circuit-breaker.html', cat: 'security', tags: ['resilience', 'fault-tolerance'] },
-      { ch: 4, icon: '🔍', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'patterns/api/service-discovery.html', cat: 'api', tags: ['eureka', 'registry'] },
-      { ch: 5, icon: '📨', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'patterns/data/message-broker.html', cat: 'data', tags: ['kafka', 'async'] },
-      { ch: 6, icon: '🔄', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'patterns/data/saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
-      { ch: 7, icon: '📊', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
-      { ch: 8, icon: '🚪', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'patterns/api/api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
-      { ch: 8, icon: '⏱️', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'patterns/security/rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
-      { ch: 9, icon: '🔐', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'patterns/security/oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
-      { ch: 10, icon: '🌿', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
-      { ch: 10, icon: '📦', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'patterns/data/outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
-      { ch: 11, icon: '🔭', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'patterns/ops/distributed-tracing.html', cat: 'ops', tags: ['tracing', 'observability'] },
-      { ch: 12, icon: '🚀', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'patterns/ops/deployment-strategies.html', cat: 'ops', tags: ['deployment', 'CI-CD'] },
+      { ch: 1, icon: 'CH01', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'patterns/architecture/monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
+      { ch: 2, icon: 'CH02', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'patterns/architecture/context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
+      { ch: 3, icon: 'CH03', name: 'REST API Explorer', desc: 'Send requests, xem response, test các HTTP methods', file: 'patterns/api/rest-api-explorer.html', cat: 'api', tags: ['REST', 'API-design'] },
+      { ch: 3, icon: 'CH03', name: 'GraphQL vs REST', desc: 'So sánh N+1 problem và schema-first approach', file: 'patterns/api/graphql-vs-rest.html', cat: 'api', tags: ['GraphQL', 'API-design'] },
+      { ch: 4, icon: 'CH04', name: 'Circuit Breaker', desc: 'Ngắt mạch 3 states — Closed → Open → Half-Open', file: 'patterns/security/circuit-breaker.html', cat: 'security', tags: ['resilience', 'fault-tolerance'] },
+      { ch: 4, icon: 'CH04', name: 'Service Discovery', desc: 'Eureka register/discover — topology & heartbeat', file: 'patterns/api/service-discovery.html', cat: 'api', tags: ['eureka', 'registry'] },
+      { ch: 5, icon: 'CH05', name: 'Message Broker (Kafka)', desc: 'Pub/Sub flow — producer/consumer, partitions, offsets', file: 'patterns/data/message-broker.html', cat: 'data', tags: ['kafka', 'async'] },
+      { ch: 6, icon: 'CH06', name: 'Saga Orchestration', desc: 'KBLab Submit Saga — happy path, error, compensation', file: 'patterns/data/saga-orchestration.html', cat: 'data', tags: ['saga', 'transactions'] },
+      { ch: 7, icon: 'CH07', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
+      { ch: 8, icon: 'CH08', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'patterns/api/api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
+      { ch: 8, icon: 'CH08', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'patterns/security/rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
+      { ch: 9, icon: 'CH09', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'patterns/security/oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
+      { ch: 10, icon: 'CH10', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
+      { ch: 10, icon: 'CH10', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'patterns/data/outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
+      { ch: 11, icon: 'CH11', name: 'Distributed Tracing', desc: 'Trace propagation — request flow xuyên multiple services', file: 'patterns/ops/distributed-tracing.html', cat: 'ops', tags: ['tracing', 'observability'] },
+      { ch: 12, icon: 'CH12', name: 'Deployment Strategies', desc: 'Blue/Green, Canary, Rolling — visual so sánh', file: 'patterns/ops/deployment-strategies.html', cat: 'ops', tags: ['deployment', 'CI-CD'] },
     ];
 
     function renderList(filter = 'all') {
@@ -315,10 +339,13 @@
       renderList(e.target.dataset.filter);
     });
 
+    const SUN_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`;
+    const MOON_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       const isLight = document.documentElement.classList.contains('light');
-      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
+      document.getElementById('theme-toggle-btn').innerHTML = isLight ? MOON_SVG : SUN_SVG;
       
       const iframe = document.getElementById('viewer');
       if (iframe.contentWindow) {

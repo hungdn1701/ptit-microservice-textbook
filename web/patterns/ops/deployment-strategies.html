@@ -25,18 +25,18 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 12 — Deployment</div>
-      <h1>🚀 Deployment Strategies</h1>
+      <h1>Deployment Strategies</h1>
       <p class="subtitle">So sánh Blue/Green, Canary, và Rolling deployment — click Deploy để xem animation</p>
     </header>
 
     <div class="strategy-tabs" id="tabs">
-      <button class="strategy-tab active" onclick="selectStrategy('bluegreen')">🔵🟢 Blue/Green</button>
-      <button class="strategy-tab" onclick="selectStrategy('canary')">🐤 Canary</button>
-      <button class="strategy-tab" onclick="selectStrategy('rolling')">🔄 Rolling</button>
+      <button class="strategy-tab active" onclick="selectStrategy('bluegreen')">Blue/Green</button>
+      <button class="strategy-tab" onclick="selectStrategy('canary')">Canary</button>
+      <button class="strategy-tab" onclick="selectStrategy('rolling')">Rolling</button>
     </div>
 
     <div class="card" id="strategy-panel">
-      <div class="card-title" id="strategy-title">🔵🟢 Blue/Green Deployment</div>
+      <div class="card-title" id="strategy-title">Blue/Green Deployment</div>
       <p id="strategy-desc" style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;"></p>
 
       <div style="display:flex; gap:8px; margin-bottom:8px;">
@@ -53,8 +53,8 @@
       </div>
 
       <div class="controls">
-        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()">🚀 Deploy v2</button>
-        <button class="btn" onclick="resetStrategy()">🔄 Reset</button>
+        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()">Deploy v2</button>
+        <button class="btn" onclick="resetStrategy()">Reset</button>
       </div>
 
       <div class="phase-info" id="phase-info">Click Deploy để bắt đầu.</div>
@@ -62,15 +62,15 @@
 
     <!-- Comparison Table -->
     <div class="card" style="margin-top:24px;">
-      <div class="card-title">📊 So sánh Strategies</div>
+      <div class="card-title">So sánh Strategies</div>
       <div class="table-wrapper">
         <table>
           <thead><tr><th>Tiêu chí</th><th>Blue/Green</th><th>Canary</th><th>Rolling</th></tr></thead>
           <tbody>
-            <tr><td>Downtime</td><td>Zero ✅</td><td>Zero ✅</td><td>Near-zero ✅</td></tr>
-            <tr><td>Rollback speed</td><td>Instant ⚡</td><td>Fast 🚀</td><td>Moderate ⏱️</td></tr>
-            <tr><td>Resource cost</td><td>2x infra ❌</td><td>+10-20% ⚠️</td><td>Same ✅</td></tr>
-            <tr><td>Risk</td><td>Low ✅</td><td>Very low ✅</td><td>Medium ⚠️</td></tr>
+            <tr><td>Downtime</td><td>Zero</td><td>Zero</td><td>Near-zero</td></tr>
+            <tr><td>Rollback speed</td><td>Instant </td><td>Fast</td><td>Moderate </td></tr>
+            <tr><td>Resource cost</td><td>2x infra </td><td>+10-20% </td><td>Same</td></tr>
+            <tr><td>Risk</td><td>Low</td><td>Very low</td><td>Medium </td></tr>
             <tr><td>Complexity</td><td>Low</td><td>High (monitoring)</td><td>Medium</td></tr>
           </tbody>
         </table>
@@ -79,7 +79,7 @@
 
     <div style="margin-top:24px;">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Docker Compose cho phép Blue/Green đơn giản: chạy song song 2 bản core-service, đổi port mapping khi sẵn sàng. Với Kubernetes, Rolling Update là mặc định — mỗi pod được thay thế tuần tự.
+        <strong>Trong KBLab LMS:</strong> Docker Compose cho phép Blue/Green đơn giản: chạy song song 2 bản core-service, đổi port mapping khi sẵn sàng. Với Kubernetes, Rolling Update là mặc định — mỗi pod được thay thế tuần tự.
       </div>
     </div>
 
@@ -91,33 +91,33 @@
 
     const strategies = {
       bluegreen: {
-        title: '🔵🟢 Blue/Green Deployment',
+        title: 'Blue/Green Deployment',
         desc: 'Chạy song song 2 environments giống hệt nhau. Switch traffic toàn bộ khi Green sẵn sàng.',
         phases: [
           { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> All traffic → Blue (v1). Green environment đang được chuẩn bị.' },
           { instances: 'v1 v1 v1 v1 v1 v1|v2 v2 v2 v2 v2 v2', v1: 100, v2: 0, info: '<span class="phase-step">Phase 1:</span> Green (v2) deployed & tested. Traffic vẫn ở Blue.' },
-          { instances: 'down down down down down down|v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 2:</span> ⚡ Switch! Traffic chuyển sang Green. Blue giữ lại cho rollback.' },
+          { instances: 'down down down down down down|v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 2:</span> Switch! Traffic chuyển sang Green. Blue giữ lại cho rollback.' },
         ]
       },
       canary: {
-        title: '🐤 Canary Deployment',
+        title: 'Canary Deployment',
         desc: 'Triển khai v2 cho một nhóm nhỏ users trước, tăng dần nếu metrics OK.',
         phases: [
           { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> Tất cả instances chạy v1.' },
           { instances: 'v1 v1 v1 v1 v1 v2', v1: 85, v2: 15, info: '<span class="phase-step">Phase 1:</span> 1 canary instance v2 — 15% traffic. Monitor error rate, latency...' },
           { instances: 'v1 v1 v1 v2 v2 v2', v1: 50, v2: 50, info: '<span class="phase-step">Phase 2:</span> Metrics OK! Tăng lên 50%. Tiếp tục monitor...' },
-          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 3:</span> ✅ Full rollout — tất cả instances chạy v2.' },
+          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 3:</span> Full rollout — tất cả instances chạy v2.' },
         ]
       },
       rolling: {
-        title: '🔄 Rolling Deployment',
+        title: 'Rolling Deployment',
         desc: 'Thay thế từng instance một — luôn có ít nhất N-1 instances running.',
         phases: [
           { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> Tất cả 6 instances chạy v1.' },
           { instances: 'v2 v1 v1 v1 v1 v1', v1: 83, v2: 17, info: '<span class="phase-step">Phase 1:</span> Instance 1 → v2. 5 instances vẫn serving.' },
           { instances: 'v2 v2 v1 v1 v1 v1', v1: 67, v2: 33, info: '<span class="phase-step">Phase 2:</span> Instance 2 → v2.' },
           { instances: 'v2 v2 v2 v2 v1 v1', v1: 33, v2: 67, info: '<span class="phase-step">Phase 3:</span> Instances 3-4 → v2.' },
-          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 4:</span> ✅ All instances updated to v2.' },
+          { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 4:</span> All instances updated to v2.' },
         ]
       }
     };
@@ -167,7 +167,7 @@
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+        document.documentElement.classList.contains('light') ? '' : '️';
     }
 
     renderPhase();

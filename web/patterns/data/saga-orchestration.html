@@ -93,7 +93,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 6 — Giao dịch Phân tán</div>
-      <h1>🔄 KBLab Submit Saga</h1>
+      <h1>KBLab Submit Saga</h1>
       <p class="subtitle">Mô phỏng quy trình chấm bài: Compensatable → Pivot → Retriable</p>
     </header>
 
@@ -101,7 +101,7 @@
       
       <!-- Visualization -->
       <div class="architecture-box">
-        <div class="card-title">🗺️ Saga Topology (Choreography)</div>
+        <div class="card-title">Saga Topology (Choreography)</div>
         <div class="saga-canvas">
           
           <svg class="saga-lines">
@@ -117,8 +117,8 @@
 
           <div class="service-row">
             <div class="node node-core" style="z-index: 10;">Core Service<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">kblab-app</span></div>
-            <div class="node node-db" style="z-index: 10;">🛢️</div>
-            <div class="node node-judge" style="z-index: 10;">Judge Service<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">judge-mysql</span></div>
+            <div class="node node-db" style="z-index: 10;"></div>
+            <div class="node node-judge" style="z-index: 10;">Judge Service<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">kblab-judge</span></div>
           </div>
 
           <!-- Saga Steps -->
@@ -145,9 +145,9 @@
         </div>
         
         <div class="controls">
-          <button class="btn btn-success btn-sm" onclick="runSaga('happy')">▶ Run Happy Path</button>
-          <button class="btn btn-danger btn-sm" onclick="runSaga('fail_pivot')">❌ Fail at Pivot (T2)</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSaga()">🔄 Reset</button>
+          <button class="btn btn-success btn-sm" onclick="runSaga('happy')">Run Happy Path</button>
+          <button class="btn btn-danger btn-sm" onclick="runSaga('fail_pivot')">Fail at Pivot (T2)</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSaga()">Reset</button>
         </div>
         
         <div class="transaction-types">
@@ -160,7 +160,7 @@
 
       <!-- Log Panel -->
       <div class="architecture-box">
-        <div class="card-title">📋 Saga Execution Log</div>
+        <div class="card-title">Saga Execution Log</div>
         <div class="log-panel" id="saga-log">
           <div style="font-style:italic">Waiting to start Saga...</div>
         </div>
@@ -171,7 +171,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Từ Sách (Chương 6):</strong> <i>"Saga là chuỗi local transactions... Nếu Judge gặp lỗi, chúng ta không 'undo' việc nhận bài — ta cập nhật trạng thái thành ERROR. Đây chính là tư duy compensation — hành động nghiệp vụ ngược thay vì database rollback... Với submit flow hiện tại (3 steps), choreography là đủ — thêm orchestrator sẽ over-engineering."</i>
+        <strong>Từ Sách (Chương 6):</strong> <i>"Saga là chuỗi local transactions... Nếu Judge gặp lỗi, chúng ta không 'undo' việc nhận bài — ta cập nhật trạng thái thành ERROR. Đây chính là tư duy compensation — hành động nghiệp vụ ngược thay vì database rollback... Với submit flow hiện tại (3 steps), choreography là đủ — thêm orchestrator sẽ over-engineering."</i>
       </div>
     </div>
 

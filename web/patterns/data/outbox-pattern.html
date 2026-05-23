@@ -110,7 +110,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 10 — Migration & Dữ liệu</div>
-      <h1>📦 Outbox Pattern</h1>
+      <h1>Outbox Pattern</h1>
       <p class="subtitle">Giải quyết bài toán Dual-Write: Ghi Database và gửi Message an toàn tuyệt đối</p>
     </header>
 
@@ -128,8 +128,8 @@
         </div>
         
         <div class="controls" style="margin: 12px 0;">
-          <button class="btn btn-ghost btn-sm" onclick="runDualWrite(true)">▶ Success Flow</button>
-          <button class="btn btn-danger btn-sm" onclick="runDualWrite(false)">❌ Simulate Kafka Down</button>
+          <button class="btn btn-ghost btn-sm" onclick="runDualWrite(true)">Success Flow</button>
+          <button class="btn btn-danger btn-sm" onclick="runDualWrite(false)">Simulate Kafka Down</button>
         </div>
 
         <div class="query-log" id="log-dw">
@@ -161,7 +161,7 @@
         </div>
         
         <div class="controls" style="margin: 12px 0;">
-          <button class="btn btn-primary btn-sm" onclick="runOutbox()">▶ Run Outbox Flow</button>
+          <button class="btn btn-primary btn-sm" onclick="runOutbox()">Run Outbox Flow</button>
         </div>
 
         <div class="query-log" id="log-ob">
@@ -174,7 +174,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Vấn đề:</strong> Trong Microservices, khi user tạo Submit, hệ thống phải (1) Lưu Submit vào DB và (2) Bắn Kafka Event cho Judge Service. Nếu làm 2 việc rời rạc (Dual Write), nếu bước 2 lỗi (Kafka sập), DB đã ghi nhưng Event không bao giờ được bắn → <strong>Dữ liệu bất đồng bộ vĩnh viễn</strong>. Outbox Pattern giải quyết bằng cách ghi Event vào 1 bảng <code>outbox</code> trong cùng một Database Transaction, sau đó có một tiến trình Relay (như Debezium) đọc bảng này và đẩy lên Kafka một cách độc lập và kiên trì.
+        <strong>Vấn đề:</strong> Trong Microservices, khi user tạo Submit, hệ thống phải (1) Lưu Submit vào DB và (2) Bắn Kafka Event cho Judge Service. Nếu làm 2 việc rời rạc (Dual Write), nếu bước 2 lỗi (Kafka sập), DB đã ghi nhưng Event không bao giờ được bắn → <strong>Dữ liệu bất đồng bộ vĩnh viễn</strong>. Outbox Pattern giải quyết bằng cách ghi Event vào 1 bảng <code>outbox</code> trong cùng một Database Transaction, sau đó có một tiến trình Relay (như Debezium) đọc bảng này và đẩy lên Kafka một cách độc lập và kiên trì.
       </div>
     </div>
 
@@ -220,13 +220,13 @@
       addLog('log-dw', '2. producer.send(Event)...', 'log-mq');
       if (isSuccess) {
         await anim('dw-msg2', 'dualWriteBroker', '0.6s');
-        addLog('log-dw', '✅ Kafka Ack received', 'log-mq');
-        addLog('log-dw', '✅ Flow Completed. Consistent.', 'log-sys');
+        addLog('log-dw', 'Kafka Ack received', 'log-mq');
+        addLog('log-dw', 'Flow Completed. Consistent.', 'log-sys');
       } else {
         document.getElementById('dw-msg2').classList.add('msg-err');
         await anim('dw-msg2', 'dualWriteBroker', '0.3s'); // fails halfway
-        addLog('log-dw', '❌ ERROR: Kafka Timeout/Down!', 'log-err');
-        addLog('log-dw', '💥 INCONSISTENT STATE: DB has data, but Event lost forever!', 'log-err');
+        addLog('log-dw', 'ERROR: Kafka Timeout/Down!', 'log-err');
+        addLog('log-dw', 'INCONSISTENT STATE: DB has data, but Event lost forever!', 'log-err');
       }
     }
 
@@ -267,14 +267,14 @@
       addLog('log-ob', '4. Publish to Kafka', 'log-mq');
       await anim('ob-msg3', 'outboxRelayPublish', '0.6s');
 
-      addLog('log-ob', '✅ Kafka Ack received', 'log-mq');
+      addLog('log-ob', 'Kafka Ack received', 'log-mq');
       addLog('log-ob', '5. UPDATE outbox SET status=SENT', 'log-db');
       
       // Update table visually
       const row = document.getElementById(rowId);
       if(row) row.innerHTML = `<td>${outboxId-1}</td><td style="color:var(--text-dim)">{evt...}</td><td style="color:var(--success)">SENT</td>`;
 
-      addLog('log-ob', '✅ Flow Completed. Guaranteed Delivery.', 'log-sys');
+      addLog('log-ob', 'Flow Completed. Guaranteed Delivery.', 'log-sys');
       
       setTimeout(() => {
         document.getElementById('ob-msg2').style.opacity = '0';

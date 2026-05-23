@@ -110,7 +110,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 7 — Quản lý Dữ liệu</div>
-      <h1>📊 CQRS & Event Sourcing</h1>
+      <h1>CQRS & Event Sourcing</h1>
       <p class="subtitle">Mô phỏng Leaderboard Contest: Tách biệt Write Model (Command) và Read Model (Query)</p>
     </header>
 
@@ -118,7 +118,7 @@
       
       <!-- Visualization -->
       <div class="architecture-box">
-        <div class="card-title">🗺️ Kiến trúc CQRS + ES</div>
+        <div class="card-title">Kiến trúc CQRS + ES</div>
         <div class="cqrs-canvas">
           
           <!-- Nodes -->
@@ -159,17 +159,17 @@
         </div>
         
         <div class="controls">
-          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u1', 10)">▶ Nộp bài User_01 (+10)</button>
-          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u2', 20)">▶ Nộp bài User_02 (+20)</button>
-          <button class="btn btn-sm" style="border-color:var(--info); color:var(--info)" onclick="sendQuery()">🔍 Lấy Leaderboard</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u1', 10)">Nộp bài User_01 (+10)</button>
+          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u2', 20)">Nộp bài User_02 (+20)</button>
+          <button class="btn btn-sm" style="border-color:var(--info); color:var(--info)" onclick="sendQuery()">Lấy Leaderboard</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
         </div>
 
       </div>
 
       <!-- Log Panel -->
       <div class="architecture-box">
-        <div class="card-title">📋 System Log</div>
+        <div class="card-title">System Log</div>
         <div class="query-log" id="sys-log">
           <div class="log-sys">Hệ thống sẵn sàng...</div>
         </div>
@@ -177,7 +177,7 @@
         <!-- Book Context -->
         <div style="margin-top: 16px;">
           <div class="callout" style="font-size: 11px;">
-            <strong>🔍 Từ Sách (Chương 7):</strong> <i>"Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách. Với CQRS, leaderboard có read model riêng: write side publish <code>ScoreUpdatedEvent</code>, read side consume event và cập nhật <code>LeaderboardEntry</code> denormalized. Query leaderboard chỉ cần <code>findByContestId()</code> — đơn giản, nhanh, không cần JOIN."</i>
+            <strong>Từ Sách (Chương 7):</strong> <i>"Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách. Với CQRS, leaderboard có read model riêng: write side publish <code>ScoreUpdatedEvent</code>, read side consume event và cập nhật <code>LeaderboardEntry</code> denormalized. Query leaderboard chỉ cần <code>findByContestId()</code> — đơn giản, nhanh, không cần JOIN."</i>
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@
       await sleep(300);
       logSys(`Read DB: SELECT * FROM leaderboard_view (NO JOINS!)`, 'log-qry');
       await sleep(300);
-      logSys(`Response: [user_02: ${scores['u2']}, user_01: ${scores['u1']}] (Ultra Fast ⚡)`, 'log-qry');
+      logSys(`Response: [user_02: ${scores['u2']}, user_01: ${scores['u1']}] (Ultra Fast )`, 'log-qry');
     }
 
     function resetSim() {

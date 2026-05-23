@@ -26,52 +26,46 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 11 — Observability</div>
-      <h1>🔭 Distributed Tracing</h1>
+      <h1>Distributed Tracing</h1>
       <p class="subtitle">Trace request xuyên qua multiple services — Zipkin/Sleuth style</p>
     </header>
 
     <div class="controls">
-      <button class="btn btn-primary" onclick="traceRequest('success')">📤 Trace: Submit SQL (Success)</button>
-      <button class="btn btn-danger" onclick="traceRequest('error')">💥 Trace: Submit SQL (Error)</button>
-      <button class="btn" onclick="resetTrace()">🔄 Reset</button>
+      <button class="btn btn-primary" onclick="traceRequest('success')">Trace: Submit SQL (Success)</button>
+      <button class="btn btn-danger" onclick="traceRequest('error')">Trace: Submit SQL (Error)</button>
+      <button class="btn" onclick="resetTrace()">Reset</button>
     </div>
 
     <!-- Trace Waterfall -->
     <div class="card">
-      <div class="card-title">📊 Trace Waterfall — <span class="correlation-id" id="trace-id">—</span></div>
+      <div class="card-title">Trace Waterfall — <span class="correlation-id" id="trace-id">—</span></div>
       <div class="timeline-ruler"><span>0ms</span><span>100ms</span><span>200ms</span><span>500ms</span><span>1000ms</span></div>
       <div class="trace-container" id="trace-container">
-        <div class="trace-row"><div class="trace-service">🚪 Gateway</div><div class="trace-bar-container"><div class="trace-bar" id="bar-gateway" style="left:0; width:100%; background: var(--info);">gateway.filter</div></div></div>
-        <div class="trace-row"><div class="trace-service">📝 Core Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-core" style="left:5%; width:90%; background: var(--success);">POST /submissions <span class="bar-time">450ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">📦 Kafka Produce</div><div class="trace-bar-container"><div class="trace-bar" id="bar-kafka" style="left:15%; width:10%; background: var(--warning);">produce <span class="bar-time">50ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">⚖️ Judge Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-judge" style="left:30%; width:55%; background: var(--primary);">executeSQL <span class="bar-time">550ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">🗄️ MySQL Sandbox</div><div class="trace-bar-container"><div class="trace-bar" id="bar-db" style="left:40%; width:30%; background: #8b5cf6;">SQL exec <span class="bar-time">300ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">📤 Kafka Result</div><div class="trace-bar-container"><div class="trace-bar" id="bar-result" style="left:85%; width:8%; background: var(--warning);">produce <span class="bar-time">40ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">Gateway</div><div class="trace-bar-container"><div class="trace-bar" id="bar-gateway" style="left:0; width:100%; background: var(--info);">gateway.filter</div></div></div>
+        <div class="trace-row"><div class="trace-service">Core Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-core" style="left:5%; width:90%; background: var(--success);">POST /submissions <span class="bar-time">450ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">Kafka Produce</div><div class="trace-bar-container"><div class="trace-bar" id="bar-kafka" style="left:15%; width:10%; background: var(--warning);">produce <span class="bar-time">50ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">Judge Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-judge" style="left:30%; width:55%; background: var(--primary);">executeSQL <span class="bar-time">550ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">MySQL Sandbox</div><div class="trace-bar-container"><div class="trace-bar" id="bar-db" style="left:40%; width:30%; background: #8b5cf6;">SQL exec <span class="bar-time">300ms</span></div></div></div>
+        <div class="trace-row"><div class="trace-service">Kafka Result</div><div class="trace-bar-container"><div class="trace-bar" id="bar-result" style="left:85%; width:8%; background: var(--warning);">produce <span class="bar-time">40ms</span></div></div></div>
       </div>
     </div>
 
     <!-- Span Detail -->
     <div class="card span-detail" id="span-detail">
-      <div class="card-title">📋 Span Details</div>
+      <div class="card-title">Span Details</div>
       <div id="span-info"></div>
     </div>
 
     <!-- Metrics -->
-    <div class="grid-3" style="margin-top:20px;">
-      <div class="card">
-        <div class="metric"><div class="metric-value" id="m-total" style="color:var(--primary);">0</div><div class="metric-label">Total Spans</div></div>
-      </div>
-      <div class="card">
-        <div class="metric"><div class="metric-value" id="m-latency" style="color:var(--warning);">0</div><div class="metric-label">Total Latency (ms)</div></div>
-      </div>
-      <div class="card">
-        <div class="metric"><div class="metric-value" id="m-services" style="color:var(--success);">0</div><div class="metric-label">Services</div></div>
-      </div>
+    <div class="metric-strip" style="margin-top:20px;">
+      <div class="metric"><div class="metric-value" id="m-total" style="color:var(--primary);">0</div><div class="metric-label">Total Spans</div></div>
+      <div class="metric"><div class="metric-value" id="m-latency" style="color:var(--warning);">0</div><div class="metric-label">Total Latency (ms)</div></div>
+      <div class="metric"><div class="metric-value" id="m-services" style="color:var(--success);">0</div><div class="metric-label">Services</div></div>
     </div>
 
     <div style="margin-top:24px;">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Spring Cloud Sleuth tự động inject traceId/spanId vào mỗi request header. Zipkin server thu thập và visualize trace — cho phép debug latency: "Tại sao submit mất 2 giây?" → thấy ngay Judge Service SQL execution mất 1.5s.
+        <strong>Trong KBLab LMS:</strong> Spring Cloud Sleuth tự động inject traceId/spanId vào mỗi request header. Zipkin server thu thập và visualize trace — cho phép debug latency: "Tại sao submit mất 2 giây?" → thấy ngay Judge Service SQL execution mất 1.5s.
       </div>
     </div>
 
@@ -95,7 +89,7 @@
           el.classList.add('visible');
           if (type === 'error' && b === 'bar-judge') {
             el.style.background = 'var(--danger)';
-            el.innerHTML = '❌ executeSQL FAILED <span class="bar-time">ERROR</span>';
+            el.innerHTML = 'executeSQL FAILED <span class="bar-time">ERROR</span>';
           }
         }, delays[i]);
       });
@@ -114,7 +108,7 @@
           <div style="font-size:11px; color:var(--text-secondary);">
             <div>Gateway → Core: 10ms (JWT validation)</div>
             <div>Core → Kafka: 50ms (produce SubmitMessage)</div>
-            <div>Judge: ${type === 'error' ? '❌ SQLException: Table not found' : '550ms (SQL execution on MySQL sandbox)'}</div>
+            <div>Judge: ${type === 'error' ? 'SQLException: Table not found' : '550ms (SQL execution on MySQL sandbox)'}</div>
             <div>Judge → Kafka: 40ms (produce JudgeResult)</div>
           </div>
         `;
@@ -137,7 +131,7 @@
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+        document.documentElement.classList.contains('light') ? '' : '️';
     }
   
     window.addEventListener('message', (e) => {

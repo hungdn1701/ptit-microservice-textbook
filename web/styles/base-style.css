@@ -3,7 +3,7 @@
    Inspired by 9router.com (Dark-First Tech)
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 /* ── CSS Custom Properties — Dark-First ── */
 :root {
@@ -51,7 +51,7 @@
   /* Font */
   --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  --font-body: 'Inter', sans-serif;
+  --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
   /* Grid */
   --grid-color: rgba(255, 255, 255, 0.03);
@@ -208,13 +208,15 @@ body::after {
 }
 
 .page-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 40px;
   padding-top: 16px;
+  padding-left: 20px;
+  border-left: 3px solid var(--primary);
 }
 
 .page-header h1 {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--text-main);
   margin-bottom: 8px;
@@ -225,7 +227,7 @@ body::after {
   font-size: 15px;
   color: var(--text-secondary);
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .chapter-badge {
@@ -268,8 +270,12 @@ body::after {
 
 /* ── Grids ── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+/* Asymmetric 3-slot: left panel wider than two right cells */
+.grid-3 { display: grid; grid-template-columns: 3fr 2fr 2fr; gap: 16px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+/* Metric strip: horizontal scroll row for KPI cards */
+.metric-strip { display: flex; gap: 1px; overflow-x: auto; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.metric-strip .metric { flex: 1; min-width: 100px; background: var(--bg-card); border-radius: 0; }
 
 @media (max-width: 768px) {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
@@ -384,20 +390,21 @@ body::after {
 .code-block .func { color: #d2a8ff; }
 
 /* ── Metrics ── */
-.metric { text-align: center; padding: 16px 12px; }
+.metric { text-align: left; padding: 16px 12px; }
 .metric-value {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
   margin-bottom: 4px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
 }
 .metric-label {
   font-size: 11px;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ── Flow Pipeline ── */
@@ -419,9 +426,9 @@ body::after {
   transition: all 0.3s ease;
 }
 
-.flow-node.active { border-color: var(--primary); box-shadow: var(--shadow-glow); }
-.flow-node.success { border-color: var(--success); box-shadow: 0 0 12px rgba(16,185,129,0.2); }
-.flow-node.error { border-color: var(--danger); box-shadow: 0 0 12px rgba(239,68,68,0.2); }
+.flow-node.active { border-color: var(--primary); box-shadow: inset 0 0 0 1px rgba(255,122,0,0.15); }
+.flow-node.success { border-color: var(--success); box-shadow: inset 0 0 0 1px rgba(16,185,129,0.15); }
+.flow-node.error { border-color: var(--danger); box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15); }
 
 .flow-node .node-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
 .flow-node .node-desc { font-size: 11px; color: var(--text-dim); }
@@ -489,7 +496,15 @@ body::after {
   line-height: 1.7;
 }
 
-.callout strong { color: var(--primary); }
+.callout strong {
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
 
 /* ── Tables ── */
 .table-wrapper { overflow-x: auto; }

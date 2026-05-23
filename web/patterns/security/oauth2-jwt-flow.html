@@ -91,7 +91,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 9 — Bảo mật hệ thống</div>
-      <h1>🔐 JWT & OAuth2 Flow</h1>
+      <h1>JWT & OAuth2 Flow</h1>
       <p class="subtitle">Mô phỏng vòng đời Token (Access/Refresh) và thuật toán ký (HS256 vs RS256)</p>
     </header>
 
@@ -127,7 +127,7 @@
           <button class="btn btn-primary btn-sm" onclick="runFlow('api-ok')">2. Call API (Valid)</button>
           <button class="btn btn-danger btn-sm" onclick="runFlow('api-exp')">3. Call API (Expired)</button>
           <button class="btn btn-warning btn-sm" onclick="runFlow('refresh')">4. Refresh Token</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
         </div>
 
       </div>
@@ -154,7 +154,7 @@
         </div>
 
         <div class="architecture-box" style="flex: 1;">
-          <div class="card-title">📋 Flow Log</div>
+          <div class="card-title">Flow Log</div>
           <div class="query-log" id="sys-log">
             <div class="log-sys">Hệ thống sẵn sàng...</div>
           </div>
@@ -167,7 +167,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Từ Sách (Chương 9):</strong> <i>"KBLab hiện dùng HS256 (Symmetric) — các services chia sẻ cùng secret key. Trong production, rủi ro là nếu một service bị hack, attacker có thể tạo token giả. Giải pháp là chuyển sang RS256 (Asymmetric) — Auth Service giữ Private Key để ký, các service khác chỉ có Public Key để verify... JWT có thời hạn (exp). Khi Access Token (ngắn hạn) hết hạn, client dùng Refresh Token (dài hạn) gọi Auth Service để lấy cặp token mới mà không bắt user login lại."</i>
+        <strong>Từ Sách (Chương 9):</strong> <i>"KBLab hiện dùng HS256 (Symmetric) — các services chia sẻ cùng secret key. Trong production, rủi ro là nếu một service bị hack, attacker có thể tạo token giả. Giải pháp là chuyển sang RS256 (Asymmetric) — Auth Service giữ Private Key để ký, các service khác chỉ có Public Key để verify... JWT có thời hạn (exp). Khi Access Token (ngắn hạn) hết hạn, client dùng Refresh Token (dài hạn) gọi Auth Service để lấy cặp token mới mà không bắt user login lại."</i>
       </div>
     </div>
 

@@ -29,20 +29,20 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 3 — Thiết kế API</div>
-      <h1>📋 REST API Explorer</h1>
+      <h1>REST API Explorer</h1>
       <p class="subtitle">Khám phá REST endpoints — click endpoint, xem request/response mẫu</p>
     </header>
 
     <!-- Endpoints List -->
     <div class="card">
-      <div class="card-title">🔗 KBLab LMS — Core Service Endpoints</div>
+      <div class="card-title">KBLab LMS — Core Service Endpoints</div>
       <div id="endpoints-list"></div>
     </div>
 
     <!-- Request / Response -->
     <div class="req-res" id="req-res" style="display: none;">
       <div class="card">
-        <div class="card-title">📤 Request</div>
+        <div class="card-title">Request</div>
         <div class="code-block">
           <div class="code-block-header">
             <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-title">📥 Response — <span id="res-status"></span></div>
+        <div class="card-title">Response — <span id="res-status"></span></div>
         <div class="code-block">
           <div class="code-block-header">
             <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
@@ -65,7 +65,7 @@
 
     <!-- Richardson Maturity -->
     <div class="card" style="margin-top:24px;">
-      <div class="card-title">📊 Richardson Maturity Model — LMS ở Level 2</div>
+      <div class="card-title">Richardson Maturity Model — LMS ở Level 2</div>
       <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
         <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--danger-dim); text-align:center;">
           <div style="font-weight:700; font-size:13px;">Level 0</div><div style="font-size:11px; color:var(--text-dim);">Swamp of POX</div>
@@ -84,7 +84,7 @@
 
     <div style="margin-top:24px;">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> API sử dụng Level 2 REST — resource-oriented URLs, đúng HTTP verbs, DTO pattern (tách entity khỏi response). Còn thiếu: API versioning (/api/v1/), inconsistent naming (/question singular vs /users plural).
+        <strong>Trong KBLab LMS:</strong> API sử dụng Level 2 REST — resource-oriented URLs, đúng HTTP verbs, DTO pattern (tách entity khỏi response). Còn thiếu: API versioning (/api/v1/), inconsistent naming (/question singular vs /users plural).
       </div>
     </div>
 
@@ -125,7 +125,7 @@
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+        document.documentElement.classList.contains('light') ? '' : '️';
     }
 
     renderEndpoints();

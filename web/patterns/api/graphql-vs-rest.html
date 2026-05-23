@@ -106,7 +106,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 3 — Thiết kế API</div>
-      <h1>🕸️ GraphQL vs REST</h1>
+      <h1>GraphQL vs REST</h1>
       <p class="subtitle">Mô phỏng bài toán N+1 Queries khi lấy dữ liệu phân cấp (Questions & Submissions)</p>
     </header>
 
@@ -119,12 +119,12 @@
           <div class="client-node">Client</div>
           <div class="request-packet" id="pkt-rest"></div>
           <div class="server-node">API Server</div>
-          <div class="db-node">🛢️</div>
+          <div class="db-node"></div>
         </div>
         
         <div class="controls" style="margin: 12px 0;">
-          <button class="btn btn-ghost btn-sm" onclick="runRest()">▶ Run REST Flow</button>
-          <button class="btn btn-ghost btn-sm" onclick="clearLogs('rest')">🔄 Clear</button>
+          <button class="btn btn-ghost btn-sm" onclick="runRest()">Run REST Flow</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLogs('rest')">Clear</button>
         </div>
 
         <div class="query-log" id="log-rest">
@@ -145,12 +145,12 @@
           <div class="client-node">Client</div>
           <div class="request-packet" id="pkt-gql"></div>
           <div class="server-node">GraphQL Server</div>
-          <div class="db-node">🛢️</div>
+          <div class="db-node"></div>
         </div>
         
         <div class="controls" style="margin: 12px 0;">
-          <button class="btn btn-primary btn-sm" onclick="runGraphql()">▶ Run GraphQL Flow</button>
-          <button class="btn btn-ghost btn-sm" onclick="clearLogs('gql')">🔄 Clear</button>
+          <button class="btn btn-primary btn-sm" onclick="runGraphql()">Run GraphQL Flow</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearLogs('gql')">Clear</button>
         </div>
 
         <div class="query-log" id="log-gql">
@@ -169,7 +169,7 @@
     <!-- KBLab Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Vấn đề N+1 trong thực tế:</strong> Khi lấy danh sách 10 câu hỏi, và cần lấy thêm số lượt nộp bài (submissions) cho MỖI câu hỏi. Với REST ngây thơ, bạn tốn 1 request lấy questions, và N=10 requests lấy submissions. GraphQL giải quyết bằng 1 network request duy nhất, nhưng cần cẩn thận tối ưu DB (dùng DataLoader) để tránh chuyển N+1 từ Network xuống Database.
+        <strong>Vấn đề N+1 trong thực tế:</strong> Khi lấy danh sách 10 câu hỏi, và cần lấy thêm số lượt nộp bài (submissions) cho MỖI câu hỏi. Với REST ngây thơ, bạn tốn 1 request lấy questions, và N=10 requests lấy submissions. GraphQL giải quyết bằng 1 network request duy nhất, nhưng cần cẩn thận tối ưu DB (dùng DataLoader) để tránh chuyển N+1 từ Network xuống Database.
       </div>
     </div>
 
@@ -236,7 +236,7 @@
         addLog('rest', `Server -> Client: [Submissions for Q${i}]`, 'req');
         await animatePacket('rest', 'anim-res');
       }
-      addLog('rest', '✅ Done (N+1 bottleneck illustrated)', '');
+      addLog('rest', 'Done (N+1 bottleneck illustrated)', '');
     }
 
     async function runGraphql() {
@@ -266,7 +266,7 @@
       addLog('gql', 'Server -> Client: Graph Tree Assembled', 'req');
       await animatePacket('gql', 'anim-res');
       
-      addLog('gql', '✅ Done (1 Network Request, Optimized DB)', '');
+      addLog('gql', 'Done (1 Network Request, Optimized DB)', '');
     }
 
     // Theme integration

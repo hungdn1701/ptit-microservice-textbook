@@ -113,7 +113,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 2 — Strategic DDD</div>
-      <h1>🗺️ Context Map (KBLab LMS)</h1>
+      <h1>Context Map (KBLab LMS)</h1>
       <p class="subtitle">Bản đồ 5 Bounded Contexts hoàn chỉnh của hệ thống — không còn chồng chéo, phản ánh đúng kiến trúc trong sách.</p>
     </header>
 
@@ -207,7 +207,7 @@
       <!-- Book Context -->
       <div style="margin-top:24px;">
         <div class="callout">
-          <strong>🔍 Từ Sách (Chương 2):</strong> <i>"KBLab phục vụ giảng dạy, thực hành, đánh giá. Từ góc nhìn DDD, chúng ta xác định 5 bounded contexts chính... Các service hỗ trợ như Gateway, Registry không phải là domain context độc lập."</i> Bản đồ này phản ánh chính xác kiến trúc 5 Domain (Identity, SQL, Academic, Network, DevOps) được mô tả trong bản thảo.
+          <strong>Từ Sách (Chương 2):</strong> <i>"KBLab phục vụ giảng dạy, thực hành, đánh giá. Từ góc nhìn DDD, chúng ta xác định 5 bounded contexts chính... Các service hỗ trợ như Gateway, Registry không phải là domain context độc lập."</i> Bản đồ này phản ánh chính xác kiến trúc 5 Domain (Identity, SQL, Academic, Network, DevOps) được mô tả trong bản thảo.
         </div>
       </div>
 
@@ -218,27 +218,27 @@
   <script>
     const bcData = {
       'identity': {
-        title: '🔑 Identity & Access', type: 'UPSTREAM', color: 'var(--success)',
+        title: 'Identity & Access', type: 'UPSTREAM', color: 'var(--success)',
         desc: 'Domain rõ ràng nhất — quản lý danh tính người dùng, xác thực, phân quyền. Đây là context <strong>upstream</strong>: mọi context khác đều phụ thuộc vào kết quả authentication. Tách thành service riêng <code>kblab-auth</code> sớm nhất vì thay đổi cơ chế đăng nhập (SSO, Email) không ảnh hưởng logic chấm bài.',
         rel: '<div class="rel-badge"><span style="color:var(--success)">Customer-Supplier:</span> Cấp phát JWT cho toàn hệ thống</div>'
       },
       'sql': {
-        title: '📝 SQL Practice', type: 'CORE DOMAIN', color: 'var(--primary)',
-        desc: 'Đây là <strong>core domain</strong> ban đầu — phần tạo ra giá trị chính cho hệ thống. Toàn bộ quy trình từ "xem câu hỏi → viết SQL → nộp bài → nhận kết quả" nằm ở đây. Kiến trúc bên trong phức tạp, bao gồm một coordinator (<code>kblab-app</code>) và nhiều processor (<code>judge-mysql</code>, <code>judge-sqlserver</code>).',
+        title: 'SQL Practice', type: 'CORE DOMAIN', color: 'var(--primary)',
+        desc: 'Đây là <strong>core domain</strong> ban đầu — phần tạo ra giá trị chính cho hệ thống. Toàn bộ quy trình từ "xem câu hỏi → viết SQL → nộp bài → nhận kết quả" nằm ở đây. Kiến trúc bên trong phức tạp, bao gồm một coordinator (<code>kblab-app</code>) và nhiều processor (<code>kblab-judge</code>, <code>judge-sqlserver</code>).',
         rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chia sẻ Database với Academic Mgmt</div>'
       },
       'academic': {
-        title: '📚 Academic Management', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
+        title: 'Academic Management', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
         desc: 'Quản lý khóa học, bài tập dạng rubric, đăng ký môn, điểm số, điểm danh, và Github Classroom. Context này đã được tách mã nguồn ra khỏi Core Service (<code>kblab-assignment</code>) nhưng <strong>vẫn chia sẻ database (app_db)</strong>. Đây là một trade-off quan trọng được phân tích trong sách.',
         rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chung DB với SQL Practice</div>'
       },
       'network': {
-        title: '🌐 Network Practice', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
+        title: 'Network Practice', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
         desc: 'Domain chuyên biệt cho bài thực hành lập trình mạng (TCP, UDP, RMI, REST, gRPC). Khác với SQL Practice, sinh viên viết client trên IDE cá nhân và kết nối trực tiếp đến server. Ranh giới domain ở đây được xác định bởi <strong>Protocol Semantics</strong>, không chỉ là entities hay database.',
         rel: '<div class="rel-badge"><span style="color:var(--text-dim)">Isolated:</span> Độc lập hoàn toàn với SQL Judge</div>'
       },
       'devops': {
-        title: '🐳 DevOps Practice', type: 'POLYGLOT DOMAIN', color: 'var(--warning)',
+        title: 'DevOps Practice', type: 'POLYGLOT DOMAIN', color: 'var(--warning)',
         desc: 'Domain mới phục vụ thực hành Docker/Kubernetes (tạo lab environment cô lập, web terminal, validator). Context này dùng ngôn ngữ <strong>Go, k3s, Sysbox</strong>, khác biệt hoàn toàn với stack Java/Spring Boot của LMS chính, nhưng vẫn dùng chung hệ thống Identity.',
         rel: '<div class="rel-badge"><span style="color:var(--warning)">Polyglot:</span> Sử dụng Go & k3s thay vì Java</div>'
       }

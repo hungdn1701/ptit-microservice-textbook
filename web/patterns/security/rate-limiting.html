@@ -80,7 +80,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 8 — API Gateway</div>
-      <h1>⏱️ Rate Limiting</h1>
+      <h1>Rate Limiting</h1>
       <p class="subtitle">Thuật toán Token Bucket (Spring Cloud Gateway + Redis)</p>
     </header>
 
@@ -88,20 +88,20 @@
       
       <!-- Visualization -->
       <div class="card">
-        <div class="card-title">🪣 Token Bucket</div>
+        <div class="card-title">Token Bucket</div>
         <div class="bucket-container">
           <div class="bucket" id="bucket">
             <!-- Tokens rendered via JS -->
           </div>
         </div>
         <div class="controls">
-          <button class="btn btn-primary" onclick="sendRequest()">▶ Send Request (-1 Token)</button>
+          <button class="btn btn-primary" onclick="sendRequest()">Send Request (-1 Token)</button>
         </div>
       </div>
 
       <!-- Settings & Logs -->
       <div class="card">
-        <div class="card-title">⚙️ Gateway Config</div>
+        <div class="card-title">Gateway Config</div>
         
         <div class="config-row">
           <span class="config-label">Replenish Rate (Tokens/sec)</span>
@@ -116,7 +116,7 @@
           <span class="config-value" id="val-tokens" style="color: var(--warning)">10</span>
         </div>
 
-        <div class="card-title" style="margin-top: 24px;">📋 Request Log</div>
+        <div class="card-title" style="margin-top: 24px;">Request Log</div>
         <div class="log-panel" id="req-log"></div>
       </div>
     </div>
@@ -124,7 +124,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Redis Rate Limiter trong KBLab:</strong> Gateway sử dụng thuật toán Token Bucket. Hệ thống liên tục "nhỏ giọt" tokens vào xô (ví dụ: 2 request/giây). Nếu user gửi requests liên tục (burst), họ sẽ tiêu thụ sạch token trong xô (max 10). Khi xô rỗng, các requests tiếp theo sẽ bị từ chối với mã lỗi <code>429 Too Many Requests</code> cho đến khi xô có token mới.
+        <strong>Redis Rate Limiter trong KBLab:</strong> Gateway sử dụng thuật toán Token Bucket. Hệ thống liên tục "nhỏ giọt" tokens vào xô (ví dụ: 2 request/giây). Nếu user gửi requests liên tục (burst), họ sẽ tiêu thụ sạch token trong xô (max 10). Khi xô rỗng, các requests tiếp theo sẽ bị từ chối với mã lỗi <code>429 Too Many Requests</code> cho đến khi xô có token mới.
       </div>
     </div>
   </div>

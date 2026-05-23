@@ -101,7 +101,7 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 5 — Giao tiếp Bất đồng bộ</div>
-      <h1>📨 Apache Kafka</h1>
+      <h1>Apache Kafka</h1>
       <p class="subtitle">Mô phỏng KBLab Pipeline: Core Service → Kafka (Submissions) → Judge Instances</p>
     </header>
 
@@ -109,7 +109,7 @@
       
       <!-- Visualization -->
       <div class="architecture-box">
-        <div class="card-title">🗺️ Durable Broker Architecture</div>
+        <div class="card-title">Durable Broker Architecture</div>
         <div class="kafka-canvas">
           
           <div class="node producer">Core Service<br><span style="font-size:10px;font-weight:normal">(Producer)</span></div>
@@ -131,16 +131,16 @@
         </div>
         
         <div class="controls" style="margin-top: 16px;">
-          <button class="btn btn-primary btn-sm" onclick="produceMsg()">📤 Gửi Bài (Produce)</button>
-          <button class="btn btn-info btn-sm" onclick="consumeMsg()">📥 Chấm Bài (Consume)</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+          <button class="btn btn-primary btn-sm" onclick="produceMsg()">Gửi Bài (Produce)</button>
+          <button class="btn btn-info btn-sm" onclick="consumeMsg()">Chấm Bài (Consume)</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
         </div>
 
       </div>
 
       <!-- Log Panel -->
       <div class="architecture-box">
-        <div class="card-title">📋 Event Log</div>
+        <div class="card-title">Event Log</div>
         <div class="query-log" id="sys-log">
           <div class="log-sys">Kafka Cluster Ready. 3 Partitions created.</div>
         </div>
@@ -151,7 +151,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Từ Sách (Chương 5):</strong> <i>"KBLab chọn Kafka cho submission pipeline vì cần replay (chấm lại bài khi Judge đổi logic), ordering theo người dùng, và khả năng mở rộng khi contest có nhiều submissions... Một topic chia làm nhiều Partitions. Consumer Group chia nhau các partitions. Offset đánh dấu vị trí đã đọc."</i>
+        <strong>Từ Sách (Chương 5):</strong> <i>"KBLab chọn Kafka cho submission pipeline vì cần replay (chấm lại bài khi Judge đổi logic), ordering theo người dùng, và khả năng mở rộng khi contest có nhiều submissions... Một topic chia làm nhiều Partitions. Consumer Group chia nhau các partitions. Offset đánh dấu vị trí đã đọc."</i>
       </div>
     </div>
 

@@ -38,14 +38,14 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 4 — Service Discovery</div>
-      <h1>🔍 Service Discovery — Eureka</h1>
+      <h1>Service Discovery — Eureka</h1>
       <p class="subtitle">Services tự đăng ký và tìm kiếm nhau qua Service Registry</p>
     </header>
 
     <div class="registry-panel">
       <!-- Registry List -->
       <div class="card animate-fadeIn">
-        <div class="card-title">📋 Eureka Registry</div>
+        <div class="card-title">Eureka Registry</div>
         <div class="service-list" id="service-list">
           <!-- Rendered by JS -->
         </div>
@@ -67,11 +67,11 @@
 
       <!-- Visualization -->
       <div class="card animate-fadeIn">
-        <div class="card-title">🌐 Topology</div>
+        <div class="card-title">Topology</div>
         <div class="registry-viz" id="registry-viz">
           <div class="orbit-ring" style="width:260px;height:260px;"></div>
           <div class="eureka-hub">
-            <div class="eureka-label">📋<br>Eureka<br>Server</div>
+            <div class="eureka-label"><br>Eureka<br>Server</div>
           </div>
           <!-- Orbit nodes rendered by JS -->
         </div>
@@ -81,14 +81,14 @@
     <!-- Controls -->
     <div class="controls">
       <button class="btn btn-primary" onclick="registerService()">➕ Register Service</button>
-      <button class="btn btn-danger" onclick="killRandom()">💀 Kill Random</button>
-      <button class="btn" onclick="sendHeartbeats()">💗 Heartbeat All</button>
-      <button class="btn" onclick="resetAll()">🔄 Reset</button>
+      <button class="btn btn-danger" onclick="killRandom()">Kill Random</button>
+      <button class="btn" onclick="sendHeartbeats()"> Heartbeat All</button>
+      <button class="btn" onclick="resetAll()">Reset</button>
     </div>
 
     <!-- Event Ticker -->
     <div class="card">
-      <div class="card-title">📡 Events</div>
+      <div class="card-title">Events</div>
       <div class="event-ticker" id="events">
         <div><span style="color:#6A9955">[INIT]</span> Eureka Server started, waiting for registrations...</div>
       </div>
@@ -96,7 +96,7 @@
 
     <div style="margin-top:24px;">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Các service (Auth, Core, Assignment, Judge) đăng ký với Eureka khi khởi động. Gateway dùng Eureka để route requests. Khi Judge Service scale thêm 1 instance, nó tự register → Gateway tự biết, không cần cấu hình thủ công.
+        <strong>Trong KBLab LMS:</strong> Các service (Auth, Core, Assignment, Judge) đăng ký với Eureka khi khởi động. Gateway dùng Eureka để route requests. Khi Judge Service scale thêm 1 instance, nó tự register → Gateway tự biết, không cần cấu hình thủ công.
       </div>
     </div>
 
@@ -104,12 +104,12 @@
 
   <script>
     const serviceTemplates = [
-      { name: 'Auth Service', icon: '🔑', port: 8081 },
-      { name: 'Core Service', icon: '📝', port: 8082 },
-      { name: 'Assignment', icon: '📚', port: 8083 },
-      { name: 'Judge Service', icon: '⚖️', port: 8084 },
-      { name: 'Notification', icon: '🔔', port: 8085 },
-      { name: 'Judge (2)', icon: '⚖️', port: 8086 },
+      { name: 'Auth Service', icon: '', port: 8081 },
+      { name: 'Core Service', icon: '', port: 8082 },
+      { name: 'Assignment', icon: '', port: 8083 },
+      { name: 'Judge Service', icon: '', port: 8084 },
+      { name: 'Notification', icon: '', port: 8085 },
+      { name: 'Judge (2)', icon: '', port: 8086 },
     ];
 
     let services = [];
@@ -121,29 +121,29 @@
     ];
 
     function registerService() {
-      if (nextIdx >= serviceTemplates.length) { addEvent('⚠️ All services already registered', '#FFBD2E'); return; }
+      if (nextIdx >= serviceTemplates.length) { addEvent('All services already registered', '#FFBD2E'); return; }
       const tmpl = serviceTemplates[nextIdx];
       services.push({ ...tmpl, healthy: true, id: nextIdx });
-      addEvent(`✅ REGISTER: ${tmpl.name} (port ${tmpl.port})`, '#27C93F');
+      addEvent(`REGISTER: ${tmpl.name} (port ${tmpl.port})`, '#27C93F');
       nextIdx++;
       renderAll();
     }
 
     function killRandom() {
       const healthy = services.filter(s => s.healthy);
-      if (!healthy.length) { addEvent('⚠️ No healthy services to kill', '#FFBD2E'); return; }
+      if (!healthy.length) { addEvent('No healthy services to kill', '#FFBD2E'); return; }
       const victim = healthy[Math.floor(Math.random() * healthy.length)];
       victim.healthy = false;
-      addEvent(`💀 DOWN: ${victim.name} (port ${victim.port}) — missed heartbeats`, '#FF5F56');
+      addEvent(`DOWN: ${victim.name} (port ${victim.port}) — missed heartbeats`, '#FF5F56');
       renderAll();
     }
 
     function sendHeartbeats() {
       services.filter(s => s.healthy).forEach(s => {
-        addEvent(`💗 HEARTBEAT: ${s.name} — OK`, '#27C93F');
+        addEvent(` HEARTBEAT: ${s.name} — OK`, '#27C93F');
       });
       services.filter(s => !s.healthy).forEach(s => {
-        addEvent(`❌ HEARTBEAT MISSED: ${s.name}`, '#FF5F56');
+        addEvent(`HEARTBEAT MISSED: ${s.name}`, '#FF5F56');
       });
     }
 
@@ -200,7 +200,7 @@
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+        document.documentElement.classList.contains('light') ? '' : '';
     }
 
     renderAll();

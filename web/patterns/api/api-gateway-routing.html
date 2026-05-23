@@ -77,14 +77,14 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 8 — API Gateway</div>
-      <h1>🚪 Gateway Routing Pipeline</h1>
+      <h1>Gateway Routing Pipeline</h1>
       <p class="subtitle">Mô phỏng chuỗi xử lý: CORS → JWT Validation → StripPrefix → Route</p>
     </header>
 
     <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
       
       <div class="architecture-box">
-        <div class="card-title">🗺️ Request Pipeline</div>
+        <div class="card-title">Request Pipeline</div>
         <div class="gateway-canvas" id="canvas">
           
           <div class="node node-client">Client<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">Browser/App</span></div>
@@ -107,17 +107,17 @@
         </div>
         
         <div class="controls-row">
-          <button class="btn btn-primary btn-sm" onclick="runPipeline('happy')">▶ Core API (Happy Path)</button>
-          <button class="btn btn-danger btn-sm" onclick="runPipeline('no-token')">❌ Core API (No JWT)</button>
-          <button class="btn btn-info btn-sm" onclick="runPipeline('public')">🌐 Auth API (Public Route)</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">🔄 Reset</button>
+          <button class="btn btn-primary btn-sm" onclick="runPipeline('happy')">Core API (Happy Path)</button>
+          <button class="btn btn-danger btn-sm" onclick="runPipeline('no-token')">Core API (No JWT)</button>
+          <button class="btn btn-info btn-sm" onclick="runPipeline('public')">Auth API (Public Route)</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
         </div>
 
       </div>
 
       <!-- Log Panel -->
       <div class="architecture-box">
-        <div class="card-title">📋 Gateway Log</div>
+        <div class="card-title">Gateway Log</div>
         <div class="log-panel" id="sys-log">
           <div style="font-style:italic">Waiting for incoming requests...</div>
         </div>
@@ -128,7 +128,7 @@
     <!-- Context -->
     <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
       <div class="callout">
-        <strong>🔍 Từ Sách (Chương 8):</strong> <i>"Cross-cutting concerns tại Gateway: Thay vì mỗi service tự validate JWT, tự xử lý CORS... Gateway tập trung xử lý tại một điểm duy nhất. Gateway giải mã JWT, sau đó truyền thông tin user xuống downstream service thông qua HTTP Headers (<code>X-User-Id</code>). Spring Cloud Gateway dùng <code>StripPrefix=2</code> để biến <code>/api/core/questions</code> thành <code>/questions</code> trước khi forward tới Core Service."</i>
+        <strong>Từ Sách (Chương 8):</strong> <i>"Cross-cutting concerns tại Gateway: Thay vì mỗi service tự validate JWT, tự xử lý CORS... Gateway tập trung xử lý tại một điểm duy nhất. Gateway giải mã JWT, sau đó truyền thông tin user xuống downstream service thông qua HTTP Headers (<code>X-User-Id</code>). Spring Cloud Gateway dùng <code>StripPrefix=2</code> để biến <code>/api/core/questions</code> thành <code>/questions</code> trước khi forward tới Core Service."</i>
       </div>
     </div>
 
@@ -172,7 +172,7 @@
         // 1. CORS
         pkt.style.left = '280px'; pkt.style.top = '100px';
         document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '✅';
+        document.getElementById('s-cors').textContent = '';
         logSys('1. CORS Check: Passed (Origin allowed)', 'var(--success)');
         await sleep(800);
         document.getElementById('f-cors').classList.remove('active');
@@ -180,7 +180,7 @@
         // 2. JWT
         pkt.style.top = '145px';
         document.getElementById('f-jwt').classList.add('active');
-        document.getElementById('s-jwt').textContent = '✅';
+        document.getElementById('s-jwt').textContent = '';
         logSys('2. JwtRequestFilter: Token Valid. Extracting claims...', 'var(--success)');
         await sleep(600);
         pkt.innerHTML = "GET /api/core/questions<br>[X-User-Id: SV001]";
@@ -199,7 +199,7 @@
         // 4. StripPrefix
         pkt.style.top = '235px';
         document.getElementById('f-strip').classList.add('active');
-        document.getElementById('s-strip').textContent = '✅';
+        document.getElementById('s-strip').textContent = '';
         logSys('4. StripPrefix=2: Removing /api/core', 'var(--warning)');
         await sleep(600);
         pkt.innerHTML = "GET /questions<br>[X-User-Id: SV001]";
@@ -209,11 +209,11 @@
         // Forward to Core
         pkt.style.left = '70%'; pkt.style.top = '110px';
         document.getElementById('svc-core').classList.add('active');
-        logSys('🚀 Forwarding to lb://core-service/questions', 'var(--info)');
+        logSys('Forwarding to lb://core-service/questions', 'var(--info)');
         await sleep(1000);
         pkt.style.opacity = 0;
         document.getElementById('svc-core').classList.remove('active');
-        logSys('✅ Request completed successfully.', 'var(--success)');
+        logSys('Request completed successfully.', 'var(--success)');
 
       } else if (scenario === 'no-token') {
         logSys('--- NEW REQUEST: GET /api/core/questions ---', 'var(--info)');
@@ -225,7 +225,7 @@
         // 1. CORS
         pkt.style.left = '280px'; pkt.style.top = '100px';
         document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '✅';
+        document.getElementById('s-cors').textContent = '';
         logSys('1. CORS Check: Passed', 'var(--success)');
         await sleep(800);
         document.getElementById('f-cors').classList.remove('active');
@@ -233,7 +233,7 @@
         // 2. JWT Fails
         pkt.style.top = '145px';
         document.getElementById('f-jwt').classList.add('error');
-        document.getElementById('s-jwt').textContent = '❌';
+        document.getElementById('s-jwt').textContent = '';
         pkt.style.background = 'var(--danger)'; pkt.style.color = '#fff';
         logSys('2. JwtRequestFilter: Missing/Invalid Token!', 'var(--danger)');
         await sleep(800);
@@ -254,7 +254,7 @@
         // 1. CORS
         pkt.style.left = '280px'; pkt.style.top = '100px';
         document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '✅';
+        document.getElementById('s-cors').textContent = '';
         logSys('1. CORS Check: Passed', 'var(--success)');
         await sleep(800);
         document.getElementById('f-cors').classList.remove('active');
@@ -278,7 +278,7 @@
         // 4. StripPrefix
         pkt.style.top = '235px';
         document.getElementById('f-strip').classList.add('active');
-        document.getElementById('s-strip').textContent = '✅';
+        document.getElementById('s-strip').textContent = '';
         logSys('4. StripPrefix=2: Removing /api/auth', 'var(--warning)');
         await sleep(600);
         pkt.innerHTML = "POST /login<br>body: {user, pass}";
@@ -288,11 +288,11 @@
         // Forward to Auth
         pkt.style.left = '70%'; pkt.style.top = '200px'; // lower position for auth svc
         document.getElementById('svc-auth').classList.add('active');
-        logSys('🚀 Forwarding to lb://auth-service/login', 'var(--info)');
+        logSys('Forwarding to lb://auth-service/login', 'var(--info)');
         await sleep(1000);
         pkt.style.opacity = 0;
         document.getElementById('svc-auth').classList.remove('active');
-        logSys('✅ Request completed successfully.', 'var(--success)');
+        logSys('Request completed successfully.', 'var(--success)');
       }
     }
 

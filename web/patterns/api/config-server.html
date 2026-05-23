@@ -26,39 +26,39 @@
   <div class="page-container">
     <header class="page-header animate-fadeIn">
       <div class="chapter-badge">Chương 8 — API Gateway & Config</div>
-      <h1>⚙️ Config Server</h1>
+      <h1>Config Server</h1>
       <p class="subtitle">Centralized configuration — switch profiles, hot reload, xem config resolution</p>
     </header>
 
     <!-- Architecture -->
     <div class="card">
-      <div class="card-title">🏗️ Architecture Flow</div>
+      <div class="card-title"> Architecture Flow</div>
       <div class="arch-flow">
-        <div class="arch-node" id="node-git"><div>📦</div><div style="font-size:11px; font-weight:600;">Git Repo</div></div>
+        <div class="arch-node" id="node-git"><div>GIT</div><div style="font-size:11px; font-weight:600;">Git Repo</div></div>
         <div class="arch-arrow">→</div>
-        <div class="arch-node active" id="node-config"><div>⚙️</div><div style="font-size:11px; font-weight:600;">Config Server</div></div>
+        <div class="arch-node active" id="node-config"><div></div><div style="font-size:11px; font-weight:600;">Config Server</div></div>
         <div class="arch-arrow">→</div>
-        <div class="arch-node" id="node-services"><div>📝🔑⚖️</div><div style="font-size:11px; font-weight:600;">All Services</div></div>
+        <div class="arch-node" id="node-services"><div></div><div style="font-size:11px; font-weight:600;">All Services</div></div>
       </div>
     </div>
 
     <!-- Environment Selector -->
     <div class="card" style="margin-top:20px;">
-      <div class="card-title">🌍 Environment Profile</div>
+      <div class="card-title"> Environment Profile</div>
       <div class="env-selector" id="env-selector">
-        <button class="env-btn active" onclick="switchEnv('dev')">🔧 dev</button>
-        <button class="env-btn" onclick="switchEnv('staging')">🧪 staging</button>
-        <button class="env-btn" onclick="switchEnv('prod')">🚀 prod</button>
+        <button class="env-btn active" onclick="switchEnv('dev')">dev</button>
+        <button class="env-btn" onclick="switchEnv('staging')">staging</button>
+        <button class="env-btn" onclick="switchEnv('prod')">prod</button>
       </div>
       <div id="config-list"></div>
     </div>
 
     <!-- Hot Reload -->
     <div class="card" style="margin-top:20px;">
-      <div class="card-title">🔄 Hot Reload Simulation</div>
+      <div class="card-title">Hot Reload Simulation</div>
       <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Thay đổi config → bus refresh → services pickup</p>
       <div class="controls">
-        <button class="btn btn-primary" onclick="hotReload()">🔄 Push Config Change</button>
+        <button class="btn btn-primary" onclick="hotReload()">Push Config Change</button>
       </div>
       <div class="log-panel" id="reload-log" style="margin-top:12px; max-height:120px;">
         <div><span class="log-info">Config server ready</span></div>
@@ -67,7 +67,7 @@
 
     <div style="margin-top:24px;">
       <div class="callout">
-        <strong>🔍 Trong KBLab LMS:</strong> Mỗi service đọc config từ Spring Cloud Config Server. Khi cần điều chỉnh (ví dụ: tăng connection pool vào kỳ thi), admin chỉnh file config trên Git → POST /actuator/bus-refresh → tất cả services reload mà không cần restart.
+        <strong>Trong KBLab LMS:</strong> Mỗi service đọc config từ Spring Cloud Config Server. Khi cần điều chỉnh (ví dụ: tăng connection pool vào kỳ thi), admin chỉnh file config trên Git → POST /actuator/bus-refresh → tất cả services reload mà không cần restart.
       </div>
     </div>
 
@@ -129,16 +129,16 @@
       const log = document.getElementById('reload-log');
       const time = () => new Date().toLocaleTimeString('en-US', { hour12: false });
       log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-info">POST /actuator/bus-refresh</span></div>`;
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ auth-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 400);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ core-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 700);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">✅ judge-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 1000);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-warn">⚡ All services refreshed — 0 restarts needed</span></div>`; log.scrollTop = log.scrollHeight; }, 1300);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">auth-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 400);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">core-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 700);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">judge-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 1000);
+      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-warn">All services refreshed — 0 restarts needed</span></div>`; log.scrollTop = log.scrollHeight; }, 1300);
     }
 
     function toggleTheme() {
       document.documentElement.classList.toggle('light');
       document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '🌙' : '☀️';
+        document.documentElement.classList.contains('light') ? '' : '';
     }
 
     renderConfig();
