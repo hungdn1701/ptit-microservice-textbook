@@ -41,8 +41,6 @@
 
   <div class="diagram-canvas" style="min-height: 540px;">
 
-    <div class="d-title-page">Two-Phase Commit (2PC)</div>
-
     <!--
       Participants (N=3, flex:1 each):
         0: Coordinator  1: Core Service (DB1)  2: Judge Service (DB2)
@@ -156,7 +154,7 @@
 
     <!-- Anti-pattern warning -->
     <div class="d-box d-danger" style="margin-top:12px;">
-      <div class="d-title" style="margin-bottom:4px;">⚠️ Anti-pattern trong Microservices</div>
+      <div class="d-title" style="margin-bottom:4px;">Anti-pattern trong Microservices</div>
       <div style="font-size:12px; line-height:1.6;">
         2PC <strong>không phù hợp</strong> cho microservices: single point of failure (Coordinator),
         high latency (2 round-trips), lock resources xuyên service.<br>

@@ -1,0 +1,818 @@
+window.DIAGRAM_MANIFEST = [
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-1-1",
+        "path":  "./ch01/fig-1-1.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-1-2",
+        "path":  "./ch01/fig-1-2.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-1-3",
+        "path":  "./ch01/fig-1-3.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-1-4",
+        "path":  "./ch01/fig-1-4.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-1-5",
+        "path":  "./ch01/fig-1-5.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-1-6",
+        "path":  "./ch01/fig-1-6.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-1-7",
+        "path":  "./ch01/fig-1-7.html"
+    },
+    {
+        "ch":  "01",
+        "chapter":  1,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-1-8",
+        "path":  "./ch01/fig-1-8.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-2-1",
+        "path":  "./ch02/fig-2-1.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-2-2",
+        "path":  "./ch02/fig-2-2.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-2-3",
+        "path":  "./ch02/fig-2-3.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-2-4",
+        "path":  "./ch02/fig-2-4.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-2-5",
+        "path":  "./ch02/fig-2-5.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-2-6",
+        "path":  "./ch02/fig-2-6.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  6,
+        "suffix":  "b",
+        "file":  "fig-2-6b",
+        "path":  "./ch02/fig-2-6b.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-2-7",
+        "path":  "./ch02/fig-2-7.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-2-8",
+        "path":  "./ch02/fig-2-8.html"
+    },
+    {
+        "ch":  "03",
+        "chapter":  3,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-3-1",
+        "path":  "./ch03/fig-3-1.html"
+    },
+    {
+        "ch":  "03",
+        "chapter":  3,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-3-2",
+        "path":  "./ch03/fig-3-2.html"
+    },
+    {
+        "ch":  "03",
+        "chapter":  3,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-3-3",
+        "path":  "./ch03/fig-3-3.html"
+    },
+    {
+        "ch":  "03",
+        "chapter":  3,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-3-4",
+        "path":  "./ch03/fig-3-4.html"
+    },
+    {
+        "ch":  "03",
+        "chapter":  3,
+        "number":  6,
+        "suffix":  "b",
+        "file":  "fig-3-6b",
+        "path":  "./ch03/fig-3-6b.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-4-1",
+        "path":  "./ch04/fig-4-1.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-4-2",
+        "path":  "./ch04/fig-4-2.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-4-3",
+        "path":  "./ch04/fig-4-3.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-4-4",
+        "path":  "./ch04/fig-4-4.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-4-5",
+        "path":  "./ch04/fig-4-5.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-4-6",
+        "path":  "./ch04/fig-4-6.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-4-7",
+        "path":  "./ch04/fig-4-7.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-4-8",
+        "path":  "./ch04/fig-4-8.html"
+    },
+    {
+        "ch":  "04",
+        "chapter":  4,
+        "number":  9,
+        "suffix":  "",
+        "file":  "fig-4-9",
+        "path":  "./ch04/fig-4-9.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-5-1",
+        "path":  "./ch05/fig-5-1.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-5-2",
+        "path":  "./ch05/fig-5-2.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-5-3",
+        "path":  "./ch05/fig-5-3.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-5-4",
+        "path":  "./ch05/fig-5-4.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-5-5",
+        "path":  "./ch05/fig-5-5.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-5-6",
+        "path":  "./ch05/fig-5-6.html"
+    },
+    {
+        "ch":  "05",
+        "chapter":  5,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-5-7",
+        "path":  "./ch05/fig-5-7.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-6-1",
+        "path":  "./ch06/fig-6-1.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-6-2",
+        "path":  "./ch06/fig-6-2.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-6-3",
+        "path":  "./ch06/fig-6-3.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-6-4",
+        "path":  "./ch06/fig-6-4.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-6-5",
+        "path":  "./ch06/fig-6-5.html"
+    },
+    {
+        "ch":  "06",
+        "chapter":  6,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-6-6",
+        "path":  "./ch06/fig-6-6.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-7-1",
+        "path":  "./ch07/fig-7-1.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-7-2",
+        "path":  "./ch07/fig-7-2.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-7-3",
+        "path":  "./ch07/fig-7-3.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-7-4",
+        "path":  "./ch07/fig-7-4.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-7-5",
+        "path":  "./ch07/fig-7-5.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-7-7",
+        "path":  "./ch07/fig-7-7.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-7-8",
+        "path":  "./ch07/fig-7-8.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  9,
+        "suffix":  "",
+        "file":  "fig-7-9",
+        "path":  "./ch07/fig-7-9.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  10,
+        "suffix":  "",
+        "file":  "fig-7-10",
+        "path":  "./ch07/fig-7-10.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  11,
+        "suffix":  "",
+        "file":  "fig-7-11",
+        "path":  "./ch07/fig-7-11.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  12,
+        "suffix":  "",
+        "file":  "fig-7-12",
+        "path":  "./ch07/fig-7-12.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  12,
+        "suffix":  "b",
+        "file":  "fig-7-12b",
+        "path":  "./ch07/fig-7-12b.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  13,
+        "suffix":  "",
+        "file":  "fig-7-13",
+        "path":  "./ch07/fig-7-13.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  14,
+        "suffix":  "",
+        "file":  "fig-7-14",
+        "path":  "./ch07/fig-7-14.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-8-1",
+        "path":  "./ch08/fig-8-1.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-8-2",
+        "path":  "./ch08/fig-8-2.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-8-3",
+        "path":  "./ch08/fig-8-3.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-8-4",
+        "path":  "./ch08/fig-8-4.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-8-5",
+        "path":  "./ch08/fig-8-5.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-8-6",
+        "path":  "./ch08/fig-8-6.html"
+    },
+    {
+        "ch":  "08",
+        "chapter":  8,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-8-7",
+        "path":  "./ch08/fig-8-7.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-9-1",
+        "path":  "./ch09/fig-9-1.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-9-2",
+        "path":  "./ch09/fig-9-2.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-9-3",
+        "path":  "./ch09/fig-9-3.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-9-4",
+        "path":  "./ch09/fig-9-4.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-9-5",
+        "path":  "./ch09/fig-9-5.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  5,
+        "suffix":  "b",
+        "file":  "fig-9-5b",
+        "path":  "./ch09/fig-9-5b.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-9-6",
+        "path":  "./ch09/fig-9-6.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-9-7",
+        "path":  "./ch09/fig-9-7.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-9-8",
+        "path":  "./ch09/fig-9-8.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-10-1",
+        "path":  "./ch10/fig-10-1.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-10-2",
+        "path":  "./ch10/fig-10-2.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-10-3",
+        "path":  "./ch10/fig-10-3.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-10-4",
+        "path":  "./ch10/fig-10-4.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-10-5",
+        "path":  "./ch10/fig-10-5.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-10-6",
+        "path":  "./ch10/fig-10-6.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-10-7",
+        "path":  "./ch10/fig-10-7.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-10-8",
+        "path":  "./ch10/fig-10-8.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  9,
+        "suffix":  "",
+        "file":  "fig-10-9",
+        "path":  "./ch10/fig-10-9.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  10,
+        "suffix":  "",
+        "file":  "fig-10-10",
+        "path":  "./ch10/fig-10-10.html"
+    },
+    {
+        "ch":  "10",
+        "chapter":  10,
+        "number":  11,
+        "suffix":  "",
+        "file":  "fig-10-11",
+        "path":  "./ch10/fig-10-11.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-11-1",
+        "path":  "./ch11/fig-11-1.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-11-2",
+        "path":  "./ch11/fig-11-2.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-11-3",
+        "path":  "./ch11/fig-11-3.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-11-4",
+        "path":  "./ch11/fig-11-4.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-11-5",
+        "path":  "./ch11/fig-11-5.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-11-6",
+        "path":  "./ch11/fig-11-6.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-11-7",
+        "path":  "./ch11/fig-11-7.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-11-8",
+        "path":  "./ch11/fig-11-8.html"
+    },
+    {
+        "ch":  "11",
+        "chapter":  11,
+        "number":  9,
+        "suffix":  "",
+        "file":  "fig-11-9",
+        "path":  "./ch11/fig-11-9.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  1,
+        "suffix":  "",
+        "file":  "fig-12-1",
+        "path":  "./ch12/fig-12-1.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  2,
+        "suffix":  "",
+        "file":  "fig-12-2",
+        "path":  "./ch12/fig-12-2.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  3,
+        "suffix":  "",
+        "file":  "fig-12-3",
+        "path":  "./ch12/fig-12-3.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  4,
+        "suffix":  "",
+        "file":  "fig-12-4",
+        "path":  "./ch12/fig-12-4.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  5,
+        "suffix":  "",
+        "file":  "fig-12-5",
+        "path":  "./ch12/fig-12-5.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  6,
+        "suffix":  "",
+        "file":  "fig-12-6",
+        "path":  "./ch12/fig-12-6.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  7,
+        "suffix":  "",
+        "file":  "fig-12-7",
+        "path":  "./ch12/fig-12-7.html"
+    },
+    {
+        "ch":  "12",
+        "chapter":  12,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-12-8",
+        "path":  "./ch12/fig-12-8.html"
+    }
+];

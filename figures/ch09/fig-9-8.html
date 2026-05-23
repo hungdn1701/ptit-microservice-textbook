@@ -6,10 +6,6 @@
   <link rel="stylesheet" href="../../web/styles/base-style.css">
   <link rel="stylesheet" href="../../web/styles/diagram-style.css">
   <style>
-    .seq-lane { flex:1; text-align:center; position:relative; }
-    .seq-lane::after { content:''; position:absolute; left:50%; top:0; bottom:0; width:1.5px; background:repeating-linear-gradient(180deg,#94a3b8 0,#94a3b8 4px,transparent 4px,transparent 8px); z-index:0; }
-    .seq-header { position:relative; z-index:1; }
-    .seq-msg { display:flex; align-items:center; min-height:36px; position:relative; z-index:1; }
     .seq-line { height:1.5px; background:#64748b; position:relative; flex:1; }
     .seq-line::after { content:'▶'; position:absolute; right:-2px; top:-7px; font-size:10px; color:#64748b; }
     .seq-line.left::after { content:'◀'; left:-2px; right:auto; }
@@ -19,7 +15,6 @@
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
-    <div class="d-title-page">Secrets Management — Vault Pattern</div>
 
     <div style="display:flex; gap:0; margin-bottom:12px;">
       <div class="seq-lane"><div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 14px;"><div class="d-title">Auth Service</div></div></div></div>
@@ -30,9 +25,9 @@
     <div style="display:flex; flex-direction:column; gap:0;">
       <!-- 1. Request credentials -->
       <div class="seq-msg">
-        <div style="flex:1;"></div>
-        <div class="seq-line" style="flex:2;"><span class="seq-label">Request DB credentials</span></div>
-        <div style="flex:1;"></div>
+        <div style="flex:0.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label">Request DB credentials</span></div>
+        <div style="flex:1.5;"></div>
       </div>
       <!-- 2. Generate -->
       <div style="display:flex; justify-content:center; margin:4px 0;">
@@ -40,19 +35,21 @@
       </div>
       <!-- 3. Return -->
       <div class="seq-msg">
-        <div style="flex:1;"></div>
-        <div class="seq-line dashed left" style="flex:2;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">temp_user / temp_pass (TTL: 30min)</span></div>
-        <div style="flex:1;"></div>
+        <div style="flex:0.5;"></div>
+        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">temp_user / temp_pass (TTL: 30min)</span></div>
+        <div style="flex:1.5;"></div>
       </div>
       <!-- 4. Connect to DB -->
       <div class="seq-msg">
-        <div style="flex:1;"></div>
-        <div class="seq-line" style="flex:4;"><span class="seq-label">Connect with temp credentials</span></div>
+        <div style="flex:0.5;"></div>
+        <div class="seq-line" style="flex:2;"><span class="seq-label">Connect with temp credentials</span></div>
+        <div style="flex:0.5;"></div>
       </div>
       <!-- 5. Access granted -->
       <div class="seq-msg">
-        <div style="flex:1;"></div>
-        <div class="seq-line dashed left" style="flex:4;"><span class="seq-label">Access granted</span></div>
+        <div style="flex:0.5;"></div>
+        <div class="seq-line dashed left" style="flex:2;"><span class="seq-label">Access granted</span></div>
+        <div style="flex:0.5;"></div>
       </div>
     </div>
 

@@ -15,45 +15,45 @@
   --diagram-size-node-body: 13px;
   --diagram-size-meta: 12px;
 
-  /* Book palette */
-  --diagram-color-bg: #f8fafc;
+  /* Book palette (light, print-safe, transparent-friendly) */
+  --diagram-color-bg: #ffffff;
   --diagram-color-surface: #ffffff;
-  --diagram-color-line: #64748b;
+  --diagram-color-line: #0f766e;
   --diagram-color-line-muted: #94a3b8;
   --diagram-color-text: #0f172a;
   --diagram-color-muted: #475569;
 
-  --diagram-color-service-bg: #e6f4f3;
+  --diagram-color-service-bg: #f0fdfa;
   --diagram-color-service-border: #0f766e;
-  --diagram-color-service-text: #0b4f49;
+  --diagram-color-service-text: #0f172a;
 
-  --diagram-color-database-bg: #dbeafe;
-  --diagram-color-database-border: #2563eb;
-  --diagram-color-database-text: #1e3a8a;
+  --diagram-color-database-bg: #f8fafc;
+  --diagram-color-database-border: #0f766e;
+  --diagram-color-database-text: #0f172a;
 
-  --diagram-color-queue-bg: #fef9c3;
+  --diagram-color-queue-bg: #fffbeb;
   --diagram-color-queue-border: #ca8a04;
-  --diagram-color-queue-text: #713f12;
+  --diagram-color-queue-text: #78350f;
 
-  --diagram-color-gateway-bg: #f5f3ff;
-  --diagram-color-gateway-border: #7c3aed;
-  --diagram-color-gateway-text: #3b0764;
+  --diagram-color-gateway-bg: #f8fafc;
+  --diagram-color-gateway-border: #64748b;
+  --diagram-color-gateway-text: #0f172a;
 
-  --diagram-color-warning-bg: #fff7ed;
-  --diagram-color-warning-border: #ea580c;
-  --diagram-color-warning-text: #7c2d12;
+  --diagram-color-warning-bg: #fffbeb;
+  --diagram-color-warning-border: #ca8a04;
+  --diagram-color-warning-text: #78350f;
 
-  --diagram-color-success-bg: #dcfce7;
-  --diagram-color-success-border: #16a34a;
-  --diagram-color-success-text: #14532d;
+  --diagram-color-success-bg: #ecfdf5;
+  --diagram-color-success-border: #0f766e;
+  --diagram-color-success-text: #0f172a;
 
-  --diagram-color-danger-bg: #fee2e2;
+  --diagram-color-danger-bg: #fef2f2;
   --diagram-color-danger-border: #dc2626;
   --diagram-color-danger-text: #7f1d1d;
 
   --diagram-color-note-bg: #f8fafc;
-  --diagram-color-note-border: #cbd5e1;
-  --diagram-color-note-text: #334155;
+  --diagram-color-note-border: #e2e8f0;
+  --diagram-color-note-text: #475569;
 
   /* Geometry + rhythm */
   --diagram-space-1: 8px;
@@ -68,7 +68,7 @@
   --diagram-border-default: 1.5px;
   --diagram-border-emphasis: 2px;
 
-  --diagram-shadow-elevation-1: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --diagram-shadow-elevation-1: 0 10px 26px rgba(0, 0, 0, 0.45);
 
   --diagram-motion-fast: 180ms;
   --diagram-motion-normal: 280ms;
@@ -86,6 +86,8 @@
   color: var(--diagram-color-text) !important;
   font-family: var(--diagram-font-body) !important;
   padding: var(--diagram-space-4) !important;
+  border: 1px solid var(--diagram-color-line-muted) !important;
+  background-image: none !important;
 }
 
 .diagram-mode .d-title-page {
@@ -113,7 +115,12 @@
 .diagram-mode .d-caption {
   font-family: var(--diagram-font-body) !important;
   font-size: var(--diagram-size-meta) !important;
-  color: var(--diagram-color-muted) !important;
+  color: #334155 !important;
+}
+
+.diagram-mode .diagram-canvas::before,
+.diagram-mode .diagram-canvas::after {
+  color: var(--diagram-color-line-muted) !important;
 }
 
 /* Enforce minimum readable text size on inline-styled labels */
@@ -136,8 +143,13 @@
 .diagram-mode .badge {
   border-radius: var(--diagram-radius-card) !important;
   border-width: var(--diagram-border-default) !important;
-  box-shadow: var(--diagram-shadow-elevation-1);
+  box-shadow: none !important;
   transition: transform var(--diagram-motion-fast) var(--diagram-motion-ease);
+}
+
+.diagram-mode .d-box,
+.diagram-mode .d-box * {
+  color: var(--diagram-color-text) !important;
 }
 
 .diagram-mode .d-cluster,
@@ -224,4 +236,47 @@
 .diagram-mode .d-sep-title::after {
   stroke: var(--diagram-color-line-muted) !important;
   background: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-cluster {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+.diagram-mode .d-arrow-label,
+.diagram-mode .d-seq-msg-text {
+  background: #ffffff !important;
+  border: 1px solid var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-seq-participants {
+  border-bottom-color: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-seq-msg-line {
+  background: var(--diagram-color-line) !important;
+}
+
+.diagram-mode .d-seq-msg-line::after {
+  color: var(--diagram-color-line) !important;
+}
+
+.diagram-mode .d-seq-msg-line.dashed {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--diagram-color-line-muted) 0,
+    var(--diagram-color-line-muted) 4px,
+    transparent 4px,
+    transparent 8px
+  ) !important;
+}
+
+.diagram-mode .d-timeline-axis {
+  background: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-timeline-dot {
+  background: var(--diagram-color-line) !important;
+  border-color: var(--diagram-color-surface) !important;
+  box-shadow: 0 0 0 2px var(--diagram-color-line) !important;
 }

@@ -25,14 +25,20 @@
   min-height: unset;
 }
 
+.diagram-mode::before,
+.diagram-mode::after {
+  content: none !important;
+  display: none !important;
+}
+
 /* Diagram viewport — optimized for high-quality capture */
 .diagram-canvas {
-  width: 960px;
+  width: min(100%, 1100px);
   min-height: 540px;
   padding: 40px;
+  margin: 0 auto;
   background: #ffffff;
-  background-image: radial-gradient(#e5e7eb 1px, transparent 0);
-  background-size: 24px 24px;
+  background-image: none;
   box-sizing: border-box;
   font-family: var(--font-body);
   font-size: 13px;
@@ -43,26 +49,142 @@
   border: 1px solid #e5e7eb;
 }
 
-/* Technical decorations */
-.diagram-canvas::before {
-  content: 'FIG. ID: ' attr(data-fig-id) ' // REF: ' attr(data-ref);
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: #9ca3af;
-  letter-spacing: 0.1em;
+/* Export mode keeps transparent background for PNG generation */
+.diagram-mode.png-export {
+  background: transparent !important;
 }
 
-.diagram-canvas::after {
-  content: '+ 0.00';
+.diagram-mode.png-export .diagram-canvas {
+  background: transparent !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Export mode rule: image title/caption belong to Typst, not HTML figure */
+.diagram-mode .d-title-page,
+.diagram-mode .d-caption,
+.diagram-mode .fig-caption,
+.diagram-mode .caption {
+  display: none !important;
+}
+
+/* ── Layout Primitives used by figure HTML files ── */
+.d-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.d-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.d-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.d-sub {
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* Shared sequence primitives for swim-lane readability */
+.seq-lane {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.seq-lane::after {
+  content: '';
   position: absolute;
-  bottom: 12px;
-  left: 16px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: #9ca3af;
+  left: 50%;
+  top: 100% !important;
+  bottom: -420px !important;
+  width: 1.5px;
+  background: repeating-linear-gradient(
+    180deg,
+    #94a3b8 0,
+    #94a3b8 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  z-index: 0;
+}
+
+.seq-header {
+  position: relative;
+  z-index: 2;
+}
+
+.seq-msg {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  position: relative;
+  z-index: 1;
+}
+
+.seq-line {
+  height: 1.5px;
+  background: #64748b;
+  position: relative;
+  flex: 1;
+}
+
+.seq-label {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  padding: 0 4px;
+  font-size: 11px;
+  color: #334155;
+  white-space: nowrap;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.d-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.d-grow {
+  flex: 1 1 auto;
+}
+
+.d-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.d-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.d-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* No technical watermark/decorations in export assets */
+.diagram-canvas::before,
+.diagram-canvas::after {
+  content: none !important;
+  display: none !important;
 }
 
 /* ── Typography Scale ── */
@@ -199,12 +321,32 @@
   border-bottom: 1.5px solid #cbd5e1;
   padding-bottom: 10px;
   margin-bottom: 0;
+  position: relative;
+  overflow: visible;
 }
 
 .d-seq-actor {
   flex: 1;
   text-align: center;
   padding: 8px 6px;
+  position: relative;
+}
+
+.d-seq-actor::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  bottom: -420px;
+  width: 1.5px;
+  background: repeating-linear-gradient(
+    180deg,
+    #94a3b8 0,
+    #94a3b8 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  z-index: 0;
 }
 
 .d-seq-actor-box {
@@ -221,6 +363,8 @@
   flex-direction: column;
   padding-top: 8px;
   gap: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .d-seq-msg {
@@ -386,5 +530,34 @@
 @media screen {
   .diagram-canvas {
     outline: 1px dashed #e2e8f0; /* thấy boundary khi xem trong browser */
+  }
+
+  .diagram-mode.png-export .diagram-canvas {
+    outline: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .diagram-canvas {
+    width: 100%;
+    min-height: auto;
+    padding: 28px;
+  }
+
+  .d-grid-3,
+  .d-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .d-row {
+    flex-wrap: wrap;
+  }
+
+  .d-grid-2,
+  .d-grid-3,
+  .d-grid-4 {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
