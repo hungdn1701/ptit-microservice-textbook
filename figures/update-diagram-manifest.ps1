@@ -4,6 +4,20 @@ $figuresRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $manifestJsonPath = Join-Path $figuresRoot 'diagram-manifest.json'
 $manifestJsPath = Join-Path $figuresRoot 'diagram-manifest.js'
 
+function Write-Utf8NoBomLf {
+  param(
+    [string]$Path,
+    [string]$Content
+  )
+
+  $normalized = ($Content -replace "`r`n", "`n" -replace "`r", "`n")
+  if (-not $normalized.EndsWith("`n")) {
+    $normalized += "`n"
+  }
+
+  [System.IO.File]::WriteAllText($Path, $normalized, [System.Text.UTF8Encoding]::new($false))
+}
+
 $items = Get-ChildItem -Path $figuresRoot -Recurse -Filter '*.html' |
   Where-Object { $_.Directory.Name -match '^ch\d{2}$' } |
   ForEach-Object {
@@ -23,7 +37,7 @@ $items = Get-ChildItem -Path $figuresRoot -Recurse -Filter '*.html' |
   Sort-Object chapter, number, suffix
 
 $json = $items | ConvertTo-Json
-[System.IO.File]::WriteAllText($manifestJsonPath, $json, [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($manifestJsPath, "window.DIAGRAM_MANIFEST = $json;", [System.Text.UTF8Encoding]::new($false))
+Write-Utf8NoBomLf -Path $manifestJsonPath -Content $json
+Write-Utf8NoBomLf -Path $manifestJsPath -Content "window.DIAGRAM_MANIFEST = $json;"
 
 Write-Output "Updated manifest: $($items.Count) diagrams"
