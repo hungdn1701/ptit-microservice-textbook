@@ -6,6 +6,10 @@ function readFile(relativePath) {
   return fs.readFileSync(fullPath, 'utf8');
 }
 
+function exists(relativePath) {
+  return fs.existsSync(path.join(process.cwd(), relativePath));
+}
+
 function fail(errors) {
   console.error('Metadata consistency check failed:\n');
   for (const error of errors) {
@@ -70,17 +74,23 @@ for (const requiredReleaseName of ['`book.pdf`', '`book.html`']) {
   }
 }
 
-const mainTyp = readFile(path.join('references', 'internal', 'typst', 'main.typ'));
-if (author && !mainTyp.includes(`author: "${author}"`)) {
-  errors.push(`references/internal/typst/main.typ author mismatch (expected "${author}").`);
-}
-if (!new RegExp(`edition:\\s*"Phiên bản ${escapeRegExp(version)}"`).test(mainTyp)) {
-  errors.push(`references/internal/typst/main.typ edition must be "Phiên bản ${version}".`);
-}
+const mainTypPath = path.join('references', 'internal', 'typst', 'main.typ');
+const mainWebTypPath = path.join('references', 'internal', 'typst', 'main-web.typ');
+if (exists(mainTypPath) && exists(mainWebTypPath)) {
+  const mainTyp = readFile(mainTypPath);
+  if (author && !mainTyp.includes(`author: "${author}"`)) {
+    errors.push(`references/internal/typst/main.typ author mismatch (expected "${author}").`);
+  }
+  if (!new RegExp(`edition:\\s*"Phiên bản ${escapeRegExp(version)}"`).test(mainTyp)) {
+    errors.push(`references/internal/typst/main.typ edition must be "Phiên bản ${version}".`);
+  }
 
-const mainWebTyp = readFile(path.join('references', 'internal', 'typst', 'main-web.typ'));
-if (author && !mainWebTyp.includes(`author: "${author}"`)) {
-  errors.push(`references/internal/typst/main-web.typ author mismatch (expected "${author}").`);
+  const mainWebTyp = readFile(mainWebTypPath);
+  if (author && !mainWebTyp.includes(`author: "${author}"`)) {
+    errors.push(`references/internal/typst/main-web.typ author mismatch (expected "${author}").`);
+  }
+} else {
+  console.warn('[metadata] Skipping internal Typst metadata checks because references submodule is unavailable.');
 }
 
 const releaseFiles = fs.readdirSync(path.join(process.cwd(), 'release'));

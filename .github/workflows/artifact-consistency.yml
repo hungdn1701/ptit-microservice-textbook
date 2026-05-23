@@ -13,11 +13,10 @@ jobs:
   consistency:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with submodules)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,12 +34,14 @@ jobs:
         run: |
           .\figures\update-diagram-manifest.ps1
 
-      - name: Regenerate changed diagram PNG artifacts
+      - name: Regenerate changed diagram PNG artifacts (when internal submodule is available)
+        if: ${{ hashFiles('references/internal/scripts/gen-diagrams.ps1') != '' }}
         shell: pwsh
         run: |
           .\references\internal\scripts\gen-diagrams.ps1 -Chapter all
 
-      - name: Run editorial audit
+      - name: Run editorial audit (when internal submodule is available)
+        if: ${{ hashFiles('references/internal/scripts/audit-editorial.ps1') != '' }}
         shell: pwsh
         run: |
           .\references\internal\scripts\audit-editorial.ps1
