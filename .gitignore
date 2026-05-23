@@ -29,7 +29,8 @@ scripts/pdf_to_md.py
 figures/shared/test*
 
 # ----- Auto-generated diagram PNGs (gen-diagrams.ps1: HTML → PNG) -----
-figures/**/*.png
+# ENABLED: PNG images now tracked in git (see AGENTS.md versioning strategy)
+# figures/**/*.png
 
 # ----- Local build cache -----
 # output/ is disposable and reset by build-typst.ps1.

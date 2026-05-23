@@ -555,6 +555,7 @@
         diagrams[diagram.ch].push({
           num: diagram.file,
           path: diagram.path,
+          pngPath: diagram.pngPath,  // ← ADD: Include PNG path from manifest
           chNum: diagram.ch,
           search: `${diagram.file} hinh ${diagram.chapter}.${diagram.number}${suffix}`,
           name: `Hình ${diagram.chapter}.${diagram.number}${suffix}`
@@ -640,16 +641,31 @@
       document.getElementById('refreshBtn').style.display = 'inline-block';
     }
 
-    function getPngPath(htmlPath) {
-      return htmlPath.replace(/\.html$/i, '.png');
+    function getPngPath(diagram) {
+      // Use pngPath from manifest if available
+      if (diagram.pngPath) {
+        return diagram.pngPath;
+      }
+      // Fallback to regex-based path generation
+      return (diagram.path || '').replace(/\.html$/i, '.png');
     }
 
     function renderPreview() {
       if (!currentDiagram) return;
       const container = document.getElementById('previewContainer');
       if (currentView === 'png') {
-        const pngPath = getPngPath(currentDiagram.path);
-        container.innerHTML = `<img src="${pngPath}" alt="${currentDiagram.name}">`;
+        const pngPath = getPngPath(currentDiagram);
+        const img = document.createElement('img');
+        img.src = pngPath;
+        img.alt = currentDiagram.name;
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        img.style.display = 'block';
+        img.onerror = function() {
+          container.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--slate-500);">Unable to load image: ${pngPath}</div>`;
+        };
+        container.innerHTML = '';
+        container.appendChild(img);
         document.getElementById('previewSize').textContent = pngPath;
       } else {
         container.innerHTML = `<iframe src="${currentDiagram.path}" title="${currentDiagram.name}"></iframe>`;
