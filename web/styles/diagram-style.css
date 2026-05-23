@@ -223,48 +223,62 @@
 
 /* ── Box Primitives — Refined ── */
 .d-box {
-  border-radius: 4px; /* More industrial/technical */
-  border: 1.5px solid #000;
+  border-radius: var(--diagram-radius-card);
+  border: 1.5px solid var(--diagram-color-line-muted);
   padding: 12px 16px;
-  background: #fff;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+  background: var(--diagram-color-surface);
+  box-shadow: none;
 }
 
-/* Service — High Contrast Teal */
+/* Service / Domain — nghiệp vụ */
 .d-service {
-  background: #f0fdfa;
-  border-color: #0d9488;
+  background: var(--diagram-color-service-bg);
+  border-color: var(--diagram-color-service-border);
   border-left-width: 6px;
 }
-.d-service .d-title { color: #0f766e; }
+.d-service .d-title { color: var(--diagram-color-service-border); }
 
-/* Storage — Blueprint Blue */
+.d-domain {
+  background: var(--diagram-color-domain-bg);
+  border-color: var(--diagram-color-domain-border);
+  border-left-width: 6px;
+}
+.d-domain .d-title { color: var(--diagram-color-domain-border); }
+
+/* Storage / Infrastructure — hạ tầng */
 .d-storage {
-  background: #eff6ff;
-  border-color: #2563eb;
+  background: var(--diagram-color-database-bg);
+  border-color: var(--diagram-color-database-border);
   border-style: solid;
 }
-.d-storage .d-title { color: #1e40af; }
+.d-storage .d-title { color: var(--diagram-color-database-border); }
+
+.d-infra {
+  background: var(--diagram-color-infra-bg);
+  border-color: var(--diagram-color-infra-border);
+  border-left-width: 6px;
+}
+.d-infra .d-title { color: var(--diagram-color-infra-border); }
 
 /* Event — Warning Yellow */
 .d-event {
-  background: #fffbeb;
-  border-color: #d97706;
-  border-radius: 20px; /* Distinct shape for events */
+  background: var(--diagram-color-queue-bg);
+  border-color: var(--diagram-color-queue-border);
+  border-radius: 20px;
 }
 
 /* Legacy — Industrial Gray */
 .d-legacy {
-  background: #f9fafb;
-  border-color: #4b5563;
-  color: #374151;
+  background: #f8fafc;
+  border-color: #64748b;
+  color: #334155;
 }
 
 /* Cluster — dashed zone */
 .d-cluster {
-  background: rgba(243, 244, 246, 0.3);
-  border: 1px dashed #9ca3af;
-  border-radius: 8px;
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px dashed var(--diagram-color-line-muted);
+  border-radius: var(--diagram-radius-card);
   padding: 20px;
 }
 
@@ -274,7 +288,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--diagram-color-line-muted);
   font-size: 16px;
   flex-shrink: 0;
   user-select: none;
@@ -299,8 +313,8 @@
 /* Labeled arrow row: [box] —label→ [box] */
 .d-arrow-label {
   font-size: 10px;
-  color: #64748b;
-  background: #ffffff;
+  color: #475569;
+  background: var(--diagram-color-surface);
   padding: 1px 5px;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
@@ -313,13 +327,15 @@
   flex-direction: column;
   gap: 0;
   position: relative;
+  padding-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .d-seq-participants {
   display: flex;
   gap: 0;
   border-bottom: 1.5px solid #cbd5e1;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
   margin-bottom: 0;
   position: relative;
   overflow: visible;
@@ -337,7 +353,7 @@
   position: absolute;
   left: 50%;
   top: 100%;
-  bottom: -420px;
+  bottom: -340px;
   width: 1.5px;
   background: repeating-linear-gradient(
     180deg,
@@ -361,8 +377,8 @@
 .d-seq-messages {
   display: flex;
   flex-direction: column;
-  padding-top: 8px;
-  gap: 0;
+  padding-top: 12px;
+  gap: 6px;
   position: relative;
   z-index: 1;
 }
@@ -380,15 +396,22 @@
   height: 1.5px;
   background: #64748b;
   position: relative;
+  margin-right: 8px;
 }
 
 .d-seq-msg-line::after {
   content: '▶';
   position: absolute;
-  right: -6px;
+  right: -4px;
   top: -7px;
   font-size: 10px;
   color: #64748b;
+}
+
+.d-seq-msg-line.reverse::after {
+  content: '◀';
+  left: -4px;
+  right: auto;
 }
 
 .d-seq-msg-line.dashed {
@@ -524,6 +547,12 @@
   font-style: italic;
   border-top: 1px solid #e2e8f0;
   padding-top: 8px;
+}
+
+.d-note {
+  position: relative;
+  z-index: 2;
+  margin-top: 20px;
 }
 
 /* ── Watermark / Debug aid (stripped at print) ── */

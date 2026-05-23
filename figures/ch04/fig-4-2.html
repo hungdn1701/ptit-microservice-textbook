@@ -84,11 +84,11 @@
     <!-- Main pipeline row -->
     <div class="feign-pipeline">
 
-      <!-- Service Code box -->
+      <!-- Khối mã nghiệp vụ -->
       <div style="display:flex; flex-direction:column; align-items:center; gap:6px; align-self:center;">
-        <div class="d-box d-service" style="width:140px; text-align:center">
-          <div class="d-title">Service Code</div>
-          <div class="d-sub">gọi như local method</div>
+        <div class="d-box d-domain" style="width:140px; text-align:center">
+          <div class="d-title">Mã nghiệp vụ</div>
+          <div class="d-sub">gọi như hàm nội bộ</div>
         </div>
       </div>
 
@@ -97,7 +97,7 @@
 
       <!-- Feign Interface box -->
       <div style="display:flex; flex-direction:column; align-items:center; gap:6px; align-self:center;">
-        <div class="d-box d-event" style="width:140px; text-align:center">
+        <div class="d-box d-infra" style="width:140px; text-align:center">
           <div class="d-title">Feign Interface</div>
           <div class="d-sub">(khai báo)</div>
         </div>
@@ -108,33 +108,33 @@
 
       <!-- Cluster: Tự động bởi Feign -->
       <div class="d-cluster feign-cluster">
-        <span class="d-label">Tự động bởi Feign</span>
+        <span class="d-label">Feign tự động xử lý</span>
         <div class="capability-grid">
 
-          <div class="capability-item d-info">
+          <div class="capability-item d-infra">
             <div>
-              <div class="cap-label">HTTP Request</div>
-              <div class="cap-desc">GET/POST/PUT tự động</div>
+              <div class="cap-label">Yêu cầu HTTP</div>
+              <div class="cap-desc">GET / POST / PUT tự động</div>
             </div>
           </div>
 
-          <div class="capability-item d-service">
+          <div class="capability-item d-domain">
             <div>
               <div class="cap-label">JWT Header</div>
               <div class="cap-desc">Authorization: Bearer ...</div>
             </div>
           </div>
 
-          <div class="capability-item d-success">
+          <div class="capability-item d-infra">
             <div>
-              <div class="cap-label">Eureka Lookup</div>
-              <div class="cap-desc">Tìm instance healthy</div>
+              <div class="cap-label">Tra cứu Eureka</div>
+              <div class="cap-desc">Tìm instance khỏe</div>
             </div>
           </div>
 
-          <div class="capability-item d-warning">
+          <div class="capability-item d-infra">
             <div>
-              <div class="cap-label">Error Handling</div>
+              <div class="cap-label">Xử lý lỗi</div>
               <div class="cap-desc">Decode + fallback</div>
             </div>
           </div>
@@ -144,8 +144,8 @@
         <!-- Target Service (below cluster) -->
         <div class="target-section">
           <div class="d-arrow-v"></div>
-          <div class="d-box d-service" style="width:180px; text-align:center">
-            <div class="d-title">Target Service</div>
+          <div class="d-box d-domain" style="width:180px; text-align:center">
+            <div class="d-title">Dịch vụ đích</div>
             <div class="d-sub">(Judge, Auth...)</div>
           </div>
         </div>

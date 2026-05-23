@@ -49,42 +49,42 @@
     <!-- Top row: 4 main contexts -->
     <div class="d-row" style="align-items: stretch; gap: 0; margin-bottom: 6px;">
 
-      <div class="ctx-box d-info">
-        <div class="ctx-title">Identity</div>
-        <div class="ctx-role">Upstream</div>
+      <div class="ctx-box d-infra">
+        <div class="ctx-title">Danh tính</div>
+        <div class="ctx-role">Nguồn</div>
         <div class="ctx-sub">JWT / OAuth2 / SSO</div>
       </div>
 
       <div class="rel-arrow">
         <div class="d-arrow d-arrow-h"></div>
-        <div class="rel-label">auth</div>
+        <div class="rel-label">xác thực</div>
       </div>
 
-      <div class="ctx-box d-service">
-        <div class="ctx-title">SQL Practice</div>
-        <div class="ctx-role">Core Domain</div>
-        <div class="ctx-sub">Questions, Contests</div>
+      <div class="ctx-box d-domain">
+        <div class="ctx-title">Bài tập SQL</div>
+        <div class="ctx-role">Lõi nghiệp vụ</div>
+        <div class="ctx-sub">Câu hỏi, kỳ thi</div>
       </div>
 
       <div class="rel-arrow">
         <div class="d-arrow d-arrow-h"></div>
-        <div class="rel-label">protocols</div>
+        <div class="rel-label">giao thức</div>
       </div>
 
-      <div class="ctx-box d-service">
-        <div class="ctx-title">Network Practice</div>
-        <div class="ctx-role">Protocol Domain</div>
+      <div class="ctx-box d-domain">
+        <div class="ctx-title">Bài tập mạng</div>
+        <div class="ctx-role">Miền giao thức</div>
         <div class="ctx-sub">TCP/UDP/RMI/SOAP</div>
       </div>
 
       <div class="rel-arrow">
         <div class="d-arrow d-arrow-h"></div>
-        <div class="rel-label">shared JWT</div>
+        <div class="rel-label">JWT dùng chung</div>
       </div>
 
-      <div class="ctx-box d-event">
-        <div class="ctx-title">DevOps Practice</div>
-        <div class="ctx-role">Polyglot</div>
+      <div class="ctx-box d-infra">
+        <div class="ctx-title">Bài tập DevOps</div>
+        <div class="ctx-role">Đa ngôn ngữ</div>
         <div class="ctx-sub">Go + k3s / Sysbox</div>
       </div>
 
@@ -102,30 +102,30 @@
     <div class="d-row" style="align-items:stretch; gap: 12px; margin-bottom: 12px;">
 
       <div class="ctx-box d-danger" style="max-width:180px; flex:none;">
-        <div class="ctx-title">Shared Kernel</div>
-        <div class="ctx-role">(shared library)</div>
+        <div class="ctx-title">Kernel dùng chung</div>
+        <div class="ctx-role">(thư viện dùng chung)</div>
         <div class="ctx-sub">JWT, BaseEntity</div>
       </div>
 
       <div style="display:flex; flex-direction:column; justify-content:center; flex-shrink:0;">
         <div style="font-size:13px; color:#64748b;">⇢</div>
-        <div class="rel-label">Shared DB</div>
+        <div class="rel-label">CSDL dùng chung</div>
       </div>
 
-      <div class="ctx-box d-highlight" style="flex:1;">
-        <div class="ctx-title">Academic</div>
-        <div class="ctx-role">Context</div>
-        <div class="ctx-sub">Courses, Grades, Thesis</div>
+      <div class="ctx-box d-domain" style="flex:1;">
+        <div class="ctx-title">Học vụ</div>
+        <div class="ctx-role">Bối cảnh</div>
+        <div class="ctx-sub">Học phần, điểm, luận văn</div>
       </div>
 
       <div class="rel-arrow">
         <div class="d-arrow d-arrow-h"></div>
-        <div class="rel-label">events</div>
+        <div class="rel-label">sự kiện</div>
       </div>
 
-      <div class="ctx-box d-warning" style="flex:1;">
-        <div class="ctx-title">Communication</div>
-        <div class="ctx-role">Supporting</div>
+      <div class="ctx-box d-infra" style="flex:1;">
+        <div class="ctx-title">Giao tiếp</div>
+        <div class="ctx-role">Hỗ trợ</div>
         <div class="ctx-sub">Kafka, WebSocket, Email</div>
       </div>
 
@@ -134,8 +134,8 @@
     <!-- Legend / issues -->
     <div class="d-box d-note">
       <div class="d-title" style="margin-bottom:4px;">Quan hệ &amp; vấn đề:</div>
-      <div class="d-sub">Identity là <strong>upstream</strong> — SQL/Network/DevOps dùng shared identity | Communication là <strong>supporting context</strong></div>
-      <div class="d-sub" style="margin-top:3px; color:#dc2626;"><strong>⚠ Vấn đề:</strong> Shared DB giữa SQL và Academic = coupling | Shared Kernel quá rộng (23 files)</div>
+      <div class="d-sub">Danh tính là <strong>nguồn</strong> — SQL/Mạng/DevOps dùng chung xác thực | Giao tiếp là <strong>bối cảnh hỗ trợ</strong></div>
+      <div class="d-sub" style="margin-top:3px; color:#dc2626;"><strong>Vấn đề:</strong> CSDL dùng chung giữa SQL và Học vụ tạo coupling; Kernel dùng chung đang quá rộng (23 files)</div>
     </div>
 
   </div><!-- /.diagram-canvas -->

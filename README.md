@@ -52,6 +52,18 @@ Dự án này sử dụng mô hình **Dual-layer Repository**. Các kịch bản
 
 - Nếu bạn là Core Author: Hãy vào mục `references/README.md` để xem cấu trúc và hướng dẫn toàn tập.
 - Lưu ý: Luôn sử dụng lệnh `git pull --recurse-submodules` để đồng bộ thư mục này.
+- Trước khi push public repo, chạy kiểm tra nhất quán metadata:
+  ```bash
+  npm run check:metadata
+  ```
+- Nếu có sửa `figures/chNN/fig-*.html`, bắt buộc cập nhật artifacts trước khi commit:
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File .\figures\update-diagram-manifest.ps1
+  powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\gen-diagrams.ps1 -Chapter all
+  powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\build-typst.ps1 all -Html
+  powershell -ExecutionPolicy Bypass -File .\references\internal\scripts\audit-editorial.ps1
+  ```
+- Nhánh `master/main` đã có CI gate `Artifact Consistency Gate` để chặn push/merge khi manifest hoặc PNG artifacts không đồng bộ với source HTML.
 
 ---
 

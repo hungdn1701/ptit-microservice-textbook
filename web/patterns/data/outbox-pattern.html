@@ -172,7 +172,7 @@
     </div>
 
     <!-- Context -->
-    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
+    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
       <div class="callout">
         <strong>Vấn đề:</strong> Trong Microservices, khi user tạo Submit, hệ thống phải (1) Lưu Submit vào DB và (2) Bắn Kafka Event cho Judge Service. Nếu làm 2 việc rời rạc (Dual Write), nếu bước 2 lỗi (Kafka sập), DB đã ghi nhưng Event không bao giờ được bắn → <strong>Dữ liệu bất đồng bộ vĩnh viễn</strong>. Outbox Pattern giải quyết bằng cách ghi Event vào 1 bảng <code>outbox</code> trong cùng một Database Transaction, sau đó có một tiến trình Relay (như Debezium) đọc bảng này và đẩy lên Kafka một cách độc lập và kiên trì.
       </div>

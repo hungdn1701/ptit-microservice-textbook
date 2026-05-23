@@ -2,11 +2,13 @@
    diagram-book-theme.css — One-book visual language for figures
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap');
+
 :root {
   /* Typography */
-  --diagram-font-heading: "Be Vietnam Pro", "Segoe UI Semibold", "Segoe UI", sans-serif;
-  --diagram-font-body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", sans-serif;
-  --diagram-font-mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  --diagram-font-heading: "Geist", "Outfit", "Segoe UI Semibold", "Segoe UI", sans-serif;
+  --diagram-font-body: "Geist", "Outfit", "Segoe UI", "Helvetica Neue", sans-serif;
+  --diagram-font-mono: "Geist Mono", "Cascadia Code", Consolas, monospace;
 
   /* Scale */
   --diagram-size-title: 28px;
@@ -27,6 +29,10 @@
   --diagram-color-service-border: #0f766e;
   --diagram-color-service-text: #0f172a;
 
+  --diagram-color-domain-bg: #ecfdf5;
+  --diagram-color-domain-border: #059669;
+  --diagram-color-domain-text: #064e3b;
+
   --diagram-color-database-bg: #f8fafc;
   --diagram-color-database-border: #0f766e;
   --diagram-color-database-text: #0f172a;
@@ -42,6 +48,10 @@
   --diagram-color-warning-bg: #fffbeb;
   --diagram-color-warning-border: #ca8a04;
   --diagram-color-warning-text: #78350f;
+
+  --diagram-color-infra-bg: #eff6ff;
+  --diagram-color-infra-border: #2563eb;
+  --diagram-color-infra-text: #1e3a8a;
 
   --diagram-color-success-bg: #ecfdf5;
   --diagram-color-success-border: #0f766e;
@@ -166,6 +176,13 @@
   color: var(--diagram-color-service-text) !important;
 }
 
+.diagram-mode .d-domain,
+.diagram-mode .node-domain {
+  background: var(--diagram-color-domain-bg) !important;
+  border-color: var(--diagram-color-domain-border) !important;
+  color: var(--diagram-color-domain-text) !important;
+}
+
 .diagram-mode .d-storage,
 .diagram-mode .node-database {
   background: var(--diagram-color-database-bg) !important;
@@ -186,6 +203,13 @@
   background: var(--diagram-color-gateway-bg) !important;
   border-color: var(--diagram-color-gateway-border) !important;
   color: var(--diagram-color-gateway-text) !important;
+}
+
+.diagram-mode .d-infra,
+.diagram-mode .node-infrastructure {
+  background: var(--diagram-color-infra-bg) !important;
+  border-color: var(--diagram-color-infra-border) !important;
+  color: var(--diagram-color-infra-text) !important;
 }
 
 .diagram-mode .d-warning {

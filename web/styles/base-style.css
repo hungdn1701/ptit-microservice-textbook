@@ -316,6 +316,7 @@ body::after {
 .btn-danger:hover { filter: brightness(1.15); }
 
 .btn-success { background: var(--success); color: #fff; border-color: transparent; }
+.btn-info { background: var(--info); color: #fff; border-color: transparent; }
 
 .btn-ghost { background: transparent; border-color: var(--border); }
 .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
@@ -656,4 +657,3 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
     background: transparent !important;
   }
 }
-

@@ -116,7 +116,7 @@
         <div class="seq-row" style="height:52px; margin-top:4px;">
           <div class="seq-note" style="left:calc(33.33% + 5px); width:calc(33.33% - 10px);
                background:#fef9c3; border-color:#ca8a04; color:#713f12;">
-            ⚠ N=10 assignments<br>
+            N=10 assignments<br>
             <span style="font-size:10px; font-weight:400;">= 10 calls đến Auth</span>
           </div>
         </div>
@@ -139,7 +139,7 @@
 
     <!-- N+1 explanation note -->
     <div class="d-box d-note" style="margin-top:12px;">
-      <div class="d-title" style="color:#dc2626;">⚠ Vấn đề N+1 Queries</div>
+      <div class="d-title" style="color:#dc2626;">Vấn đề N+1 Queries</div>
       <div class="d-sub">
         10 assignments → 10 calls riêng lẻ đến Auth Service. Độ trễ nhân lên tuyến tính.
         <strong>Giải pháp:</strong> batch API hoặc CQRS với data replication (Hình 7.8).

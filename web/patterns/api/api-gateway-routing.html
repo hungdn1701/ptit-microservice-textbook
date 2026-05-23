@@ -126,7 +126,7 @@
     </div>
 
     <!-- Context -->
-    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
+    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
       <div class="callout">
         <strong>Từ Sách (Chương 8):</strong> <i>"Cross-cutting concerns tại Gateway: Thay vì mỗi service tự validate JWT, tự xử lý CORS... Gateway tập trung xử lý tại một điểm duy nhất. Gateway giải mã JWT, sau đó truyền thông tin user xuống downstream service thông qua HTTP Headers (<code>X-User-Id</code>). Spring Cloud Gateway dùng <code>StripPrefix=2</code> để biến <code>/api/core/questions</code> thành <code>/questions</code> trước khi forward tới Core Service."</i>
       </div>

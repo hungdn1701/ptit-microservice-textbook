@@ -76,7 +76,7 @@
         <div class="pool-box d-danger">
           <div class="pool-name">Thread Pool: Judge</div>
           <div class="pool-threads" style="color:#dc2626;">10 threads</div>
-          <div class="pool-status" style="color:#dc2626; font-weight:600;">⚠ ĐẦY!</div>
+          <div class="pool-status" style="color:#dc2626; font-weight:600;">ĐẦY (saturated)</div>
           <!-- Thread dots: all red (full) -->
           <div class="thread-bar">
             <div class="thread-dot" style="background:#dc2626;" title="busy"></div>
@@ -96,7 +96,7 @@
         <div class="pool-box d-success">
           <div class="pool-name">Thread Pool: Question</div>
           <div class="pool-threads" style="color:#16a34a;">20 threads</div>
-          <div class="pool-status" style="color:#16a34a;">✓ Bình thường</div>
+          <div class="pool-status" style="color:#16a34a;">OK Bình thường</div>
           <div class="thread-bar">
             <div class="thread-dot" style="background:#16a34a;"></div>
             <div class="thread-dot" style="background:#16a34a;"></div>
@@ -113,7 +113,7 @@
         <div class="pool-box d-success">
           <div class="pool-name">Thread Pool: Contest</div>
           <div class="pool-threads" style="color:#16a34a;">15 threads</div>
-          <div class="pool-status" style="color:#16a34a;">✓ Bình thường</div>
+          <div class="pool-status" style="color:#16a34a;">OK Bình thường</div>
           <div class="thread-bar">
             <div class="thread-dot" style="background:#16a34a;"></div>
             <div class="thread-dot" style="background:#16a34a;"></div>
@@ -138,11 +138,11 @@
     <!-- Comparison: without vs with -->
     <div class="comparison-grid">
       <div class="d-box d-danger">
-        <div class="d-title" style="margin-bottom:4px;">❌ Không có Bulkhead</div>
+        <div class="d-title" style="margin-bottom:4px;">Không có Bulkhead</div>
         <div class="d-sub">1 pool chung 45 threads. Judge chậm → tất cả block.</div>
       </div>
       <div class="d-box d-success">
-        <div class="d-title" style="margin-bottom:4px;">✅ Có Bulkhead</div>
+        <div class="d-title" style="margin-bottom:4px;">Có Bulkhead</div>
         <div class="d-sub">Pool riêng. Judge chậm → chỉ Judge bị ảnh hưởng, Question/Contest vẫn OK.</div>
       </div>
     </div>

@@ -167,7 +167,7 @@
     </div>
 
     <!-- KBLab Context -->
-    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
+    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
       <div class="callout">
         <strong>Vấn đề N+1 trong thực tế:</strong> Khi lấy danh sách 10 câu hỏi, và cần lấy thêm số lượt nộp bài (submissions) cho MỖI câu hỏi. Với REST ngây thơ, bạn tốn 1 request lấy questions, và N=10 requests lấy submissions. GraphQL giải quyết bằng 1 network request duy nhất, nhưng cần cẩn thận tối ưu DB (dùng DataLoader) để tránh chuyển N+1 từ Network xuống Database.
       </div>

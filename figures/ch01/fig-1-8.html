@@ -43,25 +43,25 @@
 
     <!-- Frontend layer -->
     <div class="layer-label">Frontend</div>
-    <div class="d-box d-highlight" style="text-align:center; margin-bottom:4px;">
-      <div class="d-title">🖥️ Web Apps (Student, CMS, Lab)</div>
+    <div class="d-box d-infra" style="text-align:center; margin-bottom:4px;">
+      <div class="d-title">Ứng dụng web (Sinh viên, CMS, Lab)</div>
     </div>
 
     <div class="layer-sep">↓</div>
 
     <!-- Edge/Gateway layer -->
-    <div class="layer-label">Edge Layer</div>
+    <div class="layer-label">Lớp biên</div>
     <div class="d-row" style="gap:12px; margin-bottom:4px;">
-      <div class="d-box d-event d-grow" style="text-align:center;">
-        <div class="d-title">🚪 Spring Cloud Gateway</div>
-        <div class="d-sub">path-based routing</div>
+      <div class="d-box d-infra d-grow" style="text-align:center;">
+        <div class="d-title">Spring Cloud Gateway</div>
+        <div class="d-sub">định tuyến theo đường dẫn</div>
       </div>
-      <div class="d-box d-event d-grow" style="text-align:center;">
-        <div class="d-title">🌐 Lab Router (Go)</div>
-        <div class="d-sub">hostname-based routing</div>
+      <div class="d-box d-infra d-grow" style="text-align:center;">
+        <div class="d-title">Lab Router (Go)</div>
+        <div class="d-sub">định tuyến theo hostname</div>
       </div>
-      <div class="d-box d-info" style="text-align:center; min-width:160px;">
-        <div class="d-title">🔍 Discovery</div>
+      <div class="d-box d-infra" style="text-align:center; min-width:160px;">
+        <div class="d-title">Khám phá dịch vụ</div>
         <div class="d-sub">Eureka / Config</div>
       </div>
     </div>
@@ -69,40 +69,40 @@
     <div class="layer-sep">↓</div>
 
     <!-- Domain services layer -->
-    <div class="layer-label">Domain Services</div>
+    <div class="layer-label">Dịch vụ nghiệp vụ</div>
     <div class="svc-row" style="margin-bottom:4px;">
 
-      <div class="svc-box d-info">
-        <span class="svc-icon">🔐</span>
-        <div class="svc-title">Identity</div>
+      <div class="svc-box d-domain">
+        <span class="svc-icon">ID</span>
+        <div class="svc-title">Danh tính</div>
         <div class="svc-name">kblab-auth</div>
         <div class="d-sub" style="font-size:10px;">JWT, OAuth2, SSO</div>
       </div>
 
       <div class="svc-box d-service">
-        <span class="svc-icon">🧪</span>
-        <div class="svc-title">SQL Lab</div>
+        <span class="svc-icon">SQL</span>
+        <div class="svc-title">Phòng SQL</div>
         <div class="svc-name">kblab-app + judge</div>
-        <div class="d-sub" style="font-size:10px;">Practice / Contest</div>
+        <div class="d-sub" style="font-size:10px;">Luyện tập / thi đấu</div>
       </div>
 
       <div class="svc-box d-service">
-        <span class="svc-icon">🌐</span>
-        <div class="svc-title">Network Lab</div>
+        <span class="svc-icon">NET</span>
+        <div class="svc-title">Phòng mạng</div>
         <div class="svc-name">kblab-judge-net</div>
         <div class="d-sub" style="font-size:10px;">TCP, UDP, RMI, gRPC</div>
       </div>
 
-      <div class="svc-box d-highlight">
-        <span class="svc-icon">📚</span>
-        <div class="svc-title">Academic</div>
+      <div class="svc-box d-domain">
+        <span class="svc-icon">ACD</span>
+        <div class="svc-title">Học vụ</div>
         <div class="svc-name">kblab-assignment</div>
-        <div class="d-sub" style="font-size:10px;">courses, grades, thesis</div>
+        <div class="d-sub" style="font-size:10px;">môn học, điểm, luận văn</div>
       </div>
 
-      <div class="svc-box d-event">
-        <span class="svc-icon">⚙️</span>
-        <div class="svc-title">DevOps Lab</div>
+      <div class="svc-box d-infra">
+        <span class="svc-icon">OPS</span>
+        <div class="svc-title">Phòng DevOps</div>
         <div class="svc-name">dol-api / dol-infra</div>
         <div class="d-sub" style="font-size:10px;">Go + k3s / Sysbox</div>
       </div>
@@ -112,15 +112,15 @@
     <div class="layer-sep">↓</div>
 
     <!-- Async/Integration layer -->
-    <div class="layer-label">Async &amp; Integration</div>
+    <div class="layer-label">Bất đồng bộ &amp; tích hợp</div>
     <div class="d-row" style="gap:12px; margin-bottom:4px;">
       <div class="d-box d-event d-grow" style="text-align:center;">
-        <div class="d-title">📨 Kafka Event Bus</div>
-        <div class="d-sub">contest submissions, notifications</div>
+        <div class="d-title">Kafka Event Bus</div>
+        <div class="d-sub">submission, thông báo</div>
       </div>
       <div class="d-box d-warning d-grow" style="text-align:center;">
-        <div class="d-title">🧾 DB Queue / External ACL</div>
-        <div class="d-sub">DevOps grading, QLĐT / GitHub integration</div>
+        <div class="d-title">DB Queue / External ACL</div>
+        <div class="d-sub">chấm DevOps, tích hợp QLĐT / GitHub</div>
       </div>
     </div>
 
@@ -131,19 +131,19 @@
       <span class="d-label">Data &amp; Infrastructure Layer</span>
       <div class="d-grid-4" style="margin-top:8px;">
         <div class="d-box d-storage" style="text-align:center;">
-          <div class="d-title">🐘 PostgreSQL</div>
-          <div class="d-sub">shared + service DBs</div>
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">CSDL dùng chung + theo dịch vụ</div>
         </div>
         <div class="d-box d-storage" style="text-align:center;">
-          <div class="d-title">🐬 Sandbox DBs</div>
+          <div class="d-title">Sandbox DBs</div>
           <div class="d-sub">MySQL / SQL Server</div>
         </div>
         <div class="d-box d-storage" style="text-align:center;">
-          <div class="d-title">☸️ k3s + Sysbox</div>
-          <div class="d-sub">isolated lab pods</div>
+          <div class="d-title">k3s + Sysbox</div>
+          <div class="d-sub">pod lab cô lập</div>
         </div>
         <div class="d-box d-info" style="text-align:center;">
-          <div class="d-title">📊 Observability</div>
+          <div class="d-title">Quan sát hệ thống</div>
           <div class="d-sub">metrics, logs, traces</div>
         </div>
       </div>

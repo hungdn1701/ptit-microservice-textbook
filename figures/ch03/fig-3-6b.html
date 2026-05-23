@@ -32,8 +32,8 @@
     }
     .center-inner {
       border-radius: 12px;
-      border: 2px solid #0f766e;
-      background: #e6f4f3;
+      border: 2px solid var(--diagram-color-domain-border);
+      background: var(--diagram-color-domain-bg);
       padding: 12px 14px;
       height: 100%;
       box-sizing: border-box;
@@ -41,7 +41,7 @@
       flex-direction: column;
       gap: 8px;
     }
-    .center-inner .d-title { color: #085041; font-size: 13px; text-align: center; font-weight: 700; }
+    .center-inner .d-title { color: var(--diagram-color-domain-border); font-size: 13px; text-align: center; font-weight: 700; }
     .port-box {
       border-radius: 8px;
       border: 1.5px dashed #94a3b8;
@@ -78,13 +78,13 @@
       <!-- Left: Inbound Adapters -->
       <div class="hex-zone hex-side">
         <div class="d-cluster" style="height:100%; box-sizing:border-box;">
-          <span class="d-label">Adapters (bên ngoài) — Inbound</span>
+          <span class="d-label">Adapter ngoài — đầu vào</span>
           <div class="d-col" style="gap:10px; margin-top:8px;">
-            <div class="d-box d-info">
+            <div class="d-box d-infra">
               <div class="d-title">REST Controller</div>
               <div class="d-sub">(inbound adapter)</div>
             </div>
-            <div class="d-box d-warning">
+            <div class="d-box d-infra">
               <div class="d-title">Kafka Consumer</div>
               <div class="d-sub">(inbound adapter)</div>
             </div>
@@ -101,20 +101,20 @@
       <!-- Center: Business Logic -->
       <div class="hex-zone hex-center">
         <div class="center-inner">
-          <div class="d-title">Business Logic (bên trong)</div>
+          <div class="d-title">Logic nghiệp vụ (bên trong)</div>
 
           <div class="port-box">
-            <div class="port-name">Inbound Port</div>
+            <div class="port-name">Cổng vào</div>
             <div class="port-sub">(Service Interface)</div>
           </div>
 
-          <div class="domain-box">
-            <div class="d-title" style="color:#713f12; margin-bottom:3px;">Domain Logic</div>
-            <div class="d-sub" style="color:#92400e;">(pure business rules)</div>
+          <div class="domain-box d-domain">
+            <div class="d-title" style="margin-bottom:3px;">Logic nghiệp vụ</div>
+            <div class="d-sub" style="color:#065f46;">(quy tắc thuần nghiệp vụ)</div>
           </div>
 
           <div class="port-box">
-            <div class="port-name">Outbound Port</div>
+            <div class="port-name">Cổng ra</div>
             <div class="port-sub">(Repository Interface)</div>
           </div>
         </div>
@@ -129,13 +129,13 @@
       <!-- Right: Outbound Adapters -->
       <div class="hex-zone hex-side">
         <div class="d-cluster" style="height:100%; box-sizing:border-box;">
-          <span class="d-label">Adapters (bên ngoài) — Outbound</span>
+          <span class="d-label">Adapter ngoài — đầu ra</span>
           <div class="d-col" style="gap:10px; margin-top:8px;">
-            <div class="d-box d-storage">
+            <div class="d-box d-infra">
               <div class="d-title">JPA Repository</div>
               <div class="d-sub">(outbound adapter)</div>
             </div>
-            <div class="d-box d-highlight">
+            <div class="d-box d-infra">
               <div class="d-title">Feign Client</div>
               <div class="d-sub">(outbound adapter)</div>
             </div>
@@ -149,12 +149,12 @@
     <div class="d-box d-note">
       <div class="d-row" style="gap:12px; flex-wrap:wrap;">
         <div>
-          <span class="d-title">Core principle: </span>
+          <span class="d-title">Nguyên tắc cốt lõi: </span>
           <span class="d-sub">Domain Logic không biết gì về HTTP, JPA, Kafka.</span>
         </div>
         <div>
           <span class="d-title">Lợi ích: </span>
-          <span class="d-sub">Test business rules mà không cần infrastructure. Thay đổi adapter không ảnh hưởng domain.</span>
+          <span class="d-sub">Kiểm thử logic nghiệp vụ mà không cần hạ tầng. Đổi adapter không ảnh hưởng domain.</span>
         </div>
       </div>
     </div>

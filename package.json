@@ -4,6 +4,7 @@
   "private": true,
   "description": "SOA & Microservices Textbook - HTML Diagram Generator",
   "scripts": {
+    "check:metadata": "node scripts/check-public-metadata.js"
   },
   "dependencies": {
     "puppeteer": "^22.6.0"

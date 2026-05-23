@@ -182,7 +182,7 @@
     </div>
 
     <!-- KBLab Context & Code -->
-    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.3s">
+    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.3s">
       <div class="callout" style="margin-bottom: 24px;">
         <strong>Từ Sách (Chương 4):</strong> <i>"Khi circuit ở trạng thái Open, mọi request được reject ngay lập tức — không gửi tới service downstream. Điều này bảo vệ cả caller (không block threads chờ timeout) và callee (không bị overwhelm khi đang recovery)... Trong KBLab, Core Service gọi Judge Service qua OpenFeign. Nếu Judge sập, ta trả về Fallback message thay vì để toàn bộ LMS bị treo theo."</i>
       </div>

@@ -165,7 +165,7 @@
     </div>
 
     <!-- Context -->
-    <div style="margin-top: 32px;" class="animate-fadeIn" style="animation-delay: 0.2s">
+    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
       <div class="callout">
         <strong>Từ Sách (Chương 9):</strong> <i>"KBLab hiện dùng HS256 (Symmetric) — các services chia sẻ cùng secret key. Trong production, rủi ro là nếu một service bị hack, attacker có thể tạo token giả. Giải pháp là chuyển sang RS256 (Asymmetric) — Auth Service giữ Private Key để ký, các service khác chỉ có Public Key để verify... JWT có thời hạn (exp). Khi Access Token (ngắn hạn) hết hạn, client dùng Refresh Token (dài hạn) gọi Auth Service để lấy cặp token mới mà không bắt user login lại."</i>
       </div>

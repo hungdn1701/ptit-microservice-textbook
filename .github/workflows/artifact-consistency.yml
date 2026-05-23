@@ -1,0 +1,52 @@
+name: Artifact Consistency Gate
+
+on:
+  pull_request:
+    branches: ["master", "main"]
+  push:
+    branches: ["master", "main"]
+
+permissions:
+  contents: read
+
+jobs:
+  consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify metadata consistency
+        run: npm run check:metadata
+
+      - name: Refresh diagram manifest
+        shell: pwsh
+        run: |
+          .\figures\update-diagram-manifest.ps1
+
+      - name: Regenerate changed diagram PNG artifacts
+        shell: pwsh
+        run: |
+          .\references\internal\scripts\gen-diagrams.ps1 -Chapter all
+
+      - name: Run editorial audit
+        shell: pwsh
+        run: |
+          .\references\internal\scripts\audit-editorial.ps1
+
+      - name: Ensure generated artifacts are committed
+        shell: pwsh
+        run: |
+          git --no-pager diff -- figures/diagram-manifest.json figures/diagram-manifest.js figures/ch*/fig-*.png
+          git diff --quiet --exit-code -- figures/diagram-manifest.json figures/diagram-manifest.js figures/ch*/fig-*.png

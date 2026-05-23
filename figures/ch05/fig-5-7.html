@@ -26,16 +26,16 @@
     <div class="arch-center" style="margin: 8px 0 16px;">
 
       <!-- Frontend -->
-      <div class="d-box d-highlight" style="text-align:center; width:240px;">
-        <div class="d-title">Frontend (Next.js)</div>
+      <div class="d-box d-infra" style="text-align:center; width:240px;">
+        <div class="d-title">Giao diện người dùng</div>
         <div class="d-sub">gửi submission, nhận kết quả qua WebSocket</div>
       </div>
 
       <div class="d-arrow-v"></div>
 
       <!-- Core Service -->
-      <div class="d-box d-service" style="text-align:center; width:300px;">
-        <div class="d-title">Core Service</div>
+      <div class="d-box d-domain" style="text-align:center; width:300px;">
+        <div class="d-title">Dịch vụ lõi</div>
         <div class="d-sub">Produce + Consume — điểm vào duy nhất</div>
       </div>
 
@@ -59,25 +59,25 @@
 
         <div class="d-cluster" style="text-align:center; width:200px;">
           <span class="d-label">Consumer 1</span>
-          <div class="d-box d-service" style="margin-top:8px;">
-            <div class="d-title">Judge Service</div>
+          <div class="d-box d-domain" style="margin-top:8px;">
+            <div class="d-title">Dịch vụ chấm bài</div>
             <div class="d-sub">Execute SQL on sandbox</div>
           </div>
         </div>
 
         <div class="d-cluster" style="text-align:center; width:200px;">
           <span class="d-label">Consumer 2</span>
-          <div class="d-box d-info" style="margin-top:8px;">
-            <div class="d-title">Leaderboard Service</div>
-            <div class="d-sub">Aggregate scores, rank</div>
+          <div class="d-box d-domain" style="margin-top:8px;">
+            <div class="d-title">Dịch vụ xếp hạng</div>
+            <div class="d-sub">Tổng hợp điểm, xếp hạng</div>
           </div>
         </div>
 
         <div class="d-cluster" style="text-align:center; width:200px;">
           <span class="d-label">Consumer 3</span>
-          <div class="d-box d-warning" style="margin-top:8px;">
-            <div class="d-title">Notification Service</div>
-            <div class="d-sub">WebSocket push to student</div>
+          <div class="d-box d-infra" style="margin-top:8px;">
+            <div class="d-title">Dịch vụ thông báo</div>
+            <div class="d-sub">WebSocket đẩy đến sinh viên</div>
           </div>
         </div>
 
@@ -87,11 +87,11 @@
 
     <!-- Benefits note -->
     <div class="d-box d-note">
-      <div class="d-label" style="margin-bottom:8px;">Lợi ích của kiến trúc Async này</div>
-      <div class="benefit-row"><strong>1. Non-blocking:</strong> Core Service không bị block khi Judge xử lý chậm</div>
-      <div class="benefit-row"><strong>2. Extensible:</strong> Thêm consumer mới (Analytics, Replay) không cần sửa code Core</div>
-      <div class="benefit-row"><strong>3. Resilient:</strong> Judge down → message chờ trong Kafka, không mất, xử lý lại khi recover</div>
-      <div class="benefit-row"><strong>4. Independent scaling:</strong> Scale Judge pods độc lập dựa theo contest load</div>
+      <div class="d-label" style="margin-bottom:8px;">Lợi ích của kiến trúc bất đồng bộ</div>
+      <div class="benefit-row"><strong>1. Không chặn:</strong> Dịch vụ lõi không bị block khi chấm bài chậm</div>
+      <div class="benefit-row"><strong>2. Mở rộng:</strong> Thêm consumer mới (Analytics, Replay) không cần sửa mã lõi</div>
+      <div class="benefit-row"><strong>3. Chịu lỗi:</strong> Judge down → message chờ trong Kafka, không mất, xử lý lại khi phục hồi</div>
+      <div class="benefit-row"><strong>4. Co giãn độc lập:</strong> Scale Judge pods theo tải contest</div>
     </div>
 
   </div><!-- /.diagram-canvas -->

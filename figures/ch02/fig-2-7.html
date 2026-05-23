@@ -42,25 +42,25 @@
   <div class="diagram-canvas">
 
     <div class="d-cluster" style="margin-bottom: 14px;">
-      <span class="d-label">Domain contexts (supporting services omitted for clarity)</span>
+      <span class="d-label">Các bối cảnh nghiệp vụ (bỏ qua dịch vụ hỗ trợ để rõ hơn)</span>
 
       <!-- Top row: 3 contexts -->
       <div class="d-row" style="align-items:stretch; gap:10px; margin-top:12px; margin-bottom:10px;">
 
-        <div class="bc-card d-info">
-          <div class="bc-card-title">Identity &amp; Access</div>
+        <div class="bc-card d-infra">
+          <div class="bc-card-title">Danh tính &amp; quyền truy cập</div>
           <div class="bc-card-svc">kblab-auth</div>
-          <div class="bc-card-desc">JWT, OAuth2, SSO, roles</div>
+          <div class="bc-card-desc">JWT, OAuth2, SSO, vai trò</div>
         </div>
 
-        <div class="bc-card d-service">
-          <div class="bc-card-title">SQL Practice</div>
+        <div class="bc-card d-domain">
+          <div class="bc-card-title">Bài tập SQL</div>
           <div class="bc-card-svc">kblab-app + judge</div>
-          <div class="bc-card-desc">questions, contests, submissions</div>
+          <div class="bc-card-desc">câu hỏi, kỳ thi, bài nộp</div>
         </div>
 
-        <div class="bc-card d-service">
-          <div class="bc-card-title">Network Practice</div>
+        <div class="bc-card d-domain">
+          <div class="bc-card-title">Bài tập mạng</div>
           <div class="bc-card-svc">kblab-judge-network</div>
           <div class="bc-card-desc">TCP, UDP, RMI, SOAP, REST, gRPC</div>
         </div>
@@ -70,16 +70,16 @@
       <!-- Bottom row: 2 contexts -->
       <div class="d-row" style="align-items:stretch; gap:10px; justify-content:center;">
 
-        <div class="bc-card d-highlight" style="max-width: 320px;">
-          <div class="bc-card-title">Academic Management</div>
+        <div class="bc-card d-domain" style="max-width: 320px;">
+          <div class="bc-card-title">Quản lý học vụ</div>
           <div class="bc-card-svc">kblab-assignment</div>
-          <div class="bc-card-desc">courses, grades, attendance, thesis</div>
+          <div class="bc-card-desc">học phần, điểm, chuyên cần, luận văn</div>
         </div>
 
-        <div class="bc-card d-event" style="max-width: 320px;">
-          <div class="bc-card-title">DevOps Practice</div>
+        <div class="bc-card d-infra" style="max-width: 320px;">
+          <div class="bc-card-title">Bài tập DevOps</div>
           <div class="bc-card-svc">dol-api / dol-infra / dol-web</div>
-          <div class="bc-card-desc">Go, k3s, Sysbox, lab pods</div>
+          <div class="bc-card-desc">Go, k3s, Sysbox, pod lab</div>
         </div>
 
       </div>
@@ -88,7 +88,7 @@
 
     <!-- Shared Kernel note -->
     <div class="d-box d-note" style="text-align:center;">
-      <div class="d-sub">Shared Kernel chỉ nên giữ cross-cutting concerns; domain logic phải quay về context sở hữu.</div>
+      <div class="d-sub">Shared Kernel chỉ nên giữ phần dùng chung cắt ngang; logic nghiệp vụ phải quay về bối cảnh sở hữu.</div>
     </div>
 
   </div><!-- /.diagram-canvas -->

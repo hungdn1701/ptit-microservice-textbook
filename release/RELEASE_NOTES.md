@@ -9,20 +9,20 @@
 
 | File | Description |
 |:---|:---|
-| `SOA-Microservices-Book-v1.0.2.pdf` | Full book (all chapters + appendices) |
-| `SOA-Microservices-Book-v1.0.2.html` | Typst HTML export |
-| `chapter-01-v1.0.2.pdf` | Chapter 01 |
-| `chapter-02-v1.0.2.pdf` | Chapter 02 |
-| `chapter-03-v1.0.2.pdf` | Chapter 03 |
-| `chapter-04-v1.0.2.pdf` | Chapter 04 |
-| `chapter-05-v1.0.2.pdf` | Chapter 05 |
-| `chapter-06-v1.0.2.pdf` | Chapter 06 |
-| `chapter-07-v1.0.2.pdf` | Chapter 07 |
-| `chapter-08-v1.0.2.pdf` | Chapter 08 |
-| `chapter-09-v1.0.2.pdf` | Chapter 09 |
-| `chapter-10-v1.0.2.pdf` | Chapter 10 |
-| `chapter-11-v1.0.2.pdf` | Chapter 11 |
-| `chapter-12-v1.0.2.pdf` | Chapter 12 |
+| `book.pdf` | Full book (all chapters + appendices) |
+| `book.html` | Typst HTML export |
+| `chapter-01.pdf` | Chapter 01 |
+| `chapter-02.pdf` | Chapter 02 |
+| `chapter-03.pdf` | Chapter 03 |
+| `chapter-04.pdf` | Chapter 04 |
+| `chapter-05.pdf` | Chapter 05 |
+| `chapter-06.pdf` | Chapter 06 |
+| `chapter-07.pdf` | Chapter 07 |
+| `chapter-08.pdf` | Chapter 08 |
+| `chapter-09.pdf` | Chapter 09 |
+| `chapter-10.pdf` | Chapter 10 |
+| `chapter-11.pdf` | Chapter 11 |
+| `chapter-12.pdf` | Chapter 12 |
 
 ## Build Information
 

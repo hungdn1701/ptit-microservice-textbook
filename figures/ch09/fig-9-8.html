@@ -7,16 +7,18 @@
   <link rel="stylesheet" href="../../web/styles/diagram-style.css">
   <style>
     .seq-line { height:1.5px; background:#64748b; position:relative; flex:1; }
-    .seq-line::after { content:'▶'; position:absolute; right:-2px; top:-7px; font-size:10px; color:#64748b; }
-    .seq-line.left::after { content:'◀'; left:-2px; right:auto; }
+    .seq-line { margin-right:8px; }
+    .seq-line::after { content:'▶'; position:absolute; right:-4px; top:-7px; font-size:10px; color:#64748b; }
+    .seq-line.left::after { content:'◀'; left:-4px; right:auto; }
     .seq-line.dashed { background:repeating-linear-gradient(90deg,#94a3b8 0,#94a3b8 4px,transparent 4px,transparent 8px); }
     .seq-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#fff; padding:0 4px; font-size:11px; color:#334155; white-space:nowrap; }
+    .sequence-wrap { margin-bottom: 20px; padding-bottom: 16px; }
   </style>
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
 
-    <div style="display:flex; gap:0; margin-bottom:12px;">
+    <div class="sequence-wrap" style="display:flex; gap:0; margin-bottom:12px;">
       <div class="seq-lane"><div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 14px;"><div class="d-title">Auth Service</div></div></div></div>
       <div class="seq-lane"><div class="seq-header"><div class="d-box d-highlight" style="display:inline-block; padding:8px 14px;"><div class="d-title">Vault</div></div></div></div>
       <div class="seq-lane"><div class="seq-header"><div class="d-box d-storage" style="display:inline-block; padding:8px 14px;"><div class="d-title">Database</div></div></div></div>
@@ -54,8 +56,8 @@
     </div>
 
     <!-- Benefits -->
-    <div class="d-box d-success" style="margin-top:16px; padding:12px 18px;">
-      <div class="d-title" style="margin-bottom:4px;">✅ Lợi ích</div>
+    <div class="d-box d-success" style="margin-top:24px; padding:12px 18px; position:relative; z-index:2;">
+      <div class="d-title" style="margin-bottom:4px;">Lợi ích</div>
       <div class="d-sub" style="color:#14532d; line-height:1.5;">Credentials tự hết hạn. Không hardcode password. Vault tự rotate. Audit trail cho mọi access.</div>
     </div>
   </div>
