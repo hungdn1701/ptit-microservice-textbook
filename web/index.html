@@ -369,7 +369,7 @@
       padding: 20px 20px 24px;
       gap: 20px;
       min-height: 0;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
     .portal-links {
@@ -476,7 +476,7 @@
     }
 
     .pattern-list {
-      gap: 12px;
+      gap: 8px;
       flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
@@ -505,8 +505,8 @@
       border: 1.5px solid #e2e8f0;
       border-radius: 14px;
       box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
-      padding: 18px;
-      gap: 16px;
+      padding: 14px 16px;
+      gap: 14px;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -830,6 +830,42 @@
     .welcome-screen .decoration {
       color: var(--shell-primary);
     }
+
+    /* ── Mobile: override late-cascade desktop rules ── */
+    @media (max-width: 768px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        height: 100svh;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--shell-border);
+        position: relative;
+        box-shadow: none;
+      }
+      .sidebar-content {
+        display: none;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--shell-surface);
+        max-height: 75vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        z-index: 100;
+        border-bottom: 1px solid var(--shell-border);
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+      }
+      .sidebar-content.open { display: flex; }
+      .welcome-screen { padding: 40px 28px; }
+      .welcome-screen h2 { font-size: 28px; }
+      .welcome-screen p { font-size: 14px; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -927,7 +963,6 @@
           <div class="pattern-item-icon">${p.icon}</div>
           <div class="pattern-item-info">
             <div class="pattern-item-name">${p.name}</div>
-            <div class="pattern-item-ch">Chương ${p.ch}</div>
           </div>
         </div>
       `).join('');

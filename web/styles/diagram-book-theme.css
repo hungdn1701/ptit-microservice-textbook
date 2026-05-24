@@ -2,7 +2,23 @@
    diagram-book-theme.css — One-book visual language for figures
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap');
+/* Local Geist fonts — used for offline-safe Puppeteer/Playwright captures */
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 400; font-display: block;
+  src: url('./fonts/Geist-Regular.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 500; font-display: block;
+  src: url('./fonts/Geist-Medium.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 600; font-display: block;
+  src: url('./fonts/Geist-SemiBold.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 700; font-display: block;
+  src: url('./fonts/Geist-Bold.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 800; font-display: block;
+  src: url('./fonts/Geist-ExtraBold.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 400; font-display: block;
+  src: url('./fonts/GeistMono-Regular.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 500; font-display: block;
+  src: url('./fonts/GeistMono-Medium.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 700; font-display: block;
+  src: url('./fonts/GeistMono-Bold.ttf') format('truetype'); }
 
 :root {
   /* Typography */
