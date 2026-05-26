@@ -37,16 +37,21 @@ if (!readme.includes(`Phiên bản hiện tại: \`v${version}\``)) {
 }
 
 const webIndex = readFile(path.join('web', 'index.html'));
-const webMetaMatch = webIndex.match(/<div class="book-meta">\s*Tác giả:\s*([^•<]+)\s*•\s*Phiên bản\s*([0-9]+\.[0-9]+\.[0-9]+(?:-rc\.\d+)?)\s*<\/div>/);
-if (!webMetaMatch) {
-  errors.push('web/index.html missing standardized .book-meta block: "Tác giả: <name> • Phiên bản <x.y.z>".');
+const webVersionMatch = webIndex.match(/<meta name="book-version" content="([0-9]+\.[0-9]+\.[0-9]+(?:-rc\.\d+)?)">/);
+const webAuthorMatch  = webIndex.match(/<meta name="book-author" content="([^"]+)">/);
+
+if (!webVersionMatch) {
+  errors.push('web/index.html missing <meta name="book-version" content="x.y.z">.');
+}
+if (!webAuthorMatch) {
+  errors.push('web/index.html missing <meta name="book-author" content="...">.');
 }
 
-const webAuthor = webMetaMatch ? webMetaMatch[1].trim() : '';
-const webVersion = webMetaMatch ? webMetaMatch[2].trim() : '';
+const webAuthor  = webAuthorMatch  ? webAuthorMatch[1].trim()  : '';
+const webVersion = webVersionMatch ? webVersionMatch[1].trim() : '';
 
-if (webMetaMatch && webVersion !== version) {
-  errors.push(`web/index.html version mismatch: expected "${version}", found "${webVersion}".`);
+if (webVersionMatch && webVersion !== version) {
+  errors.push(`web/index.html book-version meta mismatch: expected "${version}", found "${webVersion}".`);
 }
 
 const releaseNotes = readFile(path.join('release', 'RELEASE_NOTES.md'));

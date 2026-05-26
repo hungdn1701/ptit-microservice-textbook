@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.7 — Anti-Corruption Layer (ACL) | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-row" style="gap:12px; align-items:stretch;">
+      <!-- New Service -->
+      <div class="d-cluster" style="flex:2; padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">New Service (clean model)</div>
+        <div class="d-col" style="gap:8px;">
+          <div class="d-box d-service" style="text-align:center; padding:12px;">
+            <div class="d-title">Business Logic</div>
+            <div class="d-sub">Clean domain model</div>
+          </div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-highlight" style="text-align:center; padding:12px;">
+            <div class="d-title">Anti-Corruption Layer</div>
+            <div class="d-sub">Translate between models</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-arrow-h" style="align-self:center; font-size:18px;"></div>
+
+      <!-- Legacy -->
+      <div class="d-cluster" style="flex:2; padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Legacy System</div>
+        <div class="d-box d-legacy" style="text-align:center; padding:16px;">
+          <div class="d-title">Monolith API</div>
+          <div class="d-sub">Legacy data model</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-box d-note" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-sub" style="text-align:center; line-height:1.5;">ACL dịch data giữa legacy model và clean model. New service không bao giờ phụ thuộc trực tiếp vào legacy schema.</div>
+    </div>
+  </div>
+</body>
+</html>

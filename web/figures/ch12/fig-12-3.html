@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.3 — CI/CD Pipeline | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- CI section -->
+    <div class="d-cluster" style="padding:14px; margin-bottom:8px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Continuous Integration (CI)</div>
+      <div class="d-row" style="gap:6px; align-items:stretch;">
+        <div class="d-box d-service" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Git Push</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-info" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Build</div>
+          <div class="d-mono" style="font-size:10px;">mvn package</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-event" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Unit Test</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-highlight" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Docker Build</div>
+          <div class="d-mono" style="font-size:10px;">docker build</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-info" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Push Registry</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-arrow-v"></div>
+
+    <!-- CD section -->
+    <div class="d-cluster" style="padding:14px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Continuous Delivery/Deployment (CD)</div>
+      <div class="d-row" style="gap:6px; align-items:stretch;">
+        <div class="d-box d-event" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Integration Test</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-warning" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Staging Deploy</div>
+        </div>
+        <div class="d-arrow-h" style="align-self:center;"></div>
+        <div class="d-box d-success" style="flex:1; text-align:center; padding:12px 6px;">
+          <div class="d-title" style="font-size:12px;">Production Deploy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

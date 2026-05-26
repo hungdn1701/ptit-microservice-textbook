@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.1 — Microservices — N điểm bảo vệ | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- Firewall -->
+    <div class="d-row" style="justify-content:center; margin-bottom:4px;">
+      <div class="d-box d-danger" style="min-width:240px; text-align:center; padding:12px 24px;">
+        <div class="d-title">Firewall</div>
+      </div>
+    </div>
+    <div class="d-arrow-v"></div>
+
+    <!-- Gateway -->
+    <div class="d-row" style="justify-content:center; margin-bottom:4px;">
+      <div class="d-box d-event" style="min-width:240px; text-align:center; padding:12px 24px;">
+        <div class="d-title">Gateway</div>
+      </div>
+    </div>
+
+    <!-- Fan-out -->
+    <div class="d-row" style="justify-content:center; gap:0; margin-bottom:4px;">
+      <div class="d-arrow" style="flex:1; text-align:center; font-size:14px;">↙</div>
+      <div class="d-arrow" style="flex:1; text-align:center; font-size:14px;">↓</div>
+      <div class="d-arrow" style="flex:1; text-align:center; font-size:14px;">↘</div>
+    </div>
+
+    <!-- Services row -->
+    <div class="d-row" style="gap:16px; justify-content:center; margin-bottom:4px;">
+      <div class="d-box d-service" style="flex:1; max-width:180px; text-align:center; padding:12px;">
+        <div class="d-title">Service A</div>
+      </div>
+      <div class="d-box d-service" style="flex:1; max-width:180px; text-align:center; padding:12px;">
+        <div class="d-title">Service B</div>
+      </div>
+      <div class="d-box d-service" style="flex:1; max-width:180px; text-align:center; padding:12px;">
+        <div class="d-title">Service C</div>
+      </div>
+    </div>
+
+    <!-- Arrows to DBs -->
+    <div class="d-row" style="gap:16px; justify-content:center; margin-bottom:4px;">
+      <div style="flex:1; max-width:180px; text-align:center;" class="d-arrow-v"></div>
+      <div style="flex:1; max-width:180px; text-align:center;" class="d-arrow-v"></div>
+      <div style="flex:1; max-width:180px;"></div>
+    </div>
+
+    <!-- Databases -->
+    <div class="d-row" style="gap:16px; justify-content:center; margin-bottom:16px;">
+      <div class="d-box d-storage" style="flex:1; max-width:180px; text-align:center; padding:12px;">
+        <div class="d-title">DB A</div>
+      </div>
+      <div class="d-box d-storage" style="flex:1; max-width:180px; text-align:center; padding:12px;">
+        <div class="d-title">DB B</div>
+      </div>
+      <div style="flex:1; max-width:180px;"></div>
+    </div>
+
+    <!-- Warning note -->
+    <div class="d-box d-warning" style="padding:12px 18px;">
+      <div class="d-title" style="margin-bottom:4px;">Lưu ý</div>
+      <div class="d-sub" style="color:#7c2d12; line-height:1.5;">Mỗi service là 1 điểm bảo vệ riêng. Không thể chỉ bảo vệ Gateway. Service-to-service call cũng cần authentication và authorization.</div>
+    </div>
+  </div>
+</body>
+</html>

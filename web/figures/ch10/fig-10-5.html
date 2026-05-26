@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.5 — Vấn đề: DB update mà không gửi event | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-row" style="gap:16px; align-items:center;">
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:14px;">
+        <div class="d-title">Service</div>
+      </div>
+      <div class="d-col" style="flex:1; gap:8px;">
+        <div class="d-row" style="gap:6px; align-items:center;">
+          <div class="d-arrow-h"></div>
+          <div class="d-arrow-label">INSERT submission</div>
+          <div class="d-arrow-h"></div>
+        </div>
+        <div class="d-box d-storage" style="text-align:center; padding:14px;">
+          <div class="d-title">Database</div>
+          <div class="d-zone d-zone-success" style="margin-top:6px; font-size:11px;">Saved</div>
+        </div>
+      </div>
+      <div class="d-col" style="flex:1; gap:8px;">
+        <div class="d-row" style="gap:6px; align-items:center;">
+          <div class="d-arrow-h"></div>
+          <div class="d-arrow-label">Publish event</div>
+          <div class="d-arrow-h"></div>
+        </div>
+        <div class="d-box d-event" style="text-align:center; padding:14px;">
+          <div class="d-title">Kafka</div>
+          <div class="d-zone d-zone-danger" style="margin-top:6px; font-size:11px;">Failed!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-box d-danger" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-title" style="margin-bottom:4px;">Vấn đề Dual-Write</div>
+      <div class="d-sub" style="color:#7f1d1d; line-height:1.5;">DB đã lưu nhưng event không gửi được → data inconsistency. Cần Outbox Pattern hoặc CDC để đảm bảo atomicity.</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.7 — SLI / SLO / SLA | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+    <div class="d-row" style="gap:16px; align-items:stretch;">
+      <div class="d-box d-service" style="flex:1; padding:16px; text-align:center;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">📏 SLI</div>
+        <div class="d-sub" style="color:#085041; font-weight:600;">Service Level Indicator</div>
+        <div class="d-sep"></div>
+        <div class="d-sub" style="color:#085041; margin-bottom:4px;">Đo gì?</div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-mono" style="font-size:11px;">• latency p99</div>
+          <div class="d-mono" style="font-size:11px;">• error_rate</div>
+          <div class="d-mono" style="font-size:11px;">• availability</div>
+        </div>
+      </div>
+      <div class="d-box d-event" style="flex:1; padding:16px; text-align:center;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">🎯 SLO</div>
+        <div class="d-sub" style="color:#713f12; font-weight:600;">Service Level Objective</div>
+        <div class="d-sep"></div>
+        <div class="d-sub" style="color:#713f12; margin-bottom:4px;">Mục tiêu nội bộ</div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-mono" style="font-size:11px;">• p99 < 500ms</div>
+          <div class="d-mono" style="font-size:11px;">• error < 0.1%</div>
+          <div class="d-mono" style="font-size:11px;">• uptime 99.9%</div>
+        </div>
+      </div>
+      <div class="d-box d-danger" style="flex:1; padding:16px; text-align:center;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">📜 SLA</div>
+        <div class="d-sub" style="color:#7f1d1d; font-weight:600;">Service Level Agreement</div>
+        <div class="d-sep"></div>
+        <div class="d-sub" style="color:#7f1d1d; margin-bottom:4px;">Cam kết với khách hàng</div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-mono" style="font-size:11px;">• uptime ≥ 99.5%</div>
+          <div class="d-mono" style="font-size:11px;">• Vi phạm → bồi thường</div>
+          <div class="d-mono" style="font-size:11px;">• SLA ≤ SLO (có buffer)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.11 — Decision Matrix — Ưu tiên Migration | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-grid-2" style="gap:14px; align-items:stretch;">
+      <!-- Quadrant 1: High Impact, Low Effort = DO FIRST -->
+      <div class="d-box d-success" style="padding:14px;">
+        <div class="d-title" style="text-align:center; margin-bottom:6px;">🌟 High Impact, Low Effort</div>
+        <div class="d-sub" style="text-align:center; color:#14532d; font-weight:700; margin-bottom:6px;">LÀM NGAY</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px;">
+          <div class="d-sub" style="color:#14532d;">• CORS restrict</div>
+          <div class="d-sub" style="color:#14532d;">• JWT unify</div>
+          <div class="d-sub" style="color:#14532d;">• Structured logging</div>
+        </div>
+      </div>
+
+      <!-- Quadrant 2: High Impact, High Effort = PLAN -->
+      <div class="d-box d-event" style="padding:14px;">
+        <div class="d-title" style="text-align:center; margin-bottom:6px;">Logs High Impact, High Effort</div>
+        <div class="d-sub" style="text-align:center; color:#713f12; font-weight:700; margin-bottom:6px;">LẬP KẾ HOẠCH</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px;">
+          <div class="d-sub" style="color:#713f12;">• Database separation</div>
+          <div class="d-sub" style="color:#713f12;">• Saga pattern</div>
+          <div class="d-sub" style="color:#713f12;">• Event-driven migration</div>
+        </div>
+      </div>
+
+      <!-- Quadrant 3: Low Impact, Low Effort = NICE TO HAVE -->
+      <div class="d-box d-info" style="padding:14px;">
+        <div class="d-title" style="text-align:center; margin-bottom:6px;">💡 Low Impact, Low Effort</div>
+        <div class="d-sub" style="text-align:center; color:#1e3a8a; font-weight:700; margin-bottom:6px;">KHI RẢNH</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px;">
+          <div class="d-sub" style="color:#1e3a8a;">• Code formatting</div>
+          <div class="d-sub" style="color:#1e3a8a;">• Doc updates</div>
+          <div class="d-sub" style="color:#1e3a8a;">• Minor refactors</div>
+        </div>
+      </div>
+
+      <!-- Quadrant 4: Low Impact, High Effort = SKIP -->
+      <div class="d-box d-legacy" style="padding:14px;">
+        <div class="d-title" style="text-align:center; margin-bottom:6px;">⏳ Low Impact, High Effort</div>
+        <div class="d-sub" style="text-align:center; color:#374151; font-weight:700; margin-bottom:6px;">BỎ QUA</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px;">
+          <div class="d-sub" style="color:#374151;">• Full rewrite</div>
+          <div class="d-sub" style="color:#374151;">• Framework migration</div>
+          <div class="d-sub" style="color:#374151;">• Over-engineering</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

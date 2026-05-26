@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.8 — Branch by Abstraction | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-grid-3" style="gap:16px; align-items:start;">
+      <!-- Step 1 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Bước 1: Tạo lớp trừu tượng</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-highlight" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Interface</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:10px;">
+            <div class="d-title">Triển khai cũ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Bước 2: Triển khai mới</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-highlight" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Interface</div></div>
+          <div class="d-row" style="gap:6px; width:100%;">
+            <div class="d-box d-legacy" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Cũ</div></div>
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Mới</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Bước 3: Xóa cũ</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-highlight" style="width:100%; text-align:center; padding:10px;"><div class="d-title">Interface</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-service" style="width:100%; text-align:center; padding:10px;">
+            <div class="d-title">Triển khai mới</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

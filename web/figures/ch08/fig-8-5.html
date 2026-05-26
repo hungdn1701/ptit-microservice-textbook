@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.5 — Gateway + Eureka — Load Balanced Routing | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+  <style>
+    .seq-msg { min-height:38px; }
+    .seq-line { height:1.5px; background:#64748b; position:relative; flex:1; }
+    .seq-line::after { content:'▶'; position:absolute; right:-2px; top:-7px; font-size:10px; color:#64748b; }
+    .seq-line.left::after { content:'◀'; left:-2px; right:auto; }
+    .seq-line.dashed { background:repeating-linear-gradient(90deg,#94a3b8 0,#94a3b8 4px,transparent 4px,transparent 8px); }
+    .seq-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#fff; padding:0 4px; font-size:11px; color:#334155; white-space:nowrap; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div style="display:flex; gap:0;">
+      <!-- Lanes -->
+      <div class="seq-lane">
+        <div class="seq-header"><div class="d-box d-legacy" style="display:inline-block; padding:8px 16px;"><div class="d-title">Client</div></div></div>
+      </div>
+      <div class="seq-lane">
+        <div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 16px;"><div class="d-title">Gateway</div></div></div>
+      </div>
+      <div class="seq-lane">
+        <div class="seq-header"><div class="d-box d-info" style="display:inline-block; padding:8px 16px;"><div class="d-title">Eureka Registry</div></div></div>
+      </div>
+      <div class="seq-lane">
+        <div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 16px;"><div class="d-title">Core #1</div></div></div>
+      </div>
+      <div class="seq-lane">
+        <div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 16px;"><div class="d-title">Core #2</div></div></div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:0; margin-top:12px;">
+      <!-- 1. Client → Gateway -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">GET /api/core/questions</span></div>
+        <div style="flex:3.5;"></div>
+      </div>
+      <!-- 2. Gateway → Eureka -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label">Query: core-service instances?</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      <!-- 3. Eureka → Gateway (response) -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">[core:8080, core:8081]</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      <!-- LB decision -->
+      <div style="display:flex; justify-content:center; margin:6px 0;">
+        <div class="d-box d-event" style="padding:4px 14px; font-size:11px;">
+          <div class="d-title" style="font-size:12px;">Round-Robin: chọn Core #1</div>
+        </div>
+      </div>
+      <!-- 4. Gateway → Core #1 -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line" style="flex:2;"><span class="seq-label">Forward request</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 5. Core #1 → Gateway (response) -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line dashed left" style="flex:2;"><span class="seq-label">Response</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 6. Gateway → Client (response) -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label">Response to client</span></div>
+        <div style="flex:3.5;"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

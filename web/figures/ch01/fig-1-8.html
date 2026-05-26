@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.8 — Kiến trúc tổng quan KBLab LMS
+    =========================================================
+    Tier 1 HTML migration từ fig-1-8.svg
+    Layout: Layered top-down: Frontend → Gateway → Services → Kafka/Queue → Data
+    Capture: gen-diagrams.ps1 → fig-1-8.png → Typst image()
+  -->
+  <title>Fig 1.8 — Kiến trúc tổng quan KBLab LMS | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+  <style>
+    .layer-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .svc-row {
+      display: flex;
+      gap: 10px;
+    }
+    .svc-box {
+      flex: 1;
+      border-radius: 10px;
+      border: 1.5px solid;
+      padding: 10px 10px 12px;
+      text-align: center;
+    }
+    .svc-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    .svc-title { font-size: 12px; font-weight: 700; }
+    .svc-name  { font-size: 10px; color: #64748b; margin-top: 2px; font-family: monospace; }
+    .layer-sep { text-align: center; color: #94a3b8; font-size: 16px; margin: 4px 0; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- Frontend layer -->
+    <div class="layer-label">Frontend</div>
+    <div class="d-box d-infra" style="text-align:center; margin-bottom:4px;">
+      <div class="d-title">Ứng dụng web (Sinh viên, CMS, Lab)</div>
+    </div>
+
+    <div class="layer-sep">↓</div>
+
+    <!-- Edge/Gateway layer -->
+    <div class="layer-label">Lớp biên</div>
+    <div class="d-row" style="gap:12px; margin-bottom:4px;">
+      <div class="d-box d-infra d-grow" style="text-align:center;">
+        <div class="d-title">Spring Cloud Gateway</div>
+        <div class="d-sub">định tuyến theo đường dẫn</div>
+      </div>
+      <div class="d-box d-infra d-grow" style="text-align:center;">
+        <div class="d-title">Lab Router (Go)</div>
+        <div class="d-sub">định tuyến theo hostname</div>
+      </div>
+      <div class="d-box d-infra" style="text-align:center; min-width:160px;">
+        <div class="d-title">Khám phá dịch vụ</div>
+        <div class="d-sub">Eureka / Config</div>
+      </div>
+    </div>
+
+    <div class="layer-sep">↓</div>
+
+    <!-- Domain services layer -->
+    <div class="layer-label">Dịch vụ nghiệp vụ</div>
+    <div class="svc-row" style="margin-bottom:4px;">
+
+      <div class="svc-box d-domain">
+        <span class="svc-icon">ID</span>
+        <div class="svc-title">Danh tính</div>
+        <div class="svc-name">kblab-auth</div>
+        <div class="d-sub" style="font-size:10px;">JWT, OAuth2, SSO</div>
+      </div>
+
+      <div class="svc-box d-service">
+        <span class="svc-icon">SQL</span>
+        <div class="svc-title">SQL Lab</div>
+        <div class="svc-name">kblab-app + judge</div>
+        <div class="d-sub" style="font-size:10px;">Luyện tập / thi đấu</div>
+      </div>
+
+      <div class="svc-box d-service">
+        <span class="svc-icon">NET</span>
+        <div class="svc-title">Network Lab</div>
+        <div class="svc-name">kblab-judge-net</div>
+        <div class="d-sub" style="font-size:10px;">TCP, UDP, RMI, gRPC</div>
+      </div>
+
+      <div class="svc-box d-domain">
+        <span class="svc-icon">ACD</span>
+        <div class="svc-title">Học vụ</div>
+        <div class="svc-name">kblab-assignment</div>
+        <div class="d-sub" style="font-size:10px;">môn học, điểm, luận văn</div>
+      </div>
+
+      <div class="svc-box d-infra">
+        <span class="svc-icon">OPS</span>
+        <div class="svc-title">DevOps Lab</div>
+        <div class="svc-name">dol-api / dol-infra</div>
+        <div class="d-sub" style="font-size:10px;">Go + k3s / Sysbox</div>
+      </div>
+
+    </div>
+
+    <div class="layer-sep">↓</div>
+
+    <!-- Async/Integration layer -->
+    <div class="layer-label">Bất đồng bộ &amp; tích hợp</div>
+    <div class="d-row" style="gap:12px; margin-bottom:4px;">
+      <div class="d-box d-event d-grow" style="text-align:center;">
+        <div class="d-title">Kafka Event Bus</div>
+        <div class="d-sub">submission, thông báo</div>
+      </div>
+      <div class="d-box d-warning d-grow" style="text-align:center;">
+        <div class="d-title">DB Queue / External ACL</div>
+        <div class="d-sub">chấm DevOps, tích hợp QLĐT / GitHub</div>
+      </div>
+    </div>
+
+    <div class="layer-sep">↓</div>
+
+    <!-- Data/Infra layer -->
+    <div class="d-cluster">
+      <span class="d-label">Data &amp; Infrastructure Layer</span>
+      <div class="d-grid-4" style="margin-top:8px;">
+        <div class="d-box d-storage" style="text-align:center;">
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">CSDL dùng chung + theo dịch vụ</div>
+        </div>
+        <div class="d-box d-storage" style="text-align:center;">
+          <div class="d-title">Sandbox DBs</div>
+          <div class="d-sub">MySQL / SQL Server</div>
+        </div>
+        <div class="d-box d-storage" style="text-align:center;">
+          <div class="d-title">k3s + Sysbox</div>
+          <div class="d-sub">pod lab cô lập</div>
+        </div>
+        <div class="d-box d-info" style="text-align:center;">
+          <div class="d-title">Quan sát hệ thống</div>
+          <div class="d-sub">metrics, logs, traces</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

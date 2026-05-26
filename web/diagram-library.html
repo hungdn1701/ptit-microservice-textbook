@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagram Library — SOA Microservices Textbook</title>
+  <meta name="description" content="Thư viện sơ đồ tương tác cho giáo trình SOA & Microservices: 102 sơ đồ kiến trúc, communication patterns, và system design theo 12 chương.">
+  <meta property="og:title" content="Diagram Library — SOA & Microservices Textbook">
+  <meta property="og:description" content="102 sơ đồ tương tác: kiến trúc microservices, communication patterns, và system design">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hungdn1701.github.io/ptit-microservice-textbook/diagram-library.html">
+  <link rel="canonical" href="https://hungdn1701.github.io/ptit-microservice-textbook/diagram-library.html">
+  <link rel="stylesheet" href="./styles/base-style.css">
+  <link rel="stylesheet" href="./styles/diagram-style.css">
+  <script src="js/nav.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #ffffff;
+      color: #1a1f36;
+      overflow: hidden;
+      --primary: #0f766e;
+      --accent: #ca8a04;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #cbd5e1;
+      --slate-300: #e2e8f0;
+      --slate-200: #f1f5f9;
+      --slate-100: #f8fafc;
+      --zinc-950: #09090b;
+    }
+
+    body::before,
+    body::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    .library-container {
+      display: flex;
+      height: 100vh;
+      gap: 0;
+    }
+
+    /* ============ SIDEBAR ============ */
+    .sidebar {
+      width: 340px;
+      background: #ffffff;
+      border-right: 1px solid var(--slate-200);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.03);
+    }
+
+    .sidebar-header {
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--slate-200);
+      background: #ffffff;
+    }
+
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 0 0 6px;
+      letter-spacing: -0.5px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .book-meta {
+      font-size: 12px;
+      color: var(--slate-500);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      margin-top: 12px;
+    }
+
+    .back-portal-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--slate-300);
+      background: #ffffff;
+      color: var(--slate-700);
+      text-decoration: none;
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .back-portal-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(15, 118, 110, 0.06);
+      transform: translateX(-1px);
+    }
+
+    .sidebar-search {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--slate-300);
+      border-radius: 8px;
+      font-size: 13px;
+      background: #ffffff;
+      font-family: 'Geist Mono', monospace;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 2px rgba(15, 118, 110, 0.08);
+    }
+
+    .search-input::placeholder {
+      color: var(--slate-500);
+    }
+
+    .sidebar-chapters {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .chapter-group {
+      margin-bottom: 4px;
+    }
+
+    .chapter-header {
+      padding: 13px 24px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--slate-600);
+      letter-spacing: 0.6px;
+      background: transparent;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+
+    .chapter-header:hover {
+      background: rgba(15, 118, 110, 0.05);
+      border-left-color: var(--primary);
+      color: var(--primary);
+      transform: translateX(2px);
+    }
+
+    .chapter-header.active {
+      background: transparent;
+      border-left-color: var(--primary);
+      color: var(--slate-900);
+      font-weight: 800;
+    }
+
+    .diagram-list {
+      display: none;
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .chapter-header.active + .diagram-list {
+      display: block;
+      max-height: 500px;
+    }
+
+    .diagram-item {
+      padding: 11px 32px;
+      font-size: 13px;
+      color: var(--slate-600);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      font-weight: 500;
+    }
+
+    .diagram-item:hover {
+      background: rgba(15, 118, 110, 0.06);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      padding-left: 36px;
+    }
+
+    .diagram-item.active {
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--slate-900);
+      border-left-color: var(--primary);
+      font-weight: 700;
+      padding-left: 36px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--slate-200);
+      font-size: 11px;
+      color: var(--slate-600);
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    /* ============ MAIN CONTENT ============ */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .preview-header {
+      padding: 24px 36px;
+      border-bottom: 1px solid var(--slate-200);
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .preview-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preview-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.6px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .preview-info {
+      font-size: 12px;
+      color: var(--slate-600);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--primary);
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .preview-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .preview-btn {
+      padding: 9px 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .preview-btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--slate-300);
+    }
+
+    .preview-btn-secondary:hover {
+      background: rgba(15, 118, 110, 0.05);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .preview-btn-secondary:active {
+      transform: translateY(0);
+    }
+
+    .preview-canvas {
+      flex: 1;
+      padding: 40px;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+    }
+
+    .preview-frame {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--slate-200);
+      width: 100%;
+      height: 100%;
+      max-width: 1280px;
+      max-height: 750px;
+      overflow: auto;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .preview-frame:hover {
+      box-shadow: 0 25px 70px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    .preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+    }
+
+    .preview-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #ffffff;
+    }
+
+    .preview-tabs {
+      display: inline-flex;
+      border: 1px solid var(--slate-300);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+
+    .preview-tab {
+      border: none;
+      background: #ffffff;
+      color: var(--slate-600);
+      font-family: 'Geist Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preview-tab + .preview-tab {
+      border-left: 1px solid var(--slate-300);
+    }
+
+    .preview-tab.active {
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--primary);
+    }
+
+    .preview-empty {
+      text-align: center;
+      color: var(--slate-600);
+      font-size: 14px;
+    }
+
+    .preview-empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+
+    /* ============ SCROLLBAR STYLING ============ */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--slate-400);
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--slate-600);
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 280px;
+      }
+
+      .preview-canvas {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .library-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--slate-200);
+      }
+
+      .preview-area {
+        flex: 1;
+      }
+
+      .preview-canvas {
+        padding: 16px;
+      }
+
+      .preview-frame {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="library-container">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-header" id="site-header"></div>
+
+      <div class="sidebar-search">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search diagrams..." autocomplete="off">
+      </div>
+
+      <div class="sidebar-chapters" id="chapterList">
+        <!-- Dynamically populated -->
+      </div>
+
+      <div class="sidebar-footer">
+        <div>v1.0.3 — Preview Mode</div>
+        <div style="margin-top: 4px; opacity: 0.7;">Display-only for feedback</div>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN PREVIEW ============ -->
+    <main class="preview-area">
+      <div class="preview-header">
+        <div class="preview-meta">
+          <div class="preview-title" id="previewTitle">Select diagram to preview</div>
+          <div class="preview-info">
+            <span id="previewChapter" class="preview-badge">—</span>
+            <span id="previewSize" style="color: var(--slate-500);">—</span>
+          </div>
+        </div>
+        <div class="preview-controls">
+          <div class="preview-tabs" id="previewTabs" style="display:none;">
+            <button class="preview-tab active" type="button" data-view="html">HTML</button>
+            <button class="preview-tab" type="button" data-view="png">PNG</button>
+          </div>
+          <button class="preview-btn preview-btn-secondary" id="refreshBtn" style="display:none;">Reload</button>
+        </div>
+      </div>
+
+      <div class="preview-canvas">
+        <div class="preview-frame" id="previewContainer">
+          <div class="preview-empty">
+            <div class="preview-empty-icon">□</div>
+            <div>Choose diagram from left sidebar</div>
+            <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">Multi-chapter support with live search</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="./figures/diagram-manifest.js"></script>
+  <script>
+    const CHAPTERS = [
+      { num: '01', title: 'Tổng quan SOA & Microservices' },
+      { num: '02', title: 'Phân tích Hướng dịch vụ & DDD' },
+      { num: '03', title: 'Thiết kế Dịch vụ & API' },
+      { num: '04', title: 'Giao tiếp Đồng bộ' },
+      { num: '05', title: 'Giao tiếp Bất đồng bộ' },
+      { num: '06', title: 'Giao dịch Phân tán (Saga)' },
+      { num: '07', title: 'Quản lý Dữ liệu (CQRS, Event Sourcing)' },
+      { num: '08', title: 'API Gateway' },
+      { num: '09', title: 'Bảo mật' },
+      { num: '10', title: 'Chuyển đổi Thực tế (Strangler Fig)' },
+      { num: '11', title: 'Observability' },
+      { num: '12', title: 'Triển khai & Tự động hóa' }
+    ];
+
+    const DIAGRAMS = Array.isArray(window.DIAGRAM_MANIFEST) ? window.DIAGRAM_MANIFEST : [];
+    let diagrams = {};
+    let currentDiagram = null;
+    let currentView = 'html';
+
+    // Initialize
+    async function init() {
+      SiteNav.renderHeader(document.getElementById('site-header'), {
+        title: 'Diagram Library',
+        subtitle: 'SOA Microservices Book',
+        backLink: { href: './index.html', text: 'Pattern Portal' },
+        withActions: false
+      });
+      loadDiagrams();
+      renderChapterList();
+      setupEventListeners();
+      updateFooterStats();
+    }
+
+    function loadDiagrams() {
+      diagrams = {};
+      DIAGRAMS.forEach((diagram) => {
+        if (!diagrams[diagram.ch]) {
+          diagrams[diagram.ch] = [];
+        }
+
+        const suffix = diagram.suffix ? String(diagram.suffix).toUpperCase() : '';
+        const pathPrefix = './figures/';
+        diagrams[diagram.ch].push({
+          num: diagram.file,
+          path: pathPrefix + diagram.path.replace(/^\.\//, ''),
+          pngPath: diagram.pngPath ? pathPrefix + diagram.pngPath.replace(/^\.\//, '') : null,
+          chNum: diagram.ch,
+          search: `${diagram.file} hinh ${diagram.chapter}.${diagram.number}${suffix}`,
+          name: `Hình ${diagram.chapter}.${diagram.number}${suffix}`
+        });
+      });
+
+      Object.keys(diagrams).forEach((chNum) => {
+        diagrams[chNum].sort((a, b) => a.num.localeCompare(b.num, 'en', { numeric: true }));
+      });
+    }
+
+    function renderChapterList() {
+      const container = document.getElementById('chapterList');
+      container.innerHTML = '';
+
+      CHAPTERS.forEach((ch, idx) => {
+        const chapterDiagrams = diagrams[ch.num] || [];
+        if (!chapterDiagrams.length) {
+          return;
+        }
+
+        const chapterGroup = document.createElement('div');
+        chapterGroup.className = 'chapter-group';
+
+        const header = document.createElement('div');
+        header.className = 'chapter-header';
+        header.textContent = `Chương ${ch.num} — ${ch.title}`;
+        header.dataset.chapter = ch.num;
+        
+        header.addEventListener('click', (e) => {
+          toggleChapter(ch.num, header, diagramList);
+        });
+
+        const diagramList = document.createElement('div');
+        diagramList.className = 'diagram-list';
+
+        chapterDiagrams.forEach(diag => {
+          const item = document.createElement('div');
+          item.className = 'diagram-item';
+          item.textContent = `${diag.name} (${diag.num})`;
+          item.dataset.path = diag.path;
+          item.dataset.figName = diag.num;
+          item.dataset.search = diag.search;
+          
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loadDiagram(diag, item);
+          });
+
+          diagramList.appendChild(item);
+        });
+
+        chapterGroup.appendChild(header);
+        chapterGroup.appendChild(diagramList);
+        container.appendChild(chapterGroup);
+      });
+    }
+
+    function toggleChapter(chNum, header, diagramList) {
+      const isActive = header.classList.toggle('active');
+      if (isActive) {
+        diagramList.style.display = 'block';
+      } else {
+        diagramList.style.display = 'none';
+      }
+    }
+
+    function loadDiagram(diagram, itemElement) {
+      // Remove previous selection
+      document.querySelectorAll('.diagram-item.active').forEach(el => {
+        el.classList.remove('active');
+      });
+      itemElement.classList.add('active');
+
+      currentDiagram = diagram;
+
+      // Update header
+      document.getElementById('previewTitle').textContent = diagram.name;
+      document.getElementById('previewChapter').textContent = `CH.${diagram.chNum}`;
+      document.getElementById('previewSize').textContent = diagram.path;
+      renderPreview();
+      document.getElementById('previewTabs').style.display = 'inline-flex';
+      document.getElementById('refreshBtn').style.display = 'inline-block';
+    }
+
+    function getPngPath(diagram) {
+      // Use pngPath from manifest if available
+      if (diagram.pngPath) {
+        return diagram.pngPath;
+      }
+      // Fallback to regex-based path generation
+      return (diagram.path || '').replace(/\.html$/i, '.png');
+    }
+
+    function renderPreview() {
+      if (!currentDiagram) return;
+      const container = document.getElementById('previewContainer');
+      if (currentView === 'png') {
+        const pngPath = getPngPath(currentDiagram);
+        const img = document.createElement('img');
+        img.src = pngPath;
+        img.alt = currentDiagram.name;
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        img.style.display = 'block';
+        img.onerror = function() {
+          container.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--slate-500);">Unable to load image: ${pngPath}</div>`;
+        };
+        container.innerHTML = '';
+        container.appendChild(img);
+        document.getElementById('previewSize').textContent = pngPath;
+      } else {
+        container.innerHTML = `<iframe src="${currentDiagram.path}" title="${currentDiagram.name}"></iframe>`;
+        document.getElementById('previewSize').textContent = currentDiagram.path;
+      }
+    }
+
+    function updateFooterStats() {
+      const total = DIAGRAMS.length;
+      const target = document.querySelector('.sidebar-footer');
+      if (!target) return;
+      target.innerHTML = `<div>v1.0.3 — Preview Mode</div><div style="margin-top: 4px; opacity: 0.7;">Display-only for feedback · ${total} diagrams</div>`;
+    }
+
+    function setupEventListeners() {
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        filterDiagrams(query);
+      });
+
+      // Refresh button
+      document.getElementById('refreshBtn').addEventListener('click', () => {
+        if (currentDiagram) {
+          renderPreview();
+        }
+      });
+
+      document.getElementById('previewTabs').addEventListener('click', (event) => {
+        const button = event.target.closest('.preview-tab');
+        if (!button || !currentDiagram) return;
+        currentView = button.dataset.view;
+        document.querySelectorAll('.preview-tab').forEach((tab) => {
+          tab.classList.toggle('active', tab.dataset.view === currentView);
+        });
+        renderPreview();
+      });
+    }
+
+    function filterDiagrams(query) {
+      if (!query) {
+        document.querySelectorAll('.chapter-group').forEach(el => {
+          el.style.display = 'block';
+        });
+        return;
+      }
+
+      document.querySelectorAll('.chapter-group').forEach(group => {
+        const items = group.querySelectorAll('.diagram-item');
+        let hasMatch = false;
+
+        items.forEach(item => {
+          const text = item.dataset.search || item.textContent.toLowerCase();
+          const matches = text.toLowerCase().includes(query);
+          item.style.display = matches ? 'block' : 'none';
+          if (matches) hasMatch = true;
+        });
+
+        group.style.display = hasMatch ? 'block' : 'none';
+      });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+</body>
+</html>

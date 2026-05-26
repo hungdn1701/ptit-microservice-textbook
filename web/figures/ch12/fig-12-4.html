@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.4 — Rolling Update | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+    <div class="d-grid-3" style="gap:14px; align-items:start;">
+      <!-- State 1 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Trạng thái ban đầu</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v1.0</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+        </div>
+      </div>
+      <!-- State 2 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Đang cập nhật</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 (ready)</div></div>
+          <div class="d-box d-warning" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0 → v2.0 (updating)</div></div>
+          <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+        </div>
+      </div>
+      <!-- State 3 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Hoàn thành</div>
+        <div class="d-col" style="gap:6px;">
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 (ready)</div></div>
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v2.0 (ready)</div></div>
+          <div class="d-box d-success" style="text-align:center; padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v2.0 (ready)</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="d-box d-note" style="margin-top:12px; padding:10px 18px;">
+      <div class="d-sub" style="text-align:center;">Zero-downtime: luôn có instance sẵn sàng phục vụ traffic trong quá trình update.</div>
+    </div>
+  </div>
+</body>
+</html>

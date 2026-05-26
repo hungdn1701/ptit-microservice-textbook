@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.6 — Gateway JWT Filter — Request Rejected | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+  <style>
+    .seq-line { height:1.5px; background:#64748b; position:relative; flex:1; }
+    .seq-line::after { content:'▶'; position:absolute; right:-2px; top:-7px; font-size:10px; color:#64748b; }
+    .seq-line.left::after { content:'◀'; left:-2px; right:auto; }
+    .seq-line.dashed { background:repeating-linear-gradient(90deg,#94a3b8 0,#94a3b8 4px,transparent 4px,transparent 8px); }
+    .seq-line.danger { background:#dc2626; }
+    .seq-line.danger::after { color:#dc2626; }
+    .seq-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#fff; padding:0 4px; font-size:11px; color:#334155; white-space:nowrap; }
+    .seq-sep { display:flex; align-items:center; gap:8px; margin:8px 0; }
+    .seq-sep::before, .seq-sep::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+    .seq-sep span { font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- Participants -->
+    <div style="display:flex; gap:0; margin-bottom:12px;">
+      <div class="seq-lane"><div class="seq-header"><div class="d-box d-legacy" style="display:inline-block; padding:8px 16px;"><div class="d-title">Client</div></div></div></div>
+      <div class="seq-lane"><div class="seq-header"><div class="d-box d-event" style="display:inline-block; padding:8px 16px;"><div class="d-title">Gateway</div></div></div></div>
+      <div class="seq-lane"><div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 16px;"><div class="d-title">Core Service</div></div></div></div>
+    </div>
+
+    <!-- SCENARIO 1: Invalid token -->
+    <div class="seq-sep"><span>Kịch bản 1: Token không hợp lệ</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:0;">
+      <!-- Request with invalid token -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">GET /api/core/admin (invalid token)</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- Token check -->
+      <div style="display:flex; justify-content:center; margin:4px 0;">
+        <div class="d-zone d-zone-danger" style="font-size:11px;">Token INVALID</div>
+      </div>
+      <!-- 401 back -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line dashed danger left" style="flex:1;"><span class="seq-label" style="color:#dc2626; font-weight:600;">401 Unauthorized</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <div style="text-align:center; margin:2px 0;"><span class="d-sub" style="color:#dc2626; font-style:italic;">Request KHÔNG đến Core Service</span></div>
+    </div>
+
+    <!-- SCENARIO 2: Valid token -->
+    <div class="seq-sep"><span>Kịch bản 2: Token hợp lệ</span></div>
+
+    <div style="display:flex; flex-direction:column; gap:0;">
+      <!-- Request with valid token -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">GET /api/core/questions (valid token)</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- Token check -->
+      <div style="display:flex; justify-content:center; margin:4px 0;">
+        <div class="d-zone d-zone-success" style="font-size:11px;">Token valid</div>
+      </div>
+      <!-- Forward -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line" style="flex:1;"><span class="seq-label">Forward + X-User-Id header</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- Response back -->
+      <div class="seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label">Response</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- To client -->
+      <div class="seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label">Response to client</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

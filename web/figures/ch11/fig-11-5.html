@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.5 — Distributed Tracing — traceId propagation | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+    <div class="d-row" style="gap:8px; align-items:stretch;">
+      <div class="d-box d-event" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Gateway</div>
+        <div class="d-mono" style="font-size:10px;">traceId: abc123</div>
+        <div class="d-mono" style="font-size:10px;">spanId: span-1</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Core Service</div>
+        <div class="d-mono" style="font-size:10px;">traceId: abc123</div>
+        <div class="d-mono" style="font-size:10px;">spanId: span-2</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-highlight" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Judge Service</div>
+        <div class="d-mono" style="font-size:10px;">traceId: abc123</div>
+        <div class="d-mono" style="font-size:10px;">spanId: span-3</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-storage" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Database</div>
+        <div class="d-mono" style="font-size:10px;">traceId: abc123</div>
+        <div class="d-mono" style="font-size:10px;">spanId: span-4</div>
+      </div>
+    </div>
+    <div class="d-box d-note" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-sub" style="text-align:center; line-height:1.5;">Cùng <span class="d-mono" style="display:inline; color:#7c3aed;">traceId: abc123</span> xuyên suốt tất cả services → dễ dàng trace toàn bộ request flow.</div>
+    </div>
+  </div>
+</body>
+</html>

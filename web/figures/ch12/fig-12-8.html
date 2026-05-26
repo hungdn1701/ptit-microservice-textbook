@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.8 — KBLab Deployment Architecture — Abstract View | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- Danh tính dùng chung & lớp biên -->
+    <div class="d-cluster" style="padding:14px; margin-bottom:8px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Danh tính dùng chung &amp; lớp biên</div>
+      <div class="d-row" style="gap:10px; justify-content:center;">
+        <div class="d-box d-event" style="flex:1; max-width:200px; text-align:center; padding:10px;">
+          <div class="d-title">API Gateway</div>
+          <div class="d-sub">JWT, CORS, Routing</div>
+        </div>
+        <div class="d-box d-info" style="flex:1; max-width:200px; text-align:center; padding:10px;">
+          <div class="d-title">Dịch vụ xác thực</div>
+          <div class="d-sub">Đăng nhập, RBAC</div>
+        </div>
+        <div class="d-box d-storage" style="flex:1; max-width:200px; text-align:center; padding:10px;">
+          <div class="d-title">Eureka Registry</div>
+          <div class="d-sub">khám phá dịch vụ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-arrow-v"></div>
+
+    <!-- Dịch vụ nghiệp vụ -->
+    <div class="d-cluster" style="padding:14px; margin-bottom:8px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Dịch vụ nghiệp vụ (Docker containers)</div>
+      <div class="d-row" style="gap:8px; flex-wrap:wrap; justify-content:center;">
+        <div class="d-box d-service" style="flex:1; min-width:110px; max-width:150px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Dịch vụ lõi</div>
+          <div class="d-mono">:8080</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:110px; max-width:150px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Bài tập</div>
+          <div class="d-mono">:8088</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:110px; max-width:150px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Chấm bài</div>
+          <div class="d-mono">:8082</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:110px; max-width:150px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Thông báo</div>
+          <div class="d-mono">:8084</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-arrow-v"></div>
+
+    <!-- Tầng dữ liệu -->
+    <div class="d-cluster" style="padding:14px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Tầng dữ liệu</div>
+      <div class="d-row" style="gap:10px; justify-content:center;">
+        <div class="d-box d-storage" style="flex:1; max-width:180px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">PostgreSQL</div>
+        </div>
+        <div class="d-box d-event" style="flex:1; max-width:180px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Kafka</div>
+        </div>
+        <div class="d-box d-highlight" style="flex:1; max-width:180px; text-align:center; padding:10px;">
+          <div class="d-title" style="font-size:12px;">Redis Cache</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

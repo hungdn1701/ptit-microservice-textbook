@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.4 — Centralized Log Aggregation Pipeline | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+    <div class="d-row" style="gap:8px; align-items:stretch;">
+      <div class="d-col" style="flex:1; gap:6px;">
+        <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title" style="font-size:12px;">Gateway</div></div>
+        <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title" style="font-size:12px;">Core</div></div>
+        <div class="d-box d-service" style="text-align:center; padding:10px;"><div class="d-title" style="font-size:12px;">Judge</div></div>
+        <div class="d-label" style="text-align:center;">Application Services</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-event" style="flex:1; text-align:center; padding:14px; align-self:center;">
+        <div class="d-title">Log Shipper</div>
+        <div class="d-sub">Filebeat / Fluentd</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-highlight" style="flex:1; text-align:center; padding:14px; align-self:center;">
+        <div class="d-title">Log Storage</div>
+        <div class="d-sub">Elasticsearch / Loki</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-info" style="flex:1; text-align:center; padding:14px; align-self:center;">
+        <div class="d-title">Dashboard</div>
+        <div class="d-sub">Kibana / Grafana</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

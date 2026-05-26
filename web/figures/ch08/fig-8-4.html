@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 8.4 — Spring Cloud Gateway — Request Pipeline | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <!-- Pipeline: 6 steps horizontal -->
+    <div class="d-row" style="gap:6px; align-items:stretch; margin-bottom:20px;">
+      <div class="d-box d-legacy" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">HTTP Request</div>
+        <div class="d-sub">từ client</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-info" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Route Predicates</div>
+        <div class="d-sub">Path, Host, Header</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Pre-Filters</div>
+        <div class="d-sub">JWT validation, CORS, logging</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-event" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Route to Service</div>
+        <div class="d-mono">lb://service-name</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-highlight" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">Post-Filters</div>
+        <div class="d-sub">Response headers, metrics</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-legacy" style="flex:1; text-align:center; padding:14px 8px;">
+        <div class="d-title">HTTP Response</div>
+        <div class="d-sub">về client</div>
+      </div>
+    </div>
+
+    <!-- Config note -->
+    <div class="d-box d-note" style="padding:14px 18px;">
+      <div class="d-title" style="margin-bottom:8px;">LMS Gateway config:</div>
+      <div class="d-code" style="font-size:12px; line-height:1.6;">
+        <span class="str">Path=/api/auth/**</span>  → <span class="kw">lb://auth-service</span><br>
+        <span class="str">Path=/api/core/**</span>  → <span class="kw">lb://core-service</span> <span class="cmt">// JWT filter trước</span><br>
+        <span class="str">Path=/api/judge/**</span> → <span class="kw">lb://judge-service</span><br>
+        <span class="cmt">// lb:// = load-balanced qua Eureka (client-side discovery)</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -21,7 +21,7 @@
 
 ## Checklist
 
-- [ ] Nội dung tuân theo [style guide](manuscript/style-guide.md)
+- [ ] Nội dung tuân theo [CONTRIBUTING guidelines](.github/CONTRIBUTING.md)
 - [ ] Tuân theo [CONTRIBUTING guidelines](CONTRIBUTING.md)
 - [ ] Thuật ngữ kỹ thuật giữ nguyên tiếng Anh
 - [ ] Đã self-review nội dung

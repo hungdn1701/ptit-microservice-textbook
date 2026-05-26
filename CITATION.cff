@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this textbook in your research or teaching, please cite it as below."
+title: "Kiến trúc SOA & Microservices — Từ lý thuyết đến thực tiễn"
+abstract: >
+  A Vietnamese-language textbook on Service-Oriented Architecture and Microservices,
+  designed for third- and fourth-year computer science students and practicing software
+  engineers. Covers 12 chapters from SOA fundamentals and Domain-Driven Design through
+  API design, distributed transactions (Saga), CQRS, Event Sourcing, API Gateway,
+  security (JWT/OAuth2), observability, and production deployment (Docker/Kubernetes/CI-CD).
+  All concepts are illustrated through a continuous case study: KBLab, a real-world LMS
+  platform undergoing monolith-to-microservices migration. Accompanied by 102 interactive
+  diagrams and a live pattern library.
+authors:
+  - family-names: "Đặng"
+    given-names: "Ngọc Hùng"
+    affiliation: "Posts and Telecommunications Institute of Technology (PTIT)"
+version: "1.0.3"
+date-released: "2026-05-26"
+repository-code: "https://github.com/hungdn1701/ptit-microservice-textbook"
+url: "https://hungdn1701.github.io/ptit-microservice-textbook"
+license: "CC-BY-4.0"
+keywords:
+  - microservices
+  - service-oriented-architecture
+  - distributed-systems
+  - system-design
+  - vietnamese
+  - textbook
+preferred-citation:
+  type: book
+  authors:
+    - family-names: "Đặng"
+      given-names: "Ngọc Hùng"
+      affiliation: "Posts and Telecommunications Institute of Technology (PTIT)"
+  title: "Kiến trúc SOA & Microservices — Từ lý thuyết đến thực tiễn"
+  publisher: "Posts and Telecommunications Institute of Technology (PTIT)"
+  year: 2026
+  url: "https://hungdn1701.github.io/ptit-microservice-textbook"
+  version: "1.0.3"

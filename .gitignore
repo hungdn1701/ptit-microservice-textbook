@@ -15,18 +15,10 @@ references/extracted/
 IDEAS.md
 PROGRESS.md
 CHANGELOG.md
-manuscript/storyline-analysis.md
-manuscript/style-guide.md
-manuscript/book-outline.md
-manuscript/archive/
-manuscript/appendices/
 
 # ----- Gen scripts & build tools (private submodule) -----
 scripts/gen_svg_*.py
 scripts/pdf_to_md.py
-
-# ----- Test/temporary figures -----
-figures/shared/test*
 
 # ----- Auto-generated diagram PNGs (gen-diagrams.ps1: HTML → PNG) -----
 # ENABLED: PNG images now tracked in git (see AGENTS.md versioning strategy)

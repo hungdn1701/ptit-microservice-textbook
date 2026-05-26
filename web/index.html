@@ -4,7 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Companion Web — SOA & Microservices Textbook</title>
+  <meta name="description" content="Giáo trình SOA và Microservices từ lý thuyết đến thực tiễn với case study KBLab LMS. 12 chương, sơ đồ tương tác, và tài nguyên học tập cho sinh viên và kỹ sư phần mềm.">
+  <meta property="og:title" content="Kiến trúc SOA & Microservices — Giáo trình (v1.0.3)">
+  <meta property="og:description" content="Từ lý thuyết đến thực tiễn: 12 chương, patterns, case study KBLab LMS. Dành cho sinh viên CNTT và kỹ sư phần mềm.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hungdn1701.github.io/ptit-microservice-textbook/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SOA & Microservices Textbook (v1.0.3)">
+  <meta name="twitter:description" content="Giáo trình đầy đủ về kiến trúc dịch vụ và microservices cho sinh viên và kỹ sư Việt Nam">
+  <link rel="canonical" href="https://hungdn1701.github.io/ptit-microservice-textbook/">
+  <meta name="book-version" content="1.0.3">
+  <meta name="book-author" content="Đặng Ngọc Hùng">
   <link rel="stylesheet" href="styles/base-style.css">
+  <script src="js/nav.js"></script>
   <style>
     body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
     .app-layout { display: flex; height: 100vh; width: 100vw; }
@@ -871,24 +883,7 @@
 <body>
   <div class="app-layout">
     <div class="sidebar">
-      <div class="sidebar-header">
-        <div>
-          <h1>SOA & Microservices</h1>
-          <div class="book-meta">Tác giả: Đặng Ngọc Hùng • Phiên bản 1.0.2</div>
-        </div>
-        <div class="header-actions">
-          <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light and dark theme">
-            <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-            </svg>
-          </button>
-          <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()" title="Menu" aria-label="Toggle navigation panel" aria-expanded="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <div class="sidebar-header" id="site-header"></div>
       <div class="sidebar-content" id="sidebar-content">
         <div class="portal-links">
           <a href="book.html" class="portal-link primary">
@@ -907,7 +902,7 @@
             </span>
             <span class="link-text">
               <span class="link-title">Thư viện Hình</span>
-              <span class="link-sub">Diagram Library · 85 figures</span>
+              <span class="link-sub">Diagram Library · 102 diagrams</span>
             </span>
           </span>
           <span class="link-arrow">&#8599;</span>
@@ -936,6 +931,16 @@
   </div>
 
   <script>
+    SiteNav.renderHeader(document.getElementById('site-header'), {
+      onThemeChange(isLight) {
+        const iframe = document.getElementById('viewer');
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
+        }
+      }
+    });
+    document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
     const patterns = [
       { ch: 1, icon: 'CH01', name: 'Monolith vs Microservices', desc: 'So sánh visual kiến trúc nguyên khối và microservices', file: 'patterns/architecture/monolith-vs-microservices.html', cat: 'architecture', tags: ['architecture', 'overview'] },
       { ch: 2, icon: 'CH02', name: 'Context Map (DDD)', desc: 'Interactive bounded context map — xác định ranh giới dịch vụ', file: 'patterns/architecture/context-map.html', cat: 'architecture', tags: ['DDD', 'bounded-context'] },
@@ -948,6 +953,7 @@
       { ch: 7, icon: 'CH07', name: 'CQRS & Event Sourcing', desc: 'Write/Read model split, event store, replay', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data', tags: ['CQRS', 'event-sourcing'] },
       { ch: 8, icon: 'CH08', name: 'API Gateway Routing', desc: 'Request pipeline — JWT → CORS → Rate Limit → Route', file: 'patterns/api/api-gateway-routing.html', cat: 'api', tags: ['gateway', 'routing'] },
       { ch: 8, icon: 'CH08', name: 'Rate Limiting', desc: 'Mô phỏng Token Bucket với Redis tại Gateway', file: 'patterns/security/rate-limiting.html', cat: 'security', tags: ['gateway', 'resilience'] },
+      { ch: 8, icon: 'CH08', name: 'Config Server', desc: 'Centralized configuration — switch profiles, hot reload, config resolution', file: 'patterns/api/config-server.html', cat: 'api', tags: ['config', 'gateway'] },
       { ch: 9, icon: 'CH09', name: 'OAuth2 / JWT Flow', desc: 'Token lifecycle — login, validate, refresh, revoke', file: 'patterns/security/oauth2-jwt-flow.html', cat: 'security', tags: ['security', 'JWT'] },
       { ch: 10, icon: 'CH10', name: 'Strangler Fig Migration', desc: 'Migration slider — 4 phases, traffic split, module decomposition', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture', tags: ['migration', 'strangler-fig'] },
       { ch: 10, icon: 'CH10', name: 'Outbox Pattern', desc: 'Giải quyết Dual-Write Pitfall khi ghi DB và gửi Event', file: 'patterns/data/outbox-pattern.html', cat: 'data', tags: ['data', 'transactions'] },
@@ -976,36 +982,19 @@
       renderList(e.target.dataset.filter);
     });
 
-    const SUN_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`;
-    const MOON_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-    const MENU_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
-    const CLOSE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>`;
-    document.getElementById('theme-toggle-btn').innerHTML = MOON_SVG;
-
     function syncMobileMenuState() {
       const sidebar = document.getElementById('sidebar-content');
       const button = document.getElementById('mobile-menu-btn');
       if (window.innerWidth <= 768) {
         const isOpen = sidebar.classList.contains('open');
         button.style.display = 'inline-flex';
-        button.innerHTML = isOpen ? CLOSE_SVG : MENU_SVG;
+        button.innerHTML = isOpen ? SiteNav.CLOSE_SVG : SiteNav.MENU_SVG;
         button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       } else {
         button.style.display = 'none';
         sidebar.classList.remove('open');
-        button.innerHTML = CLOSE_SVG;
+        button.innerHTML = SiteNav.CLOSE_SVG;
         button.setAttribute('aria-expanded', 'true');
-      }
-    }
-
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      const isLight = document.documentElement.classList.contains('light');
-      document.getElementById('theme-toggle-btn').innerHTML = isLight ? MOON_SVG : SUN_SVG;
-      
-      const iframe = document.getElementById('viewer');
-      if (iframe.contentWindow) {
-        iframe.contentWindow.postMessage({ type: 'SET_THEME', isLight }, '*');
       }
     }
 
@@ -1014,13 +1003,11 @@
       const button = document.getElementById('mobile-menu-btn');
       const open = sidebar.classList.toggle('open');
       button.setAttribute('aria-expanded', open ? 'true' : 'false');
-      button.innerHTML = open ? CLOSE_SVG : MENU_SVG;
+      button.innerHTML = open ? SiteNav.CLOSE_SVG : SiteNav.MENU_SVG;
     }
 
     function getDiagramLibraryUrl() {
-      const path = window.location.pathname || '';
-      const inWebFolder = path.includes('/web/') || path.includes('\\web\\');
-      return inWebFolder ? '../figures/diagram-library.html' : 'figures/diagram-library.html';
+      return 'diagram-library.html';
     }
     
     // Pattern click
@@ -1040,7 +1027,7 @@
       // Auto-close menu on mobile after selection
       if (window.innerWidth <= 768) {
         document.getElementById('sidebar-content').classList.remove('open');
-        document.getElementById('mobile-menu-btn').innerHTML = MENU_SVG;
+        document.getElementById('mobile-menu-btn').innerHTML = SiteNav.MENU_SVG;
         document.getElementById('mobile-menu-btn').setAttribute('aria-expanded', 'false');
       }
     });

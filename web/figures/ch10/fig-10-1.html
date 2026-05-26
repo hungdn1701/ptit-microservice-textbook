@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.1 — Strangler Fig Pattern — 3 giai đoạn | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-grid-3" style="gap:16px; align-items:start;">
+      <!-- Phase 1 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Phase 1: 90% Monolith</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-event" style="width:100%; text-align:center; padding:8px;"><div class="d-title">Gateway</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:14px 8px;">
+            <div class="d-title">Monolith</div>
+            <div class="d-sub">90% traffic</div>
+          </div>
+          <div class="d-box d-service" style="width:100%; text-align:center; padding:8px;">
+            <div class="d-title">New Service A</div>
+            <div class="d-sub">10% traffic</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Phase 2: 50/50</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-event" style="width:100%; text-align:center; padding:8px;"><div class="d-title">Gateway</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-box d-legacy" style="width:100%; text-align:center; padding:8px;">
+            <div class="d-title">Monolith</div>
+            <div class="d-sub">50% traffic</div>
+          </div>
+          <div class="d-row" style="gap:6px; width:100%;">
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Svc A</div></div>
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Svc B</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Phase 3: 100% Services</div>
+        <div class="d-col" style="gap:6px; align-items:center;">
+          <div class="d-box d-event" style="width:100%; text-align:center; padding:8px;"><div class="d-title">Gateway</div></div>
+          <div class="d-arrow-v"></div>
+          <div class="d-row" style="gap:6px; width:100%;">
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Svc A</div></div>
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Svc B</div></div>
+            <div class="d-box d-service" style="flex:1; text-align:center; padding:8px;"><div class="d-title" style="font-size:11px;">Svc C</div></div>
+          </div>
+          <div class="d-box d-success" style="width:100%; text-align:center; padding:6px;">
+            <div class="d-sub" style="color:#14532d;">Monolith retired</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

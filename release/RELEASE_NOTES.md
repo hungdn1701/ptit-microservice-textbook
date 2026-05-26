@@ -3,6 +3,8 @@
 > **Date**: 2026-05-26
 > **Author**: Đặng Ngọc Hùng — PTIT
 
+📥 **Download**: [GitHub Releases v1.0.3](https://github.com/hungdn1701/ptit-microservice-textbook/releases/tag/v1.0.3)
+
 ---
 
 ## Contents
@@ -44,3 +46,15 @@
 10. Chuyển đổi Thực tế (Strangler Fig)
 11. Observability
 12. Triển khai & Tự động hóa
+
+## Breaking Changes
+
+Không có breaking changes — tương thích ngược với v1.0.2.
+
+## Known Issues
+
+Không có known issues đã xác nhận cho v1.0.3.
+
+## Contributors
+
+- Đặng Ngọc Hùng (PTIT)

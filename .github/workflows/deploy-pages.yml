@@ -40,15 +40,6 @@ jobs:
           mkdir -p public
           cp -R web/* public/
 
-          # Include figures library (chNN/ dirs + manifest + viewer only; exclude dev templates)
-          mkdir -p public/figures
-          for d in figures/ch*/; do cp -R "$d" public/figures/; done
-          cp figures/diagram-library.html figures/diagram-manifest.js figures/diagram-manifest.json public/figures/
-
-          # Duplicate styles so figure HTML relative paths (../web/styles/ and ../../web/styles/) resolve on GH Pages
-          mkdir -p public/web
-          cp -R web/styles public/web/styles
-
           if [ -f "release/book.html" ]; then
             cp release/book.html public/book.html
             echo "Copied book.html"

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.3 — JSON Web Token (JWT) — Cấu trúc | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-row" style="gap:12px; align-items:stretch;">
+      <!-- Header -->
+      <div class="d-box d-danger" style="flex:1; text-align:center; padding:14px 12px;">
+        <div class="d-title">Header</div>
+        <div class="d-sub" style="color:#7f1d1d;">(algorithm, type)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style="font-size:10px; word-break:break-all;">eyJhbGciOiJIUzI1NiJ9</div>
+      </div>
+
+      <!-- Payload -->
+      <div class="d-box d-highlight" style="flex:1.5; text-align:center; padding:14px 12px;">
+        <div class="d-title">Payload</div>
+        <div class="d-sub" style="color:#3b0764;">(claims: userId, roles, exp)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style="font-size:10px; word-break:break-all;">eyJ1c2VySWQiOjEsInJvbGUiOiJTVFVERU5UIn0</div>
+      </div>
+
+      <!-- Signature -->
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:14px 12px;">
+        <div class="d-title">Signature</div>
+        <div class="d-sub" style="color:#085041;">HMAC-SHA256(header + payload, secret)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style="font-size:10px; word-break:break-all;">SflKxwRJSM...kqtQ</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:12px;">
+      <div class="d-mono" style="font-size:11px; color:#64748b;">header<span style="color:#dc2626; font-weight:700;">.</span>payload<span style="color:#dc2626; font-weight:700;">.</span>signature</div>
+    </div>
+
+    <!-- Note -->
+    <div class="d-box d-note" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-title" style="margin-bottom:4px;">💡 Lưu ý</div>
+      <div class="d-sub" style="line-height:1.5;">JWT chỉ được <strong>ký</strong> (signed), không mã hóa. Ai cũng có thể decode payload — không lưu thông tin nhạy cảm.</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.6 — CDC (Change Data Capture) Pattern | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/diagram-style.css">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas">
+
+    <div class="d-row" style="gap:12px; align-items:stretch;">
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:14px;">
+        <div class="d-title">Service</div>
+        <div class="d-sub">Chỉ ghi DB</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-storage" style="flex:1; text-align:center; padding:14px;">
+        <div class="d-title">Database</div>
+        <div class="d-sub">Transaction log</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-highlight" style="flex:1; text-align:center; padding:14px;">
+        <div class="d-title">CDC / Debezium</div>
+        <div class="d-sub">Đọc WAL/binlog</div>
+      </div>
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      <div class="d-box d-event" style="flex:1; text-align:center; padding:14px;">
+        <div class="d-title">Kafka</div>
+        <div class="d-sub">Events published</div>
+      </div>
+    </div>
+
+    <div class="d-box d-success" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-title" style="margin-bottom:4px;">Giải pháp</div>
+      <div class="d-sub" style="color:#14532d; line-height:1.5;">Service chỉ cần ghi DB. CDC tự động capture changes và publish event. Guaranteed consistency — không bao giờ mất event.</div>
+    </div>
+  </div>
+</body>
+</html>
