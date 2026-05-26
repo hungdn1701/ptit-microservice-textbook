@@ -23,6 +23,9 @@ Dự án tuân theo [Contributor Covenant v2.1](https://www.contributor-covenant
 
 ## 🚀 Cách đóng góp
 
+> [!IMPORTANT]
+> Luồng active hiện tại là Typst-first. Core authors sửa nội dung ở `references/internal/typst/chapters/*.typ`; `manuscript/*.md` chỉ còn là archive công khai của v1.0.2.
+
 ### 1. Báo lỗi hoặc đề xuất
 
 Nếu bạn phát hiện lỗi hoặc có ý tưởng cải thiện, [tạo một Issue mới](../../issues/new/choose) và chọn template phù hợp:
@@ -59,7 +62,7 @@ git checkout -b feat/ch05-kafka-diagram
 #### Bước 3: Thực hiện thay đổi
 
 - Đọc [Quy ước viết bài](#-quy-ước-viết-bài) trước khi viết
-- Tham khảo `manuscript/style-guide.md` cho voice & tone
+- Tham khảo `references/internal/docs/style-guide.md` nếu bạn là core author; `manuscript/style-guide.md` là archive tham chiếu của v1.0.2
 - Test build nếu có thể
 
 #### Bước 4: Commit & Push
@@ -89,38 +92,19 @@ git push origin docs/ch04-add-grpc-example
 
 ### Cấu trúc chương
 
-Mỗi file chương (`chapter-XX.md`) tuân theo template:
+Mỗi file chapter active (`references/internal/typst/chapters/chapter-XX.typ`) thường đi theo nhịp:
 
-```markdown
-# Chương N: Tiêu đề
-
-> *Opening quote (optional)*
-
-## Mục tiêu chương
-- Sau khi đọc xong chương này, bạn sẽ...
-
-## [Nội dung chính]
-### Section
-### Section
-
-## Case Study: [Tình huống trong LMS]
-> Phần minh họa thực tế từ hệ thống LMS
-
-## Tổng kết
-- Bullet points tóm tắt
-
-## Câu hỏi ôn tập
-
-## Đọc thêm
-- Danh sách tài liệu bổ sung
-```
+1. Mở đầu bằng `==` và một danh sách “Bạn sẽ học được gì”
+2. Trình bày các `===` section theo logic vấn đề → phân tích → giải pháp
+3. Gắn case study KBLab khi có điểm nối với LMS
+4. Kết thúc bằng tổng kết và `Đọc thêm`
 
 ### Nguyên tắc biên soạn
 
 1. **Logic "Nỗi đau → Giải pháp"**: Mỗi pattern/concept bắt đầu bằng vấn đề thực tế trước khi trình bày giải pháp
 2. **Bám sát nguồn cốt lõi**: Mỗi chương lấy 1 cuốn sách tham khảo làm kim chỉ nam
 3. **Case study LMS**: Mọi lý thuyết phải ánh xạ vào hệ thống LMS thực tế
-4. **Code examples**: Đặt trong `code/chXX/`, reference từ manuscript bằng relative path
+4. **Code examples**: Đặt inline trong Typst hoặc trỏ bằng relative path ổn định
 5. **Figures**: Đặt trong `figures/chXX/`, sử dụng PNG hoặc SVG
 
 ### Các loại đóng góp được hoan nghênh

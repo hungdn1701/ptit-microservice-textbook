@@ -18,7 +18,10 @@ Giáo trình cho sinh viên CNTT năm 3–4 và kỹ sư phần mềm, đi từ 
 | Nền tảng | Hướng dẫn |
 |---|---|
 | **Online Portal** | Truy cập **[Trang Web Giáo Trình](https://hungdn1701.github.io/ptit-microservice-textbook)** để đọc sách hoàn chỉnh, xem sơ đồ tương tác và tải PDF mới nhất. |
-| **Mã nguồn** | Đọc trực tiếp các file `.md` trong thư mục [`manuscript/`](manuscript/) |
+| **Mã nguồn** | Nội dung active được duy trì bằng Typst trong `references/internal/typst/chapters/*.typ` (submodule private cho core authors). Thư mục [`manuscript/`](manuscript/) chỉ là archive Markdown công khai của v1.0.2. |
+
+> [!IMPORTANT]
+> Các liên kết chương trong mục lục phía dưới trỏ tới archive Markdown v1.0.2 để đọc nhanh công khai. Khi sửa nội dung active, core authors làm việc trong `references/internal/typst/chapters/*.typ`.
 
 ---
 
@@ -48,10 +51,11 @@ Kèm theo: [Bài tập](manuscript/exercises.md) · [Glossary](manuscript/append
 
 ## 🔒 Dành cho Core Authors (Nhóm Tác giả)
 
-Dự án này sử dụng mô hình **Dual-layer Repository**. Các kịch bản build sách, tài liệu hướng dẫn nội bộ (Git workflow, quy chuẩn định dạng), và mã nguồn Typst được lưu trữ trong Git Submodule riêng tư `references/`.
+Dự án này sử dụng mô hình **Dual-layer Repository**. Nội dung active của sách nằm trong Typst source ở Git Submodule riêng tư `references/`; `manuscript/` chỉ là archive Markdown công khai của v1.0.2.
 
-- Nếu bạn là Core Author: Hãy vào mục `references/README.md` để xem cấu trúc và hướng dẫn toàn tập.
-- Lưu ý: Luôn sử dụng lệnh `git pull --recurse-submodules` để đồng bộ thư mục này.
+- Nếu bạn là Core Author: Hãy vào mục `references/README.md` để xem cấu trúc, workflow Typst, và nội dung nội bộ.
+- Lưu ý: Luôn sử dụng lệnh `git pull --recurse-submodules` để đồng bộ public repo và submodule.
+- Khi sửa nội dung active, làm việc trực tiếp trong `references/internal/typst/chapters/*.typ`.
 - Trước khi push public repo, chạy kiểm tra nhất quán metadata:
   ```bash
   npm run check:metadata
