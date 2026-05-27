@@ -10,6 +10,7 @@ references/extracted/
 # ----- AI agent config (personal workflows) -----
 .agents/
 .gemini/
+.claude/
 
 # ----- Internal authoring docs (private submodule) -----
 IDEAS.md
