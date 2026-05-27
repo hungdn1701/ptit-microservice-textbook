@@ -27,24 +27,36 @@ jobs:
         run: npm run check:metadata
 
       - name: Refresh diagram manifest
+        if: ${{ hashFiles('references/internal/scripts/update-diagram-manifest.ps1') != '' }}
         shell: pwsh
         run: |
-          .\figures\update-diagram-manifest.ps1
+          .\references\internal\scripts\update-diagram-manifest.ps1
 
-      - name: Regenerate changed diagram PNG artifacts (when internal submodule is available)
-        if: ${{ hashFiles('references/internal/scripts/gen-diagrams.ps1') != '' }}
-        shell: pwsh
+      - name: Verify manifest is committed
+        if: ${{ hashFiles('references/internal/scripts/update-diagram-manifest.ps1') != '' }}
         run: |
-          .\references\internal\scripts\gen-diagrams.ps1 -Chapter all
+          git diff --quiet --exit-code -- web/figures/diagram-manifest.json web/figures/diagram-manifest.js \
+            || (echo "diagram-manifest is stale — run update-diagram-manifest.ps1 locally and commit." && exit 1)
+
+      - name: Verify all diagram HTMLs have committed PNGs
+        run: |
+          missing=0
+          while IFS= read -r html; do
+            png="${html%.html}.png"
+            if [ ! -f "$png" ]; then
+              echo "Missing PNG: $png  (source: $html)"
+              missing=$((missing + 1))
+            fi
+          done < <(find web/figures -name "fig-*.html" 2>/dev/null)
+          if [ "$missing" -gt 0 ]; then
+            echo ""
+            echo "Error: $missing diagram(s) missing PNG. Run gen-diagrams.ps1 locally and commit the PNGs."
+            exit 1
+          fi
+          echo "All diagram PNGs present."
 
       - name: Run editorial audit (when internal submodule is available)
         if: ${{ hashFiles('references/internal/scripts/audit-editorial.ps1') != '' }}
         shell: pwsh
         run: |
           .\references\internal\scripts\audit-editorial.ps1
-
-      - name: Ensure generated artifacts are committed
-        shell: pwsh
-        run: |
-          git --no-pager diff -- figures/diagram-manifest.json figures/diagram-manifest.js figures/ch*/fig-*.png
-          git diff --quiet --exit-code -- figures/diagram-manifest.json figures/diagram-manifest.js figures/ch*/fig-*.png

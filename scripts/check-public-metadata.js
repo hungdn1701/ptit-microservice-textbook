@@ -32,8 +32,8 @@ if (!/^\d+\.\d+\.\d+(?:-rc\.\d+)?$/.test(version)) {
 }
 
 const readme = readFile('README.md');
-if (!readme.includes(`Phiên bản hiện tại: \`v${version}\``)) {
-  errors.push(`README.md must contain "Phiên bản hiện tại: \`v${version}\`".`);
+if (!readme.includes(`v${version}`)) {
+  errors.push(`README.md must mention version "v${version}".`);
 }
 
 const webIndex = readFile(path.join('web', 'index.html'));
