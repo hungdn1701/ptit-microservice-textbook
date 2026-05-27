@@ -4,16 +4,15 @@
 
 ## Loại thay đổi
 
-- [ ] 📝 Sửa lỗi chính tả / ngữ pháp
-- [ ] 🐛 Sửa lỗi nội dung kỹ thuật
-- [ ] 💡 Bổ sung nội dung mới
-- [ ] 🖼️ Thêm/cập nhật hình minh họa
-- [ ] 💻 Code example
-- [ ] 📚 Cập nhật tài liệu tham khảo
+- [ ] Sửa lỗi chính tả / ngữ pháp
+- [ ] Sửa lỗi nội dung kỹ thuật
+- [ ] Bổ sung nội dung mới
+- [ ] Thêm/cập nhật hình minh họa
+- [ ] Cập nhật tài liệu tham khảo
 
-## Chương / File bị ảnh hưởng
+## File bị ảnh hưởng
 
-- `manuscript/chapter-XX.md`
+<!-- Ví dụ: web/figures/ch03/fig-3-2.html, web/index.html -->
 
 ## Chi tiết
 
@@ -21,9 +20,7 @@
 
 ## Checklist
 
-- [ ] Nội dung tuân theo [CONTRIBUTING guidelines](.github/CONTRIBUTING.md)
-- [ ] Tuân theo [CONTRIBUTING guidelines](CONTRIBUTING.md)
-- [ ] Thuật ngữ kỹ thuật giữ nguyên tiếng Anh
 - [ ] Đã self-review nội dung
-- [ ] Hình ảnh mới (nếu có) đặt trong `figures/chXX/`
-- [ ] Code mới (nếu có) đặt trong `code/chXX/`
+- [ ] Thuật ngữ kỹ thuật giữ nguyên tiếng Anh
+- [ ] Tuân theo [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+- [ ] Hình ảnh mới (nếu có) đặt trong `web/figures/chNN/`
