@@ -2,62 +2,55 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.7 — KBLab LMS — Kiến trúc bảo mật tổng quan | Ch.9</title>
+  <title>Fig 9.6 — Role-Based Access Control (RBAC) | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
   <link rel="stylesheet" href="../../styles/diagram-style.css">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
 
-    <!-- Internet layer -->
-    <div class="d-cluster" style="padding:14px 18px; margin-bottom:8px;">
-      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Internet</div>
-      <div class="d-row" style="justify-content:center; gap:16px;">
-        <div class="d-box d-note" style="flex:1; max-width:180px; text-align:center; padding:10px;">
-          <div class="d-title">Student App</div>
+    <!-- Roles row -->
+    <div class="d-row" style="gap:16px; align-items:stretch; margin-bottom:20px;">
+      <div class="d-box d-danger" style="flex:1; text-align:center; padding:16px 12px;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">ADMIN</div>
+        <div class="d-sub" style="color:#7f1d1d;">Mọi quyền</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-sub" style="color:#7f1d1d;">Cho phép: Quản lý users</div>
+          <div class="d-sub" style="color:#7f1d1d;">Cho phép: CRUD content</div>
+          <div class="d-sub" style="color:#7f1d1d;">Cho phép: Xem reports</div>
+          <div class="d-sub" style="color:#7f1d1d;">Cho phép: System config</div>
         </div>
-        <div class="d-box d-note" style="flex:1; max-width:180px; text-align:center; padding:10px;">
-          <div class="d-title">Admin CMS</div>
+      </div>
+
+      <div class="d-box d-event" style="flex:1; text-align:center; padding:16px 12px;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">LECTURER</div>
+        <div class="d-sub" style="color:#713f12;">Tạo/sửa content</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-sub" style="color:#713f12;">Cho phép: CRUD assignments</div>
+          <div class="d-sub" style="color:#713f12;">Cho phép: Xem submissions</div>
+          <div class="d-sub" style="color:#713f12;">Từ chối: Quản lý users</div>
+          <div class="d-sub" style="color:#713f12;">Từ chối: System config</div>
+        </div>
+      </div>
+
+      <div class="d-box d-service" style="flex:1; text-align:center; padding:16px 12px;">
+        <div class="d-title" style="font-size:16px; margin-bottom:8px;">STUDENT</div>
+        <div class="d-sub" style="color:#085041;">Xem/submit</div>
+        <div class="d-sep"></div>
+        <div class="d-stack" style="gap:3px; text-align:left;">
+          <div class="d-sub" style="color:#085041;">Cho phép: Xem assignments</div>
+          <div class="d-sub" style="color:#085041;">Cho phép: Submit solutions</div>
+          <div class="d-sub" style="color:#085041;">Từ chối: CRUD content</div>
+          <div class="d-sub" style="color:#085041;">Từ chối: Quản lý users</div>
         </div>
       </div>
     </div>
 
-    <div class="d-arrow-v"></div>
-
-    <!-- Edge layer -->
-    <div class="d-cluster" style="padding:14px 18px; margin-bottom:8px;">
-      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Edge Layer</div>
-      <div class="d-row" style="justify-content:center;">
-        <div class="d-box d-event" style="text-align:center; padding:12px 20px;">
-          <div class="d-title">Gateway :9001</div>
-          <div class="d-sub">JWT validation · CORS · Rate limiting</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-arrow-v"></div>
-
-    <!-- Service layer -->
-    <div class="d-cluster" style="padding:14px 18px;">
-      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Service Layer (Internal Network)</div>
-      <div class="d-row" style="gap:8px; flex-wrap:wrap; justify-content:center;">
-        <div class="d-box d-info" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
-          <div class="d-title" style="font-size:12px;">Auth Service</div>
-          <div class="d-sub">JWT issuer, RBAC</div>
-        </div>
-        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
-          <div class="d-title" style="font-size:12px;">Core Service</div>
-          <div class="d-sub">@PreAuthorize</div>
-        </div>
-        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
-          <div class="d-title" style="font-size:12px;">Assignment</div>
-          <div class="d-sub">@PreAuthorize</div>
-        </div>
-        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
-          <div class="d-title" style="font-size:12px;">Judge Service</div>
-          <div class="d-sub">internal only</div>
-        </div>
-      </div>
+    <!-- Note -->
+    <div class="d-box d-note" style="padding:12px 18px;">
+      <div class="d-sub" style="line-height:1.5; text-align:center;">Quyền được encode trong JWT claim <span class="d-mono" style="display:inline;">"role": "STUDENT"</span> → Service kiểm tra khi xử lý request</div>
     </div>
   </div>
 </body>

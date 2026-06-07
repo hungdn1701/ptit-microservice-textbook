@@ -3,125 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 2.8 — Tách thư viện dùng chung (Shared Library Split)
+    Fig 2.7 — 5 Bounded Contexts trong KBLab
     =========================================================
-    Tier 1 HTML migration từ fig-2-8.svg
-    Layout: Before/After comparison + dependency table
-    Capture: gen-diagrams.ps1 → fig-2-8.png → Typst image()
+    Tier 1 HTML migration từ fig-2-7.svg
+    Layout: 5 d-cluster boxes in grid (3 top, 2 bottom) + shared kernel note
+    Capture: gen-diagrams.ps1 → fig-2-7.png → Typst image()
   -->
-  <title>Fig 2.8 — Tách thư viện dùng chung | Ch.2</title>
+  <title>Fig 2.7 — 5 Bounded Contexts trong KBLab | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
   <link rel="stylesheet" href="../../styles/diagram-style.css">
   <style>
-    .lib-item {
+    .bc-card {
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 14px;
+      text-align: center;
+      flex: 1;
+    }
+    .bc-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .bc-card-svc {
+      font-size: 10px;
+      font-family: monospace;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+    .bc-card-desc {
       font-size: 11px;
       color: #64748b;
-      padding: 3px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .lib-item:last-child { border-bottom: none; }
-    .dep-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 5px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .dep-row:last-child { border-bottom: none; }
-    .dep-svc {
-      font-size: 12px;
-      font-weight: 600;
-      min-width: 140px;
-      border-radius: 6px;
-      border: 1.5px solid;
-      padding: 4px 10px;
-      text-align: center;
-    }
-    .dep-list {
-      font-size: 11px;
-      color: #475569;
-      font-family: monospace;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
 
-    <!-- Before / After comparison -->
-    <div class="d-row" style="align-items: flex-start; gap: 12px; margin-bottom: 14px;">
+    <div class="d-cluster" style="margin-bottom: 14px;">
+      <span class="d-label">Các bối cảnh nghiệp vụ (bỏ qua dịch vụ hỗ trợ để rõ hơn)</span>
 
-      <!-- BEFORE -->
-      <div class="d-cluster" style="flex:1;">
-        <span class="d-label">Hiện tại: 1 shared library</span>
-        <div class="d-box d-danger" style="margin-top: 8px;">
-          <div class="d-title" style="text-align:center; margin-bottom:8px;">shared-library</div>
-          <div class="d-sub" style="text-align:center; margin-bottom:8px;">(23 files — tất cả)</div>
-          <div class="lib-item">BaseEntity, BaseResponse</div>
-          <div class="lib-item">JWT, Security Config</div>
-          <div class="lib-item">CompareUtil, SqlUtil</div>
-          <div class="lib-item">TypeQuestion, AnswerStatus</div>
+      <!-- Top row: 3 contexts -->
+      <div class="d-row" style="align-items:stretch; gap:10px; margin-top:12px; margin-bottom:10px;">
+
+        <div class="bc-card d-infra">
+          <div class="bc-card-title">Danh tính &amp; quyền truy cập</div>
+          <div class="bc-card-svc">kblab-auth</div>
+          <div class="bc-card-desc">JWT, OAuth2, SSO, vai trò</div>
         </div>
-      </div>
 
-      <!-- Arrow -->
-      <div style="display:flex; align-items:center; padding-top:60px; flex-shrink:0; flex-direction:column; gap:4px;">
-        <div class="d-arrow d-arrow-h"></div>
-        <div class="d-arrow-label">tách</div>
-      </div>
-
-      <!-- AFTER -->
-      <div class="d-cluster" style="flex:1.4;">
-        <span class="d-label">Hướng cải thiện</span>
-        <div class="d-stack" style="margin-top:8px; gap:8px;">
-
-          <div class="d-row" style="gap:8px; align-items:stretch;">
-            <div class="d-box d-info d-grow" style="text-align:center;">
-              <div class="d-title" style="font-size:12px;">lms-security</div>
-              <div class="d-sub">(JWT, auth)</div>
-            </div>
-            <div class="d-box d-service d-grow" style="text-align:center;">
-              <div class="d-title" style="font-size:12px;">lms-common</div>
-              <div class="d-sub">(base, response)</div>
-            </div>
-          </div>
-
-          <div class="d-box d-highlight">
-            <div class="d-title" style="font-size:12px; margin-bottom:4px;">Domain code → service riêng</div>
-            <div class="d-sub">CompareUtil → Judge</div>
-            <div class="d-sub">SqlUtil → Core</div>
-            <div class="d-sub">TypeQuestion → Core</div>
-          </div>
-
+        <div class="bc-card d-domain">
+          <div class="bc-card-title">Bài tập SQL</div>
+          <div class="bc-card-svc">kblab-app + judge</div>
+          <div class="bc-card-desc">câu hỏi, kỳ thi, bài nộp</div>
         </div>
+
+        <div class="bc-card d-domain">
+          <div class="bc-card-title">Bài tập mạng</div>
+          <div class="bc-card-svc">kblab-judge-network</div>
+          <div class="bc-card-desc">TCP, UDP, RMI, SOAP, REST, gRPC</div>
+        </div>
+
       </div>
 
-    </div><!-- /.before-after -->
+      <!-- Bottom row: 2 contexts -->
+      <div class="d-row" style="align-items:stretch; gap:10px; justify-content:center;">
 
-    <!-- Dependencies result -->
-    <div class="d-box d-note">
-      <div class="d-title" style="margin-bottom:8px;">Kết quả: mỗi service chỉ depend những gì cần</div>
+        <div class="bc-card d-domain" style="max-width: 320px;">
+          <div class="bc-card-title">Quản lý học vụ</div>
+          <div class="bc-card-svc">kblab-assignment</div>
+          <div class="bc-card-desc">học phần, điểm, chuyên cần, luận văn</div>
+        </div>
 
-      <div class="dep-row">
-        <div class="dep-svc d-info">Auth Service</div>
-        <span style="font-size:11px; color:#64748b;">deps:</span>
-        <div class="dep-list">lms-security</div>
-      </div>
-      <div class="dep-row">
-        <div class="dep-svc d-service">Core Service</div>
-        <span style="font-size:11px; color:#64748b;">deps:</span>
-        <div class="dep-list">lms-security, lms-common</div>
-      </div>
-      <div class="dep-row">
-        <div class="dep-svc d-event">Judge Service</div>
-        <span style="font-size:11px; color:#64748b;">deps:</span>
-        <div class="dep-list">lms-security, domain/judge</div>
-      </div>
-      <div class="dep-row">
-        <div class="dep-svc d-highlight">Assignment Svc</div>
-        <span style="font-size:11px; color:#64748b;">deps:</span>
-        <div class="dep-list">lms-security, lms-common</div>
+        <div class="bc-card d-infra" style="max-width: 320px;">
+          <div class="bc-card-title">Bài tập DevOps</div>
+          <div class="bc-card-svc">dol-api / dol-infra / dol-web</div>
+          <div class="bc-card-desc">Go, k3s, Sysbox, pod lab</div>
+        </div>
+
       </div>
 
+    </div><!-- /.d-cluster -->
+
+    <!-- Shared Kernel note -->
+    <div class="d-box d-note" style="text-align:center;">
+      <div class="d-sub">Shared Kernel chỉ nên giữ phần dùng chung cắt ngang; logic nghiệp vụ phải quay về bối cảnh sở hữu.</div>
     </div>
 
   </div><!-- /.diagram-canvas -->

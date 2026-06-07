@@ -2,63 +2,62 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.8 — Secrets Management — Vault Pattern | Ch.9</title>
+  <title>Fig 9.7 — KBLab LMS — Kiến trúc bảo mật tổng quan | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
   <link rel="stylesheet" href="../../styles/diagram-style.css">
-  <style>
-    .seq-line { height:1.5px; background:#64748b; position:relative; flex:1; }
-    .seq-line { margin-right:8px; }
-    .seq-line::after { content:'▶'; position:absolute; right:-4px; top:-7px; font-size:10px; color:#64748b; }
-    .seq-line.left::after { content:'◀'; left:-4px; right:auto; }
-    .seq-line.dashed { background:repeating-linear-gradient(90deg,#94a3b8 0,#94a3b8 4px,transparent 4px,transparent 8px); }
-    .seq-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#fff; padding:0 4px; font-size:11px; color:#334155; white-space:nowrap; }
-    .sequence-wrap { margin-bottom: 20px; padding-bottom: 16px; }
-  </style>
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
 
-    <div class="sequence-wrap" style="display:flex; gap:0; margin-bottom:12px;">
-      <div class="seq-lane"><div class="seq-header"><div class="d-box d-service" style="display:inline-block; padding:8px 14px;"><div class="d-title">Auth Service</div></div></div></div>
-      <div class="seq-lane"><div class="seq-header"><div class="d-box d-highlight" style="display:inline-block; padding:8px 14px;"><div class="d-title">Vault</div></div></div></div>
-      <div class="seq-lane"><div class="seq-header"><div class="d-box d-storage" style="display:inline-block; padding:8px 14px;"><div class="d-title">Database</div></div></div></div>
-    </div>
-
-    <div style="display:flex; flex-direction:column; gap:0;">
-      <!-- 1. Request credentials -->
-      <div class="seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="seq-line" style="flex:1;"><span class="seq-label">Request DB credentials</span></div>
-        <div style="flex:1.5;"></div>
-      </div>
-      <!-- 2. Generate -->
-      <div style="display:flex; justify-content:center; margin:4px 0;">
-        <div class="d-zone d-zone-info" style="font-size:11px;">Generate short-lived credentials</div>
-      </div>
-      <!-- 3. Return -->
-      <div class="seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="seq-line dashed left" style="flex:1;"><span class="seq-label" style="font-family:var(--diagram-font-mono);">temp_user / temp_pass (TTL: 30min)</span></div>
-        <div style="flex:1.5;"></div>
-      </div>
-      <!-- 4. Connect to DB -->
-      <div class="seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="seq-line" style="flex:2;"><span class="seq-label">Connect with temp credentials</span></div>
-        <div style="flex:0.5;"></div>
-      </div>
-      <!-- 5. Access granted -->
-      <div class="seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="seq-line dashed left" style="flex:2;"><span class="seq-label">Access granted</span></div>
-        <div style="flex:0.5;"></div>
+    <!-- Internet layer -->
+    <div class="d-cluster" style="padding:14px 18px; margin-bottom:8px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Internet</div>
+      <div class="d-row" style="justify-content:center; gap:16px;">
+        <div class="d-box d-note" style="flex:1; max-width:180px; text-align:center; padding:10px;">
+          <div class="d-title">Student App</div>
+        </div>
+        <div class="d-box d-note" style="flex:1; max-width:180px; text-align:center; padding:10px;">
+          <div class="d-title">Admin CMS</div>
+        </div>
       </div>
     </div>
 
-    <!-- Benefits -->
-    <div class="d-box d-success" style="margin-top:24px; padding:12px 18px; position:relative; z-index:2;">
-      <div class="d-title" style="margin-bottom:4px;">Lợi ích</div>
-      <div class="d-sub" style="color:#14532d; line-height:1.5;">Credentials tự hết hạn. Không hardcode password. Vault tự rotate. Audit trail cho mọi access.</div>
+    <div class="d-arrow-v"></div>
+
+    <!-- Edge layer -->
+    <div class="d-cluster" style="padding:14px 18px; margin-bottom:8px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Edge Layer</div>
+      <div class="d-row" style="justify-content:center;">
+        <div class="d-box d-event" style="text-align:center; padding:12px 20px;">
+          <div class="d-title">Gateway :9001</div>
+          <div class="d-sub">JWT validation · CORS · Rate limiting</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-arrow-v"></div>
+
+    <!-- Service layer -->
+    <div class="d-cluster" style="padding:14px 18px;">
+      <div class="d-label" style="position:static; margin-bottom:8px; text-align:center;">Service Layer (Internal Network)</div>
+      <div class="d-row" style="gap:8px; flex-wrap:wrap; justify-content:center;">
+        <div class="d-box d-info" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
+          <div class="d-title" style="font-size:12px;">Auth Service</div>
+          <div class="d-sub">JWT issuer, RBAC</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
+          <div class="d-title" style="font-size:12px;">Core Service</div>
+          <div class="d-sub">@PreAuthorize</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
+          <div class="d-title" style="font-size:12px;">Assignment</div>
+          <div class="d-sub">@PreAuthorize</div>
+        </div>
+        <div class="d-box d-service" style="flex:1; min-width:130px; max-width:160px; text-align:center; padding:10px 6px;">
+          <div class="d-title" style="font-size:12px;">Judge Service</div>
+          <div class="d-sub">internal only</div>
+        </div>
+      </div>
     </div>
   </div>
 </body>

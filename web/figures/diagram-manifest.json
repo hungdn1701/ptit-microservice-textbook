@@ -116,24 +116,24 @@
         "chapter":  2,
         "number":  6,
         "suffix":  "b",
-        "file":  "fig-2-6b",
-        "path":  "./ch02/fig-2-6b.html"
-    },
-    {
-        "ch":  "02",
-        "chapter":  2,
-        "number":  7,
-        "suffix":  "",
         "file":  "fig-2-7",
         "path":  "./ch02/fig-2-7.html"
     },
     {
         "ch":  "02",
         "chapter":  2,
-        "number":  8,
+        "number":  7,
         "suffix":  "",
         "file":  "fig-2-8",
         "path":  "./ch02/fig-2-8.html"
+    },
+    {
+        "ch":  "02",
+        "chapter":  2,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-2-9",
+        "path":  "./ch02/fig-2-9.html"
     },
     {
         "ch":  "03",
@@ -172,8 +172,8 @@
         "chapter":  3,
         "number":  6,
         "suffix":  "b",
-        "file":  "fig-3-6b",
-        "path":  "./ch03/fig-3-6b.html"
+        "file":  "fig-3-5",
+        "path":  "./ch03/fig-3-5.html"
     },
     {
         "ch":  "04",
@@ -396,13 +396,21 @@
         "chapter":  7,
         "number":  7,
         "suffix":  "",
+        "file":  "fig-7-6",
+        "path":  "./ch07/fig-7-6.html"
+    },
+    {
+        "ch":  "07",
+        "chapter":  7,
+        "number":  8,
+        "suffix":  "",
         "file":  "fig-7-7",
         "path":  "./ch07/fig-7-7.html"
     },
     {
         "ch":  "07",
         "chapter":  7,
-        "number":  8,
+        "number":  9,
         "suffix":  "",
         "file":  "fig-7-8",
         "path":  "./ch07/fig-7-8.html"
@@ -410,7 +418,7 @@
     {
         "ch":  "07",
         "chapter":  7,
-        "number":  9,
+        "number":  10,
         "suffix":  "",
         "file":  "fig-7-9",
         "path":  "./ch07/fig-7-9.html"
@@ -418,7 +426,7 @@
     {
         "ch":  "07",
         "chapter":  7,
-        "number":  10,
+        "number":  11,
         "suffix":  "",
         "file":  "fig-7-10",
         "path":  "./ch07/fig-7-10.html"
@@ -426,7 +434,7 @@
     {
         "ch":  "07",
         "chapter":  7,
-        "number":  11,
+        "number":  12,
         "suffix":  "",
         "file":  "fig-7-11",
         "path":  "./ch07/fig-7-11.html"
@@ -435,17 +443,9 @@
         "ch":  "07",
         "chapter":  7,
         "number":  12,
-        "suffix":  "",
+        "suffix":  "b",
         "file":  "fig-7-12",
         "path":  "./ch07/fig-7-12.html"
-    },
-    {
-        "ch":  "07",
-        "chapter":  7,
-        "number":  12,
-        "suffix":  "b",
-        "file":  "fig-7-12b",
-        "path":  "./ch07/fig-7-12b.html"
     },
     {
         "ch":  "07",
@@ -556,29 +556,21 @@
         "chapter":  9,
         "number":  5,
         "suffix":  "",
-        "file":  "fig-9-5",
-        "path":  "./ch09/fig-9-5.html"
-    },
-    {
-        "ch":  "09",
-        "chapter":  9,
-        "number":  5,
-        "suffix":  "b",
-        "file":  "fig-9-5b",
-        "path":  "./ch09/fig-9-5b.html"
-    },
-    {
-        "ch":  "09",
-        "chapter":  9,
-        "number":  6,
-        "suffix":  "",
         "file":  "fig-9-6",
         "path":  "./ch09/fig-9-6.html"
     },
     {
         "ch":  "09",
         "chapter":  9,
-        "number":  7,
+        "number":  5,
+        "suffix":  "b",
+        "file":  "fig-9-5",
+        "path":  "./ch09/fig-9-5.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  6,
         "suffix":  "",
         "file":  "fig-9-7",
         "path":  "./ch09/fig-9-7.html"
@@ -586,10 +578,18 @@
     {
         "ch":  "09",
         "chapter":  9,
-        "number":  8,
+        "number":  7,
         "suffix":  "",
         "file":  "fig-9-8",
         "path":  "./ch09/fig-9-8.html"
+    },
+    {
+        "ch":  "09",
+        "chapter":  9,
+        "number":  8,
+        "suffix":  "",
+        "file":  "fig-9-9",
+        "path":  "./ch09/fig-9-9.html"
     },
     {
         "ch":  "10",

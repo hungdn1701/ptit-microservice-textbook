@@ -2,55 +2,42 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.6 — Role-Based Access Control (RBAC) | Ch.9</title>
+  <title>Fig 9.5 — JWT Validation — Gateway vs Services | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
   <link rel="stylesheet" href="../../styles/diagram-style.css">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas">
 
-    <!-- Roles row -->
-    <div class="d-row" style="gap:16px; align-items:stretch; margin-bottom:20px;">
-      <div class="d-box d-danger" style="flex:1; text-align:center; padding:16px 12px;">
-        <div class="d-title" style="font-size:16px; margin-bottom:8px;">ADMIN</div>
-        <div class="d-sub" style="color:#7f1d1d;">Mọi quyền</div>
-        <div class="d-sep"></div>
-        <div class="d-stack" style="gap:3px; text-align:left;">
-          <div class="d-sub" style="color:#7f1d1d;">Cho phép: Quản lý users</div>
-          <div class="d-sub" style="color:#7f1d1d;">Cho phép: CRUD content</div>
-          <div class="d-sub" style="color:#7f1d1d;">Cho phép: Xem reports</div>
-          <div class="d-sub" style="color:#7f1d1d;">Cho phép: System config</div>
+    <div class="d-grid-2" style="gap:20px; align-items:stretch;">
+      <!-- Left: Auth Service (Full validation) -->
+      <div class="d-box d-info" style="padding:16px;">
+        <div class="d-title" style="text-align:center; margin-bottom:10px;">Auth Service — Full Validation</div>
+        <div class="d-stack" style="gap:6px;">
+          <div class="d-sub" style="color:#1e3a8a;">1. Verify JWT signature (secret key)</div>
+          <div class="d-sub" style="color:#1e3a8a;">2. Check expiry (exp claim)</div>
+          <div class="d-sub" style="color:#1e3a8a;">3. Query DB: user exists? active?</div>
         </div>
+        <div class="d-sep"></div>
+        <div class="d-zone d-zone-warning" style="margin-top:6px;">Nặng, nhưng chính xác nhất</div>
       </div>
 
-      <div class="d-box d-event" style="flex:1; text-align:center; padding:16px 12px;">
-        <div class="d-title" style="font-size:16px; margin-bottom:8px;">LECTURER</div>
-        <div class="d-sub" style="color:#713f12;">Tạo/sửa content</div>
-        <div class="d-sep"></div>
-        <div class="d-stack" style="gap:3px; text-align:left;">
-          <div class="d-sub" style="color:#713f12;">Cho phép: CRUD assignments</div>
-          <div class="d-sub" style="color:#713f12;">Cho phép: Xem submissions</div>
-          <div class="d-sub" style="color:#713f12;">Từ chối: Quản lý users</div>
-          <div class="d-sub" style="color:#713f12;">Từ chối: System config</div>
+      <!-- Right: Core/Judge (Claims-only) -->
+      <div class="d-box d-service" style="padding:16px;">
+        <div class="d-title" style="text-align:center; margin-bottom:10px;">Core/Judge — Claims-Only</div>
+        <div class="d-stack" style="gap:6px;">
+          <div class="d-sub" style="color:#085041;">1. Verify JWT signature (secret key)</div>
+          <div class="d-sub" style="color:#085041;">2. Check expiry (exp claim)</div>
+          <div class="d-sub" style="color:#085041;">3. Trust claims (userId, roles)</div>
         </div>
-      </div>
-
-      <div class="d-box d-service" style="flex:1; text-align:center; padding:16px 12px;">
-        <div class="d-title" style="font-size:16px; margin-bottom:8px;">STUDENT</div>
-        <div class="d-sub" style="color:#085041;">Xem/submit</div>
         <div class="d-sep"></div>
-        <div class="d-stack" style="gap:3px; text-align:left;">
-          <div class="d-sub" style="color:#085041;">Cho phép: Xem assignments</div>
-          <div class="d-sub" style="color:#085041;">Cho phép: Submit solutions</div>
-          <div class="d-sub" style="color:#085041;">Từ chối: CRUD content</div>
-          <div class="d-sub" style="color:#085041;">Từ chối: Quản lý users</div>
-        </div>
+        <div class="d-zone d-zone-success" style="margin-top:6px;">Nhanh, không query DB</div>
       </div>
     </div>
 
-    <!-- Note -->
-    <div class="d-box d-note" style="padding:12px 18px;">
-      <div class="d-sub" style="line-height:1.5; text-align:center;">Quyền được encode trong JWT claim <span class="d-mono" style="display:inline;">"role": "STUDENT"</span> → Service kiểm tra khi xử lý request</div>
+    <div class="d-box d-note" style="margin-top:16px; padding:12px 18px;">
+      <div class="d-title" style="margin-bottom:4px;">💡 Kết luận</div>
+      <div class="d-sub" style="line-height:1.5;">Gateway thực hiện Full Validation khi login. Các service khác chỉ cần Claims-Only — tin tưởng JWT đã được Gateway kiểm tra.</div>
     </div>
   </div>
 </body>
