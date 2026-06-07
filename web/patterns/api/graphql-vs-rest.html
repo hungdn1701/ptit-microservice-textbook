@@ -150,13 +150,13 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-dim);
-      background: #050505;
+      background: var(--bg-terminal, #0a0b0f);
       padding: 12px;
       border-radius: var(--radius-sm);
       height: 140px;
       overflow-y: auto;
       border: 1px solid var(--border);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      box-shadow: var(--terminal-shadow);
       margin-top: 12px;
     }
     .query-log div {
@@ -194,10 +194,10 @@
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBLab Apply</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -213,7 +213,7 @@
 </header>
 
 <!-- ── ACT 1: The Problem ── -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div>
@@ -239,19 +239,10 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">🚨</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — 21 request nghẽn mạng do nạp dashboard thi trắc nghiệm</h4>
-      <p>
-        Tại trang chủ của sinh viên, frontend hiển thị danh sách 20 bài kiểm tra và trạng thái bài làm tương ứng. Do sử dụng REST API, frontend gửi 1 cuộc gọi tới <code>/api/assignments</code>, và 20 cuộc gọi đồng thời tới <code>/api/assignments/{id}/submissions</code>. Trên mạng di động, trang chủ mất 4 giây để load xong, và hệ thống Gateway ghi nhận quá tải lượng request đột biến dù sinh viên mới chỉ đăng nhập.
-      </p>
-    </div>
-  </div>
 </section>
 
 <!-- ── ACT 2: The Pattern ── -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div>
@@ -632,6 +623,17 @@ window.addEventListener('message', (e) => {
   }
 });
 window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

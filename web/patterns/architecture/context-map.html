@@ -77,7 +77,7 @@
 </header>
 
 <!-- ACT 1 -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
@@ -105,19 +105,12 @@
       <p>Ai là upstream? Ai là downstream? Khi Core thay đổi API, Assignment có biết không? Không có "bản đồ" → integration chaos và blame game khi có lỗi.</p>
     </div>
   </div>
-  <div class="incident-box">
-    <div class="incident-icon">⚡</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Sprint 12</h4>
-      <p>Team Core đổi <code>submission.score</code> từ <code>Integer</code> sang <code>Float</code> để hỗ trợ partial credit. Assignment Service parse giá trị này và crash với ClassCastException. Không có Contract Test, không có Context Map — phải rollback cả Sprint.</p>
-    </div>
-  </div>
 </section>
 
 <hr class="act-divider">
 
 <!-- ACT 2 -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
@@ -372,6 +365,17 @@ function playTimeline() {
   });
 }
 updateNav();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

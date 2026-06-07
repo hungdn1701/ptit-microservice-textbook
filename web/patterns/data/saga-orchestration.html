@@ -171,7 +171,7 @@
 </header>
 
 <!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
@@ -204,19 +204,12 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">⚡</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Submit Flow Broken</h4>
-      <p>Sinh viên submit bài thi. Flow cần: <strong>(1)</strong> tạo submission record trong <code>Assignment DB</code>, <strong>(2)</strong> gửi cho <code>kblab-judge</code> để chấm SQL, <strong>(3)</strong> cập nhật leaderboard trong <code>Core DB</code>. Judge service bị OOM-killed sau step 1 đã commit → inconsistent state: submission tồn tại với status <code>PENDING</code> mãi mãi, sinh viên không thấy điểm, leaderboard không cập nhật. Support team phải fix bằng tay từng record.</p>
-    </div>
-  </div>
 </section>
 
 <hr class="act-divider">
 
 <!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
@@ -669,6 +662,17 @@ window.parent.postMessage({ type: 'GET_THEME' }, '*');
 
 // ── Init ──────────────────────────────────────────────────
 updateNav();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

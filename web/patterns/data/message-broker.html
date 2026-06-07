@@ -217,7 +217,7 @@
     }
 
     .sim-log {
-      background: #050505;
+      background: var(--bg-terminal, #0a0b0f);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 12px;
@@ -225,7 +225,7 @@
       font-size: 11px;
       height: 250px;
       overflow-y: auto;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      box-shadow: var(--terminal-shadow);
     }
     .log-line {
       margin-bottom: 6px;
@@ -246,10 +246,10 @@
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBLab Apply</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -265,7 +265,7 @@
 </header>
 
 <!-- ── ACT 1: The Problem ── -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div>
@@ -291,19 +291,10 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">🚨</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — 400 bài làm trắc nghiệm biến mất do sập sandbox</h4>
-      <p>
-        Trong kỳ thi lập trình thực hành đầu tiên của KBLab, hệ thống sử dụng kết nối HTTP trực tiếp giữa Core App và Judge Engine. Khi Judge Engine bị sập do rò rỉ bộ nhớ, 400 requests nộp bài của sinh viên bị crash ngang. Do không có hàng đợi lưu trữ đệm, các bài làm thi chưa kịp chấm bị mất hoàn toàn, buộc nhà trường phải mở một ca thi bù sau đó.
-      </p>
-    </div>
-  </div>
 </section>
 
 <!-- ── ACT 2: The Pattern ── -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div>
@@ -406,7 +397,7 @@
   </div>
 
   <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Sử dụng Apache Kafka cho pipeline chấm bài thi của KBLab LMS giúp bảo vệ hệ thống trước các cơn bão nộp bài của sinh viên.
+    Sử dụng Apache Kafka cho pipeline chấm bài thi của KBLab LMS giúp bảo vệ hệ thống trước tải đột biến (traffic spike) nộp bài của sinh viên.
   </p>
 
   <!-- Gap Table -->
@@ -690,6 +681,17 @@ window.addEventListener('message', (e) => {
   }
 });
 window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

@@ -167,13 +167,13 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-dim);
-      background: #050505;
+      background: var(--bg-terminal, #0a0b0f);
       padding: 12px;
       border-radius: var(--radius-sm);
       height: 120px;
       overflow-y: auto;
       border: 1px solid var(--border);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      box-shadow: var(--terminal-shadow);
       margin-top: 12px;
     }
     .query-log div {
@@ -193,10 +193,10 @@
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBLab Apply</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -212,7 +212,7 @@
 </header>
 
 <!-- ── ACT 1: The Problem ── -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div>
@@ -238,19 +238,10 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">🚨</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Sự cố mất đồng bộ điểm danh và thông báo lớp học</h4>
-      <p>
-        Khi sinh viên chọn "Tham gia lớp học", <code>kblab-app</code> ghi bản ghi đăng ký vào Course DB và gọi Feign client/Kafka để bắn Event <code>StudentJoined</code> cho <code>kblab-notification</code>. Trong đợt cao điểm đăng ký, Kafka Broker bị nghẽn làm cuộc gọi bắn Event bị timeout (5 giây). Hệ thống ghi nhận sinh viên đã vào lớp trong Course DB, nhưng notification service không nhận được Event nên sinh viên không bao giờ được thêm vào danh sách điểm danh tự động của lớp đó.
-      </p>
-    </div>
-  </div>
 </section>
 
 <!-- ── ACT 2: The Pattern ── -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div>
@@ -640,6 +631,17 @@ window.addEventListener('message', (e) => {
   if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
 });
 window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

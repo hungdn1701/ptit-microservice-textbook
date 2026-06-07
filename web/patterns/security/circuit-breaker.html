@@ -200,7 +200,7 @@
 
     .sim-log {
       grid-column: span 2;
-      background: #050505;
+      background: var(--bg-terminal, #0a0b0f);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 16px;
@@ -208,7 +208,7 @@
       font-size: 11.5px;
       height: 160px;
       overflow-y: auto;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+      box-shadow: var(--terminal-shadow);
     }
     @media (max-width: 900px) {
       .sim-log {
@@ -234,10 +234,10 @@
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBLab Apply</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -253,12 +253,12 @@
 </header>
 
 <!-- ── ACT 1: The Problem ── -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div>
       <div class="act-tag">Act 01</div>
-      <h2 class="act-title">Lỗi sập dây chuyền & Cơn bão Retry</h2>
+      <h2 class="act-title">Cascading Failure & Retry Storm</h2>
     </div>
   </div>
 
@@ -274,24 +274,15 @@
     </div>
     <div class="problem-card danger">
       <div class="problem-icon">🌪️</div>
-      <h3>Retry Storm (Cơn bão thử lại)</h3>
+      <h3>Retry Storm</h3>
       <p>Khi Service B gặp sự cố và bắt đầu fail, các clients hoặc service gọi nó liên tục thực hiện cơ chế retry tự động. Lượng traffic khổng lồ dồn vào B ngay khi nó đang cố gắng khởi động lại. Hậu quả là B bị overload liên tục và không bao giờ có thể tự phục hồi.</p>
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">🚨</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Sự cố hệ thống sập toàn cục mùa thi</h4>
-      <p>
-        Trong đợt thi học kỳ của KBLab LMS, <code>kblab-judge</code> (chạy test case chấm điểm SQL/Code rất nặng CPU) bị quá tải khiến thời gian chấm bài vọt lên hơn 15 giây. <code>kblab-app</code> (Core Service) liên tục gọi đồng bộ sang Judge mà không có giới hạn, cạn thread pool của Tomcat chỉ trong 3 phút. Toàn bộ hệ thống LMS dừng hoạt động, sinh viên không thể truy cập bất kỳ tính năng nào khác (kể cả xem đề thi hay đọc tin nhắn).
-      </p>
-    </div>
-  </div>
 </section>
 
 <!-- ── ACT 2: The Pattern ── -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div>
@@ -706,6 +697,17 @@ function playTimeline() {
 
 // ── Init ──────────────────────────────────────────────────
 updateVisuals();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

@@ -260,3 +260,44 @@ hr.act-divider {
 /* ── Subsection heading style ── */
 .sub-heading { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; margin-top: 32px; }
 .sub-label { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; font-family: var(--font-mono); }
+
+/* ── Terminal / Console Theme ── */
+:root {
+  --bg-terminal: #0a0b0f;
+  --terminal-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+}
+.light {
+  --bg-terminal: #f3f4f6;
+  --terminal-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ── Collapsible Act Sections ── */
+.act-section[data-collapsible] .act-label {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.act-section[data-collapsible] .act-label::after {
+  content: '›';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  font-size: 20px; font-weight: 300;
+  color: var(--text-dim);
+  transition: transform .3s var(--ease-out, ease);
+}
+.act-section[data-collapsible].expanded .act-label::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+.act-section[data-collapsible] .act-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .45s ease, opacity .35s ease, margin .3s ease;
+  margin-top: 0;
+}
+.act-section[data-collapsible].expanded .act-content {
+  max-height: 3000px;
+  opacity: 1;
+  margin-top: 0;
+}

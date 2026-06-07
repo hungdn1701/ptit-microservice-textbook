@@ -162,10 +162,10 @@
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBLab Apply</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -181,7 +181,7 @@
 </header>
 
 <!-- ── ACT 1: The Problem ── -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div>
@@ -207,19 +207,10 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">🚨</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Sự cố gián đoạn bài làm kiểm tra giữa kỳ</h4>
-      <p>
-        Trong lúc sinh viên đang làm bài kiểm tra trắc nghiệm, đội ngũ kỹ thuật của KBLab tiến hành nâng cấp nóng <code>kblab-app</code> (Core Service). Họ tắt container cũ và bật container mới. Tuy nhiên, JVM mới bị lỗi OutOfMemory khi load cache cấu hình và khởi động chậm 8 phút. Do không có cơ chế định tuyến dự phòng, toàn bộ sinh viên đang làm bài bị mất kết nối websocket, không lưu được câu trả lời và buộc phải tổ chức thi lại.
-      </p>
-    </div>
-  </div>
 </section>
 
 <!-- ── ACT 2: The Pattern ── -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div>
@@ -575,6 +566,17 @@ window.addEventListener('message', (e) => {
   }
 });
 window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>

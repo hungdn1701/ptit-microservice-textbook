@@ -323,7 +323,7 @@
 </header>
 
 <!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
-<section class="act-section" id="act1">
+<section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
     <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
@@ -356,19 +356,12 @@
     </div>
   </div>
 
-  <div class="incident-box">
-    <div class="incident-icon">⚡</div>
-    <div class="incident-content">
-      <h4>KBLab Incident — Mùa thi tháng 5/2024</h4>
-      <p>Core Service và Assignment Service chia sẻ cùng database. Khi Assignment thêm index cho bảng <code>submissions</code>, lock table kéo dài 40 giây. Toàn bộ sinh viên đang làm bài nhận lỗi 500. Không có cách rollback partial — phải rollback toàn bộ monolith về commit trước.</p>
-    </div>
-  </div>
 </section>
 
 <hr class="divider">
 
 <!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
-<section class="act-section" id="act2">
+<section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
     <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
@@ -704,6 +697,17 @@ function playTimeline() {
 }
 
 updateNav();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
 </script>
 </body>
 </html>
