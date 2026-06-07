@@ -3,35 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rate Limiting (Token Bucket) — Ch.8 | SOA & Microservices</title>
+  <title>Rate Limiting — Pattern Story | Ch.8 API Gateway KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
+    /* Custom CSS for Rate Limiting Token Bucket Simulation */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
     }
-    
-    .bucket-container {
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .bucket-visualization {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 40px 0;
+      justify-content: center;
+      position: relative;
     }
 
     .bucket {
-      width: 160px;
-      height: 200px;
+      width: 140px;
+      height: 180px;
       border: 4px solid var(--border);
       border-top: none;
-      border-radius: 0 0 20px 20px;
+      border-radius: 0 0 24px 24px;
       position: relative;
       display: flex;
       flex-wrap: wrap-reverse;
       align-content: flex-start;
-      padding: 10px;
-      gap: 10px;
-      background: rgba(255,255,255,0.02);
-      box-shadow: inset 0 -20px 40px rgba(0,0,0,0.5);
+      padding: 12px;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      box-shadow: inset 0 -20px 40px rgba(0,0,0,0.6);
+      transition: transform 0.15s ease-in-out;
     }
     
     .bucket::before {
@@ -41,161 +56,477 @@
       left: 0;
       right: 0;
       text-align: center;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       color: var(--text-dim);
       font-family: var(--font-mono);
+      letter-spacing: 0.05em;
     }
 
     .token {
-      width: 25px;
-      height: 25px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: var(--warning);
-      box-shadow: inset -4px -4px 10px rgba(0,0,0,0.3), 0 0 10px var(--warning-dim);
+      background: var(--primary);
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.4), 0 0 8px var(--primary-glow);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    .token.entering { animation: dropIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .token.leaving { animation: flyOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .token.entering { animation: dropIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .token.leaving { animation: flyOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
     @keyframes dropIn {
-      0% { transform: translateY(-100px) scale(0); opacity: 0; }
+      0% { transform: translateY(-80px) scale(0); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
     @keyframes flyOut {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: translate(100px, 100px) scale(0); opacity: 0; }
+      100% { transform: translate(60px, 60px) scale(0); opacity: 0; }
     }
 
-    .controls-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    .sim-dashboard {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    @media (max-width: 768px) { .controls-grid { grid-template-columns: 1fr; } }
-    
-    .log-panel { height: 180px; }
+
+    .dashboard-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .metric-lbl { color: var(--text-secondary); }
+    .metric-val { font-family: var(--font-mono); font-weight: 700; }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      margin-top: 16px;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-success { color: var(--success); }
+    .log-error { color: var(--danger); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 8 — API Gateway</div>
-      <h1>Rate Limiting</h1>
-      <p class="subtitle">Thuật toán Token Bucket (Spring Cloud Gateway + Redis)</p>
-    </header>
 
-    <div class="controls-grid animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <!-- Visualization -->
-      <div class="card">
-        <div class="card-title">Token Bucket</div>
-        <div class="bucket-container">
-          <div class="bucket" id="bucket">
-            <!-- Tokens rendered via JS -->
-          </div>
-        </div>
-        <div class="controls">
-          <button class="btn btn-primary" onclick="sendRequest()">Send Request (-1 Token)</button>
-        </div>
-      </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
 
-      <!-- Settings & Logs -->
-      <div class="card">
-        <div class="card-title">Gateway Config</div>
-        
-        <div class="config-row">
-          <span class="config-label">Replenish Rate (Tokens/sec)</span>
-          <span class="config-value">2</span>
-        </div>
-        <div class="config-row">
-          <span class="config-label">Burst Capacity</span>
-          <span class="config-value">10</span>
-        </div>
-        <div class="config-row mb-16">
-          <span class="config-label">Current Tokens</span>
-          <span class="config-value" id="val-tokens" style="color: var(--warning)">10</span>
-        </div>
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
 
-        <div class="card-title" style="margin-top: 24px;">Request Log</div>
-        <div class="log-panel" id="req-log"></div>
-      </div>
-    </div>
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Security & Gateway Patterns</div>
+  <h1 class="pattern-title">Rate Limiting</h1>
+  <p class="pattern-subtitle">Thuật toán Token Bucket bảo vệ API chống quá tải và brute-force</p>
+  <div class="pattern-meta">
+    <span>Implemented via: <strong>Spring Cloud Gateway + Redis RateLimiter</strong></span>
+    <span>Chapter Reference: <strong>Chương 8 — §8.4</strong></span>
+    <span>Case Study Bounded Context: <strong>API Gateway (kblab-gateway)</strong></span>
+  </div>
+</header>
 
-    <!-- Context -->
-    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
-      <div class="callout">
-        <strong>Redis Rate Limiter trong KBLab:</strong> Gateway sử dụng thuật toán Token Bucket. Hệ thống liên tục "nhỏ giọt" tokens vào xô (ví dụ: 2 request/giây). Nếu user gửi requests liên tục (burst), họ sẽ tiêu thụ sạch token trong xô (max 10). Khi xô rỗng, các requests tiếp theo sẽ bị từ chối với mã lỗi <code>429 Too Many Requests</code> cho đến khi xô có token mới.
-      </div>
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Lũ lụt Request & Tấn công Brute-Force</h2>
     </div>
   </div>
 
-  <script>
-    const MAX_CAPACITY = 10;
-    const REPLENISH_RATE = 2; // tokens per second
-    let currentTokens = MAX_CAPACITY;
-    let replenishInterval;
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi hệ thống mở rộng các API public ra ngoài internet, nếu không có cơ chế kiểm soát tần suất gửi request từ mỗi Client, dịch vụ sẽ rất dễ sụp đổ dưới sức ép của lượng truy cập bất thường, dù đó là vô ý hay cố ý tấn công.
+  </p>
 
-    function renderTokens(isEntering = false) {
-      const bucket = document.getElementById('bucket');
-      // Clear current non-animating
-      bucket.innerHTML = '';
-      for (let i = 0; i < currentTokens; i++) {
-        const div = document.createElement('div');
-        div.className = 'token';
-        if (isEntering && i >= currentTokens - REPLENISH_RATE) {
-          div.classList.add('entering');
-        }
-        bucket.appendChild(div);
-      }
-      document.getElementById('val-tokens').textContent = currentTokens;
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">⚡</div>
+      <h3>Nghẽn tài nguyên cục bộ (Resource Exhaustion)</h3>
+      <p>Các request spam gửi liên tục (ví dụ: quét dữ liệu, loop lỗi từ frontend) chiếm dụng hoàn toàn thread pool của web server và cạn kiệt bộ nhớ đệm CPU. Hệ thống Gateway bị đơ, không thể định tuyến request cho các người dùng hợp lệ khác.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🔒</div>
+      <h3>Tấn công Brute-Force & Credential Stuffing</h3>
+      <p>Kẻ xấu sử dụng botnet để thử hàng ngàn mật khẩu trên API đăng nhập (Auth endpoint). Nếu không giới hạn tốc độ gọi API, hacker không chỉ có cơ hội dò ra tài khoản mà còn làm tê liệt dịch vụ Authentication, sập toàn bộ hệ thống đăng nhập.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Sinh viên dùng script tự động cướp thread Gateway</h4>
+      <p>
+        Trong mùa làm bài tập lớn, một sinh viên viết script Python thực hiện vòng lặp vô hạn gọi API lấy kết quả chấm điểm từ <code>kblab-judge</code> với tần suất 10ms/request (100 request/giây) để hiển thị live score. Script chạy liên tục làm cạn kiệt kết nối Redis và Tomcat thread pool của <code>kblab-gateway</code>. Toàn bộ sinh viên khác bị chặn ngay ngoài Gateway với lỗi Gateway Timeout (504).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Cơ chế lọc và giới hạn lưu lượng (Rate Limiter)</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Đặt một bộ lọc lưu lượng (Filter) ngay tại API Gateway để đếm số request từ mỗi Client (dựa trên IP, API Key, hoặc User ID) trong một khoảng thời gian. Nếu tần suất vượt ngưỡng cho phép, Gateway từ chối xử lý ngay lập tức và trả về mã lỗi <code>429 Too Many Requests</code> kèm HTTP header <code>Retry-After</code>.
+    </p>
+    <div class="definition-attribution">— Rate Limiting Pattern · API Gateway Architecture</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Thuật toán **Token Bucket** (Xô chứa Token) là giải pháp phổ biến nhất: một cái xô có dung lượng tối đa (Burst Capacity) được bổ sung token tự động theo tốc độ cố định (Replenish Rate). Mỗi request đi qua tiêu thụ 1 token. Nếu xô hết token, request bị block.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Key Resolver</h4>
+      <p>Bộ định danh Client để áp dụng giới hạn. Có thể resolve theo: Địa chỉ IP (dành cho public route), User JWT (cho cá nhân), hoặc App ID (cho kết nối B2B/Partner).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Redis Shared State</h4>
+      <p>Lưu trữ trạng thái xô token. Sử dụng Redis (thông qua lệnh Lua script nguyên tử) giúp đảm bảo giới hạn hoạt động chính xác khi triển khai nhiều instances Gateway chạy song song (Distributed Rate Limiting).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>HTTP 429 Handler</h4>
+      <p>Đánh dấu mã lỗi 429 và định cấu hình header <code>X-RateLimit-Remaining</code> (số token còn lại) và <code>X-RateLimit-Reset</code> (thời gian nạp đầy) để báo Client tự giãn cách.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng thuật toán Token Bucket</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Nhấp liên tục nút **Gửi Request** để tiêu thụ token. Quan sát cách tokens trong xô được nạp đầy tự động sau mỗi giây và cách hệ thống tự nhảy lỗi 429 khi xô rỗng.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Visualization container -->
+    <div class="bucket-visualization">
+      <div class="bucket" id="bucket">
+        <!-- Rendered by JS -->
+      </div>
+      
+      <div style="margin-top:20px; width:100%;">
+        <button class="btn btn-primary" onclick="sendRequest()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000;">Gửi Request (-1 Token)</button>
+      </div>
+    </div>
+
+    <!-- Configuration and Logs -->
+    <div class="sim-dashboard">
+      <div>
+        <div class="dashboard-title" style="margin-bottom:12px;">Gateway RateLimiter Config</div>
+        <div class="dashboard-metrics">
+          <div class="metric-row">
+            <span class="metric-lbl">Tốc độ nạp (Replenish Rate)</span>
+            <span class="metric-val">2 tokens / giây</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-lbl">Dung lượng xô (Burst Capacity)</span>
+            <span class="metric-val">10 tokens</span>
+          </div>
+          <div class="metric-row" style="border-top:1px solid var(--border); padding-top:10px;">
+            <span class="metric-lbl">Số token hiện tại</span>
+            <span class="metric-val" id="val-tokens" style="color:var(--primary); font-size:18px;">10</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-log" id="sim-log">
+        <div><span class="log-time">[14:20:52]</span> <span class="log-success">Khởi tạo Token Bucket. Trạng thái: Sẵn sàng.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Thiết lập cấu hình KBLab Gateway</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Áp dụng cấu hình Rate Limiting chi tiết tại <code>kblab-gateway</code> cho từng nhóm API route cụ thể để ngăn ngừa lạm dụng tài nguyên.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Cấu hình chi tiết các Endpoint KBLab</h3>
+  <div class="sub-label">Quyết định cấu hình xô token dựa trên độ nhạy cảm của API</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>API Routes</th>
+          <th>Key Resolver</th>
+          <th>Replenish Rate</th>
+          <th>Burst Capacity</th>
+          <th>Mục đích bảo vệ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label"><code>/api/v1/auth/login</code></td>
+          <td>Client IP Address</td>
+          <td>1 token / 3 giây</td>
+          <td>5 tokens</td>
+          <td><span class="b-high">CRITICAL</span>: Chống brute-force dò mật khẩu và spam đăng nhập ảo.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/v1/assignments/*/submit</code></td>
+          <td>Student ID (JWT)</td>
+          <td>1 token / 5 giây</td>
+          <td>3 tokens</td>
+          <td><span class="b-high">HIGH</span>: Chống submit bài thi liên tục gây quá tải Judge engine.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/v1/courses/**</code> (Queries)</td>
+          <td>Student ID (JWT)</td>
+          <td>10 tokens / giây</td>
+          <td>20 tokens</td>
+          <td><span class="b-med">MED</span>: Đảm bảo sinh viên tải giao diện học mượt mà, hạn chế spam reload.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/static/**</code> (Assets)</td>
+          <td>Không áp dụng</td>
+          <td>∞</td>
+          <td>∞</td>
+          <td><span class="b-low">LOW</span>: File tĩnh được cache tại CDN/Nginx, không cần rate limit ở Gateway.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai Rate Limiting</h3>
+  <div class="sub-label">Tiến trình triển khai an toàn từ Dev đến Production</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Triển khai cụm Redis Shared Cache</h4>
+      <p>Cài đặt cụm Redis cluster cho API Gateway. Cấu hình Spring Cloud Gateway sử dụng <code>RedisRateLimiter</code>. Viết class <code>IpKeyResolver</code> lấy IP Client chính xác đứng sau Nginx Proxy.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Thiết lập cấu hình Route YAML & Custom Header</h4>
+      <p>Khai báo <code>RequestRateLimiter</code> filter cho từng route trong file <code>application.yml</code>. Cấu hình trả về custom header để client-side biết giới hạn còn lại và tự động delay.</p>
+      <span class="t-badge green">✓ Tích hợp thành công filter giới hạn IP</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Xây dựng Giao diện Thông báo 429 Thân thiện</h4>
+      <p>Thay đổi phản hồi thô của JSON lỗi thành một giao diện HTML thông báo lịch sự cho người dùng khi bị rate limit, kèm đồng hồ đếm ngược chờ phục hồi trên Frontend.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Auto-scaling & Monitoring cảnh báo Spam</h4>
+      <p>Đồng bộ metrics từ Redis và Gateway Actuator sang Prometheus. Thiết lập cảnh báo Grafana khi có IP bị trigger mã lỗi 429 liên tục (phát hiện dấu hiệu tấn công DDoS chủ động để tự động block IP tại Cloudflare/Nginx).</p>
+      <span class="t-badge green">✓ Hệ thống phòng ngự Gateway hoàn tất</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng Rate Limiting khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Cung cấp API công khai (Public API) cho bên thứ ba hoặc client mobile/web</li>
+        <li>Endpoint nhạy cảm có chi phí tính toán đắt đỏ (như sinh báo cáo, tìm kiếm mờ, AI)</li>
+        <li>API đăng ký, đăng nhập, gửi mã OTP để chống brute-force và spam SMS</li>
+        <li>Bảo vệ tài nguyên Database tránh bị quét cạn kết nối</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Giao tiếp nội bộ giữa các microservice qua mạng riêng (Private Network) có độ tin cậy cao</li>
+        <li>Tải các file tĩnh (CSS, JS, Image) đã được tối ưu hóa qua cache CDN</li>
+        <li>Hệ thống đòi hỏi luồng nhận dữ liệu thời gian thực không giới hạn băng thông</li>
+        <li>Chưa có giải pháp Key Resolver chuẩn hóa (dễ dẫn đến block nhầm cả NAT IP mạng cơ quan)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về API Gateway Filter, RedisRateLimiter, KeyResolver, và cấu hình Spring Cloud Gateway trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 8 — API Gateway →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const MAX_CAPACITY = 10;
+const REPLENISH_RATE = 2; // tokens per second
+let currentTokens = MAX_CAPACITY;
+let replenishInterval;
+const logEl = document.getElementById('sim-log');
+
+function addLog(msg, type) {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function renderTokens(isEntering = false) {
+  const bucket = document.getElementById('bucket');
+  bucket.innerHTML = '';
+  for (let i = 0; i < currentTokens; i++) {
+    const div = document.createElement('div');
+    div.className = 'token';
+    if (isEntering && i >= currentTokens - REPLENISH_RATE) {
+      div.classList.add('entering');
     }
+    bucket.appendChild(div);
+  }
+  document.getElementById('val-tokens').textContent = currentTokens;
+}
 
-    function addLog(msg, type) {
-      const log = document.getElementById('req-log');
-      const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-      log.innerHTML += `<div style="margin-bottom:4px; font-family: var(--font-mono); font-size:11px;">
-        <span style="color:var(--text-dim)">[${time}]</span> 
-        <span style="color: var(--${type === 'ok' ? 'success' : 'danger'})">${msg}</span>
-      </div>`;
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function sendRequest() {
-      if (currentTokens > 0) {
-        currentTokens--;
-        renderTokens();
-        addLog('Request Allowed (200 OK)', 'ok');
-      } else {
-        addLog('Rate Limited (429 Too Many Requests)', 'err');
-        
-        // Visual shake for the bucket
-        const b = document.getElementById('bucket');
-        b.style.transform = 'translateX(-10px)';
-        setTimeout(() => b.style.transform = 'translateX(10px)', 50);
-        setTimeout(() => b.style.transform = 'translateX(-10px)', 100);
-        setTimeout(() => b.style.transform = 'translateX(0)', 150);
-      }
-    }
-
-    function replenish() {
-      if (currentTokens < MAX_CAPACITY) {
-        const added = Math.min(REPLENISH_RATE, MAX_CAPACITY - currentTokens);
-        currentTokens += added;
-        renderTokens(true);
-      }
-    }
-
-    // Start background replenish
-    replenishInterval = setInterval(replenish, 1000);
-
-    // Initial render
+function sendRequest() {
+  if (currentTokens > 0) {
+    currentTokens--;
     renderTokens();
+    addLog('Request Allowed (200 OK) — Tiêu thụ 1 token.', 'success');
+  } else {
+    addLog('🚨 Rate Limited (429 Too Many Requests) — Xô đã hết token!', 'error');
+    
+    // Shake animation for the bucket
+    const b = document.getElementById('bucket');
+    b.style.transform = 'translateX(-10px)';
+    setTimeout(() => b.style.transform = 'translateX(10px)', 50);
+    setTimeout(() => b.style.transform = 'translateX(-10px)', 100);
+    setTimeout(() => b.style.transform = 'translateX(0)', 150);
+  }
+}
 
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+function replenish() {
+  if (currentTokens < MAX_CAPACITY) {
+    const added = Math.min(REPLENISH_RATE, MAX_CAPACITY - currentTokens);
+    currentTokens += added;
+    renderTokens(true);
+    addLog(`System: Tự động nạp +${added} tokens vào xô.`, 'success');
+  }
+}
+
+// Start background replenish
+replenishInterval = setInterval(replenish, 1500);
+
+// Initial render
+renderTokens();
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Theme Integration ─────────────────────────────────────
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

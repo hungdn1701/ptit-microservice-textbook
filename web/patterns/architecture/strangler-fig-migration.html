@@ -3,254 +3,707 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Strangler Fig Migration — Ch.10 | KBLab LMS</title>
+  <title>Strangler Fig Migration — Pattern Story | Ch.10 KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-    
-    .sim-container { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
-    
-    .architecture-box {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
-      padding: 20px;
-      position: relative;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+    /* ── Scroll Progress ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: var(--primary-gradient); width: 0%; z-index: 1000;
+      box-shadow: 0 0 8px var(--primary-glow); transition: width .1s linear;
     }
 
-    .slider-container { margin: 20px 0 40px; padding: 0 20px; }
-    .slider-labels { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 11px; font-weight: bold; color: var(--text-dim); }
-    .slider-labels span { cursor: pointer; transition: color 0.3s; }
-    .slider-labels span.active { color: var(--primary); }
-    
-    input[type=range] {
-      -webkit-appearance: none; width: 100%; background: transparent; height: 4px; border-radius: 2px;
-      background: var(--border); outline: none; transition: background 0.3s;
+    /* ── Sticky Act Nav ── */
+    .act-nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 4px; z-index: 999;
+      background: rgba(10,10,10,.88); backdrop-filter: blur(20px);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 6px 8px; box-shadow: var(--shadow-medium);
     }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-      background: var(--primary); cursor: pointer; box-shadow: 0 0 10px var(--primary-glow);
-      transition: transform 0.1s;
+    .act-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; cursor: pointer; border: none;
+      background: transparent; color: var(--text-secondary);
+      transition: all .2s ease; white-space: nowrap; font-family: var(--font-sans);
     }
-    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-    .migration-canvas {
-      height: 380px;
-      border: 1px dashed var(--border);
-      background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-sm);
-      margin: 16px 0;
-      position: relative;
-      overflow: hidden;
+    .act-btn:hover { color: var(--text-main); background: rgba(255,255,255,.05); }
+    .act-btn.active { background: var(--primary-dim); color: var(--primary); box-shadow: 0 0 0 1px rgba(255,122,0,.2); }
+    .act-num {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 800; flex-shrink: 0;
     }
+    .act-btn.active .act-num { background: var(--primary); border-color: var(--primary); color: #000; }
 
-    .node {
-      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
-      padding: 12px 16px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
-      text-align: center; box-shadow: var(--shadow-soft); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* ── Pattern Header ── */
+    .pattern-header {
+      padding: 100px 24px 64px; max-width: 880px; margin: 0 auto; text-align: center;
     }
-    
-    .client-node { top: 20px; left: 50%; transform: translateX(-50%); border-color: var(--info); color: var(--info); width: 120px;}
-    .gateway-node { top: 100px; left: 50%; transform: translateX(-50%); border-color: var(--warning); color: var(--warning); width: 180px; border-style: dashed;}
-    
-    /* Monolith */
-    .monolith-node {
-      top: 200px; left: 50%; transform: translateX(-50%);
-      width: 400px; height: 140px; border-color: var(--text-dim); color: var(--text-secondary);
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
-      background: rgba(255,255,255,0.02);
+    .pattern-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 14px; border-radius: 999px;
+      background: var(--primary-dim); border: 1px solid rgba(255,122,0,.2);
+      font-size: 11px; font-family: var(--font-mono);
+      color: var(--primary); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px;
     }
-    .m-module { padding: 8px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; font-size: 11px; transition: all 0.5s; opacity: 1; transform: scale(1); }
-    .m-module.extracted { opacity: 0.2; transform: scale(0.9); border-style: dashed; }
+    .pattern-title {
+      font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 800;
+      letter-spacing: -.035em; line-height: 1.05; margin-bottom: 20px;
+    }
+    .pattern-subtitle {
+      font-size: 1.05rem; color: var(--text-secondary);
+      line-height: 1.75; max-width: 580px; margin: 0 auto 36px;
+    }
+    .pattern-meta { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); }
+    .meta-value { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
 
-    /* Microservices */
-    .ms-node { font-size: 11px; width: 120px; opacity: 0; transform: translateY(20px); pointer-events: none; border-color: var(--primary); }
-    .ms-node.visible { opacity: 1; transform: translateY(0); pointer-events: auto; box-shadow: 0 0 15px rgba(255,122,0,0.2); }
-    
-    #ms-auth { top: 220px; left: 40px; }
-    #ms-core { top: 220px; right: 40px; }
-    #ms-judge { top: 300px; right: 40px; border-color: var(--success); }
+    /* ── Act Sections ── */
+    .act-section {
+      max-width: 940px; margin: 0 auto; padding: 72px 24px;
+      border-top: 1px solid var(--border); scroll-margin-top: 64px;
+    }
+    .act-label { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 40px; }
+    .act-number {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--primary); color: #000;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; flex-shrink: 0; margin-top: 2px;
+    }
+    .act-tag {
+      font-size: 11px; font-family: var(--font-mono);
+      color: var(--primary); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 4px;
+    }
+    .act-title { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.15; }
 
-    /* Routing Lines */
-    .routing-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-    .routing-lines path { fill: none; stroke: var(--border-hover); stroke-width: 2; transition: all 0.5s; }
-    .route-active { stroke: var(--warning) !important; stroke-dasharray: 4 4; animation: dashFlow 1s linear infinite; }
-    @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+    /* ── ACT 1: Problem ── */
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 28px 0;
+    }
+    @media (max-width:640px) { .problem-grid { grid-template-columns: 1fr; } }
+    .problem-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
+      transition: all .25s ease;
+    }
+    .problem-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow-medium); }
+    .problem-card.danger { border-color: rgba(244,63,94,.18); }
+    .problem-card.danger:hover { border-color: rgba(244,63,94,.38); box-shadow: 0 4px 24px rgba(244,63,94,.07); }
+    .problem-icon { font-size: 20px; margin-bottom: 10px; }
+    .problem-card h3 { font-size: 13.5px; font-weight: 700; margin-bottom: 7px; }
+    .problem-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
+    .incident-box {
+      background: rgba(244,63,94,.05); border: 1px solid rgba(244,63,94,.14);
+      border-radius: var(--radius-md); padding: 20px;
+      margin: 24px 0; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .incident-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .incident-content h4 { font-size: 12.5px; font-weight: 700; color: var(--danger); margin-bottom: 6px; }
+    .incident-content p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
+    .incident-content code { font-family: var(--font-mono); font-size: 11.5px; color: var(--primary); }
 
-    .route-label { position: absolute; font-size: 9px; font-family: var(--font-mono); color: var(--warning); background: var(--bg-surface); padding: 2px 4px; border: 1px solid var(--border); border-radius: 3px; opacity: 0; transition: opacity 0.5s; }
-    .route-label.visible { opacity: 1; }
+    /* ── ACT 2: Pattern ── */
+    .pattern-definition {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 32px; margin: 28px 0;
+      position: relative; overflow: hidden;
+    }
+    .pattern-definition::before {
+      content: '\201C'; position: absolute; top: -28px; left: 20px;
+      font-size: 130px; color: var(--primary-dim); font-weight: 900; line-height: 1; pointer-events: none;
+    }
+    .definition-text {
+      font-size: 1.1rem; line-height: 1.8; color: var(--text-main); font-weight: 500; position: relative; z-index: 1;
+    }
+    .definition-attribution { margin-top: 14px; font-size: 11.5px; color: var(--text-dim); font-family: var(--font-mono); letter-spacing: .04em; }
+    .pattern-anatomy { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 24px 0; }
+    @media (max-width:640px) { .pattern-anatomy { grid-template-columns: 1fr; } }
+    .anatomy-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 18px 16px; text-align: center;
+    }
+    .anatomy-num { font-size: 10px; font-family: var(--font-mono); color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+    .anatomy-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .anatomy-card p { font-size: 11.5px; color: var(--text-secondary); line-height: 1.55; }
 
-    #lbl-r-mono { top: 160px; left: 50%; transform: translateX(-50%); }
-    #lbl-r-auth { top: 170px; left: 25%; transform: translateX(-50%); }
-    #lbl-r-core { top: 170px; left: 75%; transform: translateX(-50%); }
+    /* ── ACT 3: Stepper ── */
+    .stepper { display: flex; gap: 0; margin: 28px 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
+    .step-controls { display: flex; flex-direction: column; width: 210px; flex-shrink: 0; border-right: 1px solid var(--border); }
+    @media (max-width:720px) {
+      .stepper { flex-direction: column; }
+      .step-controls { width: 100%; border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; overflow-x: auto; }
+    }
+    .step-btn {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--text-secondary); text-align: left; font-family: var(--font-sans);
+      border-left: 2px solid transparent; transition: all .2s ease;
+    }
+    .step-btn:hover { background: var(--primary-dim); color: var(--text-main); }
+    .step-btn.active { background: var(--primary-dim); color: var(--primary); border-left-color: var(--primary); }
+    .step-btn.done { color: var(--success); }
+    .step-dot {
+      width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; flex-shrink: 0; transition: all .2s ease;
+    }
+    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: #000; }
+    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: #000; }
+    .step-label { font-size: 11.5px; font-weight: 600; line-height: 1.35; }
+    .step-sub { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
+    .step-content-area { flex: 1; padding: 28px 28px; }
+    @media (max-width:720px) { .step-content-area { padding: 20px 0 0; } }
+    .step-panel { display: none; animation: fadeInUp .28s ease; }
+    .step-panel.active { display: block; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .desc-panel { font-size: 13px; color: var(--text-secondary); line-height: 1.6; min-height: 80px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 16px; }
+    .step-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 10px; font-family: var(--font-mono); font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .tag-before { background: rgba(244,63,94,.1); color: var(--danger); border: 1px solid rgba(244,63,94,.2); }
+    .tag-process { background: var(--primary-dim); color: var(--primary); border: 1px solid rgba(255,122,0,.2); }
+    .tag-after { background: var(--success-dim); color: var(--success); border: 1px solid rgba(34,211,160,.2); }
 
+    .step-headline { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .step-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 18px; max-width: 500px; }
+
+    /* Architecture Diagram */
+    .arch-diagram {
+      background: rgba(0,0,0,.28); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 20px; min-height: 160px;
+    }
+    .arch-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .arch-arrow { color: var(--text-dim); font-size: 15px; transition: color .4s; }
+    .arch-arrow.live { color: var(--primary); }
+    .arch-node {
+      padding: 9px 14px; border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+      border: 1px solid; text-align: center; white-space: nowrap; transition: all .35s ease;
+    }
+    .n-client  { border-color: var(--info);     color: var(--info);     background: rgba(96,165,250,.07); }
+    .n-gateway { border-color: var(--warning);  color: var(--warning);  background: rgba(245,158,11,.07); border-style: dashed; }
+    .n-mono    { border-color: var(--text-dim); color: var(--text-secondary); background: rgba(255,255,255,.02); min-width: 200px; }
+    .n-svc     { border-color: var(--primary);  color: var(--primary);  background: var(--primary-dim); }
+    .n-auth    { border-color: var(--success);  color: var(--success);  background: var(--success-dim); }
+    .n-db      { border-color: var(--text-dim); color: var(--text-dim); background: rgba(0,0,0,.3); }
+    .n-highlight { box-shadow: 0 0 18px rgba(255,122,0,.22); }
+    .n-faded   { opacity: .22; transform: scale(.94); border-style: dashed; }
+    .canary-label { font-size: 9.5px; color: var(--success); font-family: var(--font-mono); }
+
+    .step-nav-btns { display: flex; gap: 8px; margin-top: 20px; }
+    .snb {
+      padding: 7px 18px; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-secondary); font-family: var(--font-sans); transition: all .18s ease;
+    }
+    .snb:hover { border-color: var(--border-hover); color: var(--text-main); }
+    .snb.primary { background: var(--primary); border-color: var(--primary); color: #000; font-weight: 700; }
+    .snb.primary:hover { background: var(--primary-hover); }
+
+    /* ── ACT 4: KBLab ── */
+    .gap-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 12.5px; }
+    .gap-table th {
+      text-align: left; padding: 9px 14px; font-size: 10.5px;
+      font-family: var(--font-mono); color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid var(--border);
+    }
+    .gap-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    .gap-table tr:hover td { background: var(--primary-dim); }
+    .gap-label { font-weight: 700; color: var(--text-main) !important; font-family: var(--font-mono); }
+    .b-high { color: var(--danger); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
+    .b-med  { color: var(--warning); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
+    .b-low  { color: var(--success); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
+    td code { font-family: var(--font-mono); font-size: 11px; color: var(--primary); }
+
+    /* Timeline */
+    .kblab-timeline { position: relative; margin: 24px 0 0; padding-left: 28px; }
+    .kblab-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .timeline-item {
+      position: relative; margin-bottom: 28px; padding-left: 20px;
+      opacity: 0; transform: translateX(-10px); transition: all .4s ease;
+    }
+    .timeline-item.visible { opacity: 1; transform: translateX(0); }
+    .timeline-dot {
+      position: absolute; left: -27px; top: 5px;
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid var(--border); background: var(--bg); transition: all .3s ease;
+    }
+    .timeline-item.visible .timeline-dot { border-color: var(--primary); background: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+    .timeline-phase { font-size: 10px; font-family: var(--font-mono); color: var(--primary); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
+    .timeline-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .timeline-item p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
+    .t-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 9px; padding: 3px 10px; border-radius: 999px;
+      font-size: 10.5px; font-family: var(--font-mono); font-weight: 600;
+      background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary);
+    }
+    .t-badge.green { background: var(--success-dim); border-color: rgba(34,211,160,.2); color: var(--success); }
+    .t-badge.orange { background: var(--primary-dim); border-color: rgba(255,122,0,.2); color: var(--primary); }
+
+    #play-btn {
+      padding: 8px 20px; border-radius: var(--radius-sm);
+      background: var(--primary); border: none; color: #000;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-sans); margin-bottom: 24px; transition: all .2s ease;
+    }
+    #play-btn:hover { background: var(--primary-hover); }
+    #play-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Decision grid */
+    .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+    @media (max-width:640px) { .decision-grid { grid-template-columns: 1fr; } }
+    .decision-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 20px;
+    }
+    .decision-card.yes { border-color: rgba(34,211,160,.22); }
+    .decision-card.no  { border-color: rgba(244,63,94,.22); }
+    .decision-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .decision-icon { font-size: 16px; }
+    .decision-title { font-size: 12.5px; font-weight: 700; }
+    .decision-card.yes .decision-title { color: var(--success); }
+    .decision-card.no  .decision-title { color: var(--danger); }
+    .decision-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .decision-list li { font-size: 12px; color: var(--text-secondary); line-height: 1.5; padding-left: 14px; position: relative; }
+    .decision-list li::before { content: '›'; position: absolute; left: 0; color: var(--text-dim); }
+
+    /* Chapter link bar */
+    .chapter-bar { background: var(--bg-surface); border-top: 1px solid var(--border); padding: 36px 24px; text-align: center; }
+    .chapter-bar p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+    .chapter-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 26px; border-radius: var(--radius-sm);
+      background: var(--primary); color: #000;
+      font-size: 13px; font-weight: 700; text-decoration: none;
+      transition: all .2s ease;
+    }
+    .chapter-btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
+    hr.divider { max-width: 940px; margin: 0 auto; border: none; border-top: 1px solid var(--border); }
+
+    .section-intro { font-size: 14px; color: var(--text-secondary); line-height: 1.8; max-width: 660px; margin-bottom: 28px; }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 10 — Migration & Dữ liệu</div>
-      <h1>Strangler Fig Migration</h1>
-      <p class="subtitle">Thay thế hệ thống cũ một cách tăng dần (Incremental), không Big Bang Rewrite.</p>
-    </header>
 
-    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <div class="architecture-box">
-        <div class="card-title">Migration Timeline</div>
-        
-        <div class="slider-container">
-          <div class="slider-labels">
-            <span id="l-0" class="active" onclick="setPhase(0)">Phase 0: Monolith</span>
-            <span id="l-1" onclick="setPhase(1)">Phase 1: Gateway Seam</span>
-            <span id="l-2" onclick="setPhase(2)">Phase 2: Extract Auth</span>
-            <span id="l-3" onclick="setPhase(3)">Phase 3: Core & Judge</span>
-          </div>
-          <input type="range" id="phase-slider" min="0" max="3" value="0" step="1" oninput="setPhase(this.value)">
-        </div>
+<div id="progress-bar"></div>
 
-        <div class="migration-canvas">
-          
-          <svg class="routing-lines">
-            <!-- Client to Gateway -->
-            <path d="M 50% 64 L 50% 100" class="route-active" />
-            <!-- Gateway to Monolith -->
-            <path id="path-mono" d="M 50% 154 L 50% 200" class="route-active" />
-            <!-- Gateway to Auth -->
-            <path id="path-auth" d="M 35% 154 C 20% 170, 20% 190, 20% 220" />
-            <!-- Gateway to Core -->
-            <path id="path-core" d="M 65% 154 C 80% 170, 80% 190, 80% 220" />
-            <!-- Core to Judge -->
-            <path id="path-judge" d="M 80% 268 L 80% 300" />
-          </svg>
+<!-- Sticky Act Nav -->
+<nav class="act-nav">
+  <button class="act-btn active" onclick="scrollToAct('act1')" id="nav-act1"><span class="act-num">1</span> Problem</button>
+  <button class="act-btn" onclick="scrollToAct('act2')" id="nav-act2"><span class="act-num">2</span> Pattern</button>
+  <button class="act-btn" onclick="scrollToAct('act3')" id="nav-act3"><span class="act-num">3</span> How It Works</button>
+  <button class="act-btn" onclick="scrollToAct('act4')" id="nav-act4"><span class="act-num">4</span> KBLab</button>
+</nav>
 
-          <!-- Route Labels -->
-          <div class="route-label visible" id="lbl-r-mono">/* → Monolith</div>
-          <div class="route-label" id="lbl-r-auth">/api/auth/** → auth-svc</div>
-          <div class="route-label" id="lbl-r-core">/api/core/** → core-svc</div>
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="pattern-header">
+  <div class="pattern-badge">Ch.10 — Migration Patterns</div>
+  <h1 class="pattern-title">Strangler Fig<br>Migration</h1>
+  <p class="pattern-subtitle">
+    Di chuyển từ monolith sang microservices mà không cần viết lại toàn bộ — từng bước, luôn deployable, mỗi bước reversible.
+  </p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-value">Martin Fowler</span><span>Coined by</span></div>
+    <div class="meta-item"><span class="meta-value">2004</span><span>First described</span></div>
+    <div class="meta-item"><span class="meta-value">Architecture</span><span>Category</span></div>
+    <div class="meta-item"><span class="meta-value">Ch.10 §10.2</span><span>Book ref</span></div>
+  </div>
+</header>
 
-          <div class="node client-node">Client (Web)</div>
-          <div class="node gateway-node" id="gateway" style="opacity:0">API Gateway (Proxy)</div>
-          
-          <!-- Monolith -->
-          <div class="node monolith-node" id="monolith">
-            <div style="width: 100%; text-align: center; margin-bottom: 8px;">Legacy Monolith</div>
-            <div class="m-module" id="m-auth" style="border-left: 3px solid var(--success)">Identity Module</div>
-            <div class="m-module" id="m-core" style="border-left: 3px solid var(--primary)">LMS Core Module</div>
-            <div class="m-module" id="m-judge" style="border-left: 3px solid var(--info)">Judge Engine</div>
-            <div class="m-module" id="m-assign">Assignment Module</div>
-          </div>
-
-          <!-- Microservices -->
-          <div class="node ms-node" id="ms-auth" style="border-color:var(--success); color:var(--success)">Auth Service</div>
-          <div class="node ms-node" id="ms-core" style="border-color:var(--primary); color:var(--primary)">Core Service</div>
-          <div class="node ms-node" id="ms-judge" style="border-color:var(--info); color:var(--info)">Judge Service</div>
-
-        </div>
-
-        <div class="desc-panel" id="desc-panel">
-          <strong>Phase 0: Hệ thống nguyên khối.</strong> Client kết nối trực tiếp đến Monolith (hoặc qua một proxy đơn giản). Tất cả module (Auth, Core, Judge) nằm chung một codebase và chung một database. Bất kỳ thay đổi nào cũng yêu cầu deploy lại toàn bộ.
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Context -->
-    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
-      <div class="callout">
-        <strong>Từ Sách (Chương 10):</strong> <i>"Never do a big bang rewrite. Strangle the monolith incrementally — each step delivers value, each step is reversible. API Gateway đóng vai trò tự nhiên làm seam cho Strangler Fig... Dùng route-based strategy: Gateway route paths khác nhau đến monolith/services."</i>
-      </div>
-    </div>
-
+<!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
   </div>
 
-  <script>
-    const descriptions = [
-      "<strong>Phase 0: Hệ thống nguyên khối.</strong> Tất cả module (Auth, Core, Judge) nằm chung một codebase. Bất kỳ thay đổi nào cũng yêu cầu deploy lại toàn bộ. Chưa có API Gateway rõ ràng.",
-      "<strong>Phase 1: API Gateway (The Seam).</strong> Đưa Spring Cloud Gateway vào đứng trước Monolith. Lúc này Gateway chỉ làm reverse proxy: forward toàn bộ traffic (<code>/*</code>) về hệ thống cũ. Việc này tạo ra điểm cắt (seam) an toàn.",
-      "<strong>Phase 2: Extract Identity (Upstream).</strong> Tách Auth Module thành <code>kblab-auth</code> service độc lập. Cập nhật Gateway: route <code>/api/auth/**</code> tới service mới, các route khác vẫn về Monolith. Identity Module trong Monolith chính thức bị 'strangled' (chết yểu).",
-      "<strong>Phase 3: Extract Core & Judge.</strong> Tách tiếp Core Domain. Gateway route <code>/api/core/**</code> tới <code>core-service</code>. Đồng thời tách Judge ra khỏi Core để xử lý riêng biệt. Monolith bây giờ chỉ còn lại Assignment Module."
-    ];
+  <p class="section-intro">
+    Hệ thống của bạn đang scale. Team đang phình to. Deploy ngày càng chậm. Bạn biết mình cần microservices — nhưng codebase đang chạy production 3 năm và không ai dám nói "viết lại từ đầu."
+  </p>
 
-    function setPhase(p) {
-      p = parseInt(p);
-      document.getElementById('phase-slider').value = p;
-      
-      // Update Labels
-      for(let i=0; i<=3; i++) {
-        document.getElementById(`l-${i}`).className = i === p ? 'active' : '';
-      }
-      
-      document.getElementById('desc-panel').innerHTML = descriptions[p];
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">🔗</div>
+      <h3>Tight Coupling — Thay một thứ, vỡ mọi thứ</h3>
+      <p>Module Auth, Course, và Judge share cùng database. Một schema migration của Auth lock table của Course. Không ai dám touch production trước deadline thi.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🐢</div>
+      <h3>Deploy toàn bộ — All or nothing</h3>
+      <p>Team A fix bug trong Payment. Phải đợi team B finish feature trong Notification. Mỗi deploy là một sự kiện toàn team, kéo dài 4 giờ, ai cũng lo lắng.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">📈</div>
+      <h3>Không scale được phần muốn</h3>
+      <p>Mùa thi, Judge cần 10× CPU. Nhưng Judge nằm trong monolith — scale monolith = scale tất cả, lãng phí 10× chi phí, làm chậm các module khác.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">💀</div>
+      <h3>Big Bang Rewrite — Cái bẫy cổ điển</h3>
+      <p>Nhiều team đã thử: "viết lại sạch trong 6 tháng." Sau 18 tháng, hệ thống mới thiếu 30% tính năng cũ. Project bị huỷ. Monolith vẫn đó, với thêm technical debt.</p>
+    </div>
+  </div>
 
-      // Reset
-      document.getElementById('m-auth').className = 'm-module';
-      document.getElementById('m-core').className = 'm-module';
-      document.getElementById('m-judge').className = 'm-module';
-      document.getElementById('ms-auth').className = 'node ms-node';
-      document.getElementById('ms-core').className = 'node ms-node';
-      document.getElementById('ms-judge').className = 'node ms-node';
-      
-      document.getElementById('path-mono').className.baseVal = '';
-      document.getElementById('path-auth').className.baseVal = '';
-      document.getElementById('path-core').className.baseVal = '';
-      document.getElementById('path-judge').className.baseVal = '';
+  <div class="incident-box">
+    <div class="incident-icon">⚡</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Mùa thi tháng 5/2024</h4>
+      <p>Core Service và Assignment Service chia sẻ cùng database. Khi Assignment thêm index cho bảng <code>submissions</code>, lock table kéo dài 40 giây. Toàn bộ sinh viên đang làm bài nhận lỗi 500. Không có cách rollback partial — phải rollback toàn bộ monolith về commit trước.</p>
+    </div>
+  </div>
+</section>
 
-      document.getElementById('lbl-r-mono').className = 'route-label';
-      document.getElementById('lbl-r-auth').className = 'route-label';
-      document.getElementById('lbl-r-core').className = 'route-label';
+<hr class="divider">
 
-      // Apply state
-      if (p >= 0) {
-        document.getElementById('path-mono').classList.add('route-active');
-        document.getElementById('lbl-r-mono').classList.add('visible');
-      }
-      
-      if (p >= 1) {
-        document.getElementById('gateway').style.opacity = '1';
-        document.getElementById('gateway').style.borderColor = 'var(--warning)';
-        document.getElementById('gateway').style.color = 'var(--text-main)';
-      } else {
-        document.getElementById('gateway').style.opacity = '0';
-      }
+<!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
+  </div>
 
-      if (p >= 2) {
-        document.getElementById('m-auth').classList.add('extracted');
-        document.getElementById('ms-auth').classList.add('visible');
-        document.getElementById('path-auth').classList.add('route-active');
-        document.getElementById('lbl-r-auth').classList.add('visible');
-      }
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Tách dần các chức năng ra khỏi monolith — từng phần, từng sprint — trong khi monolith vẫn chạy và serve traffic. Sử dụng API Gateway làm <em>seam</em>: route traffic sang service mới khi ready, fallback về monolith khi cần. Không có "ngày switch" — chỉ có quá trình thay thế liên tục cho đến khi monolith teo dần và biến mất.
+    </p>
+    <div class="definition-attribution">— Strangler Fig Application · Martin Fowler (2004) · [W2]</div>
+  </div>
 
-      if (p >= 3) {
-        document.getElementById('m-core').classList.add('extracted');
-        document.getElementById('m-judge').classList.add('extracted');
-        document.getElementById('ms-core').classList.add('visible');
-        document.getElementById('ms-judge').classList.add('visible');
-        document.getElementById('path-core').classList.add('route-active');
-        document.getElementById('path-judge').classList.add('route-active');
-        document.getElementById('lbl-r-core').classList.add('visible');
-        
-        // Shrink monolith visual slightly
-        document.getElementById('monolith').style.opacity = '0.5';
-      } else {
-        document.getElementById('monolith').style.opacity = '1';
-      }
-    }
+  <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.65; max-width: 600px;">
+    Tên gọi lấy cảm hứng từ cây đa bóp nghẹt (strangler fig) — loại cây bám vào cây chủ, dần thay thế cho đến khi cây chủ biến mất, trong khi cây đa vẫn đứng vững và phát triển.
+  </p>
 
-    // Init
-    setPhase(0);
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>API Gateway / Seam</h4>
+      <p>Điểm đơn để redirect traffic. Client không biết phần nào đang serve từ monolith, phần nào từ service mới.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>New Service</h4>
+      <p>Build song song, deploy độc lập, database riêng. Chỉ nhận traffic khi đã verified bằng Canary hoặc Parallel Run.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Monolith (Legacy)</h4>
+      <p>Vẫn chạy và serve phần chưa tách. Mỗi feature được extract, monolith shrink. Cuối cùng có thể retire hoặc giữ làm fallback.</p>
+    </div>
+  </div>
+</section>
 
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+<hr class="divider">
+
+<!-- ══ ACT 3 — HOW IT WORKS ══════════════════════════════ -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
+  </div>
+
+  <p class="section-intro">
+    4 bước tách một service ra khỏi monolith mà không gây downtime. Nhấn từng bước để xem kiến trúc thay đổi.
+  </p>
+
+  <div class="stepper">
+    <!-- Controls -->
+    <div class="step-controls">
+      <button class="step-btn active" onclick="goToStep(0)" id="sb0">
+        <div class="step-dot">1</div>
+        <div><div class="step-label">Identify the Seam</div><div class="step-sub">Tìm ranh giới tách</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(1)" id="sb1">
+        <div class="step-dot">2</div>
+        <div><div class="step-label">Install Gateway</div><div class="step-sub">Thêm điểm routing</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(2)" id="sb2">
+        <div class="step-dot">3</div>
+        <div><div class="step-label">Build &amp; Route</div><div class="step-sub">Service mới nhận traffic</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(3)" id="sb3">
+        <div class="step-dot">4</div>
+        <div><div class="step-label">Retire Old Code</div><div class="step-sub">Xoá khỏi monolith</div></div>
+      </button>
+    </div>
+
+    <!-- Panels -->
+    <div class="step-content-area">
+
+      <!-- Step 0 -->
+      <div class="step-panel active" id="p0">
+        <div class="step-tag tag-before">Trạng thái ban đầu</div>
+        <h3 class="step-headline">Tìm "seam" — ranh giới có thể tách sạch</h3>
+        <p class="step-body">Không phải mọi phần của monolith đều tách dễ dàng. Chọn bounded context có API rõ ràng, ít database coupling. KBLab chọn Auth — HTTP boundary rõ, không share nhiều bảng với Core.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow">↓</span></div>
+          <div class="arch-row">
+            <div class="arch-node n-mono">
+              🏛️ KBLab Monolith
+              <div style="font-size:9.5px;color:var(--text-dim);margin-top:7px;font-weight:400;">Auth · Course · Assignment · Judge · Notification</div>
+            </div>
+          </div>
+          <div class="arch-row"><span class="arch-arrow">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-db">Shared PostgreSQL DB</div></div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb primary" onclick="goToStep(1)">Bước tiếp → Install Gateway</button>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-panel" id="p1">
+        <div class="step-tag tag-process">Thêm Seam Layer</div>
+        <h3 class="step-headline">Đặt API Gateway — transparent proxy, zero downtime</h3>
+        <p class="step-body">Gateway được thêm phía trước monolith. Toàn bộ traffic vẫn đến monolith — Gateway chỉ là transparent proxy. Client không thấy gì thay đổi. Fully reversible nếu cần.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">⚡ API Gateway<br><span style="font-size:9.5px;font-weight:400;">Spring Cloud Gateway</span></div></div>
+          <div class="arch-row"><span class="arch-arrow" style="font-size:11px;color:var(--text-dim);">↓ 100% traffic pass-through</span></div>
+          <div class="arch-row"><div class="arch-node n-mono">🏛️ KBLab Monolith<div style="font-size:9.5px;color:var(--text-dim);margin-top:7px;font-weight:400;">Auth · Course · Assignment · Judge · Notification</div></div></div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(0)">← Trước</button>
+          <button class="snb primary" onclick="goToStep(2)">Bước tiếp → Build &amp; Route</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-panel" id="p2">
+        <div class="step-tag tag-process">Extract &amp; Canary</div>
+        <h3 class="step-headline">Build Auth Service, route traffic tăng dần</h3>
+        <p class="step-body">Auth Service được build fresh với database riêng, deploy độc lập. Gateway route <code>/api/auth/*</code> sang service mới theo kiểu Canary: 10% → 50% → 100%. Monolith Auth vẫn chạy như fallback.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">⚡ API Gateway</div></div>
+          <div class="arch-row" style="gap:28px;margin-top:8px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span class="canary-label">/auth/* → 100%</span>
+              <div class="arch-node n-auth">✅ Auth Service<br><span style="font-size:9.5px;font-weight:400;">Own DB · Own deploy</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span style="font-size:9.5px;color:var(--text-dim);font-family:var(--font-mono);">/* → 100%</span>
+              <div class="arch-node n-mono">🏛️ Monolith<div style="font-size:9.5px;color:var(--text-dim);margin-top:6px;font-weight:400;">Course · Assignment · Judge · Notif</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(1)">← Trước</button>
+          <button class="snb primary" onclick="goToStep(3)">Bước tiếp → Retire Old Code</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-panel" id="p3">
+        <div class="step-tag tag-after">Migration Complete</div>
+        <h3 class="step-headline">Delete Auth từ monolith — shrink và lặp lại</h3>
+        <p class="step-body">Sau khi Auth Service verify ổn định (0% error rate, latency OK, 48h+), xoá Auth module khỏi monolith. Lặp lại quy trình cho Course, Assignment, Judge... Monolith thu nhỏ dần. Không có "ngày D."</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">⚡ API Gateway</div></div>
+          <div class="arch-row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
+            <div class="arch-node n-auth" style="font-size:10px;padding:7px 11px;">✅ Auth</div>
+            <div class="arch-node n-svc" style="font-size:10px;padding:7px 11px;">🔄 Course <span style="font-size:8.5px;opacity:.7;">(next)</span></div>
+            <div class="arch-node n-mono" style="font-size:9.5px;padding:7px 11px;min-width:unset;">🏛️ Assignment · Judge · Notif</div>
+          </div>
+          <div style="margin-top:12px;padding:9px 14px;background:var(--success-dim);border:1px solid rgba(34,211,160,.2);border-radius:var(--radius-sm);font-size:11px;color:var(--success);font-family:var(--font-mono);">
+            ✓ Auth Service: 0 incidents · independent deploys · own DB
+          </div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(2)">← Trước</button>
+          <button class="snb primary" onclick="scrollToAct('act4')">Xem KBLab apply it →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ══ ACT 4 — KBLAB: APPLY IT ══════════════════════════ -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBLab: Apply It</h2></div>
+  </div>
+
+  <p class="section-intro">
+    KBLab LMS là hệ thống chấm điểm SQL đang production với sinh viên nộp bài mỗi ngày. Không thể Big Bang rewrite. Đây là migration roadmap thực tế dùng Strangler Fig theo thứ tự ưu tiên.
+  </p>
+
+  <!-- Gap Analysis -->
+  <h3 style="font-size:13.5px;font-weight:700;margin-bottom:4px;">Gap Analysis — KBLab hiện tại</h3>
+  <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;font-family:var(--font-mono);">Những gì cần tách, theo thứ tự risk</p>
+
+  <table class="gap-table">
+    <tr>
+      <th>Module</th><th>Vấn đề hiện tại</th><th>Risk</th><th>Strangler Strategy</th>
+    </tr>
+    <tr>
+      <td class="gap-label">Auth</td>
+      <td>Shared secret HS256, không stateless, token không revocable</td>
+      <td class="b-high">HIGH</td>
+      <td>Route-based: <code>/auth/*</code> → Keycloak</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Core ↔ Assignment</td>
+      <td>Shared database — schema lock incidents trong mùa thi</td>
+      <td class="b-high">HIGH</td>
+      <td>Schema sep → view abstraction → separate DB + Outbox</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Judge (SQL)</td>
+      <td>CPU spike không scale được độc lập</td>
+      <td class="b-med">MED</td>
+      <td>Event-based: Kafka topic → Judge workers độc lập</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Notification</td>
+      <td>Email/WebSocket coupling chặt với Core Service</td>
+      <td class="b-low">LOW</td>
+      <td>Async: Core publish events → Notification subscriber</td>
+    </tr>
+  </table>
+
+  <!-- Timeline -->
+  <h3 style="font-size:13.5px;font-weight:700;margin:32px 0 4px;">Migration Timeline</h3>
+  <p style="font-size:11px;color:var(--text-dim);margin-bottom:18px;font-family:var(--font-mono);">Thứ tự quan trọng hơn tốc độ — Quick Wins trước, High-Risk thay đổi sau</p>
+
+  <button id="play-btn" onclick="playTimeline()">▶ Animate Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 1–2 · Phase 0</div>
+      <h4>Thêm API Gateway — transparent proxy, zero downtime</h4>
+      <p>Deploy Spring Cloud Gateway phía trước monolith. Verify 100% requests đi qua Gateway mà không tăng latency &gt; 5ms. Fully reversible.</p>
+      <span class="t-badge orange">Effort: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 3–4 · Phase 1</div>
+      <h4>Extract Auth → Keycloak (canary 10% → 100%)</h4>
+      <p>Deploy Keycloak, migrate user credentials. Gateway route /auth/* sang Keycloak với canary 10%. Monitor error rate 48h → switch 100% → delete Auth module khỏi monolith.</p>
+      <span class="t-badge green">✓ Independent deploy achieved</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 2–3 · Phase 2</div>
+      <h4>Schema Separation — Core ↔ Assignment DB</h4>
+      <p>Tách shared PostgreSQL thành 2 schemas. Thêm Outbox Pattern cho reliable events. Database views làm bridge trong giai đoạn chuyển tiếp — không downtime.</p>
+      <span class="t-badge orange">Effort: 2 devs × 3 tuần</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 4–6 · Phase 3</div>
+      <h4>Judge Service độc lập — Kafka event-based</h4>
+      <p>Judge workers nhận submission qua Kafka topic. Scale Judge × 10 trong mùa thi mà không ảnh hưởng Core. Parallel Run 2 tuần trước khi switch toàn bộ traffic.</p>
+      <span class="t-badge green">✓ Independent scaling achieved</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 style="font-size:13.5px;font-weight:700;margin:40px 0 14px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Phù hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống đang production, không thể downtime</li>
+        <li>Cần migrate dần dần, mỗi bước phải reversible</li>
+        <li>Có bounded context rõ ràng (DDD, Event Storming)</li>
+        <li>Team ≥ 3 người, có thể handle parallel work</li>
+        <li>API Gateway đã có hoặc dễ thêm vào</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không phù hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống quá nhỏ — overhead vận hành không đáng</li>
+        <li>Monolith well-structured, chỉ cần modular hóa nội bộ</li>
+        <li>Không có observability — không biết migration đúng không</li>
+        <li>Database coupling quá sâu (stored procedures, triggers)</li>
+        <li>Team chưa quen với distributed systems và async patterns</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Chapter Link Bar -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Strangler Fig, Anti-Corruption Layer, Branch by Abstraction, và Migration Roadmap KBLab đầy đủ trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 10 — Chuyển đổi Thực tế →</a>
+</div>
+
+<script>
+// ── Scroll Progress ───────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ─────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Stepper ───────────────────────────────────────────────
+function goToStep(n) {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('sb'+i).classList.remove('active','done');
+    document.getElementById('p'+i).classList.remove('active');
+    if (i < n) document.getElementById('sb'+i).classList.add('done');
+  }
+  document.getElementById('sb'+n).classList.add('active');
+  document.getElementById('p'+n).classList.add('active');
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+updateNav();
+</script>
 </body>
 </html>

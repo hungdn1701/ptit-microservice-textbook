@@ -3,214 +3,664 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service Discovery — Ch.4 | KBLab LMS</title>
+  <title>Service Discovery — Pattern Story | Ch.4 Communication KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    .registry-panel { display: grid; grid-template-columns: 260px 1fr; gap: 24px; }
-    @media (max-width: 768px) { .registry-panel { grid-template-columns: 1fr; } }
-    .service-list { display: flex; flex-direction: column; gap: 8px; }
-    .service-entry { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: all 0.3s; cursor: pointer; }
-    .service-entry:hover { border-color: var(--primary); box-shadow: var(--shadow-warm); }
-    .service-entry.registering { animation: borderGlow 1.5s ease-in-out infinite; }
-    .service-entry.unhealthy { border-color: var(--danger); opacity: 0.6; }
-    .service-info { display: flex; align-items: center; gap: 10px; }
-    .service-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-    .service-dot.unhealthy { background: var(--danger); }
-    .service-dot.registering { background: var(--warning); animation: pulse 1s infinite; }
-    .service-name { font-size: 13px; font-weight: 600; }
-    .service-port { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
-    .registry-viz { position: relative; min-height: 340px; }
-    .eureka-hub { width: 100px; height: 100px; border-radius: 50%; background: var(--primary-light); border: 2.5px solid var(--primary); display: flex; align-items: center; justify-content: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
-    .eureka-label { font-size: 12px; font-weight: 700; color: var(--primary); text-align: center; line-height: 1.3; }
-    .orbit-node { position: absolute; width: 72px; height: 72px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.4s; z-index: 3; }
-    .orbit-node.healthy { border-color: var(--success); }
-    .orbit-node.unhealthy { border-color: var(--danger); opacity: 0.5; }
-    .orbit-node .node-icon { font-size: 20px; }
-    .orbit-node .node-name { font-size: 9px; font-weight: 600; margin-top: 2px; }
-    .orbit-ring { position: absolute; top: 50%; left: 50%; border: 1px dashed var(--border); border-radius: 50%; transform: translate(-50%, -50%); }
-    .heartbeat-line { position: absolute; height: 1px; background: var(--success); opacity: 0; transform-origin: left center; z-index: 1; }
-    .heartbeat-line.active { animation: heartbeat 1.5s ease-out forwards; }
-    @keyframes heartbeat { 0% { opacity: 0.8; width: 0; } 50% { opacity: 0.6; } 100% { opacity: 0; width: 100%; } }
-    .event-ticker { background: #1E1E1E; border-radius: var(--radius-md); padding: 12px 16px; font-family: var(--font-mono); font-size: 12px; color: #D4D4D4; max-height: 160px; overflow-y: auto; margin-top: 16px; }
+    /* Custom CSS for Service Discovery Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .registry-list-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .service-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      min-height: 220px;
+    }
+
+    .service-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 0.3s ease;
+    }
+    .service-entry:hover {
+      border-color: var(--border-hover);
+    }
+    .service-entry.unhealthy {
+      border-color: rgba(244, 63, 94, 0.2);
+      opacity: 0.6;
+    }
+
+    .service-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .service-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success-glow);
+    }
+    .service-dot.unhealthy {
+      background: var(--danger);
+      box-shadow: 0 0 6px rgba(244, 63, 94, 0.4);
+    }
+
+    .service-name {
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+    .service-port {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    .topology-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .registry-viz {
+      position: relative;
+      height: 280px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(0,0,0,0.2);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .eureka-hub {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--primary-dim);
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      box-shadow: var(--shadow-glow);
+    }
+    .eureka-label {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .orbit-node {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+      box-shadow: var(--shadow-medium);
+    }
+    .orbit-node.healthy {
+      border-color: var(--success);
+      box-shadow: 0 0 10px var(--success-dim);
+    }
+    .orbit-node.unhealthy {
+      border-color: var(--danger);
+      opacity: 0.5;
+    }
+    .orbit-node .node-name {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border: 1px dashed var(--border);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      margin-top: 16px;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-sys { color: var(--text-dim); }
+    .log-reg { color: var(--success); }
+    .log-err { color: var(--danger); }
+    .log-hb { color: var(--info); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 4 — Service Discovery</div>
-      <h1>Service Discovery — Eureka</h1>
-      <p class="subtitle">Services tự đăng ký và tìm kiếm nhau qua Service Registry</p>
-    </header>
 
-    <div class="registry-panel">
-      <!-- Registry List -->
-      <div class="card animate-fadeIn">
-        <div class="card-title">Eureka Registry</div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Synchronous Communication</div>
+  <h1 class="pattern-title">Service Discovery</h1>
+  <p class="pattern-subtitle">Đăng ký và phát hiện địa chỉ mạng tự động giữa các microservices</p>
+  <div class="pattern-meta">
+    <span>Implemented via: <strong>Netflix Eureka Server & Client</strong></span>
+    <span>Chapter Reference: <strong>Chương 4 — §4.2</strong></span>
+    <span>Case Study Bounded Context: <strong>Core Registry & Feign Client Routing</strong></span>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Địa chỉ IP bị ghim cứng (Hardcoded IP)</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Trong kiến trúc Microservices, các thực thể dịch vụ (Service Instances) là cực kỳ động. Chúng liên tục scale-up (tăng instance), scale-down, khởi động lại, hoặc crash. Điều này khiến địa chỉ IP và số hiệu cổng (Port) của chúng thay đổi liên tục.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">🔌</div>
+      <h3>Ghim cứng cấu hình IP (Hardcoded Settings)</h3>
+      <p>Khi Service A gọi Service B, nếu cấu hình IP của B bị ghi cứng trong file <code>application.properties</code> của A, hệ thống sẽ sụp đổ ngay khi B đổi IP hoặc di chuyển VM. Quá trình bảo trì yêu cầu sửa cấu hình và redeploy Service A.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">❌</div>
+      <h3>Không thể tự động Scale-Out</h3>
+      <p>Nếu Service B chạy thêm 3 instances mới để gánh tải (Scale-out), Service A hoàn toàn không biết địa chỉ của các instances mới này. Khả năng tự động điều phối tải (Load Balancing) phía client-side bị vô hiệu hóa hoàn toàn.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Sự cố quá tải nghẽn hàng đợi chấm điểm bài thi</h4>
+      <p>
+        Đội hạ tầng tăng số lượng máy trạm <code>kblab-judge</code> (chấm thi) từ 1 lên 3 instances chạy trên các VM độc lập. Tuy nhiên, do <code>kblab-app</code> (Core Service) được ghim cứng địa chỉ IP của instance cũ <code>192.168.1.15:8084</code> trong cấu hình, 100% request nộp bài thi của sinh viên dồn vào máy cũ làm nó sập do quá tải CPU. Trong khi đó, 2 instances mới khởi tạo chạy không tải (0% CPU).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Service Discovery & Service Registry</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Thiết lập một dịch vụ trung tâm gọi là **Service Registry** (như Netflix Eureka). Khi bất kỳ instance nào khởi động, nó tự động gửi thông tin tên dịch vụ, địa chỉ IP và Port tới Registry (Service Registration). Dịch vụ gọi (Client) sẽ query Registry để lấy danh sách địa chỉ hoạt động và thực hiện gọi trực tiếp (Service Discovery).
+    </p>
+    <div class="definition-attribution">— Service Discovery Pattern · Microservice Patterns (Chris Richardson)</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Eureka sử dụng cơ chế gửi tin nhắn nhịp tim định kỳ (**Heartbeat**). Nếu một instance ngừng gửi heartbeat quá lâu, Eureka coi nó là sập và tự động xóa khỏi danh sách đăng ký.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Service Registry (Server)</h4>
+      <p>Cơ sở dữ liệu tập trung lưu trữ trạng thái mạng của các dịch vụ. Eureka Server chạy độc lập, hỗ trợ đồng bộ dữ liệu giữa các máy chủ Eureka khác để đảm bảo tính sẵn sàng cao (High Availability).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Service Provider (Client)</h4>
+      <p>Các microservice cung cấp API. Khi startup, Client gửi request đăng ký thông tin mạng. Định kỳ mỗi 30 giây, Client gửi request Heartbeat để duy trì trạng thái.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Service Consumer (Client)</h4>
+      <p>Dịch vụ gọi API. Consumer tải và lưu cache cục bộ (Client-side cache) danh mục từ Registry. Khi thực hiện gọi (ví dụ qua OpenFeign), nó tự động áp dụng Load Balancer để chia tải giữa các IP.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng Netflix Eureka Registry</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Sử dụng các nút điều khiển để giả lập đăng ký dịch vụ con, tắt ngẫu nhiên (simulating crash) và bẻ các nhịp tim kết nối đến Eureka Server trung tâm.
+  </p>
+
+  <div class="simulator-container">
+    
+    <!-- Left column: Registry list -->
+    <div class="registry-list-card">
+      <div>
+        <div class="dashboard-title">Eureka Server Registry</div>
         <div class="service-list" id="service-list">
           <!-- Rendered by JS -->
         </div>
-        <div style="margin-top:16px;">
-          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
-            <span style="font-size:12px;color:var(--text-muted);">Registered</span>
-            <span style="font-size:12px;font-weight:600;" id="count-registered">0</span>
-          </div>
-          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
-            <span style="font-size:12px;color:var(--text-muted);">Healthy</span>
-            <span style="font-size:12px;font-weight:600;color:var(--success);" id="count-healthy">0</span>
-          </div>
-          <div class="config-row" style="display:flex;justify-content:space-between;padding:6px 0;">
-            <span style="font-size:12px;color:var(--text-muted);">Unhealthy</span>
-            <span style="font-size:12px;font-weight:600;color:var(--danger);" id="count-unhealthy">0</span>
-          </div>
-        </div>
       </div>
 
-      <!-- Visualization -->
-      <div class="card animate-fadeIn">
-        <div class="card-title">Topology</div>
-        <div class="registry-viz" id="registry-viz">
-          <div class="orbit-ring" style="width:260px;height:260px;"></div>
-          <div class="eureka-hub">
-            <div class="eureka-label"><br>Eureka<br>Server</div>
-          </div>
-          <!-- Orbit nodes rendered by JS -->
+      <div style="margin-top:16px; border-top: 1px solid var(--border); padding-top:10px;">
+        <div class="metric-row">
+          <span class="metric-lbl">Đã đăng ký (Total)</span>
+          <span class="metric-val" id="count-registered">0</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-lbl">Khỏe mạnh (UP)</span>
+          <span class="metric-val" id="count-healthy" style="color:var(--success)">0</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-lbl">Mất kết nối (DOWN)</span>
+          <span class="metric-val" id="count-unhealthy" style="color:var(--danger)">0</span>
         </div>
       </div>
     </div>
 
-    <!-- Controls -->
-    <div class="controls">
-      <button class="btn btn-primary" onclick="registerService()">➕ Register Service</button>
-      <button class="btn btn-danger" onclick="killRandom()">Kill Random</button>
-      <button class="btn" onclick="sendHeartbeats()"> Heartbeat All</button>
-      <button class="btn" onclick="resetAll()">Reset</button>
-    </div>
-
-    <!-- Event Ticker -->
-    <div class="card">
-      <div class="card-title">Events</div>
-      <div class="event-ticker" id="events">
-        <div><span style="color:#6A9955">[INIT]</span> Eureka Server started, waiting for registrations...</div>
-      </div>
-    </div>
-
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>Trong KBLab LMS:</strong> Các service (Auth, Core, Assignment, Judge) đăng ký với Eureka khi khởi động. Gateway dùng Eureka để route requests. Khi Judge Service scale thêm 1 instance, nó tự register → Gateway tự biết, không cần cấu hình thủ công.
-      </div>
-    </div>
-
-    </div>
-
-  <script>
-    const serviceTemplates = [
-      { name: 'Auth Service', icon: '', port: 8081 },
-      { name: 'Core Service', icon: '', port: 8082 },
-      { name: 'Assignment', icon: '', port: 8083 },
-      { name: 'Judge Service', icon: '', port: 8084 },
-      { name: 'Notification', icon: '', port: 8085 },
-      { name: 'Judge (2)', icon: '', port: 8086 },
-    ];
-
-    let services = [];
-    let nextIdx = 0;
-
-    const orbitPositions = [
-      { x: 50, y: 0 }, { x: 93, y: 25 }, { x: 93, y: 75 },
-      { x: 50, y: 100 }, { x: 7, y: 75 }, { x: 7, y: 25 },
-    ];
-
-    function registerService() {
-      if (nextIdx >= serviceTemplates.length) { addEvent('All services already registered', '#FFBD2E'); return; }
-      const tmpl = serviceTemplates[nextIdx];
-      services.push({ ...tmpl, healthy: true, id: nextIdx });
-      addEvent(`REGISTER: ${tmpl.name} (port ${tmpl.port})`, '#27C93F');
-      nextIdx++;
-      renderAll();
-    }
-
-    function killRandom() {
-      const healthy = services.filter(s => s.healthy);
-      if (!healthy.length) { addEvent('No healthy services to kill', '#FFBD2E'); return; }
-      const victim = healthy[Math.floor(Math.random() * healthy.length)];
-      victim.healthy = false;
-      addEvent(`DOWN: ${victim.name} (port ${victim.port}) — missed heartbeats`, '#FF5F56');
-      renderAll();
-    }
-
-    function sendHeartbeats() {
-      services.filter(s => s.healthy).forEach(s => {
-        addEvent(` HEARTBEAT: ${s.name} — OK`, '#27C93F');
-      });
-      services.filter(s => !s.healthy).forEach(s => {
-        addEvent(`HEARTBEAT MISSED: ${s.name}`, '#FF5F56');
-      });
-    }
-
-    function resetAll() {
-      services = [];
-      nextIdx = 0;
-      document.getElementById('events').innerHTML =
-        '<div><span style="color:#6A9955">[INIT]</span> Eureka Server started, waiting for registrations...</div>';
-      renderAll();
-    }
-
-    function renderAll() {
-      // List
-      const list = document.getElementById('service-list');
-      list.innerHTML = services.map(s => `
-        <div class="service-entry ${s.healthy ? '' : 'unhealthy'}">
-          <div class="service-info">
-            <div class="service-dot ${s.healthy ? '' : 'unhealthy'}"></div>
-            <div>
-              <div class="service-name">${s.icon} ${s.name}</div>
-              <div class="service-port">:${s.port}</div>
-            </div>
-          </div>
-          <span class="badge ${s.healthy ? 'badge-success' : 'badge-danger'}">${s.healthy ? 'UP' : 'DOWN'}</span>
+    <!-- Right column: visual canvas and logs -->
+    <div class="topology-card">
+      <div class="registry-viz" id="registry-viz">
+        <div class="orbit-ring" style="width:200px; height:200px;"></div>
+        <div class="eureka-hub">
+          <div class="eureka-label">Eureka<br>Server</div>
         </div>
-      `).join('');
+        <!-- Orbit nodes rendered by JS -->
+      </div>
 
-      // Counts
-      document.getElementById('count-registered').textContent = services.length;
-      document.getElementById('count-healthy').textContent = services.filter(s => s.healthy).length;
-      document.getElementById('count-unhealthy').textContent = services.filter(s => !s.healthy).length;
+      <div class="sim-controls-btn" style="margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="registerService()" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">➕ Đăng ký Service</button>
+        <button class="btn" onclick="killRandom()" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">💥 Crash Random</button>
+        <button class="btn" onclick="sendHeartbeats()" style="font-size:12px;">💓 Heartbeat All</button>
+        <button class="btn btn-ghost" onclick="resetAll()" style="font-size:12px;">Reset</button>
+      </div>
 
-      // Orbit nodes
-      const viz = document.getElementById('registry-viz');
-      viz.querySelectorAll('.orbit-node').forEach(n => n.remove());
-      services.forEach((s, i) => {
-        const pos = orbitPositions[i % orbitPositions.length];
-        const node = document.createElement('div');
-        node.className = `orbit-node ${s.healthy ? 'healthy' : 'unhealthy'} animate-fadeIn`;
-        node.style.left = `calc(${pos.x}% - 36px)`;
-        node.style.top = `calc(${pos.y}% - 36px)`;
-        node.innerHTML = `<div class="node-icon">${s.icon}</div><div class="node-name">${s.name.split(' ')[0]}</div>`;
-        viz.appendChild(node);
-      });
-    }
+      <div class="sim-log" id="sim-log">
+        <div><span class="log-time">[14:20:52]</span> <span class="log-sys">Khởi tạo Eureka Server... Sẵn sàng nhận đăng ký.</span></div>
+      </div>
+    </div>
 
-    function addEvent(msg, color) {
-      const events = document.getElementById('events');
-      const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-      events.innerHTML += `<div><span style="color:#6A9955">[${time}]</span> <span style="color:${color}">${msg}</span></div>`;
-      events.scrollTop = events.scrollHeight;
-    }
+  </div>
+</section>
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '' : '';
-    }
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Giải pháp định danh hạ tầng KBLab LMS</h2>
+    </div>
+  </div>
 
-    renderAll();
-  
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') {
-        document.documentElement.classList.toggle('light', e.data.isLight);
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Áp dụng Service Discovery giúp KBLab LMS đạt được khả năng mở rộng tự động (Elastic Scaling) khi thi trực tuyến.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Phân tích chênh lệch giải pháp đăng ký dịch vụ</h3>
+  <div class="sub-label">So sánh các chiến lược định danh địa chỉ mạng</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>Cấu hình IP thủ công</th>
+          <th>Netflix Eureka Discovery</th>
+          <th>Sử dụng Kubernetes DNS (K8s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Cài đặt / Vận hành</td>
+          <td><span class="b-low">Dễ dàng</span>, không cần thêm tool.</td>
+          <td><span class="b-med">Trung bình</span>, deploy thêm 1 Eureka project.</td>
+          <td><span class="b-high">Phức tạp</span>, yêu cầu chạy cụm K8s hoàn chỉnh.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Tự động Scale-out</td>
+          <td>Không hỗ trợ (Yêu cầu sửa file cấu hình).</td>
+          <td>Tự động 100% khi client mới start.</td>
+          <td>Tự động 100% nhờ K8s Kube-DNS.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Load Balancing</td>
+          <td>Không hỗ trợ (Hoặc qua Gateway cứng).</td>
+          <td>Client-side Load Balancing (Spring LoadBalancer).</td>
+          <td>Server-side Load Balancing (K8s Service ClusterIP).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Phù hợp KBLab</td>
+          <td>Đã loại bỏ hoàn toàn.</td>
+          <td>Áp dụng cho môi trường chạy **Local Docker Compose** (dev/test).</td>
+          <td>Áp dụng cho môi trường **Production Kubernetes** trên Cloud.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai hạ tầng Eureka</h3>
+  <div class="sub-label">Tiến trình triển khai từ phát triển đến vận hành</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Triển khai Eureka Server độc lập</h4>
+      <p>Tạo project Spring Boot mới với dependency <code>spring-cloud-starter-netflix-eureka-server</code>. Cấu hình các tham số tắt tự đăng ký chính nó (register-with-eureka: false).</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Cấu hình các Microservices đăng ký tự động</h4>
+      <p>Thêm dependency <code>spring-cloud-starter-netflix-eureka-client</code> vào 4 core services. Bật annotation <code>@EnableDiscoveryClient</code> và trỏ địa chỉ url của Eureka Server.</p>
+      <span class="t-badge green">✓ Tự động hóa đăng ký mạng khi khởi động</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Tích hợp Feign Client và Load Balancing phía Caller</h4>
+      <p>Cấu hình Feign Client gọi service bằng ID dịch vụ (ví dụ: <code>@FeignClient(name = "kblab-judge")</code>). Thêm Spring Cloud LoadBalancer để tự động chia tải xoay vòng (Round Robin) các instances.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Tối ưu hóa tham số nhịp tim trên Production</h4>
+      <p>Điều chỉnh thời gian sống của instance (lease-expiration-duration-in-seconds) về 10s để đảm bảo khi một service sập, Gateway sẽ gỡ bỏ địa chỉ IP lỗi khỏi cache nhanh nhất.</p>
+      <span class="t-badge green">✓ Đảm bảo khả năng chịu lỗi cao</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng Service Discovery khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc phân tán gồm nhiều dịch vụ có địa chỉ động</li>
+        <li>Hệ thống thường xuyên scale out/in hoặc tự động cập nhật container</li>
+        <li>Sử dụng các Feign client hoặc gateway để định tuyến lưu lượng</li>
+        <li>Cần theo dõi sức khỏe mạng lưới (Liveness/Readiness) tập trung</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc Monolith chỉ gồm một database và một web server</li>
+        <li>Triển khai trên môi trường Kubernetes (Kubernetes có sẵn DNS Service và ClusterIP giải quyết việc này tốt hơn)</li>
+        <li>Các địa chỉ mạng hoàn toàn tĩnh, không đổi (ví dụ: gọi sang các API bên thứ 3)</li>
+        <li>Dự án cực kỳ nhỏ, ưu tiên tối giản hóa hạ tầng deploy</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Service Discovery, Eureka Server & Client, Client-side Load Balancing và cấu hình OpenFeign trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 4 — Giao tiếp Đồng bộ →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const serviceTemplates = [
+  { name: 'Auth Service', port: 8081 },
+  { name: 'Core Service', port: 8082 },
+  { name: 'Assignment Service', port: 8083 },
+  { name: 'Judge Service (1)', port: 8084 },
+  { name: 'Notification Service', port: 8085 },
+  { name: 'Judge Service (2)', port: 8086 },
+];
+
+let services = [];
+let nextIdx = 0;
+const logEl = document.getElementById('sim-log');
+
+const orbitPositions = [
+  { x: 50, y: 5 }, { x: 90, y: 25 }, { x: 90, y: 75 },
+  { x: 50, y: 95 }, { x: 10, y: 75 }, { x: 10, y: 25 },
+];
+
+function addEvent(msg, type = 'sys') {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function registerService() {
+  if (nextIdx >= serviceTemplates.length) {
+    addEvent('Cảnh báo: Đã đăng ký hết tất cả các template services sẵn có.', 'warn');
+    return;
+  }
+  const tmpl = serviceTemplates[nextIdx];
+  services.push({ ...tmpl, healthy: true, id: nextIdx });
+  addEvent(`REGISTER: ${tmpl.name} (IP: 192.168.1.100:${tmpl.port}) đăng ký thành công.`, 'reg');
+  nextIdx++;
+  renderAll();
+}
+
+function killRandom() {
+  const healthy = services.filter(s => s.healthy);
+  if (!healthy.length) {
+    addEvent('Cảnh báo: Không có service nào đang hoạt động để giả lập crash.', 'warn');
+    return;
+  }
+  const victim = healthy[Math.floor(Math.random() * healthy.length)];
+  victim.healthy = false;
+  addEvent(`CRASH: ${victim.name} (: ${victim.port}) mất kết nối đột ngột (missed heartbeat).`, 'err');
+  renderAll();
+}
+
+function sendHeartbeats() {
+  if (services.length === 0) {
+    addEvent('Hệ thống: Chưa có dịch vụ nào đăng ký trong bảng Discovery.', 'sys');
+    return;
+  }
+  services.filter(s => s.healthy).forEach(s => {
+    addEvent(`HEARTBEAT: ${s.name} (: ${s.port}) — OK.`, 'hb');
+  });
+  services.filter(s => !s.healthy).forEach(s => {
+    addEvent(`HEARTBEAT MISSED: ${s.name} (: ${s.port}) không phản hồi!`, 'err');
+  });
+}
+
+function resetAll() {
+  services = [];
+  nextIdx = 0;
+  logEl.innerHTML = '<div><span class="log-time">[14:20:52]</span> <span class="log-sys">Khởi tạo Eureka Server... Sẵn sàng nhận đăng ký.</span></div>';
+  renderAll();
+}
+
+function renderAll() {
+  // List on left
+  const list = document.getElementById('service-list');
+  if (services.length === 0) {
+    list.innerHTML = '<div style="text-align:center; color: var(--text-dim); font-size:12px; margin-top:20px; font-style:italic;">Chưa có service đăng ký</div>';
+  } else {
+    list.innerHTML = services.map(s => `
+      <div class="service-entry ${s.healthy ? '' : 'unhealthy'}">
+        <div class="service-info">
+          <div class="service-dot ${s.healthy ? '' : 'unhealthy'}"></div>
+          <div>
+            <div class="service-name">${s.name}</div>
+            <div class="service-port">192.168.1.100:${s.port}</div>
+          </div>
+        </div>
+        <span class="badge ${s.healthy ? 'badge-success' : 'badge-danger'}">${s.healthy ? 'UP' : 'DOWN'}</span>
+      </div>
+    `).join('');
+  }
+
+  // Counts
+  document.getElementById('count-registered').textContent = services.length;
+  document.getElementById('count-healthy').textContent = services.filter(s => s.healthy).length;
+  document.getElementById('count-unhealthy').textContent = services.filter(s => !s.healthy).length;
+
+  // Orbit Nodes
+  const viz = document.getElementById('registry-viz');
+  viz.querySelectorAll('.orbit-node').forEach(n => n.remove());
+  services.forEach((s, i) => {
+    const pos = orbitPositions[i % orbitPositions.length];
+    const node = document.createElement('div');
+    node.className = `orbit-node ${s.healthy ? 'healthy' : 'unhealthy'} animate-fadeIn`;
+    node.style.left = `calc(${pos.x}% - 30px)`;
+    node.style.top = `calc(${pos.y}% - 30px)`;
+    
+    let emoji = '⚙️';
+    if (s.name.includes('Auth')) emoji = '🔑';
+    if (s.name.includes('Core')) emoji = '🏠';
+    if (s.name.includes('Assignment')) emoji = '📝';
+    if (s.name.includes('Judge')) emoji = '⚖️';
+    if (s.name.includes('Notification')) emoji = '🔔';
+
+    node.innerHTML = `<span style="font-size:16px;">${emoji}</span><div class="node-name">${s.name.split(' ')[0]}</div>`;
+    viz.appendChild(node);
+  });
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+renderAll();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

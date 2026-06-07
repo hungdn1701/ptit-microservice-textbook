@@ -3,97 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Message Broker (Kafka) — Ch.5 | KBLab LMS</title>
+  <title>Message Broker (Kafka) — Pattern Story | Ch.5 Async KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    :root {
-      --canvas-bg: rgba(255, 255, 255, 0.02);
-      --partition-bg: rgba(0, 0, 0, 0.3);
-      --terminal-bg: #0d1117;
-      --terminal-text: #e6edf3;
+    /* Custom CSS for Apache Kafka Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 24px;
+      margin: 32px 0;
     }
-    .light {
-      --canvas-bg: rgba(2, 6, 23, 0.04);
-      --partition-bg: rgba(15, 23, 42, 0.08);
-      --terminal-bg: #f8fafc;
-      --terminal-text: #0f172a;
+    @media (max-width: 950px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
     }
 
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-    
-    .sim-container { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 32px; }
-    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
-    
-    .architecture-box {
+    .canvas-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
-      padding: 20px;
+      border-radius: var(--radius-lg);
+      padding: 24px;
       position: relative;
     }
 
     .kafka-canvas {
       height: 480px;
       border: 1px dashed var(--border);
-      background: var(--canvas-bg);
-      border-radius: var(--radius-sm);
-      margin: 16px 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
       padding: 20px;
     }
 
     .node {
-      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
-      padding: 10px 14px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
-      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+      position: absolute;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      box-shadow: var(--shadow-medium);
+      z-index: 2;
+      font-size: 11.5px;
     }
     
     /* Roles */
-    .producer { top: 20px; left: 50%; transform: translateX(-50%); border-color: var(--primary); color: var(--primary); }
-    .consumer-group { bottom: 20px; left: 50%; transform: translateX(-50%); border: 1px dashed var(--info); padding: 30px 10px 10px; border-radius: var(--radius-lg); display: flex; gap: 10px; background: rgba(59,130,246,0.05); }
-    .consumer-group::before { content: 'Consumer Group: judge-group'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg-surface); padding: 2px 8px; font-size: 10px; font-family: var(--font-mono); color: var(--info); border: 1px solid var(--info); border-radius: 4px; }
+    .producer {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
     
-    .consumer { background: var(--bg-card); border: 2px solid var(--info); padding: 8px 12px; border-radius: var(--radius-md); font-size: 12px; color: var(--text-main); }
+    .consumer-group {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 1px dashed var(--info);
+      padding: 24px 12px 12px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      gap: 12px;
+      background: rgba(59, 130, 246, 0.03);
+      position: absolute;
+    }
+    .consumer-group::before {
+      content: 'Consumer Group: judge-group';
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-surface);
+      padding: 2px 8px;
+      font-size: 8.5px;
+      font-family: var(--font-mono);
+      color: var(--info);
+      border: 1px solid var(--info);
+      border-radius: 99px;
+      font-weight: 700;
+    }
+    
+    .consumer {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
 
     /* Topic / Partitions */
     .topic-box {
-      position: absolute; top: 120px; left: 50%; transform: translateX(-50%);
-      border: 2px solid var(--warning); border-radius: var(--radius-md);
-      background: rgba(245,158,11,0.05); padding: 24px 12px 12px;
-      display: flex; flex-direction: column; gap: 10px; width: 280px;
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 2px solid var(--warning);
+      border-radius: var(--radius-md);
+      background: rgba(245, 158, 11, 0.03);
+      padding: 24px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 280px;
     }
-    .topic-box::before { content: 'Topic: submissions'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg-surface); padding: 2px 8px; font-size: 10px; font-family: var(--font-mono); color: var(--warning); border: 1px solid var(--warning); border-radius: 4px; }
+    .topic-box::before {
+      content: 'Topic: submissions';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-surface);
+      padding: 2px 8px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+      border-radius: 99px;
+      font-weight: 700;
+    }
     
     .partition {
-      background: var(--partition-bg); border: 1px solid var(--border); border-radius: 4px;
-      height: 36px; display: flex; align-items: center; justify-content: flex-start;
-      padding: 0 4px; gap: 2px; position: relative; overflow: hidden;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 4px;
+      gap: 3px;
+      position: relative;
+      overflow: hidden;
     }
-    .partition::before { content: attr(data-id); position: absolute; left: 4px; top: 2px; font-size: 8px; font-family: var(--font-mono); color: var(--text-dim); }
+    .partition::before {
+      content: attr(data-id);
+      position: absolute;
+      left: 4px;
+      top: 2px;
+      font-size: 8px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+    }
 
     .msg-block {
-      width: 24px; height: 24px; background: var(--success); border-radius: 4px;
-      display: flex; align-items: center; justify-content: center; font-size: 10px;
-      font-weight: bold; font-family: var(--font-mono); color: #000;
-      animation: slideInMsg 0.3s ease-out; margin-left: 2px;
+      width: 24px;
+      height: 24px;
+      background: var(--success);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #000;
+      animation: slideInMsg 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 2px;
     }
     .msg-block.consumed {
-      background: rgba(16, 185, 129, 0.25);
-      color: var(--text-secondary);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: var(--success-dim);
+      color: var(--success);
+      border: 1px solid rgba(34, 211, 160, 0.2);
     }
     @keyframes slideInMsg { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     /* Moving Messages */
     .flying-msg {
-      position: absolute; width: 16px; height: 16px; background: var(--success);
-      border-radius: 50%; box-shadow: 0 0 10px var(--success); z-index: 10;
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--success-glow);
+      z-index: 10;
       transform: translate(-50%, -50%);
-      left: var(--from-x); top: var(--from-y);
+      left: var(--from-x);
+      top: var(--from-y);
     }
     @keyframes flyPath {
       0% { left: var(--from-x); top: var(--from-y); opacity: 0.2; }
@@ -103,210 +198,498 @@
 
     /* Offset Pointers */
     .offset-marker {
-      position: absolute; bottom: 2px; width: 2px; height: 10px; background: var(--info);
+      position: absolute;
+      bottom: 2px;
+      width: 2px;
+      height: 10px;
+      background: var(--info);
       transition: left 0.3s;
     }
 
-    .query-log {
-      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
-      background: var(--terminal-bg);
-      color: var(--terminal-text);
-      padding: 12px; border-radius: var(--radius-sm);
-      height: 380px; overflow-y: auto; border: 1px solid var(--border);
+    .dashboard-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .log-sys { color: var(--text-main); }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 250px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .log-line {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
     .log-prod { color: var(--primary); }
     .log-brok { color: var(--warning); }
     .log-cons { color: var(--info); }
     .log-evt { color: var(--success); }
-
+    .log-sys { color: var(--text-main); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 5 — Giao tiếp Bất đồng bộ</div>
-      <h1>Apache Kafka</h1>
-      <p class="subtitle">Mô phỏng KBLab Pipeline: Core Service → Kafka (Submissions) → Judge Instances</p>
-    </header>
 
-    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <!-- Visualization -->
-      <div class="architecture-box">
-        <div class="card-title">Durable Broker Architecture</div>
-        <div class="kafka-canvas">
-          
-          <div class="node producer">Core Service<br><span style="font-size:10px;font-weight:normal">(Producer)</span></div>
-          
-          <div class="topic-box" id="topic-box">
-            <div class="partition" id="p0" data-id="P-0"><div class="offset-marker" style="left: 0px;"></div></div>
-            <div class="partition" id="p1" data-id="P-1"><div class="offset-marker" style="left: 0px;"></div></div>
-            <div class="partition" id="p2" data-id="P-2"><div class="offset-marker" style="left: 0px;"></div></div>
-          </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
 
-          <div class="consumer-group">
-            <div class="consumer" id="c0">Judge 1</div>
-            <div class="consumer" id="c1">Judge 2</div>
-            <div class="consumer" id="c2">Judge 3</div>
-          </div>
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
 
-          <!-- Animation Layer -->
-          <div id="anim-layer"></div>
-        </div>
-        
-        <div class="controls" style="margin-top: 16px;">
-          <button class="btn btn-primary btn-sm" onclick="produceMsg()">Gửi Bài (Produce)</button>
-          <button class="btn btn-info btn-sm" onclick="consumeMsg()">Chấm Bài (Consume)</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
-        </div>
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Asynchronous Communication</div>
+  <h1 class="pattern-title">Message Broker (Apache Kafka)</h1>
+  <p class="pattern-subtitle">Cơ chế hàng đợi phân tán, phân vùng dữ liệu và đảm bảo xử lý song song đáng tin cậy</p>
+  <div class="pattern-meta">
+    <span>Platform of Choice: <strong>Apache Kafka Cluster</strong></span>
+    <span>Chapter Reference: <strong>Chương 5 — §5.2 & §5.3</strong></span>
+    <span>Case Study Bounded Context: <strong>kblab-judge Contest Pipeline</strong></span>
+  </div>
+</header>
 
-      </div>
-
-      <!-- Log Panel -->
-      <div class="architecture-box">
-        <div class="card-title">Event Log</div>
-        <div class="query-log" id="sys-log">
-          <div class="log-sys">Kafka Cluster Ready. 3 Partitions created.</div>
-        </div>
-      </div>
-
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Lỗi nghẽn đồng bộ & Mất mát bản tin khi quá tải</h2>
     </div>
-
-    <!-- Context -->
-    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
-      <div class="callout">
-        <strong>Từ Sách (Chương 5):</strong> <i>"KBLab chọn Kafka cho submission pipeline vì cần replay (chấm lại bài khi Judge đổi logic), ordering theo người dùng, và khả năng mở rộng khi contest có nhiều submissions... Một topic chia làm nhiều Partitions. Consumer Group chia nhau các partitions. Offset đánh dấu vị trí đã đọc."</i>
-      </div>
-    </div>
-
   </div>
 
-  <script>
-    let seq = 1;
-    let pState = [0, 0, 0];
-    let cOffset = [0, 0, 0];
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi các dịch vụ giao tiếp đồng bộ trực tiếp thông qua REST API (như HTTP), hệ thống sẽ phụ thuộc hoàn toàn vào tính sẵn sàng của dịch vụ nhận. Nếu dịch vụ nhận bị chậm hoặc sập, luồng xử lý chính sẽ bị đứt gãy ngay lập tức.
+  </p>
 
-    function sleep(ms) {
-      return new Promise((r) => setTimeout(r, ms));
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">⏳</div>
+      <h3>Nghẽn thread caller đồng bộ (Thread Blocking)</h3>
+      <p>Khi sinh viên nộp code chấm bài, <code>kblab-app</code> gọi đồng bộ REST sang <code>kblab-judge</code>. Do biên dịch code mất từ 2-5 giây, thread của App bị block để chờ đợi phản hồi. Vào mùa thi, thread pool cạn kiệt lập tức, khiến cả hệ thống LMS bị treo.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">❌</div>
+      <h3>Mất mát yêu cầu khi sập dịch vụ (Message Loss)</h3>
+      <p>Nếu dịch vụ chấm bài <code>kblab-judge</code> gặp sự cố quá tải CPU và crash, mọi yêu cầu nộp bài của sinh viên gửi tới tại thời điểm đó sẽ nhận lỗi 500. Dữ liệu nộp bài bị mất mát vĩnh viễn và không thể khôi phục lại.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — 400 bài làm trắc nghiệm biến mất do sập sandbox</h4>
+      <p>
+        Trong kỳ thi lập trình thực hành đầu tiên của KBLab, hệ thống sử dụng kết nối HTTP trực tiếp giữa Core App và Judge Engine. Khi Judge Engine bị sập do rò rỉ bộ nhớ, 400 requests nộp bài của sinh viên bị crash ngang. Do không có hàng đợi lưu trữ đệm, các bài làm thi chưa kịp chấm bị mất hoàn toàn, buộc nhà trường phải mở một ca thi bù sau đó.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Hàng đợi tin nhắn phân tán (Message Broker)</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Chuyển đổi giao tiếp sang bất đồng bộ: Ứng dụng gửi (Producer) đẩy bản tin vào một **Topic** trên máy chủ tin nhắn trung gian (**Message Broker**). Broker lưu trữ tin nhắn bền vững trong các tệp log được phân chia thành các **Partitions** (Phân vùng). Các dịch vụ nhận (Consumers) kết hợp thành **Consumer Group** để chia sẻ đọc các partitions này và xử lý song song theo tốc độ của riêng chúng.
+    </p>
+    <div class="definition-attribution">— Message Broker Pattern · Enterprise Integration Patterns</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Cơ chế **Offset** đánh dấu vị trí tin nhắn đã đọc của từng consumer trong partition. Nếu consumer bị crash và khởi động lại, nó chỉ cần đọc tiếp từ Offset đã được commit gần nhất, đảm bảo không mất mát hay trùng lặp dữ liệu xử lý.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Topic & Partitioning</h4>
+      <p>Tin nhắn được lưu trữ trong các <strong>Topic</strong>. Để hỗ trợ scale-out, Topic chia nhỏ thành nhiều <strong>Partitions</strong> lưu trên nhiều máy chủ Kafka Broker khác nhau, giúp tăng băng thông đọc/ghi.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Consumer Group</h4>
+      <p>Tập hợp các consumer instances xử lý cùng một Topic. Kafka phân bổ: mỗi Partition chỉ được đọc bởi tối đa 1 Consumer instance trong group, đảm bảo tính thứ tự tin nhắn (Message Ordering).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Offset Commitment</h4>
+      <p>Chỉ số vị trí tin nhắn trong partition. Consumer đọc tin nhắn và gửi tín hiệu **Commit Offset** về Kafka. Cho phép hệ thống an toàn phục hồi sau sự cố mà không làm mất tính đúng đắn dữ liệu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng luồng Kafka Pipeline</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Sử dụng nút **Gửi Bài (Produce)** để đẩy yêu cầu chấm thi vào phân vùng ngẫu nhiên của Kafka, sau đó bấm **Chấm Bài (Consume)** để cho phép các máy trạm Judge lấy tin nhắn và commit offset.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Left column: Visual canvas -->
+    <div class="canvas-card">
+      <div class="kafka-canvas">
+        <div class="node producer">Core Service<br><span style="font-size:9.5px; font-weight:normal; color:var(--text-dim)">(Producer)</span></div>
+        
+        <div class="topic-box" id="topic-box">
+          <div class="partition" id="p0" data-id="P-0"><div class="offset-marker" id="marker-p0" style="left: 0px;"></div></div>
+          <div class="partition" id="p1" data-id="P-1"><div class="offset-marker" id="marker-p1" style="left: 0px;"></div></div>
+          <div class="partition" id="p2" data-id="P-2"><div class="offset-marker" id="marker-p2" style="left: 0px;"></div></div>
+        </div>
+
+        <div class="consumer-group">
+          <div class="consumer" id="c0">Judge 1</div>
+          <div class="consumer" id="c1">Judge 2</div>
+          <div class="consumer" id="c2">Judge 3</div>
+        </div>
+
+        <!-- Animation Layer -->
+        <div id="anim-layer" style="position: absolute; inset: 0; pointer-events: none;"></div>
+      </div>
+
+      <div class="sim-controls-btn">
+        <button class="btn btn-primary" onclick="produceMsg()" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12.5px;">Gửi Bài (Produce)</button>
+        <button class="btn" onclick="consumeMsg()" style="border-color:var(--info); color:var(--info); font-size:12.5px;">Chấm Bài (Consume)</button>
+        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12.5px;">Reset</button>
+      </div>
+    </div>
+
+    <!-- Right column: Logs -->
+    <div class="dashboard-panel">
+      <div class="dashboard-title">Kafka Events & Broker Logs</div>
+      <div class="sim-log" id="sys-log">
+        <div class="log-sys">Kafka Cluster initialized. 3 Partitions created. judge-group active.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Thiết kế hệ thống chấm bài thi KBLab</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Sử dụng Apache Kafka cho pipeline chấm bài thi của KBLab LMS giúp bảo vệ hệ thống trước các cơn bão nộp bài của sinh viên.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading"> Gap Phân Tích & Giải Pháp Hàng Đợi</h3>
+  <div class="sub-label">So sánh các giải pháp truyền thông điệp</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>RabbitMQ (Classic Queue)</th>
+          <th>Apache Kafka (Log-Based)</th>
+          <th>Lý do chọn Kafka cho KBLab</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Khả năng Replay (Chấm lại)</td>
+          <td>Không hỗ trợ (Tin nhắn bị xóa ngay sau khi consume).</td>
+          <td><span class="b-high">Hỗ trợ 100%</span> (Lưu trữ log vĩnh viễn trên disk).</td>
+          <td>Giáo viên có thể thay đổi test case và trigger "chấm lại toàn bộ bài thi" bằng cách tua lại (rewind) offset.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Thứ tự bản tin (Ordering)</td>
+          <td>Không đảm bảo khi scale nhiều consumers.</td>
+          <td>Đảm bảo tuyệt đối trong phạm vi một Partition.</td>
+          <td>Các bài nộp của cùng một sinh viên được route vào cùng partition qua khóa <code>studentId</code> để chấm đúng thứ tự.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Băng thông (Throughput)</td>
+          <td>Trung bình (~ hàng chục ngàn msg/giây).</td>
+          <td><span class="b-high">Cực lớn (Hàng triệu msg/giây)</span>.</td>
+          <td>Chịu tải tốt khi hàng ngàn sinh viên click Submit cùng lúc trong giây cuối cùng của cuộc thi.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai hạ tầng Kafka</h3>
+  <div class="sub-label">Các bước tích hợp an toàn hệ thống hàng đợi</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Setup cụm Kafka & Phân chia Partitions</h4>
+      <p>Cài đặt cụm Kafka dùng KRaft mode (không ZooKeeper). Định cấu hình Topic <code>submissions</code> gồm 3 partitions để hỗ trợ phân tải tối ưu cho 3 Judge instances.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Triển khai Spring Kafka Producer tại kblab-app</h4>
+      <p>Cấu hình <code>KafkaTemplate</code>. Sử dụng <code>studentId</code> làm Message Key để đảm bảo các bài nộp của cùng sinh viên luôn đi vào cùng phân vùng nhằm giữ thứ tự thời gian.</p>
+      <span class="t-badge green">✓ Đảm bảo nộp bài bất đồng bộ an toàn</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Cấu hình Consumer Group tại kblab-judge</h4>
+      <p>Sử dụng <code>@KafkaListener</code> với <code>groupId = "judge-group"</code>. Triển khai cấu hình tự động nhận diện phân vùng và xử lý song song tin nhắn trong pool.</p>
+      <span class="t-badge orange">Dự kiến: 2 devs × 1 tuần</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Tích hợp Dead Letter Queue (DLQ) chống nghẽn</h4>
+      <p>Khi sinh viên nộp code bị lỗi cú pháp quá nặng làm Judge crash, bản tin được chuyển tự động sang <code>submissions-dlq</code> để không block các bài thi hợp lệ tiếp theo.</p>
+      <span class="t-badge green">✓ Hoàn tất hệ thống hàng đợi chịu lỗi cao</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng Apache Kafka khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Cần giao tiếp bất đồng bộ, phân rã (Decouple) dịch vụ gửi và nhận</li>
+        <li>Hệ thống đòi hỏi khả năng xử lý lượng ghi cực lớn (Event Streaming)</li>
+        <li>Cần khả năng đọc lại lịch sử bản tin (Replayability) của hệ thống</li>
+        <li>Đòi hỏi tính thứ tự nghiêm ngặt của tin nhắn theo nhóm đối tượng (Message Key)</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc monolith đơn giản (over-engineering hạ tầng)</li>
+        <li>Hệ thống đòi hỏi thời gian phản hồi đồng bộ ngay lập tức (Request-Response)</li>
+        <li>Bị giới hạn nghiêm trọng về RAM và tài nguyên disk trên server (Kafka chạy Java nặng)</li>
+        <li>Chưa có giải pháp xử lý tin nhắn trùng lặp (Idempotency) ở phía nhận</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Message Broker, Apache Kafka, Offset Management, Partitioning, Consumer Group và Dead Letter Queue trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 5 — Giao tiếp Bất đồng bộ →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+let seq = 1;
+let pState = [0, 0, 0];
+let cOffset = [0, 0, 0];
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function getCenterInLayer(el, layerRect) {
+  const r = el.getBoundingClientRect();
+  return {
+    x: r.left - layerRect.left + (r.width / 2),
+    y: r.top - layerRect.top + (r.height / 2)
+  };
+}
+
+async function animateBetween(fromEl, toEl, duration = 450) {
+  const layer = document.getElementById('anim-layer');
+  const layerRect = layer.getBoundingClientRect();
+  const from = getCenterInLayer(fromEl, layerRect);
+  const to = getCenterInLayer(toEl, layerRect);
+  
+  const dot = document.createElement('div');
+  dot.className = 'flying-msg';
+  dot.style.setProperty('--from-x', `${from.x}px`);
+  dot.style.setProperty('--from-y', `${from.y}px`);
+  dot.style.setProperty('--to-x', `${to.x}px`);
+  dot.style.setProperty('--to-y', `${to.y}px`);
+  dot.style.animation = `flyPath ${duration}ms ease-in-out forwards`;
+  
+  layer.appendChild(dot);
+  await sleep(duration);
+  if (dot.parentNode) {
+    layer.removeChild(dot);
+  }
+}
+
+function logSys(msg, type = 'sys') {
+  const log = document.getElementById('sys-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function produceMsg() {
+  const msgId = `S-${seq++}`;
+  const pIdx = Math.floor(Math.random() * 3);
+  logSys(`Producer: Đang gửi bài làm ${msgId} tới Partition P-${pIdx}`, 'prod');
+
+  await animateBetween(
+    document.querySelector('.producer'),
+    document.getElementById(`p${pIdx}`)
+  );
+
+  pState[pIdx]++;
+  const partitionEl = document.getElementById(`p${pIdx}`);
+  const block = document.createElement('div');
+  block.className = 'msg-block';
+  block.textContent = msgId;
+  block.id = `msg-${pIdx}-${pState[pIdx]}`;
+  partitionEl.appendChild(block);
+
+  logSys(`Broker: Đã ghi bài ${msgId} vào partition P-${pIdx} (Offset: ${pState[pIdx]})`, 'brok');
+}
+
+async function consumeMsg() {
+  let pIdx = -1;
+  for (let i = 0; i < 3; i++) {
+    if (cOffset[i] < pState[i]) {
+      pIdx = i;
+      break;
     }
+  }
 
-    function getCenterInLayer(el, layerRect) {
-      const r = el.getBoundingClientRect();
-      return {
-        x: r.left - layerRect.left + (r.width / 2),
-        y: r.top - layerRect.top + (r.height / 2)
-      };
-    }
+  if (pIdx === -1) {
+    logSys('Consumers: Không tìm thấy tin nhắn mới trong hàng đợi.', 'sys');
+    return;
+  }
 
-    async function animateBetween(fromEl, toEl, duration = 420) {
-      const layer = document.getElementById('anim-layer');
-      const layerRect = layer.getBoundingClientRect();
-      const from = getCenterInLayer(fromEl, layerRect);
-      const to = getCenterInLayer(toEl, layerRect);
-      const dot = document.createElement('div');
-      dot.className = 'flying-msg';
-      dot.style.setProperty('--from-x', `${from.x}px`);
-      dot.style.setProperty('--from-y', `${from.y}px`);
-      dot.style.setProperty('--to-x', `${to.x}px`);
-      dot.style.setProperty('--to-y', `${to.y}px`);
-      dot.style.animation = `flyPath ${duration}ms ease-in-out forwards`;
-      layer.appendChild(dot);
-      await sleep(duration);
-      if (dot.parentNode) {
-        layer.removeChild(dot);
+  cOffset[pIdx]++;
+  const msgEl = document.getElementById(`msg-${pIdx}-${cOffset[pIdx]}`);
+  if (!msgEl) {
+    logSys(`Consumer: Lỗi không khớp offset tại P-${pIdx}.`, 'sys');
+    return;
+  }
+  const msgId = msgEl.textContent;
+  const cIdx = pIdx; // simple mapping for demo: Partition 0 -> Judge 1, etc.
+  
+  logSys(`Consumer Judge ${cIdx + 1}: Bắt đầu đọc bài làm ${msgId} từ P-${pIdx} (Offset ${cOffset[pIdx]})`, 'cons');
+
+  // Slide offset marker
+  const marker = document.getElementById(`marker-p0`); // wait, get actual marker
+  const actMarker = document.querySelector(`#p${pIdx} .offset-marker`);
+  actMarker.style.left = `${cOffset[pIdx] * 30}px`;
+
+  await animateBetween(msgEl, document.getElementById(`c${cIdx}`));
+  msgEl.classList.add('consumed');
+  logSys(`Consumer Judge ${cIdx + 1}: Chấm xong bài làm ${msgId}. Tiến hành COMMIT OFFSET.`, 'evt');
+
+  const cNode = document.getElementById(`c${cIdx}`);
+  cNode.style.borderColor = 'var(--success)';
+  cNode.style.boxShadow = '0 0 12px var(--success-glow)';
+  setTimeout(() => {
+    cNode.style.borderColor = '';
+    cNode.style.boxShadow = 'none';
+  }, 600);
+}
+
+function resetSim() {
+  seq = 1;
+  pState = [0, 0, 0];
+  cOffset = [0, 0, 0];
+
+  for (let i = 0; i < 3; i++) {
+    const p = document.getElementById(`p${i}`);
+    Array.from(p.querySelectorAll('.msg-block')).forEach((el) => el.remove());
+    p.querySelector('.offset-marker').style.left = '0px';
+  }
+
+  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Kafka Cluster Ready. 3 Partitions created. judge-group active.</div>';
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
-    }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
 
-    function logSys(msg, cls) {
-      const log = document.getElementById('sys-log');
-      log.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-      log.scrollTop = log.scrollHeight;
-    }
+// ── Init ──────────────────────────────────────────────────
+resetSim();
 
-    async function produceMsg() {
-      const msgId = `M${seq++}`;
-      const pIdx = Math.floor(Math.random() * 3);
-      logSys(`Producer: Sending ${msgId} to Partition ${pIdx}`, 'log-prod');
-
-      await animateBetween(
-        document.querySelector('.producer'),
-        document.getElementById(`p${pIdx}`)
-      );
-
-      pState[pIdx]++;
-      const partitionEl = document.getElementById(`p${pIdx}`);
-      const block = document.createElement('div');
-      block.className = 'msg-block';
-      block.textContent = msgId;
-      block.id = `msg-${pIdx}-${pState[pIdx]}`;
-      partitionEl.appendChild(block);
-
-      logSys(`Broker: Appended ${msgId} to P-${pIdx} (Offset: ${pState[pIdx]})`, 'log-brok');
-    }
-
-    async function consumeMsg() {
-      let pIdx = -1;
-      for (let i = 0; i < 3; i++) {
-        if (cOffset[i] < pState[i]) {
-          pIdx = i;
-          break;
-        }
-      }
-
-      if (pIdx === -1) {
-        logSys('Consumers: No new messages to read.', 'log-sys');
-        return;
-      }
-
-      cOffset[pIdx]++;
-      const msgEl = document.getElementById(`msg-${pIdx}-${cOffset[pIdx]}`);
-      if (!msgEl) {
-        logSys(`Consumer ${pIdx + 1}: Offset mismatch at P-${pIdx}.`, 'log-sys');
-        return;
-      }
-      const msgId = msgEl.textContent;
-      const cIdx = pIdx;
-      logSys(`Consumer ${cIdx + 1}: Reading from P-${pIdx} (Offset ${cOffset[pIdx]})`, 'log-cons');
-
-      const marker = document.querySelector(`#p${pIdx} .offset-marker`);
-      marker.style.left = `${cOffset[pIdx] * 28}px`;
-
-      await animateBetween(msgEl, document.getElementById(`c${cIdx}`));
-      msgEl.classList.add('consumed');
-      logSys(`Consumer ${cIdx + 1}: Processed ${msgId}. Committing offset.`, 'log-evt');
-
-      const cNode = document.getElementById(`c${cIdx}`);
-      cNode.style.borderColor = 'var(--success)';
-      cNode.style.boxShadow = '0 0 10px rgba(16,185,129,0.5)';
-      setTimeout(() => {
-        cNode.style.borderColor = 'var(--info)';
-        cNode.style.boxShadow = 'none';
-      }, 500);
-    }
-
-    function resetSim() {
-      seq = 1;
-      pState = [0, 0, 0];
-      cOffset = [0, 0, 0];
-
-      for (let i = 0; i < 3; i++) {
-        const p = document.getElementById(`p${i}`);
-        Array.from(p.querySelectorAll('.msg-block')).forEach((el) => el.remove());
-        p.querySelector('.offset-marker').style.left = '0px';
-      }
-
-      document.getElementById('sys-log').innerHTML = '<div class="log-sys">Kafka Cluster Ready. 3 Partitions created.</div>';
-    }
-
-    function applyTheme(isLight) {
-      document.documentElement.classList.toggle('light', Boolean(isLight));
-    }
-
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') applyTheme(e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

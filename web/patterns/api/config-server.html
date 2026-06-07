@@ -3,152 +3,598 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Config Server — Ch.8 | KBLab LMS</title>
+  <title>Config Server — Pattern Story | Ch.8 Edge KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    .env-selector { display: flex; gap: 8px; margin-bottom: 20px; }
-    .env-btn { padding: 8px 20px; font-size: 13px; font-weight: 600; border-radius: var(--radius-md); border: 2px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; font-family: var(--font-sans); }
-    .env-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-dim); }
-    .config-entry { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
-    .config-entry:hover { background: rgba(255,255,255,0.02); }
-    .config-entry.changed { background: var(--primary-dim); border-left: 3px solid var(--primary); }
-    .config-key { font-family: var(--font-mono); font-size: 12px; color: var(--primary); min-width: 200px; }
-    .config-val { font-family: var(--font-mono); font-size: 12px; flex: 1; }
-    .config-source { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--bg-elevated); color: var(--text-dim); }
-    .diff-indicator { font-size: 10px; font-weight: 600; margin-left: auto; }
-    .arch-flow { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
-    .arch-node { padding: 14px 20px; background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius-md); text-align: center; min-width: 100px; transition: all 0.3s; }
-    .arch-node.active { border-color: var(--primary); box-shadow: var(--shadow-glow); }
-    .arch-arrow { color: var(--primary); font-size: 20px; }
+    /* Custom CSS for Config Server Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-flex {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .arch-node {
+      padding: 12px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      min-width: 110px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-medium);
+    }
+    .arch-node.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+      background: var(--primary-dim);
+    }
+    .arch-arrow {
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .env-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.02);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .env-btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .env-btn:hover {
+      color: var(--text-main);
+    }
+    .env-btn.active {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .config-list-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .config-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .config-entry:last-child {
+      border-bottom: none;
+    }
+    .config-entry.changed {
+      background: rgba(255, 122, 0, 0.04);
+      border-left: 3px solid var(--primary);
+    }
+    .config-key {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--primary);
+    }
+    .config-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-main);
+      word-break: break-all;
+      padding: 0 10px;
+    }
+    .config-source {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: var(--bg-surface);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 140px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      margin-top: 14px;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-info { color: var(--info); }
+    .log-success { color: var(--success); }
+    .log-warn { color: var(--warning); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 8 — API Gateway & Config</div>
-      <h1>Config Server</h1>
-      <p class="subtitle">Centralized configuration — switch profiles, hot reload, xem config resolution</p>
-    </header>
 
-    <!-- Architecture -->
-    <div class="card">
-      <div class="card-title"> Architecture Flow</div>
-      <div class="arch-flow">
-        <div class="arch-node" id="node-git"><div>GIT</div><div style="font-size:11px; font-weight:600;">Git Repo</div></div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node active" id="node-config"><div></div><div style="font-size:11px; font-weight:600;">Config Server</div></div>
-        <div class="arch-arrow">→</div>
-        <div class="arch-node" id="node-services"><div></div><div style="font-size:11px; font-weight:600;">All Services</div></div>
-      </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Edge Architecture Patterns</div>
+  <h1 class="pattern-title">Centralized Configuration</h1>
+  <p class="pattern-subtitle">Config Server — Quản lý cấu hình tập trung và tự động nạp nóng (Hot Reload)</p>
+  <div class="pattern-meta">
+    <span>Implemented via: <strong>Spring Cloud Config & Spring Cloud Bus</strong></span>
+    <span>Chapter Reference: <strong>Chương 8 — §8.5</strong></span>
+    <span>Case Study Bounded Context: <strong>Git-Backed Config Service</strong></span>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Cấu hình phân tán & Sai lệch môi trường</h2>
     </div>
+  </div>
 
-    <!-- Environment Selector -->
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title"> Environment Profile</div>
-      <div class="env-selector" id="env-selector">
-        <button class="env-btn active" onclick="switchEnv('dev')">dev</button>
-        <button class="env-btn" onclick="switchEnv('staging')">staging</button>
-        <button class="env-btn" onclick="switchEnv('prod')">prod</button>
-      </div>
-      <div id="config-list"></div>
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi hệ thống mở rộng thành hàng chục microservices, việc lưu giữ các file cấu hình (như database url, credentials, timeouts) cục bộ bên trong mỗi container sẽ mang lại gánh nặng lớn cho đội vận hành.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">📉</div>
+      <h3>Sai lệch môi trường (Configuration Drift)</h3>
+      <p>Mỗi môi trường (Dev, Staging, Prod) có các tham số kết nối khác nhau. Khi lưu file cấu hình cục bộ, nhà phát triển dễ quên cập nhật tham số khi đưa ứng dụng lên Staging, dẫn đến việc ứng dụng Staging vô tình ghi đè dữ liệu vào DB Production.</p>
     </div>
-
-    <!-- Hot Reload -->
-    <div class="card" style="margin-top:20px;">
-      <div class="card-title">Hot Reload Simulation</div>
-      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Thay đổi config → bus refresh → services pickup</p>
-      <div class="controls">
-        <button class="btn btn-primary" onclick="hotReload()">Push Config Change</button>
-      </div>
-      <div class="log-panel" id="reload-log" style="margin-top:12px; max-height:120px;">
-        <div><span class="log-info">Config server ready</span></div>
-      </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">❌</div>
+      <h3>Rebuild & Restart khi đổi tham số</h3>
+      <p>Khi cần điều chỉnh một tham số nhỏ (ví dụ: tăng kích thước Connection Pool hoặc giảm Timeout để gánh tải mùa thi), đội vận hành bắt buộc phải sửa file, build lại file JAR và restart toàn bộ container, gây gián đoạn hệ thống.</p>
     </div>
+  </div>
 
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>Trong KBLab LMS:</strong> Mỗi service đọc config từ Spring Cloud Config Server. Khi cần điều chỉnh (ví dụ: tăng connection pool vào kỳ thi), admin chỉnh file config trên Git → POST /actuator/bus-refresh → tất cả services reload mà không cần restart.
-      </div>
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Đổi thông số timeout làm sập chéo do restart thủ công</h4>
+      <p>
+        Trong một đợt thi, <code>kblab-judge</code> phản hồi chậm làm nghẽn Core Service. Đội hạ tầng quyết định giảm timeout cuộc gọi từ 30 giây xuống 5 giây. Do cấu hình ghim cứng cục bộ, họ phải cập nhật file properties của Core Service và chạy lại container. Trong 3 phút Core Service khởi động lại, sinh viên hoàn toàn bị mất kết nối và không thể nộp bài làm trắc nghiệm.
+      </p>
     </div>
+  </div>
+</section>
 
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Mô hình Quản lý cấu hình tập trung</h2>
     </div>
+  </div>
 
-  <script>
-    const configs = {
-      dev: [
-        { key: 'spring.datasource.url', val: 'jdbc:mysql://localhost:3306/app_db', src: 'application-dev.yml' },
-        { key: 'spring.datasource.pool-size', val: '5', src: 'application-dev.yml' },
-        { key: 'judge.timeout-ms', val: '30000', src: 'application.yml' },
-        { key: 'judge.sandbox.enabled', val: 'false', src: 'application-dev.yml' },
-        { key: 'eureka.client.service-url', val: 'http://localhost:8761/eureka', src: 'bootstrap.yml' },
-        { key: 'spring.kafka.bootstrap-servers', val: 'localhost:9092', src: 'application-dev.yml' },
-        { key: 'logging.level.root', val: 'DEBUG', src: 'application-dev.yml' },
-      ],
-      staging: [
-        { key: 'spring.datasource.url', val: 'jdbc:mysql://staging-db:3306/app_db', src: 'application-staging.yml', diff: true },
-        { key: 'spring.datasource.pool-size', val: '10', src: 'application-staging.yml', diff: true },
-        { key: 'judge.timeout-ms', val: '15000', src: 'application-staging.yml', diff: true },
-        { key: 'judge.sandbox.enabled', val: 'true', src: 'application-staging.yml', diff: true },
-        { key: 'eureka.client.service-url', val: 'http://eureka-staging:8761/eureka', src: 'bootstrap.yml', diff: true },
-        { key: 'spring.kafka.bootstrap-servers', val: 'kafka-staging:9092', src: 'application-staging.yml', diff: true },
-        { key: 'logging.level.root', val: 'INFO', src: 'application-staging.yml', diff: true },
-      ],
-      prod: [
-        { key: 'spring.datasource.url', val: 'jdbc:mysql://prod-db-cluster:3306/app_db', src: 'application-prod.yml', diff: true },
-        { key: 'spring.datasource.pool-size', val: '30', src: 'application-prod.yml', diff: true },
-        { key: 'judge.timeout-ms', val: '10000', src: 'application-prod.yml', diff: true },
-        { key: 'judge.sandbox.enabled', val: 'true', src: 'application-prod.yml', diff: true },
-        { key: 'eureka.client.service-url', val: 'http://eureka-a:8761,http://eureka-b:8761/eureka', src: 'bootstrap.yml', diff: true },
-        { key: 'spring.kafka.bootstrap-servers', val: 'kafka-a:9092,kafka-b:9092,kafka-c:9092', src: 'application-prod.yml', diff: true },
-        { key: 'logging.level.root', val: 'WARN', src: 'application-prod.yml', diff: true },
-      ]
-    };
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Thiết lập một **Config Server** trung tâm kết nối trực tiếp đến một Git Repository chứa toàn bộ file cấu hình của hệ thống. Khi các microservices khởi động, chúng truy vấn Config Server để tải về cấu hình tương ứng với môi trường hiện tại (Profile). Khi có thay đổi, quản trị viên chỉ cần push lên Git và kích hoạt một tín hiệu Bus refresh để nạp nóng (Hot Reload) cấu hình cho các service con mà không cần khởi động lại.
+    </p>
+    <div class="definition-attribution">— Centralized Configuration · Spring Cloud Config & Bus</div>
+  </div>
 
-    let currentEnv = 'dev';
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Cơ chế **Spring Cloud Bus** kết hợp với Message Broker (như Kafka) giúp truyền tải tín hiệu làm mới cấu hình đến tất cả các service con chạy song song tức thời.
+  </p>
 
-    function switchEnv(env) {
-      currentEnv = env;
-      document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector(`.env-btn[onclick="switchEnv('${env}')"]`).classList.add('active');
-      renderConfig();
-    }
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Git Config Repo</h4>
+      <p>Kho chứa tập trung các file YAML (ví dụ: <code>application-prod.yml</code>, <code>application-dev.yml</code>). Được quản lý phiên bản, cho phép dễ dàng rollback cấu hình về thời điểm trước đó.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Config Server</h4>
+      <p>Dịch vụ trung gian đọc file cấu hình từ Git và expose thành HTTP API REST (trả về JSON). Config Server có thể mã hóa (Encrypt) các mật khẩu nhạy cảm để đảm bảo an toàn.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Spring Cloud Bus (Reload)</h4>
+      <p>Hệ thống truyền tin giúp đồng bộ refresh. Khi quản trị viên gọi API <code>/actuator/busrefresh</code>, một event refresh được gửi lên Kafka để yêu cầu tất cả các client tự động cập nhật cấu hình.</p>
+    </div>
+  </div>
+</section>
 
-    function renderConfig() {
-      const el = document.getElementById('config-list');
-      el.innerHTML = configs[currentEnv].map(c => `
-        <div class="config-entry ${c.diff ? 'changed' : ''}">
-          <span class="config-key">${c.key}</span>
-          <span class="config-val">${c.val}</span>
-          <span class="config-source">${c.src}</span>
-          ${c.diff ? '<span class="diff-indicator" style="color:var(--primary);">CHANGED</span>' : ''}
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Trực quan hóa nạp cấu hình nóng</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Hãy nhấp chọn Profile môi trường bên dưới để xem sự thay đổi giá trị cấu hình tương ứng được nạp từ Git, và bấm **Push Config Change** để giả lập nạp nóng không downtime.
+  </p>
+
+  <div class="simulator-container">
+    
+    <!-- Left panel: Env switcher and Configs -->
+    <div class="card card-flex">
+      <div>
+        <div class="dashboard-title" style="margin-bottom:12px;">Git Profiles Profile Selector</div>
+        <div class="env-selector" id="env-selector">
+          <button class="env-btn active" id="btn-dev" onclick="switchEnv('dev')">dev (Phát triển)</button>
+          <button class="env-btn" id="btn-staging" onclick="switchEnv('staging')">staging (Kiểm thử)</button>
+          <button class="env-btn" id="btn-prod" onclick="switchEnv('prod')">prod (Vận hành)</button>
         </div>
-      `).join('');
-    }
+        <div class="config-list-box" id="config-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
 
-    function hotReload() {
-      const log = document.getElementById('reload-log');
-      const time = () => new Date().toLocaleTimeString('en-US', { hour12: false });
-      log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-info">POST /actuator/bus-refresh</span></div>`;
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">auth-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 400);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">core-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 700);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-success">judge-service refreshed</span></div>`; log.scrollTop = log.scrollHeight; }, 1000);
-      setTimeout(() => { log.innerHTML += `<div><span class="log-time">[${time()}]</span> <span class="log-warn">All services refreshed — 0 restarts needed</span></div>`; log.scrollTop = log.scrollHeight; }, 1300);
-    }
+    <!-- Right panel: Flow and Hot Reload console -->
+    <div class="card card-flex">
+      <div>
+        <div class="dashboard-title">Architecture Flow</div>
+        <div class="arch-flow">
+          <div class="arch-node" id="node-git">
+            <span style="font-size:16px;">💾</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">Git Config</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node active" id="node-config">
+            <span style="font-size:16px;">🌐</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--primary);">Config Server</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node" id="node-services">
+            <span style="font-size:16px;">🖥️</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">kblab-services</div>
+          </div>
+        </div>
+      </div>
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '' : '';
-    }
+      <div style="border-top:1px solid var(--border); padding-top:14px;">
+        <div class="dashboard-title" style="margin-bottom:8px;">Spring Cloud Bus Refresh Console</div>
+        <button class="btn btn-primary" onclick="hotReload()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">Push Config Change (Nạp nóng)</button>
+        <div class="sim-log" id="reload-log">
+          <div><span class="log-time">[14:20:52]</span> <span class="log-info">Config server initialized. Reading git backend...</span></div>
+        </div>
+      </div>
+    </div>
 
-    renderConfig();
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Giải pháp KBLab Config</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Áp dụng Config Server giúp KBLab LMS đạt được sự nhất quán tuyệt đối về cấu hình hệ thống trên cả 3 môi trường mà không cần khởi động lại.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Phân tích chênh lệch giải pháp quản lý cấu hình</h3>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>Cấu hình ghim cứng cục bộ</th>
+          <th>Spring Cloud Config Server</th>
+          <th>Giải pháp K8s ConfigMap/Secret</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Lưu trữ tập trung</td>
+          <td>Không (Lưu tẻ nhạt tại mỗi service).</td>
+          <td><span class="b-high">Có 100%</span> (Lưu tại Git Repository).</td>
+          <td>Có 100% (Lưu tại K8s Cluster etcd).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Hot Reload (Nạp nóng)</td>
+          <td>Không hỗ trợ (Phải rebuild & restart).</td>
+          <td>Hỗ trợ tuyệt vời (Qua Kafka Bus Refresh).</td>
+          <td>Hỗ trợ (Yêu cầu ứng dụng có cơ chế tự động watch file).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Bảo mật thông tin nhạy cảm</td>
+          <td>Không an toàn (Lưu clear text mật khẩu trên code).</td>
+          <td>An toàn (Hỗ trợ mã hóa đối xứng AES/RSA).</td>
+          <td>An toàn (Mã hóa base64 hoặc lưu trữ Secret K8s).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Môi trường áp dụng tại KBLab</td>
+          <td>Đã loại bỏ hoàn toàn.</td>
+          <td>Áp dụng cho môi trường **Docker Compose Local**.</td>
+          <td>Áp dụng cho môi trường **Kubernetes Production**.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai Config Server</h3>
+  <div class="sub-label">Các bước chuẩn hóa cấu hình từ Dev lên Production</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Khởi tạo Git Repository lưu cấu hình</h4>
+      <p>Tạo repository Git riêng tư chứa các file: <code>application.yml</code>, <code>application-dev.yml</code>, <code>application-prod.yml</code>. Chuyển toàn bộ các properties cục bộ của 5 service lên đây.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Deploy Config Server Project</h4>
+      <p>Khởi tạo project Spring Boot Config Server. Cấu hình kết nối SSH đến Git Repository. Bật annotation <code>@EnableConfigServer</code> và verify API REST trả về cấu hình JSON.</p>
+      <span class="t-badge green">✓ Tải cấu hình JSON thành công qua API</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Tích hợp Spring Cloud Bus với Kafka</h4>
+      <p>Thêm dependency <code>spring-cloud-starter-bus-kafka</code> vào các service con. Đánh dấu các bean đọc cấu hình nhạy cảm bằng annotation <code>@RefreshScope</code> để hỗ trợ nạp nóng.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Mã hóa cấu hình nhạy cảm (Encryption)</h4>
+      <p>Cấu hình JCE (Java Cryptography Extension) trên Config Server. Thực hiện mã hóa các mật khẩu database thành dạng <code>{cipher}A1B2C3...</code> trên Git, đảm bảo an toàn tuyệt đối khi code bị công khai.</p>
+      <span class="t-badge green">✓ Hệ thống cấu hình an toàn & Hot Reload hoàn tất</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng Config Server khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc có trên 5 microservices độc lập</li>
+        <li>Hệ thống chạy trên nhiều môi trường khác nhau (Dev, Test, Staging, Prod)</li>
+        <li>Thường xuyên cần thay đổi các tham số cấu hình runtime (timeout, threadpool size)</li>
+        <li>Cần quản lý tập trung và audit lịch sử thay đổi cấu hình qua Git</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống monolith đơn giản, chỉ có một server duy nhất (over-engineering)</li>
+        <li>Triển khai hoàn toàn trên Kubernetes (Kubernetes ConfigMap & Secret là giải pháp native tốt hơn)</li>
+        <li>Không có hạ tầng Git riêng tư an toàn để lưu trữ file cấu hình</li>
+        <li>Đội ngũ vận hành chưa quen thuộc với các hệ thống Bus sự kiện bất đồng bộ</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Centralized Configuration, Spring Cloud Config Server, Spring Cloud Bus, và mã hóa thông tin nhạy cảm trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 8 — API Gateway →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const configs = {
+  dev: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://localhost:5432/kblab_dev', src: 'application-dev.yml' },
+    { key: 'spring.datasource.pool-size', val: '5', src: 'application-dev.yml' },
+    { key: 'kblab.judge.timeout-ms', val: '30000', src: 'application.yml' },
+    { key: 'kblab.judge.sandbox.enabled', val: 'false', src: 'application-dev.yml' },
+    { key: 'eureka.client.service-url', val: 'http://localhost:8761/eureka', src: 'bootstrap.yml' },
+    { key: 'spring.kafka.bootstrap-servers', val: 'localhost:9092', src: 'application-dev.yml' },
+    { key: 'logging.level.root', val: 'DEBUG', src: 'application-dev.yml' },
+  ],
+  staging: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://staging-db:5432/kblab_staging', src: 'application-staging.yml', diff: true },
+    { key: 'spring.datasource.pool-size', val: '15', src: 'application-staging.yml', diff: true },
+    { key: 'kblab.judge.timeout-ms', val: '15000', src: 'application-staging.yml', diff: true },
+    { key: 'kblab.judge.sandbox.enabled', val: 'true', src: 'application-staging.yml', diff: true },
+    { key: 'eureka.client.service-url', val: 'http://eureka-staging:8761/eureka', src: 'bootstrap.yml', diff: true },
+    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-staging:9092', src: 'application-staging.yml', diff: true },
+    { key: 'logging.level.root', val: 'INFO', src: 'application-staging.yml', diff: true },
+  ],
+  prod: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://prod-db-cluster:5432/kblab_prod', src: 'application-prod.yml', diff: true },
+    { key: 'spring.datasource.pool-size', val: '40', src: 'application-prod.yml', diff: true },
+    { key: 'kblab.judge.timeout-ms', val: '8000', src: 'application-prod.yml', diff: true },
+    { key: 'kblab.judge.sandbox.enabled', val: 'true', src: 'application-prod.yml', diff: true },
+    { key: 'eureka.client.service-url', val: 'http://eureka-a:8761,http://eureka-b:8761/eureka', src: 'bootstrap.yml', diff: true },
+    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-a:9092,kafka-b:9092,kafka-c:9092', src: 'application-prod.yml', diff: true },
+    { key: 'logging.level.root', val: 'WARN', src: 'application-prod.yml', diff: true },
+  ]
+};
+
+let currentEnv = 'dev';
+const logEl = document.getElementById('reload-log');
+
+function switchEnv(env) {
+  currentEnv = env;
+  document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`btn-${env}`).classList.add('active');
   
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') {
-        document.documentElement.classList.toggle('light', e.data.isLight);
+  // Highlight active node in flow
+  document.getElementById('node-git').className = 'arch-node active';
+  setTimeout(() => {
+    document.getElementById('node-git').className = 'arch-node';
+    document.getElementById('node-config').className = 'arch-node active';
+  }, 300);
+
+  renderConfig();
+  logSys(`Hệ thống: Vừa tải Profile [${env.toUpperCase()}]. Đọc từ ${env === 'dev' ? 'application-dev.yml' : 'application-' + env + '.yml'}`, 'info');
+}
+
+function renderConfig() {
+  const el = document.getElementById('config-list');
+  el.innerHTML = configs[currentEnv].map(c => `
+    <div class="config-entry ${c.diff ? 'changed' : ''}">
+      <div>
+        <span class="config-key">${c.key}</span>
+        <div class="config-val" style="margin-top:4px;">${c.val}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <span class="config-source">${c.src}</span>
+        ${c.diff ? '<span style="font-size:9px; font-weight:700; color:var(--primary); font-family:var(--font-mono)">CHANGED</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function logSys(msg, type = 'sys') {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function hotReload() {
+  logSys('POST /actuator/bus-refresh', 'info');
+  document.getElementById('node-config').className = 'arch-node active';
+  
+  setTimeout(() => {
+    logSys('Kafka Bus: Phát tán RefreshRemoteApplicationEvent...', 'warn');
+  }, 200);
+
+  setTimeout(() => {
+    logSys('kblab-auth: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+  }, 500);
+
+  setTimeout(() => {
+    logSys('kblab-app: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+  }, 800);
+
+  setTimeout(() => {
+    logSys('kblab-judge: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+    document.getElementById('node-services').className = 'arch-node active';
+  }, 1100);
+
+  setTimeout(() => {
+    logSys('Hệ thống: Tất cả các instances đã cập nhật cấu hình mới. 0 restarts required.', 'ok');
+    document.getElementById('node-services').className = 'arch-node';
+  }, 1400);
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+renderConfig();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

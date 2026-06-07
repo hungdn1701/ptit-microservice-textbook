@@ -2,7 +2,9 @@
 
 /* ============================================================
    diagram-style.css — Static Diagram Design System
-   SOA & Microservices Textbook · v1.0
+   SOA & Microservices Textbook · v2.0
+   Upgraded: frontend-design + high-end-visual-design skills
+   Aesthetic: Editorial precision, print-safe, transparent-friendly
 
    USAGE:
      Static figures (→ Playwright PNG → Typst):
@@ -126,30 +128,45 @@
 .seq-msg {
   display: flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 40px;
   position: relative;
   z-index: 1;
 }
 
 .seq-line {
   height: 1.5px;
-  background: #64748b;
+  background: var(--diagram-color-line-muted);
   position: relative;
   flex: 1;
 }
 
+/* Sync arrow — solid */
+.seq-line::after {
+  content: '▶';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8px;
+  color: var(--diagram-color-line-muted);
+  line-height: 1;
+}
+
 .seq-label {
   position: absolute;
-  top: -12px;
+  top: -13px;
   left: 50%;
   transform: translateX(-50%);
   background: #ffffff;
-  padding: 0 4px;
-  font-size: 11px;
-  color: #334155;
+  padding: 1px 7px;
+  font-family: var(--diagram-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--diagram-color-text);
   white-space: nowrap;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
+  letter-spacing: 0.02em;
 }
 
 .d-center {
@@ -187,38 +204,42 @@
   display: none !important;
 }
 
-/* ── Typography Scale ── */
+/* ── Typography Scale — Refined ── */
 .d-title-page {
-  font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 700;
-  color: #000;
+  font-family: var(--diagram-font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--diagram-color-text);
   text-align: center;
-  margin-bottom: 32px;
-  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.d-title {
+  font-family: var(--diagram-font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--diagram-color-text);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.d-label {
+  font-family: var(--diagram-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--diagram-color-muted);
   text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
 }
 
-.d-title { 
-  font-family: var(--font-sans);
-  font-size: 14px; 
-  font-weight: 700; 
-  color: #000; 
-}
-
-.d-label { 
-  font-family: var(--font-mono);
-  font-size: 10px; 
-  font-weight: 600; 
-  color: #6b7280;
-  text-transform: uppercase; 
-  letter-spacing: 0.1em; 
-}
-
-.d-mono { 
-  font-family: var(--font-mono);
-  font-size: 11px; 
-  color: #4b5563; 
+.d-mono {
+  font-family: var(--diagram-font-mono);
+  font-size: 11px;
+  color: var(--diagram-color-muted);
+  letter-spacing: 0.02em;
 }
 
 /* ── Box Primitives — Refined ── */
@@ -230,57 +251,82 @@
   box-shadow: none;
 }
 
-/* Service / Domain — nghiệp vụ */
+/* Service / Domain — nghiệp vụ (left-accent accent bar) */
 .d-service {
   background: var(--diagram-color-service-bg);
-  border-color: var(--diagram-color-service-border);
-  border-left-width: 6px;
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-service-border);
+  padding-left: 14px;
 }
 .d-service .d-title { color: var(--diagram-color-service-border); }
+.d-service .d-label  { color: var(--diagram-color-service-border); opacity: 0.7; }
 
 .d-domain {
   background: var(--diagram-color-domain-bg);
-  border-color: var(--diagram-color-domain-border);
-  border-left-width: 6px;
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-domain-border);
+  padding-left: 14px;
 }
 .d-domain .d-title { color: var(--diagram-color-domain-border); }
+.d-domain .d-label  { color: var(--diagram-color-domain-border); opacity: 0.7; }
 
 /* Storage / Infrastructure — hạ tầng */
 .d-storage {
   background: var(--diagram-color-database-bg);
-  border-color: var(--diagram-color-database-border);
-  border-style: solid;
+  border: 1.5px solid var(--diagram-color-database-border);
+  border-top: 3px solid var(--diagram-color-database-border);
 }
 .d-storage .d-title { color: var(--diagram-color-database-border); }
 
 .d-infra {
   background: var(--diagram-color-infra-bg);
-  border-color: var(--diagram-color-infra-border);
-  border-left-width: 6px;
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-infra-border);
+  padding-left: 14px;
 }
 .d-infra .d-title { color: var(--diagram-color-infra-border); }
 
-/* Event — Warning Yellow */
+/* Event — Message / Queue (pill shape) */
 .d-event {
   background: var(--diagram-color-queue-bg);
-  border-color: var(--diagram-color-queue-border);
-  border-radius: 20px;
+  border: 1.5px solid var(--diagram-color-queue-border);
+  border-radius: 999px;
+  padding: 8px 18px;
 }
+.d-event .d-title { color: var(--diagram-color-queue-border); }
 
 /* Legacy — Industrial Gray */
 .d-legacy {
   background: #f8fafc;
-  border-color: #64748b;
+  border: 1.5px solid #94a3b8;
   color: #334155;
 }
+.d-legacy .d-title { color: #475569; }
 
-/* Cluster — dashed zone */
+/* Cluster — dashed bounding zone */
 .d-cluster {
-  background: rgba(248, 250, 252, 0.7);
-  border: 1px dashed var(--diagram-color-line-muted);
+  background: rgba(248, 250, 252, 0.6);
+  border: 1.5px dashed var(--diagram-color-line-muted);
   border-radius: var(--diagram-radius-card);
   padding: 20px;
 }
+
+/* Gateway / API Surface */
+.d-gateway {
+  background: var(--diagram-color-gateway-bg);
+  border: 1.5px solid var(--diagram-color-gateway-border);
+  border-top: 3px solid var(--diagram-color-gateway-border);
+}
+.d-gateway .d-title { color: var(--diagram-color-gateway-border); }
+
+/* Warning / Anti-pattern zone */
+.d-warning {
+  background: var(--diagram-color-warning-bg);
+  border: 1.5px solid var(--diagram-color-warning-border);
+  border-left: 3px solid var(--diagram-color-warning-border);
+  padding-left: 14px;
+}
+.d-warning .d-title { color: var(--diagram-color-warning-border); }
 
 /* ── Arrow & Connector Utilities ── */
 /* CSS-only arrows using flex separators */

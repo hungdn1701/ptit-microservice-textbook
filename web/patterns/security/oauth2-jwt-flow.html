@@ -3,279 +3,673 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OAuth2 / JWT Flow — Ch.9 | KBLab LMS</title>
+  <title>JWT & OAuth2 Flow — Pattern Story | Ch.9 Security KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
+    /* Custom CSS for JWT & OAuth2 Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 24px;
+      margin: 32px 0;
     }
-    
-    .sim-container { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 32px; }
-    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
-    
-    .architecture-box {
+    @media (max-width: 950px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
-      padding: 20px;
+      border-radius: var(--radius-lg);
+      padding: 24px;
       position: relative;
+    }
+
+    .algo-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.02);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .algo-btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+    }
+    .algo-btn:hover {
+      color: var(--text-main);
+    }
+    .algo-btn.active {
+      background: var(--primary);
+      color: #000;
     }
 
     .flow-canvas {
       height: 380px;
       border: 1px dashed var(--border);
-      background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-sm);
-      margin: 16px 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
       padding: 20px;
     }
 
     .node {
-      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
-      padding: 10px 14px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
-      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+      position: absolute;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      box-shadow: var(--shadow-medium);
+      z-index: 2;
+      font-size: 11.5px;
+      line-height: 1.4;
     }
     
-    .node-client { top: 150px; left: 20px; border-color: var(--primary); color: var(--primary); }
-    .node-auth { top: 20px; right: 20px; border-color: var(--success); color: var(--success); width: 160px; }
-    .node-api { bottom: 20px; right: 20px; border-color: var(--info); color: var(--info); width: 160px; }
+    .node-client { top: 150px; left: 24px; border-color: var(--primary); color: var(--primary); }
+    .node-auth { top: 20px; right: 24px; border-color: var(--success); color: var(--success); width: 180px; }
+    .node-api { bottom: 20px; right: 24px; border-color: var(--info); color: var(--info); width: 180px; }
 
     /* Animated Messages */
     .msg-bubble {
-      position: absolute; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px;
-      background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border);
-      z-index: 10; opacity: 0; white-space: nowrap; font-weight: bold;
+      position: absolute;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      z-index: 10;
+      opacity: 0;
+      white-space: nowrap;
+      font-weight: 700;
+      box-shadow: var(--shadow-glow);
     }
     .msg-req { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
     .msg-token { background: var(--success-dim); border-color: var(--success); color: var(--success); }
     .msg-err { background: var(--danger-dim); border-color: var(--danger); color: var(--danger); }
 
     /* Animations */
-    @keyframes loginReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 40px; left: calc(100% - 250px); opacity: 1; } }
-    @keyframes tokenRes { 0% { top: 40px; left: calc(100% - 250px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
-    
-    @keyframes apiReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 320px; left: calc(100% - 250px); opacity: 1; } }
-    @keyframes apiRes { 0% { top: 320px; left: calc(100% - 250px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
+    @keyframes loginReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 40px; left: calc(100% - 270px); opacity: 1; } }
+    @keyframes tokenRes { 0% { top: 40px; left: calc(100% - 270px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
+    @keyframes apiReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 310px; left: calc(100% - 270px); opacity: 1; } }
+    @keyframes apiRes { 0% { top: 310px; left: calc(100% - 270px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
 
     /* Token Visualizer */
     .token-viz {
-      font-family: var(--font-mono); font-size: 10px; word-break: break-all;
-      background: var(--bg); padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      word-break: break-all;
+      background: #050505;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      line-height: 1.5;
     }
-    .t-header { color: #ff7b72; }
-    .t-payload { color: #d2a8ff; }
-    .t-sign { color: #79c0ff; }
+    .t-header { color: #f43f5e; font-weight: 700; }  /* red header */
+    .t-payload { color: #a855f7; font-weight: 700; } /* purple payload */
+    .t-sign { color: #3b82f6; font-weight: 700; }    /* blue signature */
     
-    .token-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; }
-
-    .query-log {
-      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
-      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
-      height: 280px; overflow-y: auto; border: 1px solid var(--border);
+    .token-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
     }
+
+    .dashboard-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 180px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .log-line {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
     .log-sys { color: var(--text-main); }
     .log-ok { color: var(--success); }
     .log-err { color: var(--danger); }
     .log-warn { color: var(--warning); }
-
-    .algo-switch { display: flex; gap: 8px; margin-bottom: 16px; }
-    .algo-btn { flex: 1; padding: 6px; font-size: 11px; font-weight: bold; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text-muted); }
-    .algo-btn.active { background: var(--primary-dim); color: var(--primary); border-color: var(--primary); }
-
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 9 — Bảo mật hệ thống</div>
-      <h1>JWT & OAuth2 Flow</h1>
-      <p class="subtitle">Mô phỏng vòng đời Token (Access/Refresh) và thuật toán ký (HS256 vs RS256)</p>
-    </header>
 
-    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <!-- Visualization -->
-      <div class="architecture-box">
-        
-        <div class="algo-switch">
-          <button class="algo-btn active" id="btn-hs256" onclick="setAlgo('HS256')">HS256 (Symmetric Key)</button>
-          <button class="algo-btn" id="btn-rs256" onclick="setAlgo('RS256')">RS256 (Asymmetric Key)</button>
-        </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
 
-        <div class="flow-canvas" id="canvas">
-          
-          <div class="node node-client">Client App</div>
-          
-          <div class="node node-auth">Auth Service<br>
-            <span style="font-size:9px; font-weight:normal; color:var(--text-dim)" id="lbl-auth-key">Secret Key: 'kblab-secret'</span>
-          </div>
-          
-          <div class="node node-api">Resource API (Gateway)<br>
-            <span style="font-size:9px; font-weight:normal; color:var(--text-dim)" id="lbl-api-key">Secret Key: 'kblab-secret'</span>
-          </div>
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
 
-          <!-- Animated Messages -->
-          <div class="msg-bubble" id="msg-anim"></div>
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Security Patterns</div>
+  <h1 class="pattern-title">JWT & OAuth2 Flow</h1>
+  <p class="pattern-subtitle">Cơ chế phát hành, xác thực Token và mã hóa chữ ký (Symmetric vs Asymmetric)</p>
+  <div class="pattern-meta">
+    <span>Pattern Category: <strong>Identity & Access Management</strong></span>
+    <span>Chapter Reference: <strong>Chương 9 — §9.2 & §9.3</strong></span>
+    <span>Case Study Bounded Context: <strong>kblab-auth Verification</strong></span>
+  </div>
+</header>
 
-        </div>
-        
-        <div class="controls" style="margin-top: 16px;">
-          <button class="btn btn-success btn-sm" onclick="runFlow('login')">1. Login</button>
-          <button class="btn btn-primary btn-sm" onclick="runFlow('api-ok')">2. Call API (Valid)</button>
-          <button class="btn btn-danger btn-sm" onclick="runFlow('api-exp')">3. Call API (Expired)</button>
-          <button class="btn btn-warning btn-sm" onclick="runFlow('refresh')">4. Refresh Token</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
-        </div>
-
-      </div>
-
-      <!-- Logs & State -->
-      <div style="display: flex; flex-direction: column; gap: 24px;">
-        
-        <div class="architecture-box">
-          <div class="card-title">Token State</div>
-          <div class="token-status">
-            <span>Access Token (15m):</span>
-            <span class="badge badge-success" id="acc-status">Active</span>
-          </div>
-          <div class="token-viz">
-            <span class="t-header">eyJhbGciOiJIUzI1Ni...</span>.<br/>
-            <span class="t-payload">eyJ1c2VySWQiOiJTVjAw...</span>.<br/>
-            <span class="t-sign">SflKxwRJSMeKKF2QT4f...</span>
-          </div>
-          
-          <div class="token-status" style="margin-top: 12px;">
-            <span>Refresh Token (7d):</span>
-            <span class="badge badge-success" id="ref-status">Active</span>
-          </div>
-        </div>
-
-        <div class="architecture-box" style="flex: 1;">
-          <div class="card-title">Flow Log</div>
-          <div class="query-log" id="sys-log">
-            <div class="log-sys">Hệ thống sẵn sàng...</div>
-          </div>
-        </div>
-
-      </div>
-
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Nghẽn cổ chai Xác thực & Rò rỉ khóa bí mật</h2>
     </div>
-
-    <!-- Context -->
-    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
-      <div class="callout">
-        <strong>Từ Sách (Chương 9):</strong> <i>"KBLab hiện dùng HS256 (Symmetric) — các services chia sẻ cùng secret key. Trong production, rủi ro là nếu một service bị hack, attacker có thể tạo token giả. Giải pháp là chuyển sang RS256 (Asymmetric) — Auth Service giữ Private Key để ký, các service khác chỉ có Public Key để verify... JWT có thời hạn (exp). Khi Access Token (ngắn hạn) hết hạn, client dùng Refresh Token (dài hạn) gọi Auth Service để lấy cặp token mới mà không bắt user login lại."</i>
-      </div>
-    </div>
-
   </div>
 
-  <script>
-    let algo = 'HS256';
-    let isExpired = false;
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Trong kiến trúc Microservices, nếu mỗi request của Client đi vào hệ thống đều bắt các service con gọi đồng bộ ngược lại Auth DB để kiểm tra Session, hệ thống sẽ gặp hiện tượng thắt cổ chai và mất khả năng chịu lỗi. Hơn nữa, việc sử dụng các thuật toán ký đối xứng (Symmetric Key) mang lại rủi ro an ninh nghiêm trọng.
+  </p>
 
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">💥</div>
+      <h3>Thắt cổ chai cơ sở dữ liệu Auth (Auth DB Bottleneck)</h3>
+      <p>Khi hàng ngàn request đồng thời đổ vào hệ thống, việc gọi vào Auth DB để validate Session cho từng request làm DB quá tải. Nếu Auth Service bị sập, toàn bộ các dịch vụ khác (dù không yêu cầu đăng nhập) cũng bị treo cứng theo.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🔑</div>
+      <h3>Rủi ro từ Khóa đối xứng (Symmetric Key Leak)</h3>
+      <p>Với thuật toán HS256, cả dịch vụ cấp token (Auth Service) và dịch vụ verify token (Resource API) đều dùng chung một Secret Key. Nếu một microservice bất kỳ của bên thứ 3 hoặc máy trạm chấm bài bị xâm nhập và lộ khóa bí mật, hacker có thể tự sinh token giả mạo quyền ADMIN.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Sinh viên cướp khóa HS256 tự nâng quyền TEACHER</h4>
+      <p>
+        KBLab LMS ban đầu sử dụng HS256 với khóa <code>kblab-secret</code> chia sẻ cho cả 5 microservices. Một sinh viên công nghệ đã hack thành công container chấm bài <code>kblab-judge</code> thông qua lỗi chèn mã SQL (SQL Injection), trích xuất được biến môi trường chứa khóa bí mật. Sinh viên này đã sử dụng script tự sinh token JWT với quyền <code>TEACHER</code>, trực tiếp gọi thẳng API ghi điểm của Core Service để tự sửa điểm môn thi của mình.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Chữ ký số bất đối xứng & Cặp đôi Tokens</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Sử dụng cơ chế mã hóa bất đối xứng **RS256**: Auth Service giữ **Private Key** bảo mật tuyệt đối để ký Token. Các service con chỉ cần có **Public Key** (có thể công khai rộng rãi) để xác thực chữ ký. Để tăng an toàn, hệ thống cấp cặp token: **Access Token** (thời hạn ngắn, ví dụ: 15 phút) để gọi API và **Refresh Token** (thời hạn dài, ví dụ: 7 ngày) được lưu trữ an toàn để đổi lấy Access Token mới mà không cần bắt user đăng nhập lại.
+    </p>
+    <div class="definition-attribution">— Token-based Authentication · OAuth 2.0 & RFC 7519 (JWT)</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Cơ chế xác thực token phi tập trung (Decentralized Authentication) thông qua chữ ký số giúp hệ thống hoàn toàn stateless: các dịch vụ không cần gọi lại DB xác thực, chỉ cần kiểm tra toán học trên chữ ký của JWT.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Authorization Server</h4>
+      <p>Nơi duy nhất xác thực credentials (user/password) và ký phát hành cặp Access/Refresh Token bằng Private Key. Định kỳ xoay vòng khóa (Key Rotation) để nâng cao bảo mật.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Resource Server</h4>
+      <p>API Gateway hoặc các microservices nội bộ. Chúng tải Public Key từ Auth Service về cache. Khi nhận request, chúng tự giải mã chữ ký JWT mà không cần gọi mạng (Zero-network Validation).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Refresh Token Flow</h4>
+      <p>Khi Access Token hết hạn, Client App gửi Refresh Token lên Auth Service. Auth Service kiểm tra tính hợp lệ trong database, nếu OK sẽ cấp một Access Token mới mà người dùng không hề hay biết.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng vòng đời Token & Xác thực chữ ký</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Hãy chọn thuật toán ký (**HS256** hoặc **RS256**), sau đó chạy lần lượt luồng Đăng nhập (Login), gọi API và Refresh token để quan sát hoạt ảnh truyền tin.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Left panel: interactive canvas and controls -->
+    <div class="canvas-card">
+      <div class="algo-switch">
+        <button class="algo-btn active" id="btn-hs256" onclick="setAlgo('HS256')">HS256 (Symmetric Key)</button>
+        <button class="algo-btn" id="btn-rs256" onclick="setAlgo('RS256')">RS256 (Asymmetric Key)</button>
+      </div>
+
+      <div class="flow-canvas" id="canvas">
+        <div class="node node-client">Client App</div>
+        
+        <div class="node node-auth">
+          <span>kblab-auth</span><br>
+          <span style="font-size:8.5px; font-weight:normal; color:var(--text-dim)" id="lbl-auth-key">Secret Key: 'kblab-secret'</span>
+        </div>
+        
+        <div class="node node-api">
+          <span>kblab-gateway</span><br>
+          <span style="font-size:8.5px; font-weight:normal; color:var(--text-dim)" id="lbl-api-key">Secret Key: 'kblab-secret'</span>
+        </div>
+
+        <!-- Animated Messages -->
+        <div class="msg-bubble" id="msg-anim"></div>
+      </div>
+
+      <div class="sim-controls-btn">
+        <button class="btn btn-primary" onclick="runFlow('login')" style="background:var(--success); border-color:var(--success); color:#000; font-size:12px;">1. Đăng nhập (Login)</button>
+        <button class="btn btn-primary" onclick="runFlow('api-ok')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">2. Gọi API (Hợp lệ)</button>
+        <button class="btn" onclick="runFlow('api-exp')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">3. Gọi API (Hết hạn)</button>
+        <button class="btn" onclick="runFlow('refresh')" style="border-color:var(--warning); color:var(--warning); font-size:12px;">4. Đổi Token mới</button>
+        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12px;">Reset</button>
+      </div>
+    </div>
+
+    <!-- Right panel: Token State & logs -->
+    <div class="dashboard-panel">
+      <div>
+        <div class="dashboard-title" style="margin-bottom:12px;">Token State (JWT)</div>
+        <div class="token-status">
+          <span>Access Token (15m):</span>
+          <span class="badge badge-success" id="acc-status">Chưa cấp</span>
+        </div>
+        <div class="token-viz">
+          <span class="t-header" id="jwt-header">Header</span>.<span class="t-payload" id="jwt-payload">Payload</span>.<span class="t-sign" id="jwt-signature">Signature</span>
+        </div>
+        
+        <div class="token-status" style="margin-top: 14px;">
+          <span>Refresh Token (7d):</span>
+          <span class="badge" id="ref-status" style="background:rgba(255,255,255,0.05); color:var(--text-dim);">Chưa cấp</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="dashboard-title" style="margin-bottom:8px;">Logs</div>
+        <div class="sim-log" id="sys-log">
+          <div class="log-sys">Hệ thống sẵn sàng...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Giải pháp an ninh KBLab LMS</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBLab nâng cấp cấu hình bảo mật từ khóa đối xứng HS256 sang RS256 để chống các cuộc tấn công leo thang đặc quyền từ môi trường chấm thi sandbox.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Đánh giá rủi ro và các giải pháp mã hóa chữ ký</h3>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>Cấu hình HS256 ban đầu</th>
+          <th>Cấu hình RS256 đề xuất</th>
+          <th>Mục đích an ninh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Thuật toán ký</td>
+          <td>Symmetric (Mã hóa đối xứng)</td>
+          <td>Asymmetric (Mã hóa bất đối xứng)</td>
+          <td>Ngăn ngừa các service downstream tự sinh hoặc giả mạo token.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Phân phối khóa</td>
+          <td>Chia sẻ chung chuỗi Secret Key.</td>
+          <td>Auth giữ Private Key, Gateway giữ Public Key.</td>
+          <td>Nếu <code>kblab-judge</code> bị hack, hacker có Public Key cũng không thể ký giả mạo.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Xoay vòng khóa (Rotation)</td>
+          <td><span class="b-high">Phức tạp</span> (Yêu cầu restart tất cả services).</td>
+          <td><span class="b-low">Dễ dàng</span> (Gateway fetch lại JWKS endpoint).</td>
+          <td>Thực hiện xoay vòng khóa mỗi 30 ngày tự động không gây downtime.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình nâng cấp an ninh KBLab</h3>
+  <div class="sub-label">Các bước di chuyển luồng Auth sang RS256</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Tạo cặp khóa RSA Private/Public</h4>
+      <p>Sử dụng OpenSSL sinh cặp khóa RSA 2048-bit. Cấu hình <code>kblab-auth</code> tải Private Key từ Secret Manager (Vault/KMS). Expose Public Key qua JWKS endpoint (<code>/.well-known/jwks.json</code>).</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Cấu hình Gateway Resource Server</h4>
+      <p>Cấu hình Spring Security OAuth2 tại <code>kblab-gateway</code> tự động fetch Public Key từ JWKS. Thực hiện validate token cục bộ phi tập trung tại Gateway.</p>
+      <span class="t-badge green">✓ Đảm bảo Gateway chặn đứng token giả</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Tích hợp Refresh Token Flow phía Frontend</h4>
+      <p>Cấu hình interceptor tại Axios/Fetch trên App Client. Khi gọi API nhận lỗi 401, tự động gọi API <code>/oauth2/token</code> sử dụng Refresh Token lưu trong HttpOnly Cookie để lấy token mới.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 4 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Xây dựng Redis Token Blacklist chống thu hồi</h4>
+      <p>Mặc dù JWT stateless không thể thu hồi, KBLab triển khai blacklist trên Redis. Khi user Logout hoặc Đổi mật khẩu, Access Token ID được đưa vào blacklist Redis trong thời gian sống còn lại (15 phút) để từ chối ngay lập tức.</p>
+      <span class="t-badge green">✓ Khả năng thu hồi token tức thời</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng RS256 & OAuth2 khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc gồm nhiều microservices phát triển bởi nhiều team khác nhau</li>
+        <li>Hệ thống yêu cầu độ bảo mật cao, cần ngăn ngừa rò rỉ khóa bí mật</li>
+        <li>Cần hỗ trợ tích hợp đăng nhập từ bên thứ ba (Single Sign-On - SSO)</li>
+        <li>Số lượng request đọc thông tin cá nhân lớn, cần validate stateless phi tập trung</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Ứng dụng monolith nhỏ, phân quyền đơn giản (Symmetric HS256 là đủ đáp ứng)</li>
+        <li>Yêu cầu thu hồi quyền hạn tức thời đến từng giây (stateless JWT có độ trễ thu hồi bằng thời hạn hết hạn)</li>
+        <li>Dữ liệu Payload quá lớn (kích thước token phình to làm chậm network request)</li>
+        <li>Team chưa có kinh nghiệm quản lý hạ tầng lưu trữ khóa bí mật an toàn</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về OAuth2 Flow, Token JWT, thuật toán đối xứng/bất đối xứng, JWKS, và Secret Management trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 9 — Bảo mật hệ thống →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+let algo = 'HS256';
+let isExpired = false;
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function logSys(msg, type = 'sys') {
+  const log = document.getElementById('sys-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+function setAlgo(a) {
+  algo = a;
+  document.querySelectorAll('.algo-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`btn-${a.toLowerCase()}`).classList.add('active');
+  
+  if (a === 'HS256') {
+    document.getElementById('lbl-auth-key').textContent = "Secret Key: 'kblab-secret'";
+    document.getElementById('lbl-api-key').textContent = "Secret Key: 'kblab-secret'";
+    logSys('Hệ thống: Chuyển sang HS256 (Đối xứng). Cả hai dịch vụ dùng chung secret key.', 'warn');
+  } else {
+    document.getElementById('lbl-auth-key').textContent = "Private Key (Bảo mật tuyệt đối)";
+    document.getElementById('lbl-api-key').textContent = "Public Key (Chia sẻ công khai)";
+    logSys('Hệ thống: Chuyển sang RS256 (Bất đối xứng). Auth ký bằng Private Key, API verify bằng Public Key.', 'ok');
+  }
+  resetTokensVisuals();
+}
+
+function resetTokensVisuals() {
+  document.getElementById('jwt-header').textContent = "Header";
+  document.getElementById('jwt-payload').textContent = "Payload";
+  document.getElementById('jwt-signature').textContent = "Signature";
+  document.getElementById('acc-status').className = 'badge';
+  document.getElementById('acc-status').textContent = 'Chưa cấp';
+  document.getElementById('acc-status').style.background = 'rgba(255,255,255,0.05)';
+  document.getElementById('acc-status').style.color = 'var(--text-dim)';
+  
+  document.getElementById('ref-status').className = 'badge';
+  document.getElementById('ref-status').textContent = 'Chưa cấp';
+  document.getElementById('ref-status').style.background = 'rgba(255,255,255,0.05)';
+  document.getElementById('ref-status').style.color = 'var(--text-dim)';
+}
+
+async function animMsg(text, cls, animName) {
+  const msg = document.getElementById('msg-anim');
+  msg.textContent = text;
+  msg.className = `msg-bubble ${cls}`;
+  msg.style.animation = 'none';
+  void msg.offsetWidth;
+  msg.style.animation = `${animName} 0.8s ease-in-out forwards`;
+  await sleep(800);
+  msg.style.opacity = 0;
+}
+
+async function runFlow(scenario) {
+  const accBadge = document.getElementById('acc-status');
+  const refBadge = document.getElementById('ref-status');
+  
+  if (scenario === 'login') {
+    logSys('--- BẮT ĐẦU ĐĂNG NHẬP (LOGIN FLOW) ---', 'sys');
+    await animMsg('POST /login {username, password}', 'msg-req', 'loginReq');
+    logSys('kblab-auth: Kiểm tra thông tin đăng nhập trong database...', 'sys');
+    await sleep(400);
+    logSys(`kblab-auth: Ký số token sử dụng thuật toán ${algo === 'HS256' ? 'khóa đối xứng HS256' : 'khóa bất đối xứng RS256 Private Key'}`, 'ok');
     
-    function logSys(msg, cls) {
-      const log = document.getElementById('sys-log');
-      log.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-      log.scrollTop = log.scrollHeight;
-    }
+    // Render token visualization
+    document.getElementById('jwt-header').innerHTML = algo === 'HS256' ? "eyJhbGciOiJIUzI1NiJ9" : "eyJhbGciOiJSUzI1NiJ9";
+    document.getElementById('jwt-payload').innerHTML = "eyJ1c2VySWQiOiJTVjAwMSIsInJvbGUiOiJTVFVERU5UIn0";
+    document.getElementById('jwt-signature').innerHTML = algo === 'HS256' ? "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" : "uR9v8D1fH8yK3x9B0m2c5...[RSA_SIGN]";
+    
+    await animMsg('200 OK + Cấp Access & Refresh Token', 'msg-token', 'tokenRes');
+    
+    isExpired = false;
+    accBadge.className = 'badge badge-success';
+    accBadge.textContent = 'Active (Còn hạn)';
+    accBadge.style.background = ''; accBadge.style.color = '';
+    
+    refBadge.className = 'badge badge-success';
+    refBadge.textContent = 'Active (Còn hạn)';
+    refBadge.style.background = ''; refBadge.style.color = '';
+    
+    logSys('Client App: Đã lưu Access Token (15 phút) và Refresh Token (7 ngày).', 'ok');
 
-    function setAlgo(a) {
-      algo = a;
-      document.querySelectorAll('.algo-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`btn-${a.toLowerCase()}`).classList.add('active');
-      
-      if (a === 'HS256') {
-        document.getElementById('lbl-auth-key').textContent = "Secret Key: 'kblab-secret'";
-        document.getElementById('lbl-api-key').textContent = "Secret Key: 'kblab-secret'";
-        logSys('Switched to HS256 (Symmetric). Both services share the same secret.', 'log-warn');
-      } else {
-        document.getElementById('lbl-auth-key').textContent = "Private Key (Keep safe!)";
-        document.getElementById('lbl-api-key').textContent = "Public Key (Safe to share)";
-        logSys('Switched to RS256 (Asymmetric). Auth signs with Private, API verifies with Public.', 'log-ok');
+  } else if (scenario === 'api-ok') {
+    if (accBadge.textContent === 'Chưa cấp') {
+      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước để lấy Access Token!', 'warn');
+      return;
+    }
+    if (isExpired) {
+      logSys('Lỗi: Token hiện tại đã HẾT HẠN. Hãy dùng Refresh Token để lấy token mới.', 'err');
+      return;
+    }
+    
+    logSys('--- THỰC HIỆN GỌI API (VALID TOKEN) ---', 'sys');
+    await animMsg('GET /api/core/courses + Bearer Token', 'msg-req', 'apiReq');
+    logSys(`kblab-gateway: Xác thực chữ ký token bằng ${algo === 'HS256' ? 'Secret Key' : 'Public Key'}`, 'sys');
+    await sleep(400);
+    logSys('kblab-gateway: Chữ ký hợp lệ. Kiểm tra exp > now: Passed. Chuyển tiếp request.', 'ok');
+    await animMsg('200 OK + Trả dữ liệu lớp học', 'msg-token', 'apiRes');
+
+  } else if (scenario === 'api-exp') {
+    if (accBadge.textContent === 'Chưa cấp') {
+      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước!', 'warn');
+      return;
+    }
+    logSys('--- THỰC HIỆN GỌI API (EXPIRED TOKEN) ---', 'sys');
+    isExpired = true;
+    accBadge.className = 'badge badge-danger';
+    accBadge.textContent = 'Expired (Hết hạn)';
+    accBadge.style.background = ''; accBadge.style.color = '';
+    
+    await animMsg('GET /api/core/courses + Bearer Token', 'msg-req', 'apiReq');
+    logSys(`kblab-gateway: Kiểm tra thời gian sống của token...`, 'sys');
+    await sleep(400);
+    logSys('kblab-gateway: Lỗi xác thực: Token đã hết hạn (exp < now)! Từ chối.', 'err');
+    await animMsg('401 Unauthorized (Token Expired)', 'msg-err', 'apiRes');
+
+  } else if (scenario === 'refresh') {
+    if (refBadge.textContent === 'Chưa cấp') {
+      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước để được cấp Refresh Token!', 'warn');
+      return;
+    }
+    logSys('--- THỰC HIỆN REFRESH TOKEN FLOW ---', 'sys');
+    await animMsg('POST /oauth2/token {refresh_token}', 'msg-req', 'loginReq');
+    logSys('kblab-auth: Kiểm tra tính hợp lệ của Refresh Token dài hạn trong Database...', 'sys');
+    await sleep(400);
+    logSys(`kblab-auth: Cấp Access Token mới (Ký bằng ${algo === 'HS256' ? 'Secret Key' : 'Private Key'})`, 'ok');
+    
+    // Refresh visual token signature
+    document.getElementById('jwt-signature').innerHTML = algo === 'HS256' ? "NewSignatureHS256..." : "NewRSA_SIGNATURE...";
+    
+    await animMsg('200 OK + Cấp Access Token mới', 'msg-token', 'tokenRes');
+    
+    isExpired = false;
+    accBadge.className = 'badge badge-success';
+    accBadge.textContent = 'Active (Đã đổi mới)';
+    accBadge.style.background = ''; accBadge.style.color = '';
+    logSys('Client App: Đã thay thế Access Token mới thành công. Có thể tiếp tục gọi API.', 'ok');
+  }
+}
+
+function resetSim() {
+  setAlgo('HS256');
+  isExpired = false;
+  resetTokensVisuals();
+  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
+  document.getElementById('msg-anim').style.opacity = 0;
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
-    }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
 
-    async function animMsg(text, cls, animName) {
-      const msg = document.getElementById('msg-anim');
-      msg.textContent = text;
-      msg.className = `msg-bubble ${cls}`;
-      msg.style.animation = 'none';
-      void msg.offsetWidth;
-      msg.style.animation = `${animName} 0.8s ease-in-out forwards`;
-      await sleep(800);
-      msg.style.opacity = 0;
-    }
+// ── Init ──────────────────────────────────────────────────
+resetSim();
 
-    async function runFlow(scenario) {
-      const accBadge = document.getElementById('acc-status');
-      
-      if (scenario === 'login') {
-        logSys('--- LOGIN FLOW ---', 'log-sys');
-        await animMsg('POST /login {user,pass}', 'msg-req', 'loginReq');
-        logSys('Auth Service: Validating credentials...', 'log-sys');
-        await sleep(400);
-        logSys(`Auth Service: Signing JWT with ${algo === 'HS256' ? 'Secret Key' : 'Private Key'}`, 'log-ok');
-        await animMsg('200 OK + {Access, Refresh}', 'msg-token', 'tokenRes');
-        
-        isExpired = false;
-        accBadge.className = 'badge badge-success'; accBadge.textContent = 'Active';
-        logSys('Client: Saved Access & Refresh tokens.', 'log-ok');
-
-      } else if (scenario === 'api-ok') {
-        if (isExpired) { logSys('Cannot run Happy Path while token is forced EXPIRED.', 'log-err'); return; }
-        
-        logSys('--- API CALL (VALID TOKEN) ---', 'log-sys');
-        await animMsg('GET /api/data + Bearer Token', 'msg-req', 'apiReq');
-        logSys(`API Gateway: Verifying JWT signature with ${algo === 'HS256' ? 'Secret Key' : 'Public Key'}`, 'log-sys');
-        await sleep(400);
-        logSys('API Gateway: Signature valid, exp>now. Allowing request.', 'log-ok');
-        await animMsg('200 OK + Data', 'msg-token', 'apiRes');
-
-      } else if (scenario === 'api-exp') {
-        logSys('--- API CALL (EXPIRED TOKEN) ---', 'log-sys');
-        isExpired = true;
-        accBadge.className = 'badge badge-danger'; accBadge.textContent = 'Expired';
-        
-        await animMsg('GET /api/data + Bearer Token', 'msg-req', 'apiReq');
-        logSys(`API Gateway: Verifying JWT signature...`, 'log-sys');
-        await sleep(400);
-        logSys('API Gateway: Token expired (exp < now)! Rejecting.', 'log-err');
-        await animMsg('401 Unauthorized (Token Expired)', 'msg-err', 'apiRes');
-
-      } else if (scenario === 'refresh') {
-        logSys('--- REFRESH TOKEN FLOW ---', 'log-sys');
-        await animMsg('POST /refresh + Refresh Token', 'msg-req', 'loginReq');
-        logSys('Auth Service: Validating long-lived Refresh Token...', 'log-sys');
-        await sleep(400);
-        logSys(`Auth Service: Generating NEW Access Token (signing with ${algo === 'HS256' ? 'Secret Key' : 'Private Key'})`, 'log-ok');
-        await animMsg('200 OK + {New Access Token}', 'msg-token', 'tokenRes');
-        
-        isExpired = false;
-        accBadge.className = 'badge badge-success'; accBadge.textContent = 'Active (Refreshed)';
-        logSys('Client: Replaced old Access Token with new one. Can call API again.', 'log-ok');
-      }
-    }
-
-    function resetSim() {
-      setAlgo('HS256');
-      isExpired = false;
-      document.getElementById('acc-status').className = 'badge badge-success';
-      document.getElementById('acc-status').textContent = 'Active';
-      document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
-      document.getElementById('msg-anim').style.opacity = 0;
-    }
-
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

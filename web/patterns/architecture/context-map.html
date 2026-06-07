@@ -3,277 +3,375 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Context Map — Ch.2 DDD | KBLab LMS</title>
+  <title>Context Map — Pattern Story | Ch.2 DDD KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-    
-    .map-wrapper {
-      position: relative;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-lg);
-      padding: 40px;
-      margin: 32px 0;
-      overflow: hidden;
-    }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text-main); }
 
-    .context-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-      position: relative;
-      z-index: 2;
+    /* Context Map specific */
+    .ctx-canvas {
+      background: rgba(0,0,0,.3); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px; position: relative;
+      min-height: 360px; overflow: hidden;
     }
-
-    /* Span the Identity node across the top */
-    .ctx-top { grid-column: 1 / -1; display: flex; justify-content: center; margin-bottom: 20px; }
-    
     .bc-node {
-      background: var(--bg-card);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
+      position: absolute; border-radius: var(--radius-md); padding: 16px 14px;
+      border: 2px solid; text-align: center; cursor: pointer; transition: all .25s ease;
+      min-width: 130px;
     }
+    .bc-node:hover { transform: scale(1.04); z-index: 10; }
+    .bc-node h4 { font-size: 12px; font-weight: 700; margin-bottom: 4px; font-family: var(--font-sans); }
+    .bc-node .bc-sub { font-size: 9.5px; font-family: var(--font-mono); opacity: .7; }
 
-    .bc-node.upstream { width: 300px; border-color: var(--success); }
-    .bc-node.core { border-color: var(--primary); }
-    .bc-node.support { border-color: var(--info); }
-    .bc-node.polyglot { border-color: var(--warning); }
+    .bc-identity  { border-color: var(--info);    background: rgba(96,165,250,.08);  color: var(--info);    top: 24px;  left: 50%; transform: translateX(-50%); }
+    .bc-core      { border-color: var(--primary);  background: var(--primary-dim);   color: var(--primary); top: 130px; left: 24px; }
+    .bc-assignment{ border-color: var(--warning);  background: rgba(245,158,11,.08); color: var(--warning); top: 130px; right: 24px; }
+    .bc-judge     { border-color: var(--success);  background: var(--success-dim);   color: var(--success); bottom: 24px; left: 80px; }
+    .bc-notif     { border-color: var(--text-dim); background: rgba(255,255,255,.03); color: var(--text-secondary); bottom: 24px; right: 80px; }
 
-    .bc-node:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-glow);
-      border-color: var(--text-main);
+    .ctx-line { position: absolute; pointer-events: none; }
+
+    .rel-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 10.5px; font-family: var(--font-mono); font-weight: 600;
+      border: 1px solid; margin: 4px;
     }
-    
-    .bc-node.selected {
-      box-shadow: 0 0 20px rgba(255, 122, 0, 0.2);
-    }
-    .bc-node.upstream.selected { border-color: var(--success); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-    .bc-node.core.selected { border-color: var(--primary); }
-    .bc-node.support.selected { border-color: var(--info); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
-    .bc-node.polyglot.selected { border-color: var(--warning); box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+    .rel-upstream   { border-color: rgba(255,122,0,.3);  background: var(--primary-dim); color: var(--primary); }
+    .rel-downstream { border-color: rgba(96,165,250,.3); background: rgba(96,165,250,.08); color: var(--info); }
+    .rel-shared     { border-color: rgba(244,63,94,.3);  background: rgba(244,63,94,.08); color: var(--danger); }
+    .rel-conformist { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.08); color: var(--warning); }
 
-    .bc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .bc-title { font-size: 15px; font-weight: 700; font-family: var(--font-sans); color: var(--text-main); }
-    .bc-type { font-size: 9px; font-family: var(--font-mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 4px; }
-    
-    .upstream .bc-type { background: var(--success-dim); color: var(--success); }
-    .core .bc-type { background: var(--primary-dim); color: var(--primary); }
-    .support .bc-type { background: var(--info-dim); color: var(--info); }
-    .polyglot .bc-type { background: var(--warning-dim); color: var(--warning); }
-
-    .bc-entities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-    .entity-tag { font-size: 10px; font-family: var(--font-mono); padding: 2px 8px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid var(--border); color: var(--text-dim); }
-
-    .bc-services { font-size: 11px; color: var(--text-secondary); border-top: 1px solid var(--border); padding-top: 12px; font-family: var(--font-mono); }
-
-    /* SVG Lines Container */
-    .connection-svg {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
-    }
-    .connection-svg path {
-      fill: none; stroke: var(--border-hover); stroke-width: 2; stroke-dasharray: 6 6;
-      animation: dashFlow 30s linear infinite;
-    }
-    .connection-svg .line-upstream { stroke: var(--success); opacity: 0.5; }
-    .connection-svg .line-shared { stroke: var(--primary); stroke-dasharray: none; opacity: 0.5; }
-    
-    @keyframes dashFlow { to { stroke-dashoffset: -1000; } }
-
-    /* Detail Panel */
-    .detail-panel {
-      display: grid; grid-template-columns: 1fr 2fr; gap: 24px;
-      margin-top: 24px; padding: 24px;
+    .info-panel {
       background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      display: none;
+      border-radius: var(--radius-md); padding: 16px 20px; margin-top: 16px;
+      min-height: 80px; transition: all .3s ease;
     }
-    @media (max-width: 768px) { 
-      .context-grid { grid-template-columns: 1fr; }
-      .detail-panel { grid-template-columns: 1fr; } 
-      .bc-node.upstream { width: 100%; }
-    }
-    
-    .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; font-family: var(--font-sans); }
-    .detail-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
-    
-    .rel-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 4px; background: var(--bg-elevated); border: 1px solid var(--border); margin-top: 12px; font-family: var(--font-mono);}
+    .info-panel h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .info-panel p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+    .info-panel .rel-type { font-size: 10.5px; font-family: var(--font-mono); color: var(--primary); margin-bottom: 8px; }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 2 — Strategic DDD</div>
-      <h1>Context Map (KBLab LMS)</h1>
-      <p class="subtitle">Bản đồ 5 Bounded Contexts hoàn chỉnh của hệ thống — không còn chồng chéo, phản ánh đúng kiến trúc trong sách.</p>
-    </header>
 
-    <div class="animate-fadeIn" style="animation-delay: 0.1s">
-      <div class="map-wrapper">
-        
-        <!-- Background Connections (Visual only) -->
-        <svg class="connection-svg">
-          <!-- Central Hub to Nodes -->
-          <path d="M 50% 150 C 50% 200, 25% 250, 25% 250" class="line-upstream" />
-          <path d="M 50% 150 C 50% 200, 75% 250, 75% 250" class="line-upstream" />
-          <!-- Horizontal Shared Kernel between SQL and Academic -->
-          <path d="M 25% 350 L 75% 350" class="line-shared" />
-        </svg>
+<div id="progress-bar"></div>
 
-        <div class="context-grid">
-          
-          <!-- TOP ROW: Identity -->
-          <div class="ctx-top">
-            <div class="bc-node upstream" id="ctx-identity" onclick="selectBC('identity')">
-              <div class="bc-header">
-                <div class="bc-title">Identity & Access</div>
-                <div class="bc-type">Upstream</div>
-              </div>
-              <div class="bc-entities">
-                <span class="entity-tag">User</span><span class="entity-tag">Role</span><span class="entity-tag">Token</span>
-              </div>
-              <div class="bc-services">Service: kblab-auth</div>
-            </div>
-          </div>
+<nav class="act-nav">
+  <button class="act-btn active" onclick="scrollToAct('act1')" id="nav-act1"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" onclick="scrollToAct('act2')" id="nav-act2"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" onclick="scrollToAct('act3')" id="nav-act3"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" onclick="scrollToAct('act4')" id="nav-act4"><span class="act-num">4</span> <span class="act-btn-label">KBLab</span></button>
+</nav>
 
-          <!-- MIDDLE ROW: Core & Academic -->
-          <div class="bc-node core" id="ctx-sql" onclick="selectBC('sql')">
-            <div class="bc-header">
-              <div class="bc-title">SQL Practice</div>
-              <div class="bc-type">Core Domain</div>
-            </div>
-            <div class="bc-entities">
-              <span class="entity-tag">Question</span><span class="entity-tag">Submission</span><span class="entity-tag">Contest</span>
-            </div>
-            <div class="bc-services">Service: kblab-app, judge-*</div>
-          </div>
+<header class="pattern-header">
+  <div class="pattern-badge">Ch.2 — Domain-Driven Design</div>
+  <h1 class="pattern-title">Context Map</h1>
+  <p class="pattern-subtitle">Bản đồ ranh giới giữa các Bounded Contexts — cách các domain model giao tiếp, phụ thuộc lẫn nhau, và bảo vệ tính toàn vẹn của mình.</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-value">Eric Evans</span><span>Coined by</span></div>
+    <div class="meta-item"><span class="meta-value">2003</span><span>DDD Blue Book</span></div>
+    <div class="meta-item"><span class="meta-value">DDD / Architecture</span><span>Category</span></div>
+    <div class="meta-item"><span class="meta-value">Ch.2 §2.4</span><span>Book ref</span></div>
+  </div>
+</header>
 
-          <div class="bc-node support" id="ctx-academic" onclick="selectBC('academic')">
-            <div class="bc-header">
-              <div class="bc-title">Academic Mgmt</div>
-              <div class="bc-type">Support</div>
-            </div>
-            <div class="bc-entities">
-              <span class="entity-tag">Course</span><span class="entity-tag">Assignment</span><span class="entity-tag">Grade</span>
-            </div>
-            <div class="bc-services">Service: kblab-assignment</div>
-          </div>
-
-          <!-- BOTTOM ROW: Network & DevOps -->
-          <div class="bc-node support" id="ctx-network" onclick="selectBC('network')">
-            <div class="bc-header">
-              <div class="bc-title">Network Practice</div>
-              <div class="bc-type">Support</div>
-            </div>
-            <div class="bc-entities">
-              <span class="entity-tag">TCP/UDP Client</span><span class="entity-tag">RMI</span>
-            </div>
-            <div class="bc-services">Service: kblab-judge-network</div>
-          </div>
-
-          <div class="bc-node polyglot" id="ctx-devops" onclick="selectBC('devops')">
-            <div class="bc-header">
-              <div class="bc-title">DevOps Practice</div>
-              <div class="bc-type">Polyglot</div>
-            </div>
-            <div class="bc-entities">
-              <span class="entity-tag">Lab Env</span><span class="entity-tag">Terminal</span><span class="entity-tag">Validator</span>
-            </div>
-            <div class="bc-services">Service: dol-api, dol-infra</div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Detail Panel -->
-      <div class="detail-panel animate-fadeIn" id="detail-panel">
-        <div>
-          <div class="detail-title" id="detail-title">Title</div>
-          <div class="bc-type" id="detail-type" style="display:inline-block;">Type</div>
-          <div id="detail-rel"></div>
-        </div>
-        <div class="detail-text" id="detail-desc">Description</div>
-      </div>
-
-      <!-- Book Context -->
-      <div style="margin-top:24px;">
-        <div class="callout">
-          <strong>Từ Sách (Chương 2):</strong> <i>"KBLab phục vụ giảng dạy, thực hành, đánh giá. Từ góc nhìn DDD, chúng ta xác định 5 bounded contexts chính... Các service hỗ trợ như Gateway, Registry không phải là domain context độc lập."</i> Bản đồ này phản ánh chính xác kiến trúc 5 Domain (Identity, SQL, Academic, Network, DevOps) được mô tả trong bản thảo.
-        </div>
-      </div>
-
+<!-- ACT 1 -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
+  </div>
+  <p class="section-intro">Khi nhiều team cùng build một hệ thống lớn, mỗi team có model riêng cho các khái niệm chung — và không ai biết ai đang dùng gì của ai.</p>
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">🗺️</div>
+      <h3>Ambiguous Ubiquitous Language</h3>
+      <p>"User" trong team Auth là người đăng nhập. "User" trong team Core là learner có enrollment. Cùng từ, khác model — silent bugs khi integrate.</p>
     </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🔀</div>
+      <h3>Implicit Integration — Không ai biết dependency</h3>
+      <p>Assignment Service gọi Core Service API mà không document rõ. Team Core refactor field <code>userId</code> → <code>learnerId</code> làm Assignment crash production.</p>
+    </div>
+    <div class="problem-card warn">
+      <div class="problem-icon">🌐</div>
+      <h3>Shared Database Anti-pattern</h3>
+      <p>Core và Assignment share cùng DB schema. Schema changes của team này break queries của team kia. Không ai dám refactor — "fear of breaking others."</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📜</div>
+      <h3>Undocumented Team Relationships</h3>
+      <p>Ai là upstream? Ai là downstream? Khi Core thay đổi API, Assignment có biết không? Không có "bản đồ" → integration chaos và blame game khi có lỗi.</p>
+    </div>
+  </div>
+  <div class="incident-box">
+    <div class="incident-icon">⚡</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Sprint 12</h4>
+      <p>Team Core đổi <code>submission.score</code> từ <code>Integer</code> sang <code>Float</code> để hỗ trợ partial credit. Assignment Service parse giá trị này và crash với ClassCastException. Không có Contract Test, không có Context Map — phải rollback cả Sprint.</p>
+    </div>
+  </div>
+</section>
 
+<hr class="act-divider">
+
+<!-- ACT 2 -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
+  </div>
+  <div class="pattern-definition">
+    <p class="definition-text">Context Map là bản đồ toàn cục của hệ thống — hiển thị tất cả Bounded Contexts, ranh giới giữa chúng, và mối quan hệ tích hợp (upstream/downstream, shared kernel, anti-corruption layer...). Đây là tài liệu sống, không phải sơ đồ kiến trúc tĩnh.</p>
+    <div class="definition-attribution">— Eric Evans, Domain-Driven Design [6, Ch.14] · 2003</div>
+  </div>
+  <p style="font-size:13px;color:var(--text-secondary);line-height:1.65;max-width:600px;margin-bottom:20px;">Mỗi mối quan hệ giữa hai Bounded Contexts được gọi là một <em>Integration Pattern</em>. Một số patterns phổ biến:</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+    <span class="rel-badge rel-upstream">U — Upstream (nhà cung cấp)</span>
+    <span class="rel-badge rel-downstream">D — Downstream (phụ thuộc)</span>
+    <span class="rel-badge rel-shared">SK — Shared Kernel</span>
+    <span class="rel-badge rel-conformist">CF — Conformist</span>
+    <span class="rel-badge" style="border-color:rgba(34,211,160,.3);background:var(--success-dim);color:var(--success);">ACL — Anti-Corruption Layer</span>
+    <span class="rel-badge" style="border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text-dim);">OHS — Open Host Service</span>
+  </div>
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Upstream (U)</div>
+      <h4>Nhà cung cấp</h4>
+      <p>Định nghĩa API/model. Thay đổi phía Upstream ảnh hưởng Downstream. VD: Auth Service là Upstream của Core.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Downstream (D)</div>
+      <h4>Người phụ thuộc</h4>
+      <p>Phụ thuộc vào Upstream. Nếu Upstream thay đổi, Downstream phải adapt hoặc dùng ACL để tự bảo vệ.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">ACL</div>
+      <h4>Anti-Corruption Layer</h4>
+      <p>Lớp dịch thuật ở phía Downstream — convert model của Upstream sang ngôn ngữ riêng, không để Upstream "ô nhiễm" domain model của mình.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="act-divider">
+
+<!-- ACT 3 -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
+  </div>
+  <p class="section-intro">Click vào từng Bounded Context để xem mối quan hệ integration của nó với các contexts khác trong KBLab.</p>
+  <div class="visualization-wrapper">
+    <div class="vis-header">
+      <span class="vis-title">KBLab — Context Map Interactive</span>
+      <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">Click một context để xem relationships</span>
+    </div>
+    <div class="vis-body">
+      <div class="ctx-canvas" id="ctx-canvas">
+        <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" id="ctx-svg"></svg>
+        <div class="bc-node bc-identity" onclick="showInfo('identity')">
+          <h4>Identity &amp; Auth</h4>
+          <div class="bc-sub">kblab-auth</div>
+        </div>
+        <div class="bc-node bc-core" onclick="showInfo('core')">
+          <h4>Core LMS</h4>
+          <div class="bc-sub">kblab-core</div>
+        </div>
+        <div class="bc-node bc-assignment" onclick="showInfo('assignment')">
+          <h4>Assignment</h4>
+          <div class="bc-sub">kblab-assignment</div>
+        </div>
+        <div class="bc-node bc-judge" onclick="showInfo('judge')">
+          <h4>Judge</h4>
+          <div class="bc-sub">kblab-judge</div>
+        </div>
+        <div class="bc-node bc-notif" onclick="showInfo('notif')">
+          <h4>Notification</h4>
+          <div class="bc-sub">kblab-notification</div>
+        </div>
+      </div>
+      <div class="info-panel" id="info-panel">
+        <div class="rel-type">← Click vào một Bounded Context ở trên để xem chi tiết</div>
+        <p>Mỗi hình chữ nhật là một Bounded Context — một ranh giới ngôn ngữ và model riêng biệt trong KBLab LMS.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="act-divider">
+
+<!-- ACT 4 -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBLab: Apply It</h2></div>
+  </div>
+  <p class="section-intro">KBLab có 5 Bounded Contexts chính. Mapping rõ ràng mối quan hệ giúp team tránh integration accidents và plan API changes có trách nhiệm.</p>
+
+  <h3 class="sub-heading">Context Relationship Map</h3>
+  <p class="sub-label">Upstream/Downstream và Integration Pattern cho từng cặp</p>
+  <table class="gap-table">
+    <tr><th>Upstream (U)</th><th>Downstream (D)</th><th>Pattern</th><th>Risk nếu thiếu</th></tr>
+    <tr>
+      <td class="gap-label">Identity/Auth</td>
+      <td>Core, Assignment, Judge, Notif</td>
+      <td><span class="b-high">OHS + Published Language</span></td>
+      <td>Token format thay đổi → tất cả services crash</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Core LMS</td>
+      <td>Assignment</td>
+      <td><span style="color:var(--info);font-family:var(--font-mono);font-size:11px;font-weight:700;">Customer/Supplier</span></td>
+      <td>Core schema change → Assignment silent bug</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Assignment</td>
+      <td>Judge</td>
+      <td><span class="b-med">Conformist + Event</span></td>
+      <td>Judge API change → Assignment must update</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Core / Assignment</td>
+      <td>Notification</td>
+      <td><span class="b-low">Published Language (Events)</span></td>
+      <td>Low coupling — Notif subscribes to events</td>
+    </tr>
+  </table>
+
+  <h3 class="sub-heading">Migration Timeline</h3>
+  <p class="sub-label">Từ implicit coupling → explicit Context Map</p>
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Animate Timeline</button>
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 1 · Phase 0</div>
+      <h4>Event Storming — vẽ bản đồ domain hiện tại</h4>
+      <p>Workshop 2 ngày với tất cả team. Identify bounded contexts, aggregate, domain events. Output: draft Context Map trên whiteboard.</p>
+      <span class="t-badge orange">Effort: Toàn team × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 2 · Phase 1</div>
+      <h4>Document mối quan hệ hiện tại — không thay đổi code</h4>
+      <p>Vẽ chính thức Context Map. Identify upstream/downstream, shared kernels, implicit dependencies. Đây là bức tranh hiện tại — base line.</p>
+      <span class="t-badge orange">Output: context-map.md trong repo</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 1 · Phase 2</div>
+      <h4>Thêm Contract Tests cho các integration points HIGH risk</h4>
+      <p>Auth → [Core, Assignment]: thêm Pact consumer-driven contract tests. Mỗi khi Auth thay đổi API, CI tự động verify tất cả consumers không bị break.</p>
+      <span class="t-badge green">✓ Safe API evolution</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 2+ · Phase 3</div>
+      <h4>Anti-Corruption Layer cho Core → Assignment</h4>
+      <p>Assignment Service tự build ACL layer để translate Core domain objects sang Assignment domain language. Core có thể refactor internal model mà không break Assignment.</p>
+      <span class="t-badge green">✓ Team autonomy achieved</span>
+    </div>
   </div>
 
-  <script>
-    const bcData = {
-      'identity': {
-        title: 'Identity & Access', type: 'UPSTREAM', color: 'var(--success)',
-        desc: 'Domain rõ ràng nhất — quản lý danh tính người dùng, xác thực, phân quyền. Đây là context <strong>upstream</strong>: mọi context khác đều phụ thuộc vào kết quả authentication. Tách thành service riêng <code>kblab-auth</code> sớm nhất vì thay đổi cơ chế đăng nhập (SSO, Email) không ảnh hưởng logic chấm bài.',
-        rel: '<div class="rel-badge"><span style="color:var(--success)">Customer-Supplier:</span> Cấp phát JWT cho toàn hệ thống</div>'
-      },
-      'sql': {
-        title: 'SQL Practice', type: 'CORE DOMAIN', color: 'var(--primary)',
-        desc: 'Đây là <strong>core domain</strong> ban đầu — phần tạo ra giá trị chính cho hệ thống. Toàn bộ quy trình từ "xem câu hỏi → viết SQL → nộp bài → nhận kết quả" nằm ở đây. Kiến trúc bên trong phức tạp, bao gồm một coordinator (<code>kblab-app</code>) và nhiều processor (<code>kblab-judge</code>, <code>judge-sqlserver</code>).',
-        rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chia sẻ Database với Academic Mgmt</div>'
-      },
-      'academic': {
-        title: 'Academic Management', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
-        desc: 'Quản lý khóa học, bài tập dạng rubric, đăng ký môn, điểm số, điểm danh, và Github Classroom. Context này đã được tách mã nguồn ra khỏi Core Service (<code>kblab-assignment</code>) nhưng <strong>vẫn chia sẻ database (app_db)</strong>. Đây là một trade-off quan trọng được phân tích trong sách.',
-        rel: '<div class="rel-badge"><span style="color:var(--primary)">Shared Kernel:</span> Chung DB với SQL Practice</div>'
-      },
-      'network': {
-        title: 'Network Practice', type: 'SUPPORTING DOMAIN', color: 'var(--info)',
-        desc: 'Domain chuyên biệt cho bài thực hành lập trình mạng (TCP, UDP, RMI, REST, gRPC). Khác với SQL Practice, sinh viên viết client trên IDE cá nhân và kết nối trực tiếp đến server. Ranh giới domain ở đây được xác định bởi <strong>Protocol Semantics</strong>, không chỉ là entities hay database.',
-        rel: '<div class="rel-badge"><span style="color:var(--text-dim)">Isolated:</span> Độc lập hoàn toàn với SQL Judge</div>'
-      },
-      'devops': {
-        title: 'DevOps Practice', type: 'POLYGLOT DOMAIN', color: 'var(--warning)',
-        desc: 'Domain mới phục vụ thực hành Docker/Kubernetes (tạo lab environment cô lập, web terminal, validator). Context này dùng ngôn ngữ <strong>Go, k3s, Sysbox</strong>, khác biệt hoàn toàn với stack Java/Spring Boot của LMS chính, nhưng vẫn dùng chung hệ thống Identity.',
-        rel: '<div class="rel-badge"><span style="color:var(--warning)">Polyglot:</span> Sử dụng Go & k3s thay vì Java</div>'
-      }
-    };
+  <h3 class="sub-heading">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header"><div class="decision-icon">✅</div><div class="decision-title">Phù hợp khi</div></div>
+      <ul class="decision-list">
+        <li>Nhiều team cùng build trên cùng hệ thống</li>
+        <li>Có nhiều domain model phức tạp, dễ nhầm lẫn</li>
+        <li>Đang lên kế hoạch migrate sang microservices</li>
+        <li>Cần identify integration risk trước khi refactor</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header"><div class="decision-icon">❌</div><div class="decision-title">Không cần thiết khi</div></div>
+      <ul class="decision-list">
+        <li>Hệ thống rất nhỏ, 1 team, 1 domain</li>
+        <li>Domain model đơn giản, không có ngôn ngữ mơ hồ</li>
+        <li>Prototype / MVP — context map sẽ thay đổi quá nhanh</li>
+      </ul>
+    </div>
+  </div>
+</section>
 
-    function selectBC(id) {
-      document.querySelectorAll('.bc-node').forEach(n => n.classList.remove('selected'));
-      document.getElementById(`ctx-${id}`).classList.add('selected');
-      
-      const d = bcData[id];
-      document.getElementById('detail-title').textContent = d.title;
-      document.getElementById('detail-title').style.color = d.color;
-      
-      const typeEl = document.getElementById('detail-type');
-      typeEl.textContent = d.type;
-      typeEl.style.color = d.color;
-      typeEl.style.backgroundColor = d.color.replace(')', ', 0.1)').replace('var(--', 'rgba('); // approximation for fallback, best to just use borders
-      typeEl.style.border = `1px solid ${d.color}`;
-      
-      document.getElementById('detail-rel').innerHTML = d.rel;
-      document.getElementById('detail-desc').innerHTML = d.desc;
-      
-      document.getElementById('detail-panel').style.display = 'grid';
-      
-      // Scroll to detail on mobile
-      if(window.innerWidth <= 768) {
-        document.getElementById('detail-panel').scrollIntoView({behavior: 'smooth', block: 'nearest'});
-      }
-    }
+<div class="chapter-bar">
+  <p>Đọc chi tiết về DDD, Bounded Context, Aggregate, và Context Map trong KBLab đầy đủ trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 2 — Phân tích Hướng Dịch vụ &amp; DDD →</a>
+</div>
 
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+<script>
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct,100) + '%';
+  updateNav();
+}, { passive: true });
+
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-'+id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+
+// Context info
+const ctxInfo = {
+  identity: {
+    title: 'Identity & Auth — Upstream của tất cả',
+    rel: 'Pattern: Open Host Service + Published Language',
+    desc: 'Auth Service định nghĩa JWT token format và UserClaims schema. Là Upstream của Core, Assignment, Judge, Notification. Bất kỳ thay đổi nào ở đây đều phải backward-compatible hoặc versioned. Recommended: Keycloak với OIDC standard để giảm lock-in.'
+  },
+  core: {
+    title: 'Core LMS — Hub của business logic',
+    rel: 'Pattern: Customer/Supplier với Assignment · Published Language với Notification',
+    desc: 'Core là Downstream của Auth, Upstream của Assignment và Notification. Core định nghĩa Enrollment, Course, LearnerProfile. Assignment phải translate Core model sang Assignment language — cần ACL để tránh Core model "ô nhiễm" domain logic của Assignment.'
+  },
+  assignment: {
+    title: 'Assignment — Orchestrator của submission flow',
+    rel: 'Pattern: Conformist với Judge (sau khi tách) · Customer/Supplier với Core',
+    desc: 'Assignment nhận submissions, forward sang Judge để chấm, update score về Core. Hiện tại coupling chặt với Core DB — đây là HIGH risk. Cần tách ra thành service riêng với database riêng, giao tiếp qua events.'
+  },
+  judge: {
+    title: 'Judge — CPU-intensive, cần scale độc lập',
+    rel: 'Pattern: Event-based (nhận từ Assignment qua Kafka)',
+    desc: 'Judge là Downstream của Assignment. Nhận SQL submission, execute trong sandbox, trả kết quả. CPU spike trong mùa thi. Sau khi tách hoàn toàn, Judge chỉ cần biết về SubmissionEvent — không cần biết gì về Core hay User model.'
+  },
+  notif: {
+    title: 'Notification — Pure subscriber, không upstream',
+    rel: 'Pattern: Published Language (subscribe domain events)',
+    desc: 'Notification không upstream bất kỳ service nào. Chỉ subscribe events: SubmissionGraded, CourseEnrolled, ContestEnded. Đây là pattern lý tưởng — Notification hoàn toàn độc lập, có thể deploy/restart mà không ảnh hưởng flow chính.'
+  }
+};
+
+function showInfo(key) {
+  const info = ctxInfo[key];
+  const panel = document.getElementById('info-panel');
+  panel.innerHTML = `
+    <div class="rel-type">${info.rel}</div>
+    <h4>${info.title}</h4>
+    <p>${info.desc}</p>
+  `;
+  document.querySelectorAll('.bc-node').forEach(n => n.style.boxShadow = '');
+  event.currentTarget.style.boxShadow = '0 0 20px rgba(255,122,0,.3)';
+}
+
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+updateNav();
+</script>
 </body>
 </html>

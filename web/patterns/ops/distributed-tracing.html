@@ -3,143 +3,664 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Distributed Tracing — Ch.11 | KBLab LMS</title>
+  <title>Distributed Tracing — Pattern Story | Ch.11 Observability KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    .trace-container { position: relative; margin: 24px 0; }
-    .trace-row { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .trace-service { font-size: 12px; font-weight: 600; white-space: nowrap; }
-    .trace-bar-container { position: relative; height: 28px; }
-    .trace-bar { position: absolute; height: 24px; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 10px; font-weight: 500; font-family: var(--font-mono); color: #fff; transition: all 0.5s ease; opacity: 0; }
-    .trace-bar.visible { opacity: 1; }
-    .trace-bar .bar-time { margin-left: auto; font-size: 9px; opacity: 0.8; }
-    .span-detail { margin-top: 16px; padding: 16px; background: var(--bg-elevated); border-radius: var(--radius-md); font-size: 12px; display: none; }
-    .span-detail.visible { display: block; }
-    .span-tag { display: inline-flex; gap: 4px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-family: var(--font-mono); margin: 2px; }
+    /* Custom CSS for Distributed Tracing Waterfall */
+    .trace-container {
+      position: relative;
+      margin: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .trace-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .trace-service {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      color: var(--text-main);
+    }
+    .trace-bar-container {
+      position: relative;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-sm);
+    }
+    .trace-bar {
+      position: absolute;
+      height: 100%;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: #000;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      transform: scaleX(0.8);
+      transform-origin: left center;
+    }
+    .trace-bar.visible {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+    .trace-bar .bar-time {
+      margin-left: auto;
+      font-size: 9.5px;
+      opacity: 0.8;
+      font-weight: 700;
+    }
+
+    .span-detail {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      display: none;
+      transition: all 0.3s ease;
+    }
+    .span-detail.visible {
+      display: block;
+    }
+
+    .span-tag {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      margin: 3px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+    }
     .span-tag .key { color: var(--text-dim); }
-    .span-tag .val { color: var(--primary); }
-    .timeline-ruler { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); padding: 0 0 4px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
-    .correlation-id { font-family: var(--font-mono); font-size: 12px; color: var(--primary); background: var(--primary-dim); padding: 4px 12px; border-radius: 4px; display: inline-block; }
+    .span-tag .val { color: var(--primary); font-weight: 700; }
+
+    .timeline-ruler {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      padding: 0 0 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .correlation-id {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--primary);
+      background: var(--primary-dim);
+      padding: 4px 12px;
+      border-radius: 99px;
+      display: inline-block;
+      border: 1px solid rgba(255, 122, 0, 0.2);
+    }
+
+    .metrics-dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .metric-card:hover {
+      border-color: var(--border-hover);
+    }
+    .metric-num {
+      font-size: 24px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: 4px;
+    }
+    .metric-lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 11 — Observability</div>
-      <h1>Distributed Tracing</h1>
-      <p class="subtitle">Trace request xuyên qua multiple services — Zipkin/Sleuth style</p>
-    </header>
 
-    <div class="controls">
-      <button class="btn btn-primary" onclick="traceRequest('success')">Trace: Submit SQL (Success)</button>
-      <button class="btn btn-danger" onclick="traceRequest('error')">Trace: Submit SQL (Error)</button>
-      <button class="btn" onclick="resetTrace()">Reset</button>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Observability Patterns</div>
+  <h1 class="pattern-title">Distributed Tracing</h1>
+  <p class="pattern-subtitle">Truy vết cuộc gọi xuyên suốt chuỗi Microservices phân tán (Zipkin & Micrometer)</p>
+  <div class="pattern-meta">
+    <span>Implemented via: <strong>Micrometer Observation / Spring Cloud Sleuth & Zipkin</strong></span>
+    <span>Chapter Reference: <strong>Chương 11 — §11.4</strong></span>
+    <span>Case Study Bounded Context: <strong>Core, Kafka, and Judge tracing</strong></span>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Cơn ác mộng dò lỗi hệ thống phân tán</h2>
     </div>
+  </div>
 
-    <!-- Trace Waterfall -->
-    <div class="card">
-      <div class="card-title">Trace Waterfall — <span class="correlation-id" id="trace-id">—</span></div>
-      <div class="timeline-ruler"><span>0ms</span><span>100ms</span><span>200ms</span><span>500ms</span><span>1000ms</span></div>
-      <div class="trace-container" id="trace-container">
-        <div class="trace-row"><div class="trace-service">Gateway</div><div class="trace-bar-container"><div class="trace-bar" id="bar-gateway" style="left:0; width:100%; background: var(--info);">gateway.filter</div></div></div>
-        <div class="trace-row"><div class="trace-service">Core Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-core" style="left:5%; width:90%; background: var(--success);">POST /submissions <span class="bar-time">450ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">Kafka Produce</div><div class="trace-bar-container"><div class="trace-bar" id="bar-kafka" style="left:15%; width:10%; background: var(--warning);">produce <span class="bar-time">50ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">Judge Service</div><div class="trace-bar-container"><div class="trace-bar" id="bar-judge" style="left:30%; width:55%; background: var(--primary);">executeSQL <span class="bar-time">550ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">MySQL Sandbox</div><div class="trace-bar-container"><div class="trace-bar" id="bar-db" style="left:40%; width:30%; background: #8b5cf6;">SQL exec <span class="bar-time">300ms</span></div></div></div>
-        <div class="trace-row"><div class="trace-service">Kafka Result</div><div class="trace-bar-container"><div class="trace-bar" id="bar-result" style="left:85%; width:8%; background: var(--warning);">produce <span class="bar-time">40ms</span></div></div></div>
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi một request từ client đi qua chuỗi dịch vụ phân tán qua cả giao tiếp HTTP đồng bộ và Message Queue bất đồng bộ, việc theo dấu request trở nên vô cùng khó khăn. Mỗi dịch vụ lưu log riêng biệt trong container của mình, không có bất kỳ mối liên hệ nào với nhau.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">🔍</div>
+      <h3>Logs bị cô lập (Isolated Logs)</h3>
+      <p>Khi sinh viên gặp lỗi "Gateway Timeout" khi chấm bài, quản trị viên kiểm tra log của Gateway chỉ thấy lỗi 504. Log của <code>kblab-app</code> vẫn báo đang xử lý, và log của <code>kblab-judge</code> có hàng ngàn dòng test case chạy đồng thời. Không có cách nào để biết dòng log nào thuộc về submission cụ thể của sinh viên đó.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🐢</div>
+      <h3>Dò tìm nút thắt cổ chai độ trễ (Latency Debugging)</h3>
+      <p>Hệ thống chấm bài thi mất 5 giây để phản hồi. Phía hạ tầng không biết nguyên nhân do đâu: do Gateway quá tải, do Kafka truyền tin chậm, do Judge thực thi code nặng, hay do database PostgreSQL bị block. Việc phân tích hiệu năng trở nên bế tắc.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — 3 ngày dò lỗi nguyên nhân bài nộp bị trôi và treo</h4>
+      <p>
+        Trong một buổi thi lớn, một số bài nộp của sinh viên bị stuck ở trạng thái "Đang chấm" (PENDING) vô hạn. Đội kỹ thuật phải tải file log của 4 dịch vụ khác nhau về máy, sử dụng các công cụ filter text theo thời gian để đối chiếu thủ công. Mất tới 3 ngày, họ mới phát hiện ra lỗi do một connection pool của Database MySQL Sandbox bị cạn kiệt, làm luồng callback cập nhật điểm bị treo.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Mô hình truy vết chuỗi cuộc gọi phân tán</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Tự động gán một mã định danh duy nhất gọi là **Trace ID** cho request ngay khi nó bước vào Gateway. Mã Trace ID này được truyền đi xuyên suốt qua các ranh giới mạng (HTTP Headers, Kafka Message Headers). Mỗi đơn vị công việc con tại mỗi service được gọi là một **Span** (gồm Span ID và Parent Span ID). Toàn bộ dữ liệu Span được thu thập tập trung về một hệ thống UI để vẽ biểu đồ Waterfall trực quan.
+    </p>
+    <div class="definition-attribution">— Distributed Tracing Pattern · Dapper (Google Research - 2010)</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Mẫu thiết kế này biến các dòng log hỗn loạn từ nhiều máy chủ thành một bản đồ cây thứ bậc rõ ràng, thể hiện chính xác mối liên hệ cha-con và thời gian thực thi của từng công việc.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Khái niệm 01</div>
+      <h4>Trace ID & Span ID</h4>
+      <p><strong>Trace ID</strong> là ID chung cho toàn bộ luồng request. <strong>Span ID</strong> định danh cho từng chặng riêng biệt. Parent Span ID giúp xây dựng cây quan hệ phân cấp các chặng gọi.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Khái niệm 02</div>
+      <h4>Context Propagation</h4>
+      <p>Cơ chế truyền mã Trace ID qua môi trường mạng. Sử dụng đặc tả W3C Trace Context (header <code>traceparent</code>) hoặc đặc tả B3 (header <code>X-B3-TraceId</code>) được chèn tự động bởi HTTP client / Kafka producer.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Khái niệm 03</div>
+      <h4>Trace Collector (Zipkin / Jaeger)</h4>
+      <p>Một công cụ thu thập các Trace Spans gửi về bất đồng bộ từ các microservices. Collector cung cấp giao diện trực quan hóa dạng Waterfall giúp hiển thị chi tiết lỗi và độ trễ của từng dịch vụ.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng Waterfall Trace trên Zipkin</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Bấm các nút bên dưới để bắt đầu gửi request giả lập. Quan sát quá trình sinh Trace ID và hoạt ảnh dựng biểu đồ Waterfall chặng cuộc gọi của KBLab.
+  </p>
+
+  <div class="controls" style="margin-bottom:20px;">
+    <button class="btn btn-primary" onclick="traceRequest('success')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12.5px;">Trace: Nộp bài chấm (Success)</button>
+    <button class="btn" onclick="traceRequest('error')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12.5px;">Trace: Nộp bài chấm (Error)</button>
+    <button class="btn btn-ghost" onclick="resetTrace()" style="font-size:12.5px;">Reset</button>
+  </div>
+
+  <!-- Trace Waterfall -->
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px;">Trace Waterfall — <span class="correlation-id" id="trace-id">—</span></div>
+    <div class="timeline-ruler"><span>0ms</span><span>200ms</span><span>400ms</span><span>600ms</span><span>800ms</span><span>1000ms</span></div>
+    <div class="trace-container" id="trace-container">
+      <div class="trace-row">
+        <div class="trace-service">kblab-gateway</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-gateway" style="left:0; width:100%; background: var(--info);">gateway.filter (CORS + JWT) <span class="bar-time">1000ms</span></div>
+        </div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-service">kblab-app</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-core" style="left:5%; width:90%; background: var(--success);">POST /submissions (Create) <span class="bar-time">900ms</span></div>
+        </div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-service">Kafka Produce</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-kafka" style="left:15%; width:10%; background: var(--warning);">kafka.produce (submit-topic) <span class="bar-time">100ms</span></div>
+        </div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-service">kblab-judge</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-judge" style="left:30%; width:55%; background: var(--primary);">judge.execute (Execute Code) <span class="bar-time">550ms</span></div>
+        </div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-service">MySQL Sandbox</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-db" style="left:40%; width:30%; background: #8b5cf6; color:#fff;">SQL execute (Testcases) <span class="bar-time">300ms</span></div>
+        </div>
+      </div>
+      <div class="trace-row">
+        <div class="trace-service">Kafka Result</div>
+        <div class="trace-bar-container">
+          <div class="trace-bar" id="bar-result" style="left:85%; width:8%; background: var(--warning);">kafka.produce (result-topic) <span class="bar-time">80ms</span></div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Span Detail -->
-    <div class="card span-detail" id="span-detail">
-      <div class="card-title">Span Details</div>
-      <div id="span-info"></div>
+  <!-- Span Detail -->
+  <div class="span-detail" id="span-detail">
+    <div class="card-title" style="margin-bottom:8px; font-size:12px;">Trace Span Metadata Tags</div>
+    <div id="span-info"></div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-dashboard">
+    <div class="metric-card">
+      <div class="metric-num" id="m-total" style="color:var(--primary);">0</div>
+      <div class="metric-lbl">Tổng số Spans</div>
     </div>
-
-    <!-- Metrics -->
-    <div class="metric-strip" style="margin-top:20px;">
-      <div class="metric"><div class="metric-value" id="m-total" style="color:var(--primary);">0</div><div class="metric-label">Total Spans</div></div>
-      <div class="metric"><div class="metric-value" id="m-latency" style="color:var(--warning);">0</div><div class="metric-label">Total Latency (ms)</div></div>
-      <div class="metric"><div class="metric-value" id="m-services" style="color:var(--success);">0</div><div class="metric-label">Services</div></div>
+    <div class="metric-card">
+      <div class="metric-num" id="m-latency" style="color:var(--warning);">0 ms</div>
+      <div class="metric-lbl">Tổng độ trễ (Latency)</div>
     </div>
+    <div class="metric-card">
+      <div class="metric-num" id="m-services" style="color:var(--success);">0</div>
+      <div class="metric-lbl">Services Tham Gia</div>
+    </div>
+  </div>
+</section>
 
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>Trong KBLab LMS:</strong> Spring Cloud Sleuth tự động inject traceId/spanId vào mỗi request header. Zipkin server thu thập và visualize trace — cho phép debug latency: "Tại sao submit mất 2 giây?" → thấy ngay Judge Service SQL execution mất 1.5s.
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Triển khai Observability tại KBLab</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Tích hợp Distributed Tracing vào hệ thống giúp KBLab giám sát toàn bộ hoạt động của học viên và sinh viên một cách trực quan trong thời gian thực.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Phân tích chênh lệch giải pháp Observability</h3>
+  <div class="sub-label">So sánh các cấp độ giám sát logs</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Mô hình</th>
+          <th>Tính năng thu thập</th>
+          <th>Dò lỗi Latency</th>
+          <th>Độ phức tạp tích hợp</th>
+          <th>Hạ tầng yêu cầu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Cấp độ 1: Isolated Logs</td>
+          <td>Mỗi container ghi file log cục bộ.</td>
+          <td><span class="b-high">Bất khả thi</span> (Dò thủ công cực chậm).</td>
+          <td><span class="b-low">Không có</span></td>
+          <td>Không yêu cầu thêm.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Cấp độ 2: Centralized Logs</td>
+          <td>Gom logs về Elasticsearch/Kibana (ELK Stack).</td>
+          <td>Khó khăn (Chỉ tìm theo từ khóa).</td>
+          <td><span class="b-med">Trung bình</span></td>
+          <td>ELK stack hoặc Grafana Loki.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Cấp độ 3: Distributed Tracing</td>
+          <td>Trace ID bám đuổi request, hiển thị biểu đồ Waterfall.</td>
+          <td><span class="b-low">Dễ dàng</span> (Nhìn biểu đồ thấy ngay chặng nghẽn).</td>
+          <td><span class="b-high">Cao</span> (Tích hợp Sleuth/Micrometer vào Spring).</td>
+          <td>Zipkin Server hoặc Jaeger + Prometheus.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai 3 trụ cột Observability</h3>
+  <div class="sub-label">Các bước đưa giám sát lên môi trường Production</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Tích hợp Spring Micrometer Tracer</h4>
+      <p>Thêm các dependencies <code>io.micrometer:micrometer-tracing-bridge-otel</code> và OpenTelemetry exporter. Cấu hình log format ghi kèm <code>[traceId, spanId]</code> tự động.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Deploy cụm Zipkin Server / Jaeger</h4>
+      <p>Cấu hình Zipkin container trong tệp Docker Compose. Cấu hình các client gửi dữ liệu trace spans bất đồng bộ qua giao thức HTTP (cổng 9411) để không ảnh hưởng năng lực xử lý request.</p>
+      <span class="t-badge green">✓ Tải trực quan hóa biểu đồ waterfall thành công</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Trace context propagation qua Kafka & OpenFeign</h4>
+      <p>Cấu hình OpenFeign Interceptor tự động chèn header <code>traceparent</code>. Cấu hình KafkaTemplate tự động truyền metadata trace thông qua record headers.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 4 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Dashboard Grafana đồng bộ Logs và Traces</h4>
+      <p>Liên kết Grafana Loki và Tempo. Khi click vào một dòng log lỗi trong Grafana, quản trị viên có thể bấm nút "View Trace" để nhảy sang biểu đồ Waterfall của request đó ngay lập tức.</p>
+      <span class="t-badge green">✓ Observability hoàn thiện 100%</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng Distributed Tracing khi</div>
       </div>
+      <ul class="decision-list">
+        <li>Hệ thống microservices phức tạp có chuỗi cuộc gọi sâu ≥ 3 services</li>
+        <li>Hệ thống xử lý nhiều giao dịch bất đồng bộ qua Message Queue</li>
+        <li>Cần tối ưu hóa hiệu năng, giảm latency và phát hiện các điểm nghẽn cổ chai</li>
+        <li>Đội ngũ phát triển cần debug nhanh các lỗi liên dịch vụ trên môi trường Production</li>
+      </ul>
     </div>
-
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Ứng dụng Monolith đơn giản (chỉ cần log và APM đơn luồng là đủ)</li>
+        <li>Hạ tầng phần cứng bị giới hạn nghiêm trọng (Zipkin và Jaeger đòi hỏi lưu trữ logs lớn)</li>
+        <li>Môi trường phát triển có latency quá cao làm méo mó kết quả phân tích tracing</li>
+        <li>Chưa có giải pháp bảo mật bảo vệ cổng ngõ Zipkin Dashboard (tránh lộ thông tin API)</li>
+      </ul>
     </div>
+  </div>
+</section>
 
-  <script>
-    let traceCount = 0;
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Observability, Centralized Logging, Prometheus Metrics, OpenTelemetry và Distributed Tracing trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 11 — Observability →</a>
+</div>
 
-    function traceRequest(type) {
-      traceCount++;
-      const id = `trace-${Date.now().toString(36)}`;
-      document.getElementById('trace-id').textContent = id;
-      const bars = ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'];
-      bars.forEach(b => document.getElementById(b).classList.remove('visible'));
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
 
-      // Animate bars sequentially
-      const delays = [0, 200, 400, 700, 900, 1400];
-      bars.forEach((b, i) => {
-        setTimeout(() => {
-          const el = document.getElementById(b);
-          el.classList.add('visible');
-          if (type === 'error' && b === 'bar-judge') {
-            el.style.background = 'var(--danger)';
-            el.innerHTML = 'executeSQL FAILED <span class="bar-time">ERROR</span>';
-          }
-        }, delays[i]);
-      });
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
-      // Update metrics
-      setTimeout(() => {
-        document.getElementById('m-total').textContent = 6;
-        document.getElementById('m-latency').textContent = type === 'error' ? '350' : '1000';
-        document.getElementById('m-services').textContent = 4;
+// ── Simulator Logic ──────────────────────────────────────
+let traceCount = 0;
 
-        // Show span detail
-        const detail = document.getElementById('span-detail');
-        detail.classList.add('visible');
-        document.getElementById('span-info').innerHTML = `
-          <div style="margin-bottom:8px;"><span class="span-tag"><span class="key">traceId:</span><span class="val">${id}</span></span><span class="span-tag"><span class="key">duration:</span><span class="val">${type === 'error' ? '350ms' : '1000ms'}</span></span><span class="span-tag"><span class="key">status:</span><span class="val" style="color:${type === 'error' ? 'var(--danger)' : 'var(--success)'}">${type === 'error' ? 'ERROR' : 'OK'}</span></span></div>
-          <div style="font-size:11px; color:var(--text-secondary);">
-            <div>Gateway → Core: 10ms (JWT validation)</div>
-            <div>Core → Kafka: 50ms (produce SubmitMessage)</div>
-            <div>Judge: ${type === 'error' ? 'SQLException: Table not found' : '550ms (SQL execution on MySQL sandbox)'}</div>
-            <div>Judge → Kafka: 40ms (produce JudgeResult)</div>
-          </div>
-        `;
-      }, 1600);
-    }
+function logSys(msg, type = 'sys') {
+  const log = document.getElementById('sys-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
 
-    function resetTrace() {
-      ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'].forEach(b => {
-        const el = document.getElementById(b);
-        el.classList.remove('visible');
-        if (b === 'bar-judge') { el.style.background = 'var(--primary)'; el.innerHTML = 'executeSQL <span class="bar-time">550ms</span>'; }
-      });
-      document.getElementById('trace-id').textContent = '—';
-      document.getElementById('m-total').textContent = '0';
-      document.getElementById('m-latency').textContent = '0';
-      document.getElementById('m-services').textContent = '0';
-      document.getElementById('span-detail').classList.remove('visible');
-    }
-
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '' : '️';
-    }
+function traceRequest(type) {
+  traceCount++;
+  const id = `trace-${Date.now().toString(36)}`;
+  document.getElementById('trace-id').textContent = id;
   
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') {
-        document.documentElement.classList.toggle('light', e.data.isLight);
+  const bars = ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'];
+  bars.forEach(b => {
+    const el = document.getElementById(b);
+    el.classList.remove('visible');
+    el.style.background = ''; // clear error coloring
+  });
+  
+  logSys(`[Trace] Khởi tạo trace ${id}. Nhận yêu cầu POST /submissions từ Client.`, 'sys');
+
+  // Animate bars sequentially
+  const delays = [0, 200, 400, 650, 850, 1350];
+  bars.forEach((b, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(b);
+      el.classList.add('visible');
+      
+      if (b === 'bar-gateway') {
+        el.style.background = 'var(--info)';
+        el.innerHTML = `gateway.filter <span class="bar-time">${type === 'error' ? '350ms' : '1000ms'}</span>`;
+        logSys(`[gateway] CORS & JWT check passed. Gán traceId=${id}.`, 'info');
       }
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+      else if (b === 'bar-core') {
+        el.style.background = 'var(--success)';
+        el.innerHTML = `POST /submissions <span class="bar-time">${type === 'error' ? '300ms' : '900ms'}</span>`;
+        logSys(`[kblab-app] Nhận request. Lưu submission vào Database.`, 'success');
+      }
+      else if (b === 'bar-kafka') {
+        el.style.background = 'var(--warning)';
+        el.style.color = '#000';
+        el.innerHTML = `kafka.produce <span class="bar-time">100ms</span>`;
+        logSys(`[kblab-app] Bắn sự kiện SubmissionCreated sang Kafka topic.`, 'warn');
+      }
+      else if (b === 'bar-judge') {
+        if (type === 'error') {
+          el.style.background = 'var(--danger)';
+          el.style.color = '#fff';
+          el.innerHTML = `judge.execute FAILED <span class="bar-time">ERROR</span>`;
+          logSys(`[kblab-judge] Lỗi: Bảng database mysql-sandbox không tồn tại!`, 'error');
+        } else {
+          el.style.background = 'var(--primary)';
+          el.style.color = '#000';
+          el.innerHTML = `judge.execute <span class="bar-time">550ms</span>`;
+          logSys(`[kblab-judge] Đọc tin nhắn từ Kafka. Khởi chạy Docker sandbox chấm bài.`, 'info');
+        }
+      }
+      else if (b === 'bar-db') {
+        if (type === 'error') {
+          el.style.opacity = 0; // DB is not reached on error
+        } else {
+          el.style.background = '#8b5cf6';
+          el.style.color = '#fff';
+          el.innerHTML = `SQL execute <span class="bar-time">300ms</span>`;
+          logSys(`[mysql-sandbox] Chạy 15 test cases SQL thành công.`, 'info');
+        }
+      }
+      else if (b === 'bar-result') {
+        if (type === 'error') {
+          el.style.opacity = 0;
+        } else {
+          el.style.background = 'var(--warning)';
+          el.style.color = '#000';
+          el.innerHTML = `kafka.produce <span class="bar-time">80ms</span>`;
+          logSys(`[kblab-judge] Gửi kết quả chấm điểm (GRADED) quay lại Kafka.`, 'warn');
+        }
+      }
+    }, delays[i]);
+  });
+
+  // Update metrics dashboard
+  setTimeout(() => {
+    document.getElementById('m-total').textContent = type === 'error' ? '4' : '6';
+    document.getElementById('m-latency').textContent = type === 'error' ? '350 ms' : '1000 ms';
+    document.getElementById('m-services').textContent = type === 'error' ? '3' : '4';
+
+    // Show span detail info
+    const detail = document.getElementById('span-detail');
+    detail.classList.add('visible');
+    
+    if (type === 'error') {
+      document.getElementById('span-info').innerHTML = `
+        <div style="margin-bottom:12px;">
+          <span class="span-tag"><span class="key">traceId:</span><span class="val">${id}</span></span>
+          <span class="span-tag"><span class="key">duration:</span><span class="val" style="color:var(--danger)">350ms</span></span>
+          <span class="span-tag"><span class="key">status:</span><span class="val" style="color:var(--danger)">ERROR (500)</span></span>
+        </div>
+        <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+          <div style="color:var(--danger); font-weight:700;">Exception: SQLException tại kblab-judge (VM-Port: 8086)</div>
+          <div style="margin-left:14px; font-family:var(--font-mono); font-size:10.5px;">
+            » Error code: 1146 (Table 'kblab_contest.users' doesn't exist)<br>
+            » Failed span: kblab-judge:judge.execute (SpanID: sp-404f29a)
+          </div>
+        </div>
+      `;
+      logSys(`[Trace] Kết thúc trace ${id} với mã trạng thái ERROR.`, 'error');
+    } else {
+      document.getElementById('span-info').innerHTML = `
+        <div style="margin-bottom:12px;">
+          <span class="span-tag"><span class="key">traceId:</span><span class="val">${id}</span></span>
+          <span class="span-tag"><span class="key">duration:</span><span class="val" style="color:var(--success)">1000ms</span></span>
+          <span class="span-tag"><span class="key">status:</span><span class="val" style="color:var(--success)">OK (200)</span></span>
+        </div>
+        <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+          <div>✅ Gateway Filter Chain: Passed (10ms)</div>
+          <div>✅ kblab-app: Ghi DB submissions (80ms) + Kafka publish (50ms)</div>
+          <div>✅ kblab-judge: Chạy test cases trên Sandbox (550ms)</div>
+          <div>✅ kblab-app: Nhận callback và update trạng thái điểm số (120ms)</div>
+        </div>
+      `;
+      logSys(`[Trace] Kết thúc trace ${id} với mã trạng thái SUCCESS.`, 'success');
+    }
+  }, 1600);
+}
+
+function resetTrace() {
+  const bars = ['bar-gateway', 'bar-core', 'bar-kafka', 'bar-judge', 'bar-db', 'bar-result'];
+  bars.forEach(b => {
+    const el = document.getElementById(b);
+    el.classList.remove('visible');
+    el.style.background = '';
+    el.style.opacity = '';
+    if (b === 'bar-gateway') el.innerHTML = 'gateway.filter <span class="bar-time">1000ms</span>';
+    if (b === 'bar-core') el.innerHTML = 'POST /submissions <span class="bar-time">900ms</span>';
+    if (b === 'bar-kafka') el.innerHTML = 'kafka.produce <span class="bar-time">100ms</span>';
+    if (b === 'bar-judge') el.innerHTML = 'judge.execute <span class="bar-time">550ms</span>';
+    if (b === 'bar-db') el.innerHTML = 'SQL execute <span class="bar-time">300ms</span>';
+    if (b === 'bar-result') el.innerHTML = 'kafka.produce <span class="bar-time">80ms</span>';
+  });
+  document.getElementById('trace-id').textContent = '—';
+  document.getElementById('m-total').textContent = '0';
+  document.getElementById('m-latency').textContent = '0 ms';
+  document.getElementById('m-services').textContent = '0';
+  document.getElementById('span-detail').classList.remove('visible');
+  document.getElementById('sys-log').innerHTML = '<div style="font-style:italic; color:var(--text-dim)">Đang chờ request được gửi tới cổng Gateway...</div>';
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+resetTrace();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

@@ -3,133 +3,1156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REST API Explorer — Ch.3 | KBLab LMS</title>
+  <title>REST API Explorer — Thiết kế RESTful API chuẩn hóa | KBLab LMS</title>
+  <meta name="description" content="Mô phỏng tương tác thiết kế REST API chuẩn hóa theo Richardson Maturity Model Level 2, áp dụng cho hệ thống KBLab LMS.">
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    .method-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: var(--font-mono); }
+    /* Custom styles for REST API Explorer */
+    .rest-simulator {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    @media (max-width: 900px) {
+      .rest-simulator {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .endpoints-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--bg-card);
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    
+    .endpoints-title {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .endpoint-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .endpoint-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--border-hover);
+    }
+    .endpoint-item.selected {
+      background: var(--primary-dim);
+      border-color: rgba(255, 122, 0, 0.3);
+      box-shadow: 0 0 10px rgba(255, 122, 0, 0.05);
+    }
+    .endpoint-item .method {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      min-width: 62px;
+      text-align: center;
+      flex-shrink: 0;
+    }
     .method-GET { background: var(--info-dim); color: var(--info); }
     .method-POST { background: var(--success-dim); color: var(--success); }
-    .method-PUT { background: var(--warning-dim); color: var(--warning); }
     .method-DELETE { background: var(--danger-dim); color: var(--danger); }
-    .endpoint-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; border-radius: var(--radius-sm); }
-    .endpoint-row:hover { background: rgba(255,255,255,0.03); }
-    .endpoint-row.selected { background: var(--primary-dim); border-color: rgba(255,122,0,0.2); }
-    .endpoint-path { font-family: var(--font-mono); font-size: 13px; flex: 1; }
-    .endpoint-desc { font-size: 11px; color: var(--text-dim); }
-    .req-res { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-    @media (max-width: 768px) { .req-res { grid-template-columns: 1fr; } }
-    .status-200 { color: var(--success); }
-    .status-201 { color: var(--success); }
-    .status-400 { color: var(--warning); }
-    .status-404 { color: var(--danger); }
-    .status-500 { color: var(--danger); }
+
+    .endpoint-item .path {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sim-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .config-card, .response-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.2s ease;
+    }
+    .config-card:hover, .response-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .config-header {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .api-url-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      margin-bottom: 16px;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    .api-url-bar .method-label {
+      font-weight: 800;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 600px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    .input-group label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .input-control {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .input-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 8px rgba(255, 122, 0, 0.2);
+    }
+    textarea.input-control {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Network Flow styles */
+    .network-flow-container {
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .flow-line {
+      position: absolute;
+      top: 50%;
+      left: 12.5%;
+      right: 12.5%;
+      height: 2px;
+      background: var(--border);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .flow-dot {
+      position: absolute;
+      top: 50%;
+      left: 12.5%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      z-index: 3;
+    }
+
+    .flow-nodes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      position: relative;
+      z-index: 2;
+    }
+
+    .flow-node {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      text-align: center;
+      width: 100px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+    }
+    .flow-node.active {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      box-shadow: var(--shadow-glow);
+    }
+    .flow-node h5 {
+      font-size: 11px;
+      font-weight: 700;
+      margin: 0 0 2px 0;
+    }
+    .flow-node span {
+      font-size: 9px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* Animation Keyframes */
+    @keyframes flowToGateway {
+      0% { left: 12.5%; opacity: 1; background: var(--success); box-shadow: 0 0 12px var(--success); }
+      100% { left: 37.5%; opacity: 1; background: var(--success); box-shadow: 0 0 12px var(--success); }
+    }
+    @keyframes flowToApp {
+      0% { left: 37.5%; opacity: 1; background: var(--success); box-shadow: 0 0 12px var(--success); }
+      100% { left: 62.5%; opacity: 1; background: var(--success); box-shadow: 0 0 12px var(--success); }
+    }
+    @keyframes flowToDb {
+      0% { left: 62.5%; opacity: 1; background: var(--warning); box-shadow: 0 0 12px var(--warning); }
+      100% { left: 87.5%; opacity: 1; background: var(--warning); box-shadow: 0 0 12px var(--warning); }
+    }
+    @keyframes flowBackToApp {
+      0% { left: 87.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+      100% { left: 62.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+    }
+    @keyframes flowBackToGateway {
+      0% { left: 62.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+      100% { left: 37.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+    }
+    @keyframes flowBackToClient {
+      0% { left: 37.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+      100% { left: 12.5%; opacity: 1; background: var(--info); box-shadow: 0 0 12px var(--info); }
+    }
+
+    .anim-to-gateway { animation: flowToGateway 0.4s ease-in-out forwards; }
+    .anim-to-app { animation: flowToApp 0.4s ease-in-out forwards; }
+    .anim-to-db { animation: flowToDb 0.4s ease-in-out forwards; }
+    .anim-back-to-app { animation: flowBackToApp 0.4s ease-in-out forwards; }
+    .anim-back-to-gateway { animation: flowBackToGateway 0.4s ease-in-out forwards; }
+    .anim-back-to-client { animation: flowBackToClient 0.4s ease-in-out forwards; }
+
+    .console-log {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      height: 140px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+      margin-bottom: 16px;
+    }
+    .console-log div {
+      margin-bottom: 5px;
+      line-height: 1.4;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      padding-bottom: 3px;
+    }
+    .console-log .info { color: var(--info); }
+    .console-log .success { color: var(--success); }
+    .console-log .warn { color: var(--warning); }
+    .console-log .danger { color: var(--danger); }
+    .console-log .timestamp { color: var(--text-dim); margin-right: 6px; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .status-2xx { background: var(--success-dim); color: var(--success); }
+    .status-4xx { background: var(--danger-dim); color: var(--danger); }
+    .status-403 { background: var(--warning-dim); color: var(--warning); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 3 — Thiết kế API</div>
-      <h1>REST API Explorer</h1>
-      <p class="subtitle">Khám phá REST endpoints — click endpoint, xem request/response mẫu</p>
-    </header>
 
-    <!-- Endpoints List -->
-    <div class="card">
-      <div class="card-title">KBLab LMS — Core Service Endpoints</div>
-      <div id="endpoints-list"></div>
+  <!-- ── Scroll Progress Bar ── -->
+  <div id="progress-bar"></div>
+
+  <!-- ── Sticky Act Nav ── -->
+  <nav class="act-nav">
+    <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Vấn đề</span></button>
+    <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Giải pháp</span></button>
+    <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Mô phỏng</span></button>
+    <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">Áp dụng</span></button>
+  </nav>
+
+  <!-- ── Pattern Header ── -->
+  <header class="pattern-header animate-fadeIn">
+    <div class="pattern-badge">API Design Patterns</div>
+    <h1 class="pattern-title">REST API Explorer</h1>
+    <p class="pattern-subtitle">Xây dựng Sandbox chạy thử và tự động tài liệu hóa đặc tả API chuẩn OpenAPI</p>
+    <div class="pattern-meta">
+      <div class="meta-item">
+        <span class="meta-value">API & Integration</span>
+        <span>PATTERNS</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-value">Chương 3 — §3.3</span>
+        <span>BOOK REFERENCE</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-value">kblab-gateway & kblab-app</span>
+        <span>CASE STUDY CONTEXT</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── ACT 1: The Problem ── -->
+  <section class="act-section" id="act1">
+    <div class="act-label">
+      <div class="act-number">1</div>
+      <div>
+        <div class="act-tag">Act 01</div>
+        <h2 class="act-title">Lạc hậu tài liệu (API Drift) & Rào cản chạy thử</h2>
+      </div>
     </div>
 
-    <!-- Request / Response -->
-    <div class="req-res" id="req-res" style="display: none;">
-      <div class="card">
-        <div class="card-title">Request</div>
-        <div class="code-block">
-          <div class="code-block-header">
-            <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
-            <span class="code-block-title" id="req-title">—</span>
+    <p class="section-intro">
+      Trong phát triển phần mềm Agile và microservices, API liên tục thay đổi. Sự thiếu đồng bộ giữa tài liệu thiết kế (Word, Excel) và code triển khai thực tế luôn là nguyên nhân hàng đầu gây lỗi tích hợp hệ thống.
+    </p>
+
+    <div class="problem-grid">
+      <div class="problem-card danger">
+        <div class="problem-icon">📝</div>
+        <h3>Tài liệu tĩnh lạc hậu</h3>
+        <p>Các tài liệu API viết tay trên Wiki hoặc Word nhanh chóng bị lỗi thời ngay khi backend sửa tên trường hoặc đổi URL path. Developer phải liên tục trao đổi để kiểm chứng cấu hình payload thực tế.</p>
+      </div>
+      <div class="problem-card danger">
+        <div class="problem-icon">⚠️</div>
+        <h3>Lỗi đồng bộ (API Drift)</h3>
+        <p>Sự sai lệch giữa đặc tả trên giấy và thực tế code dẫn đến lỗi Runtime khi Frontend gọi Endpoint. Các lỗi này thường chỉ phát hiện muộn ở giai đoạn Staging/UAT, gây trễ tiến độ release.</p>
+      </div>
+      <div class="problem-card danger">
+        <div class="problem-icon">🔌</div>
+        <h3>Cô lập và Khó thử nghiệm</h3>
+        <p>Frontend Dev hoặc đối tác tích hợp muốn test API phải cài đặt Postman, xin cấp quyền, cấu hình token thủ công phức tạp. Thiếu một môi trường thử nghiệm nhanh (Sandbox) để thao tác tức thì.</p>
+      </div>
+    </div>
+
+    <div class="incident-box">
+      <div class="incident-icon">🚨</div>
+      <div class="incident-content">
+        <h4>KBLab Incident — Chậm tiến độ 2 ngày do Endpoint bị thay đổi ngầm</h4>
+        <p>
+          Khi tích hợp module chấm bài tự động, Frontend gọi API <code>POST /api/question</code> theo file đặc tả Word lưu hành nội bộ. Tuy nhiên, Backend đã đổi endpoint sang <code>POST /api/v1/questions</code> (thêm phiên bản v1 và số nhiều) để tuân thủ thiết kế RESTful. Do thiếu tài liệu tập trung tự động cập nhật, Frontend nhận lỗi 404 liên tục và mất 2 ngày để debug, map lại API.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="act-divider">
+
+  <!-- ── ACT 2: The Pattern ── -->
+  <section class="act-section" id="act2">
+    <div class="act-label">
+      <div class="act-number">2</div>
+      <div>
+        <div class="act-tag">Act 02</div>
+        <h2 class="act-title">OpenAPI Specification & Swagger UI Sandbox</h2>
+      </div>
+    </div>
+
+    <div class="pattern-definition">
+      <p class="definition-text">
+        <strong>OpenAPI Specification (OAS):</strong> Là chuẩn mô tả API RESTful độc lập với ngôn ngữ lập trình. Nó cho phép cả con người và máy tính hiểu được cấu trúc API (Endpoints, Parameters, Payloads, Security) mà không cần truy cập trực tiếp vào source code.<br>
+        <strong>Swagger UI / API Explorer:</strong> Tự động biên dịch tài liệu OpenAPI thành giao diện web tương tác, tích hợp sẵn Sandbox (nút "Try it out") để chạy thử API real-time.
+      </p>
+      <div class="definition-attribution">— OpenAPI Initiative & SmartBear Software</div>
+    </div>
+
+    <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+      Với cơ chế tài liệu hóa tự động từ code (Code-First), mã nguồn đóng vai trò là <strong>Source of Truth</strong> duy nhất. Mỗi khi code thay đổi, tài liệu API sẽ tự động cập nhật theo thời gian thực.
+    </p>
+
+    <div class="pattern-anatomy">
+      <div class="anatomy-card">
+        <div class="anatomy-num">Thành phần 01</div>
+        <h4>Backend Annotations</h4>
+        <p>Metadata được tích hợp trực tiếp vào Controller/DTO (như <code>@Operation</code>, <code>@Schema</code>). Đảm bảo code và tài liệu luôn đồng bộ.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="anatomy-num">Thành phần 02</div>
+        <h4>OpenAPI Spec Generator</h4>
+        <p>Công cụ (như Springdoc) quét qua mã nguồn lúc runtime/buildtime để sinh ra file đặc tả dạng JSON/YAML chuẩn hóa.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="anatomy-num">Thành phần 03</div>
+        <h4>Interactive Sandbox</h4>
+        <p>Swagger UI hiển thị trực quan các nhóm endpoint, cấu trúc request/response mẫu, tích hợp sẵn REST Client để thực thi request.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="act-divider">
+
+  <!-- ── ACT 3: How It Works ── -->
+  <section class="act-section" id="act3">
+    <div class="act-label">
+      <div class="act-number">3</div>
+      <div>
+        <div class="act-tag">Act 03</div>
+        <h2 class="act-title">Mô phỏng Swagger UI & REST Client Simulator</h2>
+      </div>
+    </div>
+
+    <p class="section-intro">
+      Chọn một REST Endpoint từ menu bên trái, cấu hình Header xác thực và các tham số đầu vào, rồi click <strong>Gửi Request</strong>. Quan sát gói tin di chuyển qua API Gateway, Microservice đến Database và log xử lý hệ thống.
+    </p>
+
+    <div class="visualization-wrapper">
+      <div class="vis-header">
+        <div class="vis-title">KBLab LMS API Sandbox Explorer</div>
+        <div class="vis-controls">
+          <span class="step-tag tag-process">OpenAPI v3.0.0</span>
+        </div>
+      </div>
+      <div class="vis-body">
+        
+        <div class="rest-simulator">
+          <!-- Left: Endpoints menu -->
+          <div class="endpoints-nav">
+            <div class="endpoints-title">Endpoints List</div>
+            <div class="endpoint-item selected" onclick="selectEndpoint(0)" id="ep-0">
+              <span class="method method-GET">GET</span>
+              <span class="path">/api/v1/questions</span>
+            </div>
+            <div class="endpoint-item" onclick="selectEndpoint(1)" id="ep-1">
+              <span class="method method-GET">GET</span>
+              <span class="path">/questions/{id}</span>
+            </div>
+            <div class="endpoint-item" onclick="selectEndpoint(2)" id="ep-2">
+              <span class="method method-POST">POST</span>
+              <span class="path">/submissions</span>
+            </div>
+            <div class="endpoint-item" onclick="selectEndpoint(3)" id="ep-3">
+              <span class="method method-POST">POST</span>
+              <span class="path">/assignments</span>
+            </div>
+            <div class="endpoint-item" onclick="selectEndpoint(4)" id="ep-4">
+              <span class="method method-DELETE">DELETE</span>
+              <span class="path">/questions/{id}</span>
+            </div>
           </div>
-          <pre id="req-body" style="white-space: pre-wrap;"></pre>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Response — <span id="res-status"></span></div>
-        <div class="code-block">
-          <div class="code-block-header">
-            <div class="traffic-lights"><div class="traffic-light red"></div><div class="traffic-light yellow"></div><div class="traffic-light green"></div></div>
-            <span class="code-block-title" id="res-title">response.json</span>
+
+          <!-- Right: Simulator Console and Controls -->
+          <div class="sim-pane">
+            <div class="config-card">
+              <div class="config-header">
+                <span>Cấu hình HTTP Request</span>
+                <span style="font-size:11px; color:var(--text-secondary); font-family:var(--font-mono);" id="endpoint-desc">Lấy danh sách câu hỏi</span>
+              </div>
+              
+              <div class="api-url-bar">
+                <span class="method-label" id="url-method">GET</span>
+                <span id="url-path">https://api.kblab.edu.vn/api/v1/questions</span>
+              </div>
+
+              <!-- Auth and Headers -->
+              <div class="input-grid">
+                <div class="input-group">
+                  <label for="auth-select">Authorization (JWT Token)</label>
+                  <select id="auth-select" class="input-control" onchange="updateHeaders()">
+                    <option value="student">Bearer student_token (Học viên)</option>
+                    <option value="admin">Bearer admin_gv_token (Giáo viên)</option>
+                    <option value="none">Không gửi Token (Anonymous)</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="header-ct">Content-Type</label>
+                  <input type="text" id="header-ct" class="input-control" value="application/json" readonly>
+                </div>
+              </div>
+
+              <!-- Path / Query params -->
+              <div class="input-grid">
+                <div class="input-group" id="path-param-group" style="display:none;">
+                  <label for="path-param-input" id="path-param-label">Tham số {id}</label>
+                  <input type="text" id="path-param-input" class="input-control" value="q-01" oninput="updateUrlPreview()">
+                </div>
+                <div class="input-group" id="query-param-group">
+                  <label for="query-param-input">Query Parameters</label>
+                  <input type="text" id="query-param-input" class="input-control" value="page=0&size=10" oninput="updateUrlPreview()">
+                </div>
+              </div>
+
+              <!-- Request Body -->
+              <div class="input-group" id="body-group" style="display:none;">
+                <label for="body-input">Request Body (JSON)</label>
+                <textarea id="body-input" class="input-control" spellcheck="false"></textarea>
+              </div>
+
+              <button class="play-btn" id="send-request-btn" onclick="sendSimRequest()" style="width: 100%; margin-bottom: 0;">Gửi Request (Try it out)</button>
+            </div>
+
+            <!-- Visual Flow Network -->
+            <div class="network-flow-container">
+              <div class="flow-line"></div>
+              <div class="flow-dot" id="flow-dot"></div>
+              <div class="flow-nodes">
+                <div class="flow-node active" id="node-client">
+                  <h5>Client</h5>
+                  <span>Portal App</span>
+                </div>
+                <div class="flow-node" id="node-gateway">
+                  <h5>Gateway</h5>
+                  <span>kblab-gateway</span>
+                </div>
+                <div class="flow-node" id="node-app">
+                  <h5>Service</h5>
+                  <span>kblab-app</span>
+                </div>
+                <div class="flow-node" id="node-db">
+                  <h5>Database</h5>
+                  <span>MySQL DB</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Console Log -->
+            <div class="console-log" id="sim-console">
+              <div class="info"><span class="timestamp">[14:20:00]</span> Sandbox sẵn sàng. Click 'Gửi Request' để chạy thử.</div>
+            </div>
+
+            <!-- Response Viewer -->
+            <div class="response-card" id="response-block" style="display: none;">
+              <div class="config-header" style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span>HTTP Response</span>
+                <span id="response-status-badge" class="status-badge status-2xx">200 OK</span>
+              </div>
+              
+              <div class="input-group" style="margin-bottom: 0;">
+                <label>Response Body (JSON)</label>
+                <div class="code-block" style="margin-top: 5px;">
+                  <pre id="response-body-pre" style="white-space: pre-wrap; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-main); margin: 0;"></pre>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <pre id="res-body" style="white-space: pre-wrap;"></pre>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="act-divider">
+
+  <!-- ── ACT 4: KBLab Apply ── -->
+  <section class="act-section" id="act4">
+    <div class="act-label">
+      <div class="act-number">4</div>
+      <div>
+        <div class="act-tag">Act 04</div>
+        <h2 class="act-title">Richardson Maturity Model & Lộ trình chuẩn hóa</h2>
+      </div>
+    </div>
+
+    <!-- Maturity Model Explorer -->
+    <div class="card" style="margin-bottom:32px;">
+      <div class="card-title">Richardson Maturity Model — Định hướng thiết kế API KBLab</div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Đánh giá và nâng cấp độ trưởng thành API theo mô hình Richardson để đảm bảo chuẩn hóa RESTful:
+      </p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px; padding:16px; border-radius:var(--radius-sm); background:var(--danger-dim); text-align:center; border: 1px solid rgba(244,63,94,0.1)">
+          <div style="font-weight:700; font-size:13px; color: var(--danger)">Level 0</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Swamp of POX</div>
+          <p style="font-size:10px; color:var(--text-secondary); margin-top:8px; line-height: 1.4;">Gọi duy nhất endpoint POST để truyền bản tin XML/RPC.</p>
+        </div>
+        <div style="flex:1; min-width:140px; padding:16px; border-radius:var(--radius-sm); background:var(--warning-dim); text-align:center; border: 1px solid rgba(245,158,11,0.1)">
+          <div style="font-weight:700; font-size:13px; color: var(--warning)">Level 1</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Resources</div>
+          <p style="font-size:10px; color:var(--text-secondary); margin-top:8px; line-height: 1.4;">Phân rã URI riêng cho từng tài nguyên (e.g. /questions).</p>
+        </div>
+        <div style="flex:1; min-width:140px; padding:16px; border-radius:var(--radius-sm); background:var(--primary-dim); border:2px solid var(--primary); text-align:center;">
+          <div style="font-weight:700; font-size:13px; color:var(--primary);">Level 2 ✓ Target</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">HTTP Verbs</div>
+          <p style="font-size:10px; color:var(--text-main); margin-top:8px; line-height: 1.4;">Sử dụng đúng HTTP Method & HTTP Status Code chuẩn hóa.</p>
+        </div>
+        <div style="flex:1; min-width:140px; padding:16px; border-radius:var(--radius-sm); background:var(--bg-elevated); text-align:center; border: 1px solid var(--border)">
+          <div style="font-weight:700; font-size:13px; color:var(--text-secondary)">Level 3</div>
+          <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">HATEOAS</div>
+          <p style="font-size:10px; color:var(--text-secondary); margin-top:8px; line-height: 1.4;">Đính kèm link điều hướng trạng thái tiếp theo trong phản hồi.</p>
         </div>
       </div>
     </div>
 
-    <!-- Richardson Maturity -->
-    <div class="card" style="margin-top:24px;">
-      <div class="card-title">Richardson Maturity Model — LMS ở Level 2</div>
-      <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--danger-dim); text-align:center;">
-          <div style="font-weight:700; font-size:13px;">Level 0</div><div style="font-size:11px; color:var(--text-dim);">Swamp of POX</div>
-        </div>
-        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--warning-dim); text-align:center;">
-          <div style="font-weight:700; font-size:13px;">Level 1</div><div style="font-size:11px; color:var(--text-dim);">Resources</div>
-        </div>
-        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--primary-dim); border:2px solid var(--primary); text-align:center;">
-          <div style="font-weight:700; font-size:13px; color:var(--primary);">Level 2 ✓</div><div style="font-size:11px; color:var(--text-secondary);">HTTP Verbs</div>
-        </div>
-        <div style="flex:1; min-width:120px; padding:12px; border-radius:var(--radius-sm); background:var(--bg-elevated); text-align:center;">
-          <div style="font-weight:700; font-size:13px;">Level 3</div><div style="font-size:11px; color:var(--text-dim);">HATEOAS</div>
-        </div>
+    <!-- Gap analysis table -->
+    <h3 class="sub-heading">Phân tích sai lệch và Khắc phục tại KBLab</h3>
+    <div class="sub-label">Bảng đối chiếu khoảng cách (Gap Analysis) và chuẩn hóa API</div>
+    
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th style="width:20%">API Category</th>
+          <th style="width:35%">Khuyết tật API hiện tại</th>
+          <th style="width:45%">Phương án Chuẩn hóa (OpenAPI & REST)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">API Versioning</td>
+          <td>Thiếu thống nhất. Một số endpoint cũ không có version, gây rủi ro crash app client khi thay đổi DB schema.</td>
+          <td>Bắt buộc khai báo tiền tố <code>/api/v1/</code> cho toàn bộ các endpoint. Cấu hình versioning qua path.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Resource Naming</td>
+          <td>Đặt tên tùy tiện, trộn lẫn số ít/nhiều (e.g. <code>/api/question</code> vs <code>/api/users</code>).</td>
+          <td>Chuẩn hóa tên URI bằng <strong>danh từ số nhiều</strong> mô tả resource (e.g. <code>/api/v1/questions</code>).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Error Response</td>
+          <td>Trả về status <code>200 OK</code> kèm thông báo lỗi dạng text, hoặc cấu trúc JSON lỗi không thống nhất.</td>
+          <td>Định nghĩa cấu trúc lỗi chung (timestamp, status, error, message, path). Ném HTTP Status thích hợp (4xx/5xx).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Security Header</td>
+          <td>Để lộ cơ chế sinh token hoặc chấp nhận request không chứa token tại các endpoint quản trị.</td>
+          <td>Bắt buộc lọc JWT qua Gateway, chặn role STUDENT truy cập các endpoints viết hoặc xóa dữ liệu admin.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Roadmap timeline -->
+    <h3 class="sub-heading" style="margin-top:40px;">Lộ trình triển khai tự động hóa tài liệu API</h3>
+    <div class="sub-label">Quy trình 3 bước chuẩn hóa API tích hợp CI/CD</div>
+
+    <div class="kblab-timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 01</div>
+        <h4>Chuẩn hóa cấu trúc Route &amp; DTO Design</h4>
+        <p>
+          Thiết lập cấu trúc Endpoint chuẩn RESTful. Xây dựng lớp DTO (Data Transfer Object) để tách biệt thực thể Database khỏi dữ liệu JSON trả về client, ngăn rò rỉ thông tin nhạy cảm.
+        </p>
+        <span class="t-badge green">Hoàn tất thiết kế</span>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 02</div>
+        <h4>Tích hợp Springdoc OpenAPI Starter</h4>
+        <p>
+          Thêm dependency <code>springdoc-openapi-starter-webmvc-ui</code> vào các file <code>pom.xml</code>. Gắn annotation <code>@Tag</code>, <code>@Operation</code>, <code>@Schema</code> trong Controller để tự động sinh file mô tả OpenAPI JSON tại Runtime.
+        </p>
+        <span class="t-badge orange">Đang thực hiện</span>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-phase">Phase 03</div>
+        <h4>Đồng bộ Portal API tại API Gateway</h4>
+        <p>
+          Cấu hình API Gateway thu thập (aggregate) các file OpenAPI JSON từ tất cả các microservices con độc lập. Trình diễn một giao diện Swagger UI tập trung duy nhất tại Gateway portal cho toàn bộ lập trình viên.
+        </p>
+        <span class="t-badge">Chờ kiểm thử</span>
       </div>
     </div>
 
-    <div style="margin-top:24px;">
-      <div class="callout">
-        <strong>Trong KBLab LMS:</strong> API sử dụng Level 2 REST — resource-oriented URLs, đúng HTTP verbs, DTO pattern (tách entity khỏi response). Còn thiếu: API versioning (/api/v1/), inconsistent naming (/question singular vs /users plural).
+    <!-- Decision Guide -->
+    <h3 class="sub-heading" style="margin-top:40px;">Quy tắc thiết kế API tại KBLab</h3>
+    <div class="decision-grid">
+      <div class="decision-card yes">
+        <div class="decision-header">
+          <div class="decision-icon">✅</div>
+          <div class="decision-title">Nên làm (Best Practices)</div>
+        </div>
+        <ul class="decision-list">
+          <li>Sử dụng danh từ số nhiều cho URI: <code>/api/v1/submissions</code>.</li>
+          <li>Khai báo đầy đủ HTTP Status Code trong OpenAPI annotation (200, 201, 204, 400, 401, 403, 404).</li>
+          <li>Kích hoạt Swagger Sandbox trên môi trường Dev/Staging để hỗ trợ test nhanh.</li>
+          <li>Sử dụng DTO để giới hạn các thuộc tính hiển thị (như ẩn mật khẩu, ẩn mối quan hệ vòng DB).</li>
+        </ul>
+      </div>
+      <div class="decision-card no">
+        <div class="decision-header">
+          <div class="decision-icon">❌</div>
+          <div class="decision-title">Không nên làm (Anti-patterns)</div>
+        </div>
+        <ul class="decision-list">
+          <li>Cấu hình bật Swagger UI công khai trên môi trường Production (nguy cơ bị quét lộ hổng bảo mật).</li>
+          <li>Sử dụng động từ trong đường dẫn: <code>/api/v1/deleteQuestion</code> thay vì dùng đúng HTTP DELETE.</li>
+          <li>Trả về HTTP status 200 OK cho các lỗi hệ thống hoặc xác thực.</li>
+          <li>Thay đổi kiểu dữ liệu payload mà không nâng cấp phiên bản API (api versioning).</li>
+        </ul>
       </div>
     </div>
+  </section>
 
-    </div>
+  <!-- ── Chapter Link Bar ── -->
+  <div class="chapter-bar">
+    <p>Đọc chi tiết về thiết kế REST API, Richardson Maturity Model và bảo mật Gateway trong sách.</p>
+    <a href="#" class="chapter-btn">📖 Chương 3 — Thiết kế Dịch vụ &amp; API →</a>
+  </div>
 
   <script>
+    // ── Scroll Progress & Active Nav ──────────────────────────
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+      updateNav();
+    }, { passive: true });
+
+    const acts = ['act1', 'act2', 'act3', 'act4'];
+    function updateNav() {
+      let cur = 'act1';
+      for (const id of acts) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 90) cur = id;
+      }
+      acts.forEach(id => {
+        const btn = document.getElementById('nav-' + id);
+        if (btn) btn.classList.toggle('active', id === cur);
+      });
+    }
+
+    function scrollToAct(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Timeline Visibility Observer ─────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.timeline-item').forEach(item => {
+      observer.observe(item);
+    });
+
+    // ── Simulator Data & State ───────────────────────────────
     const endpoints = [
-      { method:'GET', path:'/api/questions', desc:'Lấy danh sách câu hỏi (paginated)', req:'GET /api/questions?page=0&size=20&difficulty=HARD\nAuthorization: Bearer eyJhbGci...', res:{ status:200, body:{ data:[{ id:"q-001", title:"SELECT cơ bản", difficulty:"EASY", submitCount:245, acceptRate:0.72 }, { id:"q-002", title:"JOIN 3 bảng", difficulty:"HARD", submitCount:89, acceptRate:0.31 }], pagination:{ page:0, size:20, totalElements:157, totalPages:8, hasNext:true }}}},
-      { method:'GET', path:'/api/questions/{id}', desc:'Chi tiết câu hỏi theo ID', req:'GET /api/questions/q-001\nAuthorization: Bearer eyJhbGci...', res:{ status:200, body:{ id:"q-001", title:"SELECT cơ bản", description:"Viết câu SQL lấy tên sinh viên có điểm > 8", difficulty:"EASY", schema:"students(id, name, gpa)", solution:"SELECT name FROM students WHERE gpa > 8", submitCount:245 }}},
-      { method:'POST', path:'/api/submissions', desc:'Nộp bài SQL', req:'POST /api/submissions\nContent-Type: application/json\nAuthorization: Bearer eyJhbGci...\n\n{\n  "questionId": "q-001",\n  "sqlAnswer": "SELECT name FROM students WHERE gpa > 8",\n  "dbType": "MYSQL"\n}', res:{ status:201, body:{ id:"sub-099", questionId:"q-001", status:"PENDING", message:"Bài nộp đang được chấm...", createdAt:"2026-04-09T10:30:00Z" }}},
-      { method:'PUT', path:'/api/questions/{id}', desc:'Cập nhật câu hỏi', req:'PUT /api/questions/q-001\nContent-Type: application/json\n\n{\n  "title": "SELECT cơ bản (updated)",\n  "difficulty": "MEDIUM"\n}', res:{ status:200, body:{ id:"q-001", title:"SELECT cơ bản (updated)", difficulty:"MEDIUM", updatedAt:"2026-04-09T10:35:00Z" }}},
-      { method:'DELETE', path:'/api/questions/{id}', desc:'Xóa câu hỏi', req:'DELETE /api/questions/q-001\nAuthorization: Bearer eyJhbGci...', res:{ status:204, body:null }},
-      { method:'GET', path:'/api/questions/99999', desc:'Resource không tồn tại → 404', req:'GET /api/questions/99999', res:{ status:404, body:{ status:404, error:"NOT_FOUND", message:"Question not found", timestamp:"2026-04-09T10:30:00Z", path:"/api/questions/99999" }}},
+      {
+        id: 'get-questions',
+        method: 'GET',
+        path: '/api/v1/questions',
+        desc: 'Lấy danh sách câu hỏi (Phân trang)',
+        params: {
+          query: { name: 'page=0&size=10', default: 'page=0&size=10' }
+        },
+        defaultBody: null,
+        successResponse: {
+          status: 200,
+          statusText: 'OK',
+          body: {
+            content: [
+              { id: 'q-01', title: 'Truy vấn cơ bản SELECT', difficulty: 'EASY', acceptRate: 0.75 },
+              { id: 'q-02', title: 'Truy vấn JOIN 3 bảng', difficulty: 'HARD', acceptRate: 0.32 }
+            ],
+            page: 0,
+            size: 10,
+            totalElements: 125,
+            totalPages: 13
+          }
+        }
+      },
+      {
+        id: 'get-question-detail',
+        method: 'GET',
+        path: '/questions/{id}',
+        desc: 'Xem chi tiết câu hỏi & schema mẫu',
+        params: {
+          path: { name: 'id', default: 'q-01' }
+        },
+        defaultBody: null,
+        successResponse: {
+          status: 200,
+          statusText: 'OK',
+          body: {
+            id: 'q-01',
+            title: 'Truy vấn cơ bản SELECT',
+            difficulty: 'EASY',
+            description: 'Viết câu lệnh SQL lấy danh sách tất cả sinh viên khoa CNTT.',
+            schema: 'students(id, name, department, gpa)',
+            solution: "SELECT * FROM students WHERE department = 'CNTT'"
+          }
+        }
+      },
+      {
+        id: 'post-submission',
+        method: 'POST',
+        path: '/submissions',
+        desc: 'Nộp bài làm SQL để biên dịch và chạy',
+        params: {},
+        defaultBody: {
+          questionId: 'q-01',
+          sqlAnswer: "SELECT * FROM students WHERE department = 'CNTT'",
+          dbType: 'MYSQL'
+        },
+        successResponse: {
+          status: 201,
+          statusText: 'Created',
+          body: {
+            id: 'sub-1024',
+            questionId: 'q-01',
+            status: 'PENDING',
+            message: 'Bài nộp thành công, đang gửi tới kblab-judge để đánh giá...',
+            createdAt: '2026-06-07T14:20:00Z'
+          }
+        }
+      },
+      {
+        id: 'post-assignment',
+        method: 'POST',
+        path: '/assignments',
+        desc: 'Tạo bài tập mới (Yêu cầu GV/Admin)',
+        params: {},
+        defaultBody: {
+          title: 'Bài thực hành SQL chương 3',
+          dueDate: '2026-06-15T23:59:59Z',
+          questionIds: ['q-01', 'q-02']
+        },
+        successResponse: {
+          status: 201,
+          statusText: 'Created',
+          body: {
+            id: 'ass-501',
+            title: 'Bài thực hành SQL chương 3',
+            dueDate: '2026-06-15T23:59:59Z',
+            createdAt: '2026-06-07T14:20:00Z'
+          }
+        }
+      },
+      {
+        id: 'delete-question',
+        method: 'DELETE',
+        path: '/questions/{id}',
+        desc: 'Xóa câu hỏi khỏi hệ thống (Yêu cầu GV/Admin)',
+        params: {
+          path: { name: 'id', default: 'q-01' }
+        },
+        defaultBody: null,
+        successResponse: {
+          status: 204,
+          statusText: 'No Content',
+          body: null
+        }
+      }
     ];
 
-    function renderEndpoints() {
-      const el = document.getElementById('endpoints-list');
-      el.innerHTML = endpoints.map((e, i) => `
-        <div class="endpoint-row" onclick="selectEndpoint(${i})" id="ep-${i}">
-          <span class="method-badge method-${e.method}">${e.method}</span>
-          <span class="endpoint-path">${e.path}</span>
-          <span class="endpoint-desc">${e.desc}</span>
-        </div>`).join('');
+    let currentEndpointIndex = 0;
+
+    function selectEndpoint(index) {
+      currentEndpointIndex = index;
+      document.querySelectorAll('.endpoint-item').forEach((item, idx) => {
+        item.classList.toggle('selected', idx === index);
+      });
+
+      const ep = endpoints[index];
+      document.getElementById('endpoint-desc').textContent = ep.desc;
+      document.getElementById('url-method').textContent = ep.method;
+      
+      // Update Method colors
+      const methodLabel = document.getElementById('url-method');
+      methodLabel.className = 'method-label';
+      if (ep.method === 'GET') methodLabel.style.color = 'var(--info)';
+      else if (ep.method === 'POST') methodLabel.style.color = 'var(--success)';
+      else if (ep.method === 'DELETE') methodLabel.style.color = 'var(--danger)';
+
+      // Path Param Group UI
+      if (ep.params.path) {
+        document.getElementById('path-param-group').style.display = 'flex';
+        document.getElementById('path-param-input').value = ep.params.path.default;
+        document.getElementById('path-param-label').textContent = `Tham số {${ep.params.path.name}}`;
+      } else {
+        document.getElementById('path-param-group').style.display = 'none';
+      }
+
+      // Query Param Group UI
+      if (ep.params.query) {
+        document.getElementById('query-param-group').style.display = 'flex';
+        document.getElementById('query-param-input').value = ep.params.query.default;
+      } else {
+        document.getElementById('query-param-group').style.display = 'none';
+      }
+
+      // Body Group UI
+      if (ep.defaultBody) {
+        document.getElementById('body-group').style.display = 'flex';
+        document.getElementById('body-input').value = JSON.stringify(ep.defaultBody, null, 2);
+      } else {
+        document.getElementById('body-group').style.display = 'none';
+      }
+
+      updateUrlPreview();
+      clearOutput();
     }
 
-    function selectEndpoint(i) {
-      const e = endpoints[i];
-      document.querySelectorAll('.endpoint-row').forEach(el => el.classList.remove('selected'));
-      document.getElementById(`ep-${i}`).classList.add('selected');
-      document.getElementById('req-res').style.display = 'grid';
-      document.getElementById('req-title').textContent = `${e.method} ${e.path}`;
-      document.getElementById('req-body').textContent = e.req;
-      const statusCls = `status-${e.res.status}`;
-      document.getElementById('res-status').innerHTML = `<span class="${statusCls}">${e.res.status}</span>`;
-      document.getElementById('res-body').textContent = e.res.body ? JSON.stringify(e.res.body, null, 2) : '(No Content)';
+    function updateUrlPreview() {
+      const ep = endpoints[currentEndpointIndex];
+      let path = ep.path;
+      if (ep.params.path) {
+        const idValue = document.getElementById('path-param-input').value;
+        path = path.replace(`{${ep.params.path.name}}`, idValue);
+      }
+      
+      let queryStr = '';
+      if (ep.params.query) {
+        const qValue = document.getElementById('query-param-input').value;
+        if (qValue.trim() !== '') {
+          queryStr = '?' + qValue;
+        }
+      }
+      
+      document.getElementById('url-path').textContent = `https://api.kblab.edu.vn/api/v1${path}${queryStr}`;
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.documentElement.classList.contains('light') ? '' : '️';
+    function updateHeaders() {
+      clearOutput();
     }
 
-    renderEndpoints();
-  
+    function clearOutput() {
+      document.getElementById('response-block').style.display = 'none';
+      document.getElementById('sim-console').innerHTML = `
+        <div class="info"><span class="timestamp">[14:20:00]</span> Sandbox sẵn sàng. Click 'Gửi Request' để chạy thử.</div>
+      `;
+      resetDot();
+    }
+
+    function resetDot() {
+      const dot = document.getElementById('flow-dot');
+      dot.className = 'flow-dot';
+      dot.style.opacity = 0;
+      document.querySelectorAll('.flow-node').forEach(node => node.classList.remove('active'));
+      document.getElementById('node-client').classList.add('active');
+    }
+
+    function addConsoleLog(text, type = 'info') {
+      const consoleEl = document.getElementById('sim-console');
+      const timeStr = new Date().toLocaleTimeString('vi-VN', { hour12: false });
+      consoleEl.innerHTML += `<div class="${type}"><span class="timestamp">[${timeStr}]</span> ${text}</div>`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    async function animateStep(animClass, activeNodeId) {
+      return new Promise(resolve => {
+        const dot = document.getElementById('flow-dot');
+        dot.className = 'flow-dot'; // Reset class
+        void dot.offsetWidth; // Force reflow
+        dot.className = 'flow-dot ' + animClass;
+        dot.style.opacity = 1;
+
+        document.querySelectorAll('.flow-node').forEach(node => node.classList.remove('active'));
+        if (activeNodeId) {
+          document.getElementById(activeNodeId).classList.add('active');
+        }
+        setTimeout(resolve, 400);
+      });
+    }
+
+    async function sendSimRequest() {
+      const btn = document.getElementById('send-request-btn');
+      btn.disabled = true;
+      clearOutput();
+
+      const ep = endpoints[currentEndpointIndex];
+      const auth = document.getElementById('auth-select').value;
+      const urlPreview = document.getElementById('url-path').textContent;
+
+      addConsoleLog(`Client: Bắt đầu gửi request ${ep.method} tới ${urlPreview}`);
+      
+      // Step 1: Client to Gateway
+      await animateStep('anim-to-gateway', 'node-gateway');
+      addConsoleLog('Gateway: Nhận gói tin, đang kiểm tra JWT token...');
+
+      await sleep(300);
+
+      // Authenticate
+      if (auth === 'none') {
+        addConsoleLog('Gateway: [FAIL] Thiếu Authentication Header (JWT token). Chặn request!', 'danger');
+        await animateStep('anim-back-to-client', 'node-client');
+        renderResponse(401, 'Unauthorized', {
+          timestamp: new Date().toISOString(),
+          status: 401,
+          error: 'Unauthorized',
+          message: 'Full authentication is required to access this resource.',
+          path: `/api/v1${ep.path}`
+        });
+        btn.disabled = false;
+        return;
+      }
+
+      const userRole = auth === 'admin' ? 'ROLE_TEACHER' : 'ROLE_STUDENT';
+      const userName = auth === 'admin' ? 'admin_gv' : 'student01';
+      addConsoleLog(`Gateway: [OK] Token hợp lệ. User: ${userName}, Role: ${userRole}`, 'success');
+      
+      // Authorization check (RBAC)
+      const requiresAdmin = ep.id === 'post-assignment' || ep.id === 'delete-question';
+      if (requiresAdmin && userRole !== 'ROLE_TEACHER') {
+        addConsoleLog(`Gateway: [FAIL] Quyền truy cập không hợp lệ. Endpoint yêu cầu ROLE_TEACHER.`, 'danger');
+        await animateStep('anim-back-to-client', 'node-client');
+        renderResponse(403, 'Forbidden', {
+          timestamp: new Date().toISOString(),
+          status: 403,
+          error: 'Forbidden',
+          message: 'Access is denied. You do not have the required permissions.',
+          path: `/api/v1${ep.path}`
+        });
+        btn.disabled = false;
+        return;
+      }
+
+      addConsoleLog(`Gateway: Định tuyến request đến service kblab-app...`, 'info');
+
+      // Step 2: Gateway to App
+      await animateStep('anim-to-app', 'node-app');
+      addConsoleLog(`kblab-app: Tiếp nhận request, bắt đầu phân tích tham số...`, 'info');
+
+      await sleep(300);
+
+      // Step 3: Check DB connection
+      let needDb = ep.method === 'GET' || ep.method === 'DELETE' || ep.id === 'post-submission' || ep.id === 'post-assignment';
+      let dbError = false;
+      let pathId = ep.params.path ? document.getElementById('path-param-input').value : '';
+
+      if (needDb) {
+        if (ep.id === 'get-question-detail' && pathId !== 'q-01') {
+          dbError = true;
+        }
+        
+        addConsoleLog(`kblab-app: Query Database để lấy/ghi dữ liệu...`, 'info');
+        await animateStep('anim-to-db', 'node-db');
+        
+        await sleep(300);
+
+        if (dbError) {
+          addConsoleLog(`Database: [WARN] Không tìm thấy bản ghi cho khóa id = ${pathId}`, 'warn');
+        } else {
+          addConsoleLog(`Database: [OK] Thực thi truy vấn thành công.`, 'success');
+        }
+
+        await animateStep('anim-back-to-app', 'node-app');
+      }
+
+      // Step 4: App processes response
+      if (ep.id === 'post-submission') {
+        addConsoleLog('kblab-app: Gửi sự kiện message tới Kafka Broker để đánh giá chấm bài...', 'success');
+      }
+      
+      if (dbError) {
+        addConsoleLog(`kblab-app: [FAIL] Ném ResourceNotFoundException.`, 'danger');
+      } else {
+        addConsoleLog(`kblab-app: Tạo payload response JSON thành công.`, 'success');
+      }
+
+      await sleep(200);
+
+      // Step 5: App back to Gateway
+      await animateStep('anim-back-to-gateway', 'node-gateway');
+      addConsoleLog('Gateway: Nhận response từ service kblab-app. Gửi phản hồi về client.');
+
+      // Step 6: Gateway to Client
+      await animateStep('anim-back-to-client', 'node-client');
+
+      // Render Response
+      if (dbError) {
+        renderResponse(404, 'Not Found', {
+          timestamp: new Date().toISOString(),
+          status: 404,
+          error: 'Not Found',
+          message: `Question with ID ${pathId} not found.`,
+          path: `/api/v1/questions/${pathId}`
+        });
+      } else {
+        renderResponse(ep.successResponse.status, ep.successResponse.statusText, ep.successResponse.body);
+      }
+
+      btn.disabled = false;
+    }
+
+    function renderResponse(status, statusText, body) {
+      const respBlock = document.getElementById('response-block');
+      const badge = document.getElementById('response-status-badge');
+      const bodyPre = document.getElementById('response-body-pre');
+
+      respBlock.style.display = 'block';
+      badge.textContent = `${status} ${statusText}`;
+
+      // Styling status badge
+      badge.className = 'status-badge';
+      if (status >= 200 && status < 300) {
+        badge.classList.add('status-2xx');
+      } else if (status === 403) {
+        badge.classList.add('status-403');
+      } else {
+        badge.classList.add('status-4xx');
+      }
+
+      if (body === null) {
+        bodyPre.textContent = '// (No Content)';
+      } else {
+        bodyPre.textContent = JSON.stringify(body, null, 2);
+      }
+      
+      // Auto-scroll to response
+      respBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Initialize Page
+    selectEndpoint(0);
+
+    // Theme communication with parent frame
     window.addEventListener('message', (e) => {
       if (e.data.type === 'SET_THEME') {
         document.documentElement.classList.toggle('light', e.data.isLight);

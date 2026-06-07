@@ -3,22 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CQRS & Event Sourcing — Ch.7 | KBLab LMS</title>
+  <title>CQRS & Event Sourcing — Pattern Story | Ch.7 Data KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
+    /* Custom styles for CQRS & Event Sourcing Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 24px;
+      margin: 32px 0;
     }
-    
-    .sim-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
-    @media (max-width: 900px) { .sim-container { grid-template-columns: 1fr; } }
-    
-    .architecture-box {
+    @media (max-width: 950px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
-      padding: 20px;
+      border-radius: var(--radius-lg);
+      padding: 24px;
       position: relative;
     }
 
@@ -26,42 +32,74 @@
       height: 380px;
       border: 1px dashed var(--border);
       background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-sm);
-      margin: 16px 0;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
     }
 
     .node {
-      position: absolute; background: var(--bg-card); border: 2px solid var(--border);
-      padding: 10px 14px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
-      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+      position: absolute;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      box-shadow: var(--shadow-medium);
+      z-index: 2;
+      font-size: 11px;
     }
     
     .node-command { top: 20px; left: 20px; border-color: var(--warning); color: var(--warning); }
     .node-query { top: 20px; right: 20px; border-color: var(--info); color: var(--info); }
     
     .db {
-      position: absolute; border: 2px solid; border-radius: 8px; padding: 10px;
-      text-align: center; font-family: var(--font-mono); font-size: 11px; z-index: 2;
-      background: var(--bg-elevated);
+      position: absolute;
+      border: 2px solid;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      z-index: 2;
+      background: var(--bg-card);
+      width: 150px;
     }
-    .db-write { top: 90px; left: 20px; border-color: var(--warning); width: 140px; }
-    .db-read { top: 90px; right: 20px; border-color: var(--info); width: 140px; }
+    .db-write { top: 90px; left: 20px; border-color: var(--warning); color: var(--warning); }
+    .db-read { top: 90px; right: 20px; border-color: var(--info); color: var(--info); }
 
     .event-bus {
-      position: absolute; top: 180px; left: 50%; transform: translateX(-50%);
-      width: 80%; height: 40px; border: 2px dashed var(--success);
-      border-radius: 20px; display: flex; align-items: center; justify-content: center;
-      color: var(--success); font-family: var(--font-mono); font-size: 12px; font-weight: bold;
-      background: rgba(16,185,129,0.1); z-index: 1;
+      position: absolute;
+      top: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 40px;
+      border: 2px dashed var(--success);
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--success);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      background: rgba(34, 211, 160, 0.05);
+      z-index: 1;
     }
 
     /* Event Particles */
     .event-dot {
-      position: absolute; width: 12px; height: 12px; border-radius: 50%;
-      background: var(--success); box-shadow: 0 0 10px var(--success);
-      z-index: 3; opacity: 0;
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success-glow);
+      z-index: 3;
+      opacity: 0;
     }
 
     @keyframes writeToBus {
@@ -70,203 +108,528 @@
     }
     @keyframes busToRead {
       0% { top: 190px; left: calc(50% - 6px); opacity: 1; }
-      100% { top: 140px; left: calc(100% - 90px); opacity: 1; }
+      100% { top: 140px; left: calc(100% - 95px); opacity: 1; }
     }
 
     /* Leaderboard Projection */
     .projection-table {
-      position: absolute; bottom: 20px; right: 20px; width: 220px;
-      font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);
-      background: var(--bg); border: 1px solid var(--border); padding: 4px;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 200px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-medium);
     }
-    .projection-table table { width: 100%; border-collapse: collapse; }
-    .projection-table th { border-bottom: 1px solid var(--border); padding: 4px; text-align: left; color: var(--info); }
-    .projection-table td { padding: 4px; border-bottom: 1px dotted rgba(255,255,255,0.1); }
-    .row-update { animation: flashRow 1s ease-out; }
-    @keyframes flashRow { 0% { background: rgba(59,130,246,0.3); } 100% { background: transparent; } }
+    .projection-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .projection-table th {
+      border-bottom: 1px solid var(--border);
+      padding: 4px;
+      text-align: left;
+      color: var(--info);
+      font-size: 9.5px;
+      text-transform: uppercase;
+    }
+    .projection-table td {
+      padding: 4px 0;
+      border-bottom: 1px dotted rgba(255,255,255,0.05);
+    }
+    .row-update {
+      animation: flashRow 0.8s ease-out;
+    }
+    @keyframes flashRow {
+      0% { background: rgba(96, 165, 250, 0.25); }
+      100% { background: transparent; }
+    }
 
     /* Event Store Log */
     .event-store {
-      position: absolute; bottom: 20px; left: 20px; width: 200px;
-      font-family: var(--font-mono); font-size: 9px; color: var(--warning);
-      background: var(--bg); border: 1px solid var(--warning); padding: 6px;
-      height: 120px; overflow-y: hidden;
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 180px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--warning);
+      background: var(--bg);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 8px;
+      height: 120px;
+      overflow-y: auto;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-medium);
     }
-    .es-entry { padding: 2px 0; border-bottom: 1px solid rgba(245,158,11,0.2); margin-bottom: 2px; }
+    .es-entry {
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(245,158,11,0.1);
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
 
-    .query-log {
-      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
-      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
-      height: 150px; overflow-y: auto; border: 1px solid var(--border);
+    .dashboard-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .log-sys { color: var(--text-main); }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 200px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .log-line {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
     .log-cmd { color: var(--warning); }
     .log-evt { color: var(--success); }
     .log-qry { color: var(--info); }
-
+    .log-sys { color: var(--text-main); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 7 — Quản lý Dữ liệu</div>
-      <h1>CQRS & Event Sourcing</h1>
-      <p class="subtitle">Mô phỏng Leaderboard Contest: Tách biệt Write Model (Command) và Read Model (Query)</p>
-    </header>
 
-    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <!-- Visualization -->
-      <div class="architecture-box">
-        <div class="card-title">Kiến trúc CQRS + ES</div>
-        <div class="cqrs-canvas">
-          
-          <!-- Nodes -->
-          <div class="node node-command">Command API (Write)</div>
-          <div class="node node-query">Query API (Read)</div>
-          
-          <!-- Databases -->
-          <div class="db db-write">
-            Event Store (Source of Truth)
-          </div>
-          <div class="db db-read">
-            Leaderboard DB (Redis/Materialized)
-          </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
 
-          <!-- Bus -->
-          <div class="event-bus">Kafka Event Bus</div>
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
 
-          <!-- Particles -->
-          <div class="event-dot" id="dot1"></div>
-          <div class="event-dot" id="dot2"></div>
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">Data Architecture Patterns</div>
+  <h1 class="pattern-title">CQRS & Event Sourcing</h1>
+  <p class="pattern-subtitle">Tách biệt Mô hình Đọc/Ghi dữ liệu và Lưu trữ trạng thái thông qua Chuỗi sự kiện</p>
+  <div class="pattern-meta">
+    <span>Pattern Category: <strong>Distributed Systems Patterns</strong></span>
+    <span>Chapter Reference: <strong>Chương 7 — §7.3 & §7.4</strong></span>
+    <span>Case Study Bounded Context: <strong>Contest Leaderboard Service</strong></span>
+  </div>
+</header>
 
-          <!-- Event Store Log -->
-          <div class="event-store" id="es-log">
-            <div style="color:var(--text-dim); font-style:italic">Event Store Empty</div>
-          </div>
-
-          <!-- Projection Table -->
-          <div class="projection-table">
-            <table>
-              <thead><tr><th>User</th><th>Score</th></tr></thead>
-              <tbody id="leaderboard">
-                <tr id="row-u1"><td>user_01</td><td>0</td></tr>
-                <tr id="row-u2"><td>user_02</td><td>0</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-        
-        <div class="controls">
-          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u1', 10)">Nộp bài User_01 (+10)</button>
-          <button class="btn btn-sm" style="border-color:var(--warning); color:var(--warning)" onclick="sendCommand('u2', 20)">Nộp bài User_02 (+20)</button>
-          <button class="btn btn-sm" style="border-color:var(--info); color:var(--info)" onclick="sendQuery()">Lấy Leaderboard</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
-        </div>
-
-      </div>
-
-      <!-- Log Panel -->
-      <div class="architecture-box">
-        <div class="card-title">System Log</div>
-        <div class="query-log" id="sys-log">
-          <div class="log-sys">Hệ thống sẵn sàng...</div>
-        </div>
-
-        <!-- Book Context -->
-        <div style="margin-top: 16px;">
-          <div class="callout" style="font-size: 11px;">
-            <strong>Từ Sách (Chương 7):</strong> <i>"Bảng xếp hạng cần data từ nhiều services (Auth, Core) — SQL JOIN truyền thống không thể khi database đã tách. Với CQRS, leaderboard có read model riêng: write side publish <code>ScoreUpdatedEvent</code>, read side consume event và cập nhật <code>LeaderboardEntry</code> denormalized. Query leaderboard chỉ cần <code>findByContestId()</code> — đơn giản, nhanh, không cần JOIN."</i>
-          </div>
-        </div>
-      </div>
-
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Lỗi thắt cổ chai của cấu trúc Đọc/Ghi chung</h2>
     </div>
-
   </div>
 
-  <script>
-    let scores = { 'u1': 0, 'u2': 0 };
-    let seq = 1;
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Trong các hệ thống CRUD truyền thống, Đọc (Read) và Ghi (Write) dữ liệu sử dụng chung một mô hình dữ liệu (Database Schema). Khi lượng truy cập đọc dữ liệu tăng vọt (ví dụ: F5 liên tục), các truy vấn đọc phức tạp (nhiều bảng JOIN) sẽ khóa bảng dữ liệu, làm nghẽn toàn bộ luồng ghi.
+  </p>
 
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-    
-    function logSys(msg, cls) {
-      const log = document.getElementById('sys-log');
-      log.innerHTML += `<div class="${cls}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-      log.scrollTop = log.scrollHeight;
-    }
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">📉</div>
+      <h3>Khóa bảng & Giảm Latency khi Ghi</h3>
+      <p>Khi thực hiện các câu query thống kê phức tạp (JOIN 4-5 bảng), cơ sở dữ liệu sẽ áp dụng cơ chế Shared Lock trên các dòng dữ liệu. Điều này ngăn chặn các câu lệnh <code>INSERT</code> hoặc <code>UPDATE</code> từ luồng ghi chính, dẫn đến tăng thời gian phản hồi API ghi nghiêm trọng.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">❌</div>
+      <h3>Mất dấu lịch sử biến đổi dữ liệu</h3>
+      <p>Hệ thống CRUD chỉ lưu trữ trạng thái hiện tại (Current State) của dữ liệu. Khi thực hiện thay đổi, trạng thái cũ bị ghi đè hoàn toàn. Việc truy vết lịch sử nghiệp vụ (Audit Trail) để hiểu "tại sao dữ liệu có trạng thái như thế này" trở nên vô cùng phức tạp và dễ sai sót.</p>
+    </div>
+  </div>
 
-    function logEs(msg) {
-      const es = document.getElementById('es-log');
-      if(seq === 1) es.innerHTML = ''; // clear placeholder
-      es.innerHTML = `<div class="es-entry">${seq}. ${msg}</div>` + es.innerHTML;
-      seq++;
-    }
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Sập Database vì sinh viên spam xem bảng xếp hạng</h4>
+      <p>
+        Trong kỳ thi lập trình Contest Mode, 500 sinh viên nộp code chấm bài liên tục. Đồng thời, 10,000 lượt truy cập xem bảng xếp hạng (Leaderboard) được tải lại liên tục. Do bảng xếp hạng yêu cầu thực hiện câu lệnh SQL JOIN phức tạp giữa 3 bảng: <code>Submissions</code>, <code>Assignments</code> và <code>Users</code> kèm sắp xếp theo điểm số, Database CPU vọt lên 100%, gây deadlock. Sinh viên không thể nộp bài và kết quả chấm điểm bị treo hoàn toàn.
+      </p>
+    </div>
+  </div>
+</section>
 
-    function anim(elId, animName, dur) {
-      return new Promise(r => {
-        const el = document.getElementById(elId);
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = `${animName} ${dur}s forwards`;
-        setTimeout(r, dur * 1000);
-      });
-    }
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">CQRS & Event Sourcing</h2>
+    </div>
+  </div>
 
-    async function sendCommand(user, points) {
-      logSys(`Command: Submit Answer (${user})`, 'log-cmd');
-      
-      // 1. Write to Event Store
-      logSys(`Event Store: Appending ScoreUpdatedEvent(+${points})`, 'log-evt');
-      logEs(`ScoreUpdated(user=${user}, pts=${points})`);
-      
-      // 2. Publish to Bus
-      await anim('dot1', 'writeToBus', 0.5);
-      logSys(`Kafka: Event Published`, 'log-evt');
-      document.getElementById('dot1').style.opacity = 0;
+  <div class="pattern-definition">
+    <p class="definition-text">
+      <strong>CQRS:</strong> Phân tách hệ thống thành 2 luồng độc lập: Command Side (chỉ xử lý Ghi, sử dụng DB tối ưu hóa ghi) và Query Side (chỉ xử lý Đọc, sử dụng Materialized View DB tối ưu hóa đọc). <br>
+      <strong>Event Sourcing:</strong> Trạng thái của thực thể được đại diện bằng một chuỗi các sự kiện bất biến (Immutable Events) lưu vào Event Store. Trạng thái hiện tại được dựng lại bằng cách phát lại (Replay) các sự kiện này.
+    </p>
+    <div class="definition-attribution">— Greg Young & Martin Fowler · Enterprise Integration Patterns</div>
+  </div>
 
-      // 3. Projector reads from bus
-      await sleep(200);
-      await anim('dot2', 'busToRead', 0.5);
-      document.getElementById('dot2').style.opacity = 0;
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Sự kết hợp này cho phép hệ thống mở rộng (Scale) độc lập luồng đọc và ghi, đồng thời cung cấp khả năng audit dữ liệu 100% đáng tin cậy.
+  </p>
 
-      // 4. Update Read Model
-      scores[user] += points;
-      logSys(`Projector: Updating Leaderboard DB (${user} = ${scores[user]})`, 'log-sys');
-      
-      const row = document.getElementById(`row-${user}`);
-      row.innerHTML = `<td>user_0${user.replace('u','')}</td><td style="color:var(--info); font-weight:bold">${scores[user]}</td>`;
-      row.classList.remove('row-update');
-      void row.offsetWidth;
-      row.classList.add('row-update');
-    }
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Command Side (Write)</h4>
+      <p>Nhận nghiệp vụ từ Client (Command), kiểm tra tính đúng đắn và lưu các Sự kiện (Events) vào **Event Store**. Đây là Source of Truth duy nhất của toàn bộ hệ thống.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Event Projector</h4>
+      <p>Một Worker chạy bất đồng bộ lắng nghe Event Store (thông qua Kafka). Mỗi khi có event mới, Projector biến đổi và cập nhật thông tin tương ứng vào **Read Database** (Redis/Elasticsearch).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Query Side (Read)</h4>
+      <p>Nhận các request lấy dữ liệu (Query). Chỉ thực hiện đọc trực tiếp trên **Read Database** (dữ liệu đã được denormalize, không JOIN, phản hồi nhanh dưới 5ms).</p>
+    </div>
+  </div>
+</section>
 
-    async function sendQuery() {
-      logSys(`Query: GET /api/leaderboard`, 'log-qry');
-      await sleep(300);
-      logSys(`Read DB: SELECT * FROM leaderboard_view (NO JOINS!)`, 'log-qry');
-      await sleep(300);
-      logSys(`Response: [user_02: ${scores['u2']}, user_01: ${scores['u1']}] (Ultra Fast )`, 'log-qry');
-    }
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng cơ chế đồng bộ luồng Đọc/Ghi</h2>
+    </div>
+  </div>
 
-    function resetSim() {
-      scores = { 'u1': 0, 'u2': 0 };
-      seq = 1;
-      document.getElementById('es-log').innerHTML = '<div style="color:var(--text-dim); font-style:italic">Event Store Empty</div>';
-      document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
-      document.getElementById('row-u1').innerHTML = `<td>user_01</td><td>0</td>`;
-      document.getElementById('row-u2').innerHTML = `<td>user_02</td><td>0</td>`;
-      document.getElementById('dot1').style.opacity = 0;
-      document.getElementById('dot2').style.opacity = 0;
-    }
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Hãy tương tác thử nghiệm luồng ghi điểm (Command API) để lưu trữ event và quan sát cách Kafka đồng bộ bất đồng bộ sang bảng Read Model phục vụ câu lệnh Đọc (Query API).
+  </p>
 
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+  <div class="simulator-container">
+    <!-- Left panel: visual canvas -->
+    <div class="canvas-card">
+      <div class="cqrs-canvas">
+        <!-- Nodes -->
+        <div class="node node-command">Command API (Write)</div>
+        <div class="node node-query">Query API (Read)</div>
+        
+        <!-- Databases -->
+        <div class="db db-write">Event Store (DB Ghi)</div>
+        <div class="db db-read">Leaderboard DB (Redis)</div>
+
+        <!-- Bus -->
+        <div class="event-bus">Kafka Event Bus</div>
+
+        <!-- Particles -->
+        <div class="event-dot" id="dot1"></div>
+        <div class="event-dot" id="dot2"></div>
+
+        <!-- Event Store Log -->
+        <div class="event-store" id="es-log">
+          <div style="color:var(--text-dim); font-style:italic">Event Store trống...</div>
+        </div>
+
+        <!-- Projection Table -->
+        <div class="projection-table">
+          <table>
+            <thead><tr><th>Sinh viên</th><th>Điểm số</th></tr></thead>
+            <tbody id="leaderboard">
+              <tr id="row-u1"><td>user_01</td><td>0</td></tr>
+              <tr id="row-u2"><td>user_02</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sim-controls-btn">
+        <button class="btn btn-primary" onclick="sendCommand('u1', 10)" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:11.5px;">Nộp bài User_01 (+10)</button>
+        <button class="btn btn-primary" onclick="sendCommand('u2', 20)" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:11.5px;">Nộp bài User_02 (+20)</button>
+        <button class="btn" onclick="sendQuery()" style="border-color:var(--info); color:var(--info); font-size:11.5px;">Lấy Bảng Xếp Hạng (Query)</button>
+        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:11.5px;">Reset</button>
+      </div>
+    </div>
+
+    <!-- Right panel: live logs -->
+    <div class="dashboard-panel">
+      <div class="dashboard-title">System Execution Logs</div>
+      <div class="sim-log" id="sys-log">
+        <div class="log-sys">Hệ thống sẵn sàng...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Kiến trúc Bảng xếp hạng KBLab</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBLab áp dụng mô hình CQRS cho module thi trực tuyến để bảo vệ cơ sở dữ liệu chính của hệ thống.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Phân tích chênh lệch và Quyết định kỹ thuật</h3>
+  <div class="sub-label">Bảng so sánh mô hình CRUD truyền thống và mô hình CQRS/ES</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>Monolith CRUD ban đầu</th>
+          <th>Kiến trúc CQRS + ES đề xuất</th>
+          <th>Lý do kỹ thuật (Trade-off)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Độ trễ truy vấn (Read Latency)</td>
+          <td><span class="b-high">Cao (1-3s)</span> do SQL JOIN phức tạp khi xem xếp hạng.</td>
+          <td><span class="b-low">Cực thấp (&lt; 10ms)</span> đọc trực tiếp từ cache Redis.</td>
+          <td>Read model được denormalize sẵn, tối ưu hóa cho tốc độ đọc.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Khả năng ghi (Write Throughput)</td>
+          <td>Bị block chéo khi luồng đọc khóa bảng Database.</td>
+          <td>Hoàn toàn độc lập, ghi Event siêu tốc vào append-only log.</td>
+          <td>Không bị ảnh hưởng bởi tải đọc của client.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Tính nhất quán (Consistency)</td>
+          <td>Nhất quán mạnh (Strong Consistency).</td>
+          <td>Nhất quán cuối cùng (Eventual Consistency) qua Kafka.</td>
+          <td>Bảng xếp hạng chấp nhận trễ 1-2 giây để đổi lấy khả năng chịu tải.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Độ phức tạp (Complexity)</td>
+          <td><span class="b-low">Thấp</span>, chỉ cần lập trình CRUD cơ bản.</td>
+          <td><span class="b-high">Cao</span>, cần xử lý đồng bộ bất đồng bộ, duplicate event.</td>
+          <td>Đội ngũ vận hành cần có kinh nghiệm về Kafka và Redis.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai CQRS & Event Sourcing</h3>
+  <div class="sub-label">Các bước thực thi triển khai nâng cấp hạ tầng dữ liệu</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Phân tách luồng code Command/Query trong Project</h4>
+      <p>Ứng dụng mẫu thiết kế Mediator (thư viện Spring Event). Chia nhỏ class Service thành: <code>CreateSubmissionCommandHandler</code> và <code>GetLeaderboardQueryHandler</code> độc lập.</p>
+      <span class="t-badge orange">Dự kiến: 2 devs × 4 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Thiết lập Event Store và lưu Event chuỗi sự kiện</h4>
+      <p>Cấu hình bảng <code>event_store</code> trong PostgreSQL. Chuyển đổi dữ liệu nộp bài thành chuỗi Event: <code>SubmissionCreated</code>, <code>TestCasesExecuted</code>, <code>ScoreCalculated</code>.</p>
+      <span class="t-badge green">✓ Đảm bảo lưu lịch sử nguyên tử không ghi đè</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Xây dựng Projector cập nhật Redis Read Model</h4>
+      <p>Viết worker lắng nghe Kafka. Đọc chuỗi events từ topic và tính điểm trực tiếp cập nhật vào Redis Sorted Set (ZSET) phục vụ sinh bảng xếp hạng tức thời.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 1 tuần</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Cài đặt Snapshotting chống suy giảm hiệu năng</h4>
+      <p>Khi số lượng event của một Contest vượt quá 10,000, việc Replay sự kiện khởi động lại ứng dụng sẽ rất chậm. Triển khai cơ chế Snapshotting định kỳ lưu trạng thái điểm số mỗi 1,000 events.</p>
+      <span class="t-badge green">✓ Tối ưu hóa tốc độ tải lại Aggregate</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng CQRS & Event Sourcing khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống có tải đọc lớn hơn tải ghi hàng chục lần (như Bảng xếp hạng, Tin tức, Mạng xã hội)</li>
+        <li>Cần lưu trữ vết kiểm toán (Audit Trail) chính xác tuyệt đối không thể làm giả (như ví điện tử, ngân hàng)</li>
+        <li>Dữ liệu cần tổng hợp từ nhiều nguồn khác nhau (Database-per-service) để phục vụ một màn hình hiển thị</li>
+        <li>Hệ thống đòi hỏi khả năng rollback trạng thái về bất kỳ thời điểm nào trong lịch sử</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống CRUD đơn giản, lưu lượng đọc ghi thấp và đồng đều (over-engineering)</li>
+        <li>Hệ thống đòi hỏi dữ liệu đọc phải nhất quán tuyệt đối (Real-time strong consistency) ngay sau khi ghi</li>
+        <li>Đội ngũ phát triển chưa có kinh nghiệm vận hành các hệ thống Message Queue bất đồng bộ</li>
+        <li>Thời gian phát triển ngắn, ưu tiên MVP nhanh chóng</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về CQRS, Event Sourcing, Event Store, Projection, Snapshotting và thiết kế database trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 7 — Quản lý Dữ liệu →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+let scores = { 'u1': 0, 'u2': 0 };
+let seq = 1;
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function logSys(msg, cls) {
+  const log = document.getElementById('sys-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  log.innerHTML += `<div class="${cls}"><span style="color:var(--text-dim)">[${time}]</span> ${msg}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+function logEs(msg) {
+  const es = document.getElementById('es-log');
+  if(seq === 1) es.innerHTML = ''; // Clear placeholder
+  es.innerHTML = `<div class="es-entry">${seq}. ${msg}</div>` + es.innerHTML;
+  seq++;
+}
+
+function anim(elId, animName, dur) {
+  return new Promise(r => {
+    const el = document.getElementById(elId);
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = `${animName} ${dur}s forwards`;
+    setTimeout(r, dur * 1000);
+  });
+}
+
+async function sendCommand(user, points) {
+  logSys(`Command: Gửi bài thi (${user})`, 'log-cmd');
+  
+  // 1. Write to Event Store
+  logSys(`Event Store: Append sự kiện ScoreUpdatedEvent(+${points})`, 'log-evt');
+  logEs(`ScoreUpdated(user=${user}, pts=${points})`);
+  
+  // 2. Publish to Bus
+  await anim('dot1', 'writeToBus', 0.5);
+  logSys(`Kafka: Đăng sự kiện lên topic contest-scores`, 'log-evt');
+  document.getElementById('dot1').style.opacity = 0;
+
+  // 3. Projector reads from bus
+  await sleep(150);
+  await anim('dot2', 'busToRead', 0.5);
+  document.getElementById('dot2').style.opacity = 0;
+
+  // 4. Update Read Model
+  scores[user] += points;
+  logSys(`Projector: Cập nhật Read DB Redis (${user} = ${scores[user]} điểm)`, 'log-sys');
+  
+  const row = document.getElementById(`row-${user}`);
+  row.innerHTML = `<td>user_0${user.replace('u','')}</td><td style="color:var(--info); font-weight:bold">${scores[user]}</td>`;
+  row.classList.remove('row-update');
+  void row.offsetWidth;
+  row.classList.add('row-update');
+}
+
+async function sendQuery() {
+  logSys(`Query: GET /api/leaderboard`, 'log-qry');
+  await sleep(300);
+  logSys(`Read DB: SELECT * FROM leaderboard_view (Redis Cache - NO JOINS!)`, 'log-qry');
+  await sleep(300);
+  logSys(`Response: [user_02: ${scores['u2']} điểm, user_01: ${scores['u1']} điểm] (Tốc độ phản hồi cực nhanh)`, 'log-qry');
+}
+
+function resetSim() {
+  scores = { 'u1': 0, 'u2': 0 };
+  seq = 1;
+  document.getElementById('es-log').innerHTML = '<div style="color:var(--text-dim); font-style:italic">Event Store trống...</div>';
+  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
+  document.getElementById('row-u1').innerHTML = `<td>user_01</td><td>0</td>`;
+  document.getElementById('row-u2').innerHTML = `<td>user_02</td><td>0</td>`;
+  document.getElementById('dot1').style.opacity = 0;
+  document.getElementById('dot2').style.opacity = 0;
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+resetSim();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>

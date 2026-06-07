@@ -3,304 +3,688 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Gateway Routing — Ch.8 | KBLab LMS</title>
+  <title>API Gateway Routing — Pattern Story | Ch.8 API Gateway KBLab</title>
   <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
   <style>
-    body {
-      background-image: radial-gradient(var(--grid-color) 1px, transparent 0);
-      background-size: 24px 24px;
+    /* Custom styles for API Gateway Routing Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 24px;
+      margin: 32px 0;
     }
-    
-    .sim-container { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 32px; }
-    
-    .architecture-box {
+    @media (max-width: 950px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg-surface);
-      padding: 20px;
+      border-radius: var(--radius-lg);
+      padding: 24px;
       position: relative;
     }
 
     .gateway-canvas {
-      height: 350px;
+      height: 380px;
       border: 1px dashed var(--border);
       background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-sm);
-      margin: 16px 0;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
-      padding: 0 40px;
+      justify-content: space-between;
+      padding: 0 30px;
     }
 
     .node {
-      background: var(--bg-card); border: 2px solid var(--border);
-      padding: 14px 20px; border-radius: var(--radius-md); font-weight: bold; color: var(--text-main);
-      text-align: center; box-shadow: var(--shadow-soft); z-index: 2;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      box-shadow: var(--shadow-medium);
+      z-index: 2;
+      font-size: 11.5px;
     }
     
-    .node-client { border-color: var(--primary); color: var(--primary); }
-    .node-gateway { border-color: var(--warning); border-width: 3px; border-style: dashed; padding: 20px; min-width: 320px; display: flex; flex-direction: column; gap: 12px; margin: 0 auto; position: relative;}
-    .node-gateway::before { content: 'Spring Cloud Gateway'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--bg-surface); padding: 2px 8px; font-size: 11px; font-family: var(--font-mono); color: var(--warning); border: 1px solid var(--warning); border-radius: 4px; }
+    .node-client {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .node-gateway {
+      border-color: var(--warning);
+      border-width: 2px;
+      border-style: dashed;
+      padding: 20px 14px;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      background: rgba(10, 10, 10, 0.6);
+      border-radius: var(--radius-lg);
+    }
+    .node-gateway::before {
+      content: 'Spring Cloud Gateway';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-surface);
+      padding: 2px 8px;
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+      border-radius: 99px;
+      font-weight: 700;
+    }
     
     .filter-box {
-      background: rgba(245,158,11,0.05); border: 1px solid var(--warning); border-radius: 4px;
-      padding: 8px; font-size: 11px; font-family: var(--font-mono); color: var(--text-main);
-      display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
+      background: rgba(245, 158, 11, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .filter-box.active { background: var(--warning); color: #000; font-weight: bold; box-shadow: 0 0 15px rgba(245,158,11,0.4); transform: scale(1.05); }
-    .filter-box.error { background: var(--danger); color: #fff; border-color: var(--danger); box-shadow: 0 0 15px rgba(239,68,68,0.4); transform: scale(1.05); }
+    .filter-box.active {
+      background: var(--warning-dim);
+      color: var(--warning);
+      border-color: var(--warning);
+      box-shadow: 0 0 15px rgba(245,158,11,0.15);
+      transform: scale(1.03);
+    }
+    .filter-box.error {
+      background: var(--danger-dim);
+      color: var(--danger);
+      border-color: var(--danger);
+      box-shadow: 0 0 15px rgba(244,63,94,0.15);
+      transform: scale(1.03);
+    }
 
-    .node-services { display: flex; flex-direction: column; gap: 16px; }
-    .service { background: var(--bg-card); border: 2px solid var(--info); padding: 10px; border-radius: var(--radius-md); font-size: 12px; color: var(--info); text-align: center; font-weight: bold; transition: all 0.3s;}
-    .service.active { box-shadow: 0 0 15px var(--info); background: var(--info-dim); }
+    .node-services {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .service {
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-medium);
+    }
+    .service.active {
+      border-color: var(--success);
+      color: var(--success);
+      box-shadow: 0 0 15px rgba(34,211,160,0.15);
+      background: var(--success-dim);
+    }
 
     /* Animated Packet */
     .packet {
-      position: absolute; padding: 6px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px;
-      background: var(--success); color: #000; font-weight: bold; box-shadow: 0 0 10px var(--success);
-      z-index: 10; opacity: 0; transition: all 0.5s ease-in-out; white-space: nowrap;
+      position: absolute;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      background: var(--primary);
+      color: #000;
+      font-weight: 700;
+      box-shadow: var(--shadow-glow);
+      z-index: 10;
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      line-height: 1.3;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    .log-panel {
-      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
-      background: #0d1117; padding: 12px; border-radius: var(--radius-sm);
-      height: 200px; overflow-y: auto; border: 1px solid var(--border);
+    .dashboard-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .log-entry { margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    
-    .controls-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+
+    .sim-log {
+      background: #050505;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 200px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    }
+    .log-line {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-success { color: var(--success); }
+    .log-error { color: var(--danger); }
+    .log-info { color: var(--info); }
+    .log-warn { color: var(--warning); }
   </style>
 </head>
 <body>
-  <div class="page-container">
-    <header class="page-header animate-fadeIn">
-      <div class="chapter-badge">Chương 8 — API Gateway</div>
-      <h1>Gateway Routing Pipeline</h1>
-      <p class="subtitle">Mô phỏng chuỗi xử lý: CORS → JWT Validation → StripPrefix → Route</p>
-    </header>
 
-    <div class="sim-container animate-fadeIn" style="animation-delay: 0.1s">
-      
-      <div class="architecture-box">
-        <div class="card-title">Request Pipeline</div>
-        <div class="gateway-canvas" id="canvas">
-          
-          <div class="node node-client">Client<br/><span style="font-size:10px;font-weight:normal;color:var(--text-dim)">Browser/App</span></div>
-          
-          <div class="node-gateway">
-            <div class="filter-box" id="f-cors"><span>1. CORS Check</span> <span id="s-cors">⏳</span></div>
-            <div class="filter-box" id="f-jwt"><span>2. JwtRequestFilter</span> <span id="s-jwt">⏳</span></div>
-            <div class="filter-box" id="f-route"><span>3. Route Match</span> <span id="s-route">⏳</span></div>
-            <div class="filter-box" id="f-strip"><span>4. StripPrefix=2</span> <span id="s-strip">⏳</span></div>
-          </div>
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar"></div>
 
-          <div class="node-services">
-            <div class="service" id="svc-core">core-service<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">/questions</span></div>
-            <div class="service" id="svc-auth">auth-service<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">/login</span></div>
-          </div>
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">Act 1: Problem</button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">Act 2: Pattern</button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">Act 3: How It Works</button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">Act 4: KBLab Apply</button>
+</nav>
 
-          <!-- The moving request packet -->
-          <div class="packet" id="req-packet"></div>
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <div class="pattern-badge">API Gateway Patterns</div>
+  <h1 class="pattern-title">Gateway Routing Pipeline</h1>
+  <p class="pattern-subtitle">Định tuyến thông minh và hợp nhất xử lý các mối quan tâm chéo (Cross-cutting Concerns)</p>
+  <div class="pattern-meta">
+    <span>Pattern Category: <strong>Edge Architecture Patterns</strong></span>
+    <span>Chapter Reference: <strong>Chương 8 — §8.2 & §8.3</strong></span>
+    <span>Case Study Bounded Context: <strong>kblab-gateway Pipeline</strong></span>
+  </div>
+</header>
 
-        </div>
-        
-        <div class="controls-row">
-          <button class="btn btn-primary btn-sm" onclick="runPipeline('happy')">Core API (Happy Path)</button>
-          <button class="btn btn-danger btn-sm" onclick="runPipeline('no-token')">Core API (No JWT)</button>
-          <button class="btn btn-info btn-sm" onclick="runPipeline('public')">Auth API (Public Route)</button>
-          <button class="btn btn-ghost btn-sm" onclick="resetSim()">Reset</button>
-        </div>
-
-      </div>
-
-      <!-- Log Panel -->
-      <div class="architecture-box">
-        <div class="card-title">Gateway Log</div>
-        <div class="log-panel" id="sys-log">
-          <div style="font-style:italic">Waiting for incoming requests...</div>
-        </div>
-      </div>
-
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1">
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Sự trùng lặp mã nguồn & Lỗ hổng bảo mật</h2>
     </div>
-
-    <!-- Context -->
-    <div class="animate-fadeIn" style="margin-top: 32px; animation-delay: 0.2s">
-      <div class="callout">
-        <strong>Từ Sách (Chương 8):</strong> <i>"Cross-cutting concerns tại Gateway: Thay vì mỗi service tự validate JWT, tự xử lý CORS... Gateway tập trung xử lý tại một điểm duy nhất. Gateway giải mã JWT, sau đó truyền thông tin user xuống downstream service thông qua HTTP Headers (<code>X-User-Id</code>). Spring Cloud Gateway dùng <code>StripPrefix=2</code> để biến <code>/api/core/questions</code> thành <code>/questions</code> trước khi forward tới Core Service."</i>
-      </div>
-    </div>
-
   </div>
 
-  <script>
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi không có một API Gateway đứng chặn ở cổng ngõ hệ thống, mỗi microservice nội bộ phải tự chịu trách nhiệm xử lý các tác vụ biên hạ tầng như cấu hình CORS, giải mã JWT, Rate Limiting và định tuyến đường dẫn. Điều này mang lại nhiều vấn đề nghiêm trọng cho phát triển và vận hành.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">⚙️</div>
+      <h3>Trùng lặp logic & Khó bảo trì (Boilerplate)</h3>
+      <p>Cả 5 dịch vụ nghiệp vụ đều phải cài đặt thư viện và viết filter giải mã JWT giống hệt nhau. Khi cần nâng cấp thuật toán mã hóa (ví dụ: chuyển từ HS256 sang RS256) hoặc đổi Secret Key, đội phát triển phải cập nhật cấu hình và redeploy tất cả các dịch vụ.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">🔓</div>
+      <h3>Rủi ro bảo mật & Inconsistent CORS</h3>
+      <p>Mỗi microservice tự cấu hình chính sách CORS riêng biệt. Chỉ cần một lập trình viên cấu hình nhầm thành <code>Allow-Origin: *</code> ở một service phụ, hacker có thể khai thác. Hơn nữa, trình duyệt của người dùng liên tục bị block preflight request do cấu hình CORS lệch nhau giữa các service.</p>
+    </div>
+  </div>
+
+  <div class="incident-box">
+    <div class="incident-icon">🚨</div>
+    <div class="incident-content">
+      <h4>KBLab Incident — Lỗi lộ Secret Key JWT và sập đồng loạt do cấu hình sai</h4>
+      <p>
+        Trong thiết kế ban đầu của KBLab, cả <code>kblab-app</code>, <code>kblab-assignment</code> và <code>kblab-judge</code> đều tự đọc file cấu hình chứa JWT secret key để xác thực. Khi khóa bí mật bị rò rỉ, quản trị viên thay đổi khóa trên máy chủ cấu hình. Do <code>kblab-judge</code> gặp sự cố khởi động lại chậm, nó vẫn giữ khóa cũ khiến toàn bộ sinh viên chấm bài thi bị từ chối kết quả chấm điểm do chữ ký token không khớp, trong khi vẫn đăng nhập và xem đề thi bình thường.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2">
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">API Gateway Routing Pipeline</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Thiết lập một API Gateway làm seam (đường nối) duy nhất đón nhận mọi request từ Client. Chạy một chuỗi các bộ lọc (Filter Chain) tập trung để giải quyết CORS, xác thực JWT, và rate limit trước khi định tuyến. Sau khi xác thực thành công, Gateway giải mã token, gắn thông tin danh tính (như User ID) vào HTTP Header và forward request sạch đến các service nội bộ.
+    </p>
+    <div class="definition-attribution">— API Gateway Routing · Microservice Patterns (Chris Richardson)</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Mẫu thiết kế này đưa các dịch vụ nội bộ về vùng an toàn (Private Network), giúp chúng hoàn toàn stateless và tập trung 100% vào logic nghiệp vụ thay vì lo lắng về hạ tầng bảo mật.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Routing Predicates</h4>
+      <p>Các điều kiện khớp mẫu đường dẫn URL (ví dụ: match <code>/api/v1/courses/**</code>) để xác định request sẽ được chuyển tiếp tới dịch vụ nội bộ nào thông qua Service Discovery.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Pre/Post Filter Chain</h4>
+      <p>Các filter chạy trước (Pre) và sau (Post) khi định tuyến. Pre-filters thực hiện giải mã token, ghi log, rate limit. Post-filters bổ sung các header phản hồi, đo lường thời gian phản hồi hoặc nén dữ liệu.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Gateway-to-Service Trust</h4>
+      <p>Sau khi giải mã JWT thành công, Gateway chèn header <code>X-User-Id</code> và <code>X-User-Roles</code> vào request. Các microservice downstream chỉ cần đọc các header này và tuyệt đối tin tưởng Gateway (không cần giải mã lại JWT).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Trực quan hóa hoạt động của Filter Chain</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Hãy chọn các kịch bản request khác nhau để xem cách gói tin (Packet) di chuyển qua từng filter trong pipeline của Spring Cloud Gateway và cách Gateway biến đổi header trước khi gửi tới service downstream.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Left panel: visual canvas -->
+    <div class="canvas-card">
+      <div class="gateway-canvas" id="canvas">
+        <div class="node node-client">Client<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">Browser</span></div>
+        
+        <div class="node-gateway">
+          <div class="filter-box" id="f-cors"><span>1. CORS Origin Check</span> <span id="s-cors">⏳</span></div>
+          <div class="filter-box" id="f-jwt"><span>2. JwtRequestFilter</span> <span id="s-jwt">⏳</span></div>
+          <div class="filter-box" id="f-route"><span>3. Path Predicate Match</span> <span id="s-route">⏳</span></div>
+          <div class="filter-box" id="f-strip"><span>4. StripPrefix=2 Filter</span> <span id="s-strip">⏳</span></div>
+        </div>
+
+        <div class="node-services">
+          <div class="service" id="svc-core">core-service<br><span style="font-size:9.5px;font-weight:normal;color:var(--text-dim)">/questions</span></div>
+          <div class="service" id="svc-auth">auth-service<br><span style="font-size:9.5px;font-weight:normal;color:var(--text-dim)">/login</span></div>
+        </div>
+
+        <!-- The moving request packet -->
+        <div class="packet" id="req-packet"></div>
+      </div>
+
+      <div class="sim-controls-btn">
+        <button class="btn btn-primary" onclick="runPipeline('happy')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">Core API (Happy Path)</button>
+        <button class="btn" onclick="runPipeline('no-token')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">Core API (No Token)</button>
+        <button class="btn btn-ghost" onclick="runPipeline('public')" style="font-size:12px;">Auth API (Public Route)</button>
+        <button class="btn" onclick="resetSim()" style="font-size:12px;">Reset</button>
+      </div>
+    </div>
+
+    <!-- Right panel: live logs -->
+    <div class="dashboard-panel">
+      <div class="dashboard-title">Gateway Console Logs</div>
+      <div class="sim-log" id="sys-log">
+        <div style="font-style:italic; color:var(--text-dim)">Đang chờ request được gửi tới cổng Gateway...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBLab Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Giải pháp định tuyến kblab-gateway</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBLab áp dụng mô hình phân tách định tuyến rõ ràng tại Gateway để tối ưu hóa hiệu năng và bảo mật hệ thống.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Bảng phân tích định tuyến và bảo mật API</h3>
+  <div class="sub-label">Quy hoạch các bộ lọc tương ứng cho từng nhóm dịch vụ</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>API Route Pattern</th>
+          <th>Downstream Service</th>
+          <th>JWT Validation</th>
+          <th>Header Mutation</th>
+          <th>Strip Prefix</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label"><code>/api/auth/**</code></td>
+          <td><code>kblab-auth</code></td>
+          <td>Bypass (Public)</td>
+          <td>None</td>
+          <td><code>StripPrefix=1</code> (Giữ lại <code>/auth/**</code>)</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/core/**</code></td>
+          <td><code>kblab-app</code></td>
+          <td><span class="b-high">Bắt buộc</span></td>
+          <td>Inject <code>X-User-Id</code></td>
+          <td><code>StripPrefix=2</code> (Bỏ <code>/api/core</code>)</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/assignments/**</code></td>
+          <td><code>kblab-assignment</code></td>
+          <td><span class="b-high">Bắt buộc</span></td>
+          <td>Inject <code>X-User-Id</code>, <code>X-User-Roles</code></td>
+          <td><code>StripPrefix=2</code> (Bỏ <code>/api/assignments</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai Gateway</h3>
+  <div class="sub-label">Tiến trình triển khai định tuyến an toàn</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kblab-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Xây dựng Gateway Core & Cấu hình Routes YAML</h4>
+      <p>Khởi tạo project Spring Cloud Gateway (sử dụng WebFlux reactive engine non-blocking). Khai báo các Route định tuyến sang dịch vụ nội bộ thông qua Registry Eureka service ID.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Viết Custom Global JWT Filter & Header Injection</h4>
+      <p>Implement bộ lọc <code>JwtRequestFilter</code>. Giải mã JWT chữ ký RSA công khai, trích xuất <code>userId</code> và <code>roles</code>, chuyển chúng thành HTTP Headers để chuyển tiếp an toàn xuống downstream.</p>
+      <span class="t-badge green">✓ Loại bỏ hoàn toàn logic JWT ở các dịch vụ con</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Cấu hình CORS & Cảnh báo an toàn an ninh</h4>
+      <p>Cài đặt chính sách CORS toàn cục tại Gateway, loại bỏ cấu hình CORS ở các service con. Thêm các HTTP Security Headers bảo vệ ứng dụng (X-Content-Type-Options, X-Frame-Options, Content-Security-Policy).</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Đồng bộ bảo mật mạng nội bộ (mTLS / Network Policy)</h4>
+      <p>Chỉ cho phép các dịch vụ con nhận traffic xuất phát từ Gateway. Thiết lập Kubernetes NetworkPolicy hoặc cấu hình Security Group để chặn tất cả kết nối trực tiếp từ Internet vào các service nội bộ.</p>
+      <span class="t-badge green">✓ Hoàn tất thiết lập mạng lưới Private đáng tin cậy</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title">Nên dùng API Gateway khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Kiến trúc có trên 3 microservices nghiệp vụ độc lập</li>
+        <li>Hệ thống phục vụ đa dạng các client (Web, Mobile, Third-party)</li>
+        <li>Cần quản lý tập trung bảo mật, CORS, rate limiting, log truy cập</li>
+        <li>Cần che giấu cấu trúc mạng nội bộ để chống tấn công quét cổng ngõ</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon">❌</div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống chỉ gồm 1 monolith hoặc kiến trúc cực kỳ đơn giản (over-engineering)</li>
+        <li>Ứng dụng yêu cầu truyền dữ liệu file siêu lớn (Gateway có thể trở thành nút thắt cổ chai nghẽn mạng)</li>
+        <li>Yêu cầu độ trễ mạng cực thấp gần như bằng không (mỗi bước đi qua Gateway tăng thêm 1-3ms latency)</li>
+        <li>Các microservices nghiệp vụ hoàn toàn độc lập và không dùng chung cơ chế định danh auth</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về API Gateway Pattern, Spring Cloud Gateway Filters, Predicates, CORS Policy và JWT Validation trong sách.</p>
+  <a href="#" class="chapter-btn">📖 Chương 8 — API Gateway →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('progress-bar').style.width = Math.min(pct, 100) + '%';
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function logSys(msg, type = 'system') {
+  const log = document.getElementById('sys-log');
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+function resetSim() {
+  document.getElementById('sys-log').innerHTML = '<div style="font-style:italic; color:var(--text-dim)">Đang chờ request được gửi tới cổng Gateway...</div>';
+  ['cors', 'jwt', 'route', 'strip'].forEach(id => {
+    document.getElementById(`f-${id}`).className = 'filter-box';
+    document.getElementById(`s-${id}`).textContent = '⏳';
+  });
+  document.getElementById('svc-core').className = 'service';
+  document.getElementById('svc-auth').className = 'service';
+  
+  const pkt = document.getElementById('req-packet');
+  pkt.style.opacity = 0;
+  pkt.style.left = '40px';
+  pkt.style.top = '160px';
+  pkt.style.background = 'var(--primary)';
+  pkt.style.color = '#000';
+}
+
+async function runPipeline(scenario) {
+  resetSim();
+  await sleep(100);
+  const pkt = document.getElementById('req-packet');
+  pkt.style.opacity = 1;
+  
+  if (scenario === 'happy') {
+    logSys('📥 NHẬN REQUEST MỚI: GET /api/core/questions', 'info');
+    pkt.innerHTML = "GET /api/core/questions<br>[Auth: Bearer valid.jwt]";
     
-    function logSys(msg, color='var(--text-main)') {
-      const log = document.getElementById('sys-log');
-      log.innerHTML += `<div class="log-entry"><span style="color:var(--text-dim)">[${new Date().toLocaleTimeString()}]</span> <span style="color:${color}">${msg}</span></div>`;
-      log.scrollTop = log.scrollHeight;
-    }
+    await sleep(600);
+    
+    // 1. CORS
+    pkt.style.left = '160px'; pkt.style.top = '80px';
+    document.getElementById('f-cors').className = 'filter-box active';
+    logSys('1. CORS Check: Gốc (Origin) hợp lệ. Cho phép đi tiếp.', 'success');
+    await sleep(800);
+    document.getElementById('f-cors').className = 'filter-box';
 
-    function resetSim() {
-      document.getElementById('sys-log').innerHTML = '<div style="font-style:italic">Waiting for incoming requests...</div>';
-      ['cors','jwt','route','strip'].forEach(id => {
-        document.getElementById(`f-${id}`).className = 'filter-box';
-        document.getElementById(`s-${id}`).textContent = '⏳';
-      });
-      document.getElementById('svc-core').className = 'service';
-      document.getElementById('svc-auth').className = 'service';
-      
-      const pkt = document.getElementById('req-packet');
-      pkt.style.opacity = 0;
-      pkt.style.transform = 'translate(0, 0)';
-    }
+    // 2. JWT
+    pkt.style.left = '160px'; pkt.style.top = '135px';
+    document.getElementById('f-jwt').className = 'filter-box active';
+    logSys('2. JwtRequestFilter: Token hợp lệ. Giải mã RSA claims...', 'success');
+    await sleep(600);
+    pkt.innerHTML = "GET /api/core/questions<br>[Header: X-User-Id=SV001]";
+    logSys('⚡ Gateway biến đổi Header: Gắn X-User-Id = SV001', 'warn');
+    await sleep(800);
+    document.getElementById('f-jwt').className = 'filter-box';
 
-    async function runPipeline(scenario) {
-      resetSim();
-      const pkt = document.getElementById('req-packet');
-      pkt.style.opacity = 1;
-      
-      if(scenario === 'happy') {
-        logSys('--- NEW REQUEST: GET /api/core/questions ---', 'var(--info)');
-        pkt.innerHTML = "GET /api/core/questions<br>[Auth: Bearer valid.jwt]";
-        pkt.style.left = '120px'; pkt.style.top = '160px';
-        
-        await sleep(600);
-        
-        // 1. CORS
-        pkt.style.left = '280px'; pkt.style.top = '100px';
-        document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '';
-        logSys('1. CORS Check: Passed (Origin allowed)', 'var(--success)');
-        await sleep(800);
-        document.getElementById('f-cors').classList.remove('active');
+    // 3. Route Match
+    pkt.style.left = '160px'; pkt.style.top = '190px';
+    document.getElementById('f-route').className = 'filter-box active';
+    document.getElementById('s-route').textContent = 'Matched';
+    logSys('3. Path Predicate: Khớp đường dẫn /api/core/**. Trỏ sang core-service.', 'warn');
+    await sleep(800);
+    document.getElementById('f-route').className = 'filter-box';
 
-        // 2. JWT
-        pkt.style.top = '145px';
-        document.getElementById('f-jwt').classList.add('active');
-        document.getElementById('s-jwt').textContent = '';
-        logSys('2. JwtRequestFilter: Token Valid. Extracting claims...', 'var(--success)');
-        await sleep(600);
-        pkt.innerHTML = "GET /api/core/questions<br>[X-User-Id: SV001]";
-        logSys('→ Injecting Header: X-User-Id: SV001', 'var(--primary)');
-        await sleep(600);
-        document.getElementById('f-jwt').classList.remove('active');
+    // 4. StripPrefix
+    pkt.style.left = '160px'; pkt.style.top = '245px';
+    document.getElementById('f-strip').className = 'filter-box active';
+    logSys('4. StripPrefix=2: Bỏ tiền tố /api/core ra khỏi URL.', 'success');
+    await sleep(600);
+    pkt.innerHTML = "GET /questions<br>[Header: X-User-Id=SV001]";
+    await sleep(800);
+    document.getElementById('f-strip').className = 'filter-box';
 
-        // 3. Route Match
-        pkt.style.top = '190px';
-        document.getElementById('f-route').classList.add('active');
-        document.getElementById('s-route').textContent = 'core-svc';
-        logSys('3. Route Match: Matched predicate Path=/api/core/**', 'var(--warning)');
-        await sleep(800);
-        document.getElementById('f-route').classList.remove('active');
+    // Forward to Core
+    pkt.style.left = '480px'; pkt.style.top = '100px';
+    document.getElementById('svc-core').className = 'service active';
+    logSys('🚀 Đang chuyển tiếp gói tin tới lb://core-service/questions...', 'info');
+    await sleep(1000);
+    pkt.style.opacity = 0;
+    document.getElementById('svc-core').className = 'service';
+    logSys('🎉 Hoàn tất: downstream service phản hồi 200 OK.', 'success');
 
-        // 4. StripPrefix
-        pkt.style.top = '235px';
-        document.getElementById('f-strip').classList.add('active');
-        document.getElementById('s-strip').textContent = '';
-        logSys('4. StripPrefix=2: Removing /api/core', 'var(--warning)');
-        await sleep(600);
-        pkt.innerHTML = "GET /questions<br>[X-User-Id: SV001]";
-        await sleep(600);
-        document.getElementById('f-strip').classList.remove('active');
+  } else if (scenario === 'no-token') {
+    logSys('📥 NHẬN REQUEST MỚI: GET /api/core/questions', 'info');
+    pkt.innerHTML = "GET /api/core/questions<br>[Auth: None]";
+    
+    await sleep(600);
+    
+    // 1. CORS
+    pkt.style.left = '160px'; pkt.style.top = '80px';
+    document.getElementById('f-cors').className = 'filter-box active';
+    logSys('1. CORS Check: Gốc (Origin) hợp lệ.', 'success');
+    await sleep(800);
+    document.getElementById('f-cors').className = 'filter-box';
 
-        // Forward to Core
-        pkt.style.left = '70%'; pkt.style.top = '110px';
-        document.getElementById('svc-core').classList.add('active');
-        logSys('Forwarding to lb://core-service/questions', 'var(--info)');
-        await sleep(1000);
-        pkt.style.opacity = 0;
-        document.getElementById('svc-core').classList.remove('active');
-        logSys('Request completed successfully.', 'var(--success)');
+    // 2. JWT Fails
+    pkt.style.left = '160px'; pkt.style.top = '135px';
+    document.getElementById('f-jwt').className = 'filter-box error';
+    document.getElementById('s-jwt').textContent = 'FAILED';
+    pkt.style.background = 'var(--danger)';
+    pkt.style.color = '#fff';
+    logSys('2. JwtRequestFilter: Không tìm thấy JWT Token trong Authorization Header!', 'error');
+    await sleep(800);
+    
+    logSys('⛔ Ngắt mạch: Gateway chặn request và trả ngay lỗi 401 UNAUTHORIZED.', 'error');
+    pkt.innerHTML = "HTTP/1.1 401 Unauthorized";
+    pkt.style.left = '40px'; pkt.style.top = '160px';
+    await sleep(1000);
+    pkt.style.opacity = 0;
+    
+  } else if (scenario === 'public') {
+    logSys('📥 NHẬN REQUEST MỚI: POST /api/auth/login', 'info');
+    pkt.innerHTML = "POST /api/auth/login<br>body: {user, pwd}";
+    
+    await sleep(600);
+    
+    // 1. CORS
+    pkt.style.left = '160px'; pkt.style.top = '80px';
+    document.getElementById('f-cors').className = 'filter-box active';
+    logSys('1. CORS Check: Gốc (Origin) hợp lệ.', 'success');
+    await sleep(800);
+    document.getElementById('f-cors').className = 'filter-box';
 
-      } else if (scenario === 'no-token') {
-        logSys('--- NEW REQUEST: GET /api/core/questions ---', 'var(--info)');
-        pkt.innerHTML = "GET /api/core/questions<br>[Auth: None]";
-        pkt.style.left = '120px'; pkt.style.top = '160px';
-        
-        await sleep(600);
-        
-        // 1. CORS
-        pkt.style.left = '280px'; pkt.style.top = '100px';
-        document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '';
-        logSys('1. CORS Check: Passed', 'var(--success)');
-        await sleep(800);
-        document.getElementById('f-cors').classList.remove('active');
+    // 2. JWT Skipped
+    pkt.style.left = '160px'; pkt.style.top = '135px';
+    document.getElementById('f-jwt').className = 'filter-box active';
+    document.getElementById('s-jwt').textContent = 'BYPASS';
+    logSys('2. JwtRequestFilter: Khớp whitelist API công khai. Bỏ qua xác thực.', 'warn');
+    await sleep(800);
+    document.getElementById('f-jwt').className = 'filter-box';
 
-        // 2. JWT Fails
-        pkt.style.top = '145px';
-        document.getElementById('f-jwt').classList.add('error');
-        document.getElementById('s-jwt').textContent = '';
-        pkt.style.background = 'var(--danger)'; pkt.style.color = '#fff';
-        logSys('2. JwtRequestFilter: Missing/Invalid Token!', 'var(--danger)');
-        await sleep(800);
-        
-        logSys('⛔ Short-circuiting request. Returning 401 UNAUTHORIZED.', 'var(--danger)');
-        pkt.innerHTML = "401 UNAUTHORIZED";
-        pkt.style.left = '120px'; pkt.style.top = '160px';
-        await sleep(1000);
-        pkt.style.opacity = 0;
-        
-      } else if (scenario === 'public') {
-        logSys('--- NEW REQUEST: POST /api/auth/login ---', 'var(--info)');
-        pkt.innerHTML = "POST /api/auth/login<br>body: {user, pass}";
-        pkt.style.left = '120px'; pkt.style.top = '160px';
-        
-        await sleep(600);
-        
-        // 1. CORS
-        pkt.style.left = '280px'; pkt.style.top = '100px';
-        document.getElementById('f-cors').classList.add('active');
-        document.getElementById('s-cors').textContent = '';
-        logSys('1. CORS Check: Passed', 'var(--success)');
-        await sleep(800);
-        document.getElementById('f-cors').classList.remove('active');
+    // 3. Route Match
+    pkt.style.left = '160px'; pkt.style.top = '190px';
+    document.getElementById('f-route').className = 'filter-box active';
+    document.getElementById('s-route').textContent = 'Matched';
+    logSys('3. Path Predicate: Khớp đường dẫn /api/auth/**. Trỏ sang auth-service.', 'warn');
+    await sleep(800);
+    document.getElementById('f-route').className = 'filter-box';
 
-        // 2. JWT Skipped
-        pkt.style.top = '145px';
-        document.getElementById('f-jwt').classList.add('active');
-        document.getElementById('s-jwt').textContent = 'SKIP';
-        logSys('2. JwtRequestFilter: Route is public. Bypassing validation.', 'var(--warning)');
-        await sleep(800);
-        document.getElementById('f-jwt').classList.remove('active');
+    // 4. StripPrefix
+    pkt.style.left = '160px'; pkt.style.top = '245px';
+    document.getElementById('f-strip').className = 'filter-box active';
+    logSys('4. StripPrefix=1: Bỏ tiền tố /api ra khỏi URL.', 'success');
+    await sleep(600);
+    pkt.innerHTML = "POST /auth/login<br>body: {user, pwd}";
+    await sleep(800);
+    document.getElementById('f-strip').className = 'filter-box';
 
-        // 3. Route Match
-        pkt.style.top = '190px';
-        document.getElementById('f-route').classList.add('active');
-        document.getElementById('s-route').textContent = 'auth-svc';
-        logSys('3. Route Match: Matched predicate Path=/api/auth/**', 'var(--warning)');
-        await sleep(800);
-        document.getElementById('f-route').classList.remove('active');
+    // Forward to Auth
+    pkt.style.left = '480px'; pkt.style.top = '180px';
+    document.getElementById('svc-auth').className = 'service active';
+    logSys('🚀 Đang chuyển tiếp gói tin tới lb://auth-service/login...', 'info');
+    await sleep(1000);
+    pkt.style.opacity = 0;
+    document.getElementById('svc-auth').className = 'service';
+    logSys('🎉 Hoàn tất: downstream service phản hồi 200 OK.', 'success');
+  }
+}
 
-        // 4. StripPrefix
-        pkt.style.top = '235px';
-        document.getElementById('f-strip').classList.add('active');
-        document.getElementById('s-strip').textContent = '';
-        logSys('4. StripPrefix=2: Removing /api/auth', 'var(--warning)');
-        await sleep(600);
-        pkt.innerHTML = "POST /login<br>body: {user, pass}";
-        await sleep(600);
-        document.getElementById('f-strip').classList.remove('active');
-
-        // Forward to Auth
-        pkt.style.left = '70%'; pkt.style.top = '200px'; // lower position for auth svc
-        document.getElementById('svc-auth').classList.add('active');
-        logSys('Forwarding to lb://auth-service/login', 'var(--info)');
-        await sleep(1000);
-        pkt.style.opacity = 0;
-        document.getElementById('svc-auth').classList.remove('active');
-        logSys('Request completed successfully.', 'var(--success)');
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
-    }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
 
-    // Theme integration
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-  </script>
+// ── Init ──────────────────────────────────────────────────
+resetSim();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+</script>
 </body>
 </html>
