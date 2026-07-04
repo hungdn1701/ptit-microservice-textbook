@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.10 — KBM Migration Roadmap — 3 Phases | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.10">
+
+    <div class="d-row d-gap-2" style="align-items:stretch;">
+      <!-- Phase 1 -->
+      <div class="d-box d-success" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center"><span class="d-step">1</span> Quick Wins</div>
+        <div class="d-sub d-mb-1 text-center">(1–2 tuần)</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">- CORS restrict</div>
+          <div class="d-sub">- JWT version unify</div>
+          <div class="d-sub">- Structured logging</div>
+          <div class="d-sub">- Health check endpoints</div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="d-box d-note" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center"><span class="d-step">2</span> Observability Foundation</div>
+        <div class="d-sub d-mb-1 text-center">(2–4 tuần)</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">- Centralized Logging</div>
+          <div class="d-sub">- Distributed Tracing</div>
+          <div class="d-sub">- Metrics Collection</div>
+          <div class="d-sub">- Dashboards Setup</div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="d-box d-event" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center"><span class="d-step">3</span> Resilience & CI/CD</div>
+        <div class="d-sub d-mb-1 text-center">(4–6 tuần)</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">- API Gateway Centralize</div>
+          <div class="d-sub">- Circuit Breaker</div>
+          <div class="d-sub">- Auto-scaling</div>
+          <div class="d-sub">- Automated Deployments</div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="d-box d-highlight" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center"><span class="d-step">4</span> Database Decomposition</div>
+        <div class="d-sub d-mb-1 text-center">(6–12 tuần)</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">- Database per service</div>
+          <div class="d-sub">- CDC setup</div>
+          <div class="d-sub">- Saga orchestration</div>
+          <div class="d-sub">- Event-driven patterns</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

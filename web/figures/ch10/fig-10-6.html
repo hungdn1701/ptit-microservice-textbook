@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.6 — CDC (Change Data Capture) Pattern | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.6">
+
+    <div class="d-row d-gap-1" style="align-items:stretch;">
+      
+      <div class="d-box d-service d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
+        <div class="d-title">Service</div>
+        <div class="d-sub">Lưu data + outbox</div>
+      </div>
+      
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      
+      <!-- Transaction Boundary -->
+      <div class="d-box d-storage" style="padding:14px; position:relative; flex: 2;">
+        <div class="d-label d-mb-1 text-center">Transaction Boundary (Database)</div>
+        <div class="d-col d-gap-1">
+          <div class="d-box text-center" style="padding:8px; border: 1px solid var(--diagram-color-line);">
+            <div class="d-title">Business Table</div>
+          </div>
+          <div class="d-box d-warning text-center" style="padding:8px;">
+            <div class="d-title">Outbox Table</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      
+      <div class="d-box d-highlight d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
+        <div class="d-title">CDC / Poller</div>
+        <div class="d-sub">Đọc Outbox</div>
+      </div>
+      
+      <div class="d-arrow-h" style="align-self:center;"></div>
+      
+      <div class="d-box d-event d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
+        <div class="d-title">Message Broker</div>
+        <div class="d-sub">Kafka/RabbitMQ</div>
+      </div>
+      
+    </div>
+
+    <div class="d-box d-success d-mt-2" style="padding:12px 18px;">
+      <div class="d-title d-mb-1">Giải pháp Outbox Pattern</div>
+      <div class="d-sub" style="line-height:1.5;">Ghi Business Entity và Event vào Outbox table trong cùng 1 Database Transaction. Đảm bảo tính nhất quán giữa việc thay đổi dữ liệu và gửi event.</div>
+    </div>
+  </div>
+</body>
+</html>

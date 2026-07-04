@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.4 — Spring Cloud Gateway — Request Pipeline
+    =========================================================
+    Tier 1 HTML migration
+    Layout: Horizontal pipeline
+    Capture: gen-diagrams.ps1 -> fig-8-4.png -> Typst image()
+  -->
+  <title>Fig 8.4 — Spring Cloud Gateway — Request Pipeline | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.4">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <!-- Pipeline: 6 steps horizontal -->
+    <div class="d-row d-center d-gap-2 d-mb-3">
+      
+      <!-- Box 1 -->
+      <div class="d-box d-legacy d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
+        <div class="d-title text-center">HTTP Request</div>
+        <div class="d-sub text-center" style="margin-top: 4px;">từ Client</div>
+      </div>
+
+      <!-- Arrow 1 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Box 2 -->
+      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
+        <div class="d-title text-center">Route Predicates</div>
+        <div class="d-sub text-center" style="margin-top: 4px;">Path, Host, Header</div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Box 3 -->
+      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
+        <div class="d-title text-center">Pre-Filters</div>
+        <div class="d-sub text-center" style="margin-top: 4px;">JWT, CORS, Log</div>
+      </div>
+
+      <!-- Arrow 3 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Box 4 -->
+      <div class="d-box d-service d-col d-center" style="height: 90px; padding: 4px; border-width: 2px; flex: 1;">
+        <div class="d-title text-center">Target Service</div>
+        <div class="d-mono text-center" style="margin-top: 6px;">lb://service-name</div>
+      </div>
+
+      <!-- Arrow 4 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Box 5 -->
+      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
+        <div class="d-title text-center">Post-Filters</div>
+        <div class="d-sub text-center" style="margin-top: 4px;">Response Headers</div>
+      </div>
+
+      <!-- Arrow 5 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Box 6 -->
+      <div class="d-box d-legacy d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
+        <div class="d-title text-center">HTTP Response</div>
+        <div class="d-sub text-center" style="margin-top: 4px;">về Client</div>
+      </div>
+
+    </div>
+
+    <!-- Config note -->
+    <div class="d-box d-note" style="padding:14px 18px;">
+      <div class="d-title d-mb-1">LMS Gateway config:</div>
+      <div class="d-code" style="font-size:12px; line-height:1.6;">
+        <span class="str">Path=/api/auth/**</span>  → <span class="kw">lb://auth-service</span><br>
+        <span class="str">Path=/api/core/**</span>  → <span class="kw">lb://kbm-core</span> <span class="cmt">// JWT filter first</span><br>
+        <span class="str">Path=/api/judge/**</span> → <span class="kw">lb://judge-service</span><br>
+        <span class="cmt">// lb:// = load-balanced via Eureka (client-side discovery)</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

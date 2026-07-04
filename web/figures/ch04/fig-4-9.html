@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.9 — Migration Path: Ownership → Resilience → Standardize → Async
+    =========================================================
+  -->
+  <title>Fig 4.9 — Migration Path: 4 Phases | Ch.4</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-4.9" data-ref="CH04-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row d-mb-2 d-gap-1" style="align-items: stretch;">
+
+      <!-- Phase 1: Ownership -->
+      <div class="d-box d-warning d-col text-center" style="flex: 1 1 0%;">
+        <div class="d-title"><span class="d-step">1</span> Ownership</div>
+        <div class="d-sub">(effort trung bình)</div>
+        <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Hợp nhất SQL executor về Judge Service</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Single ownership</div>
+        </div>
+      </div>
+
+      <!-- Arrow 1→2 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Phase 2: Resilience -->
+      <div class="d-box d-success d-col text-center" style="flex: 1 1 0%;">
+        <div class="d-title"><span class="d-step">2</span> Resilience</div>
+        <div class="d-sub">(effort thấp)</div>
+        <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Circuit Breaker</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Retry + Timeout</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Fallback message</div>
+        </div>
+      </div>
+
+      <!-- Arrow 2→3 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Phase 3: Standardize -->
+      <div class="d-box d-service d-col text-center" style="flex: 1 1 0%;">
+        <div class="d-title"><span class="d-step">3</span> Standardize</div>
+        <div class="d-sub">(effort trung bình)</div>
+        <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Chuẩn hóa API</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Log/Trace ID</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Monitoring</div>
+        </div>
+      </div>
+
+      <!-- Arrow 3→4 -->
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Phase 4: Async -->
+      <div class="d-box d-note d-col text-center" style="flex: 1 1 0%;">
+        <div class="d-title"><span class="d-step">4</span> Async</div>
+        <div class="d-sub">(effort cao)</div>
+        <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Submit → Kafka</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> → Judge → Result event</div>
+          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> (non-blocking)</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom note -->
+    <div class="d-box d-note">
+      <div class="d-row d-gap-2" style="flex-wrap:wrap;">
+        <div>
+          <span class="d-title">Khuyến nghị: </span>
+          <span class="d-sub">Bắt đầu từ Phase 1 — ROI cao nhất, không cần thay đổi kiến trúc.</span>
+        </div>
+        <div>
+          <span class="d-title">Phase 4: </span>
+          <span class="d-sub">Chỉ thực hiện khi submission volume tăng và blocking trở thành bottleneck thực sự.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

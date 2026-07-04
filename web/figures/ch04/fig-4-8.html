@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.8 — SQL Judge — Dispatch to Database Workers
+    =========================================================
+    Tier 1 HTML migration từ fig-4-8.svg
+    Layout: Coordinator dispatch pipeline → 4 DBMS workers → databases
+    Capture: gen-diagrams.ps1 → fig-4-8.png → Typst image()
+  -->
+  <title>Fig 4.8 — SQL Judge — Dispatch to Database Workers | Ch.4</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-4.8" data-ref="CH04-SEC">
+
+    <div class="d-col d-center" style="width: 760px; margin: 0 auto;">
+      
+      <!-- Level 1: Core Service -->
+      <div class="d-box d-domain text-center" style="width: 240px; z-index: 2;">
+        <div class="d-title">Core Service</div>
+        <div class="d-sub d-mt-1">Gửi yêu cầu chấm bài SQL</div>
+      </div>
+
+      <!-- Arrow 1: Core -> Coordinator -->
+      <div style="position:relative; width: 100%; height: 60px;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible;">
+          <defs><marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker></defs>
+          <line x1="50%" y1="0" x2="50%" y2="56" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        </svg>
+        <div class="d-arrow-label" style="position:absolute; left: calc(50% + 16px); top: 50%; transform: translateY(-50%); font-style:italic; white-space:nowrap; background: var(--diagram-color-surface);">JudgeRequest (HTTP / Message)</div>
+      </div>
+
+      <!-- Level 2: Judge Coordinator -->
+      <div class="d-box d-service text-center" style="width: 320px; z-index: 2; border-color: var(--diagram-color-info-border);">
+        <div class="d-title d-text-info">Judge Coordinator</div>
+        <div class="d-sub d-mt-1">Nhận request, phân luồng theo Database Type</div>
+      </div>
+
+      <!-- Arrow 2: Coordinator -> 4 Workers -->
+      <div style="position:relative; width: 100%; height: 80px; margin-top: -16px; z-index: 1;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible; position:absolute; top:0; left:0;">
+          <defs><marker id="arr-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)"/></marker></defs>
+          <!-- Dispatch tree with explicit L-shaped pipes -->
+          <!-- To MySQL (Col 1 center = 12.5%) -->
+          <path d="M 50% 0 L 50% 24 L 12.5% 24 L 12.5% 76" stroke="var(--diagram-color-info-border)" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+          <!-- To SQL Server (Col 2 center = 37.5%) -->
+          <path d="M 50% 0 L 50% 24 L 37.5% 24 L 37.5% 76" stroke="var(--diagram-color-info-border)" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+          <!-- To Postgres (Col 3 center = 62.5%) -->
+          <path d="M 50% 0 L 50% 24 L 62.5% 24 L 62.5% 76" stroke="var(--diagram-color-info-border)" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+          <!-- To Oracle (Col 4 center = 87.5%) -->
+          <path d="M 50% 0 L 50% 24 L 87.5% 24 L 87.5% 76" stroke="var(--diagram-color-info-border)" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+        </svg>
+        <!-- Dispatch Condition Labels placed perfectly on the horizontal lines -->
+        <div class="d-sub d-text-info fw-semibold" style="position:absolute; left: 12.5%; top: 38px; transform: translateX(-50%); font-style:italic; background: var(--diagram-color-surface); padding: 2px 6px; border-radius: 4px;">type = mysql</div>
+        <div class="d-sub d-text-info fw-semibold" style="position:absolute; left: 37.5%; top: 38px; transform: translateX(-50%); font-style:italic; background: var(--diagram-color-surface); padding: 2px 6px; border-radius: 4px;">type = sqlserver</div>
+        <div class="d-sub d-text-info fw-semibold" style="position:absolute; left: 62.5%; top: 38px; transform: translateX(-50%); font-style:italic; background: var(--diagram-color-surface); padding: 2px 6px; border-radius: 4px;">type = postgres</div>
+        <div class="d-sub d-text-info fw-semibold" style="position:absolute; left: 87.5%; top: 38px; transform: translateX(-50%); font-style:italic; background: var(--diagram-color-surface); padding: 2px 6px; border-radius: 4px;">type = oracle</div>
+      </div>
+
+      <!-- Level 3: 4 Workers and their DBs -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%;">
+        
+        <!-- Worker 1: MySQL -->
+        <div class="d-col d-gap-1 d-center">
+          <div class="d-box d-note text-center" style="width:100%;">
+            <div class="d-title">judge-mysql</div>
+            <div class="d-sub d-mt-1">MySQL Worker</div>
+          </div>
+          <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-storage text-center" style="width:100%;">
+            <div class="d-title">MySQL</div>
+            <div class="d-sub d-mt-1">port: 3306</div>
+          </div>
+        </div>
+
+        <!-- Worker 2: SQL Server -->
+        <div class="d-col d-gap-1 d-center">
+          <div class="d-box d-event text-center" style="width:100%;">
+            <div class="d-title">judge-sqlserver</div>
+            <div class="d-sub d-mt-1">SQL Server Worker</div>
+          </div>
+          <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-storage text-center" style="width:100%;">
+            <div class="d-title">SQL Server</div>
+            <div class="d-sub d-mt-1">port: 1433</div>
+          </div>
+        </div>
+
+        <!-- Worker 3: Postgres -->
+        <div class="d-col d-gap-1 d-center">
+          <div class="d-box d-service text-center" style="width:100%;">
+            <div class="d-title">judge-postgres</div>
+            <div class="d-sub d-mt-1">PostgreSQL Worker</div>
+          </div>
+          <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-storage text-center" style="width:100%;">
+            <div class="d-title">PostgreSQL</div>
+            <div class="d-sub d-mt-1">port: 5432</div>
+          </div>
+        </div>
+
+        <!-- Worker 4: Oracle -->
+        <div class="d-col d-gap-1 d-center">
+          <div class="d-box d-legacy text-center" style="width:100%;">
+            <div class="d-title">judge-oracle</div>
+            <div class="d-sub d-mt-1">Oracle Worker</div>
+          </div>
+          <svg width="2" height="16"><line x1="1" y1="0" x2="1" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-storage text-center" style="width:100%;">
+            <div class="d-title">Oracle</div>
+            <div class="d-sub d-mt-1">port: 1521</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Notes grid -->
+    <div class="d-box d-note d-mt-1">
+      <div class="d-grid-2 d-gap-1 d-mt-1">
+        <div class="d-sub" style="line-height: 1.55;">
+          <span class="fw-bold">Ownership: </span>
+          <span class="d-text-muted">Core gọi judge; judge sở hữu routing DBMS và worker contract.</span>
+        </div>
+        <div class="d-sub" style="line-height: 1.55;">
+          <span class="fw-bold">Scale: </span>
+          <span class="d-text-muted">Thêm DBMS mới = thêm một worker judge-* + registry config.</span>
+        </div>
+        <div class="d-sub" style="line-height: 1.55;">
+          <span class="fw-bold">Resilience: </span>
+          <span class="d-text-muted">Circuit Breaker riêng theo worker. MySQL down không ảnh hưởng SQL Server.</span>
+        </div>
+        <div class="d-sub" style="line-height: 1.55;">
+          <span class="fw-bold">Migration: </span>
+          <span class="d-text-muted">Phase 2: Async queue cho job dài — không block Core khi worker chậm.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

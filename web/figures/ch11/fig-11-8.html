@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.8 — User Activity Tracking — Async via Kafka | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.8">
+    <div class="d-seq-container">
+    <div class="d-seq-participants">
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-legacy">Student</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Core Service</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-event">Kafka</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Analytics</div></div>
+    </div>
+    <div class="d-seq-messages">
+      <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Submit assignment</span></div><div style="flex:2.5;"></div></div>
+      <div class="d-seq-msg"><div style="flex:1.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Publish: user.activity.submit</span></div><div style="flex:1.5;"></div></div>
+      <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">200 OK (async)</span></div><div style="flex:2.5;"></div></div>
+      <div class="d-mt-1 d-mb-1" style="border-top:1px dashed var(--diagram-color-line-muted);"></div>
+      <div class="d-seq-msg"><div style="flex:2.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Consume event</span></div><div style="flex:0.5;"></div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

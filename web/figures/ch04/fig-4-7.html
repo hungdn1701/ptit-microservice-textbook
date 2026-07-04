@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.7 — Bulkhead Pattern
+    =========================================================
+    Tier 1 HTML migration từ fig-4-7.svg
+    Layout: Core Service cluster với 3 isolated thread pools
+    Capture: gen-diagrams.ps1 → fig-4-7.png → Typst image()
+  -->
+  <title>Fig 4.7 — Bulkhead Pattern | Ch.4</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-4.7" data-ref="CH04-SEC">
+
+    <!-- Core Service cluster -->
+    <div class="d-cluster d-col d-center" style="width: 720px; margin: 0 auto; padding: 24px;">
+      <div class="d-label d-mb-2 text-center fw-bold" style="position:static;">Core Service (API Gateway / Dispatcher)</div>
+      
+      <!-- Top Source -->
+      <div class="d-row d-center" style="width: 100%;">
+        <div class="d-box d-domain text-center" style="width: 320px; z-index: 2;">
+          <div class="d-title">Incoming HTTP Requests</div>
+          <div class="d-sub d-mt-1">Nhiều request gọi đồng thời tới các endpoint khác nhau</div>
+        </div>
+      </div>
+
+      <!-- Routing Arrows from Center -->
+      <div style="position:relative; width: 100%; height: 70px; margin-top: -16px; z-index: 1;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible; position:absolute; top:0; left:0;">
+          <defs><marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)" /></marker></defs>
+          <!-- Center to Left (Judge, 16.6%) -->
+          <path d="M 50% 0 Q 16.6% 25 16.6% 66" stroke="var(--diagram-color-line-muted)" stroke-width="2" fill="none" marker-end="url(#arr-gray)"/>
+          <!-- Center to Middle (Question, 50%) -->
+          <path d="M 50% 0 L 50% 66" stroke="var(--diagram-color-line-muted)" stroke-width="2" fill="none" marker-end="url(#arr-gray)"/>
+          <!-- Center to Right (Contest, 83.3%) -->
+          <path d="M 50% 0 Q 83.3% 25 83.3% 66" stroke="var(--diagram-color-line-muted)" stroke-width="2" fill="none" marker-end="url(#arr-gray)"/>
+        </svg>
+      </div>
+
+      <!-- Endpoints & Thread Pools -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%;">
+        
+        <!-- Column 1: Judge -->
+        <div class="d-col d-center" style="width:100%;">
+          <div class="d-box d-danger text-center" style="width:100%;">
+            <div class="d-title d-text-danger">POST /judge</div>
+            <div class="d-sub d-mt-1">Xử lý chấm bài (Nặng)</div>
+          </div>
+          <svg width="2" height="24" style="margin: 4px 0;"><defs><marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" /></marker></defs><line x1="1" y1="0" x2="1" y2="16" stroke="var(--diagram-color-danger-border)" stroke-width="2" marker-end="url(#arr-red)"/></svg>
+          <div class="d-box d-danger text-center" style="width:100%; padding: 12px 8px; flex: 1;">
+            <div class="d-title d-mb-1">Thread Pool: Judge</div>
+            <div class="d-sub d-mb-1 d-text-danger fw-bold">10 threads</div>
+            <div class="d-label d-mb-2 d-text-danger fw-semibold" style="background: var(--diagram-color-danger-bg);">ĐẦY (Saturated)</div>
+            <!-- Thread dots: all red (full) -->
+            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+              <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Question -->
+        <div class="d-col d-center" style="width:100%;">
+          <div class="d-box d-service text-center" style="width:100%;">
+            <div class="d-title">GET /question</div>
+            <div class="d-sub d-mt-1">Xem câu hỏi (Nhẹ)</div>
+          </div>
+          <svg width="2" height="24" style="margin: 4px 0;"><defs><marker id="arr-grn" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)" /></marker></defs><line x1="1" y1="0" x2="1" y2="16" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-grn)"/></svg>
+          <div class="d-box d-success text-center" style="width:100%; padding: 12px 8px; flex: 1;">
+            <div class="d-title d-mb-1">Thread Pool: Question</div>
+            <div class="d-sub d-mb-1 d-text-success fw-bold">20 threads</div>
+            <div class="d-label d-mb-2 d-text-success fw-semibold" style="background: var(--diagram-color-success-bg);">OK Bình thường</div>
+            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Contest -->
+        <div class="d-col d-center" style="width:100%;">
+          <div class="d-box d-service text-center" style="width:100%;">
+            <div class="d-title">GET /contest</div>
+            <div class="d-sub d-mt-1">Thi đấu (Vừa)</div>
+          </div>
+          <svg width="2" height="24" style="margin: 4px 0;"><line x1="1" y1="0" x2="1" y2="16" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-grn)"/></svg>
+          <div class="d-box d-success text-center" style="width:100%; padding: 12px 8px; flex: 1;">
+            <div class="d-title d-mb-1">Thread Pool: Contest</div>
+            <div class="d-sub d-mb-1 d-text-success fw-bold">15 threads</div>
+            <div class="d-label d-mb-2 d-text-success fw-semibold" style="background: var(--diagram-color-success-bg);">OK Bình thường</div>
+            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Isolation insight -->
+      <div class="d-box d-warning d-mt-3 text-center" style="width: 100%;">
+        <span class="d-title d-text-danger">Judge pool đầy → chỉ Judge bị ảnh hưởng.</span>
+        <span class="d-sub d-mt-1 d-block">Các requests tới Question và Contest vẫn xử lý bình thường = Cách ly failure, không lan truyền.</span>
+      </div>
+
+    </div>
+
+    <!-- Comparison: without vs with -->
+    <div class="d-grid-2 d-gap-1">
+      <div class="d-box d-danger">
+        <div class="d-title d-mb-1">Không có Bulkhead</div>
+        <div class="d-sub">1 pool chung 45 threads. Judge chậm → tất cả block.</div>
+      </div>
+      <div class="d-box d-success">
+        <div class="d-title d-mb-1">Có Bulkhead</div>
+        <div class="d-sub">Pool riêng. Judge chậm → chỉ Judge bị ảnh hưởng, Question/Contest vẫn OK.</div>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <div class="d-code d-mt-1" >
+      <span class="ann">@Bulkhead</span>(<span class="kw">name</span> = <span class="str">"judge"</span>, <span class="kw">type</span> = THREADPOOL, <span class="kw">maxConcurrentCalls</span> = <span class="str">10</span>)
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

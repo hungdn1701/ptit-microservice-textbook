@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 3.2 — Chiến lược versioning API
+    =========================================================
+    Tier 1 HTML migration từ fig-3-2.svg
+    Layout: Decision flowchart — safe vs breaking changes, versioning strategies
+    Capture: gen-diagrams.ps1 → fig-3-2.png → Typst image()
+  -->
+  <title>Fig 3.2 — Chiến lược versioning API | Ch.3</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-3.2">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <!-- Decision tree -->
+    <div class="d-col d-center">
+      <!-- Top Node -->
+      <div class="d-box d-warning d-mb-0 fw-bold" style="border-radius: 24px; padding: 10px 24px; z-index: 1;">
+        <div class="d-title text-center" style="margin: 0; border: none;">Loại thay đổi API?</div>
+      </div>
+
+      <!-- Orthogonal Branching Lines -->
+      <div style="display: flex; width: 360px; height: 40px;">
+        <!-- Left branch -->
+        <div style="flex: 1; border-top: 2px solid var(--diagram-color-line-muted); border-left: 2px solid var(--diagram-color-line-muted); margin-top: 20px; position: relative;">
+            <div style="position: absolute; bottom: -2px; left: -6px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--diagram-color-line-muted);"></div>
+            <div class="d-label d-text-success" style="position: absolute; top: -20px; left: 16px; background: var(--diagram-color-surface); padding: 0 6px;">An toàn</div>
+        </div>
+        <!-- Center stem -->
+        <div style="width: 2px; height: 20px; background: var(--diagram-color-line-muted);"></div>
+        <!-- Right branch -->
+        <div style="flex: 1; border-top: 2px solid var(--diagram-color-line-muted); border-right: 2px solid var(--diagram-color-line-muted); margin-top: 20px; position: relative;">
+            <div style="position: absolute; bottom: -2px; right: -6px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--diagram-color-line-muted);"></div>
+            <div class="d-label d-text-danger" style="position: absolute; top: -20px; right: 16px; background: var(--diagram-color-surface); padding: 0 6px;">Nguy hiểm</div>
+        </div>
+      </div>
+
+      <!-- Two Children Boxes -->
+      <div style="display: flex; width: 680px; gap: 40px; justify-content: space-between; margin-bottom: 0; align-items: flex-start;">
+        
+        <!-- Left Column: Backward Compatible -->
+        <div class="d-col d-center" style="width: 320px;">
+          <div class="d-box d-success d-col text-center" style="width: 100%;">
+            <div class="d-title">Backward Compatible</div>
+            <div class="d-code d-mt-1 text-left" style="padding: 10px; background: rgba(0,0,0,0.02); line-height: 1.6;">
+              • Thêm field mới (optional)<br>
+              • Thêm endpoint mới<br>
+              • Thêm enum value mới
+            </div>
+            <div class="d-sub d-mt-1" style="font-style: italic;">Consumer cũ bỏ qua field mới</div>
+          </div>
+        </div>
+
+        <!-- Right Column: Breaking Change -->
+        <div class="d-col d-center" style="width: 320px;">
+          <div class="d-box d-danger d-col text-center" style="width: 100%;">
+            <div class="d-title">Breaking Change</div>
+            <div class="d-code d-mt-1 text-left" style="padding: 10px; background: rgba(0,0,0,0.02); line-height: 1.6;">
+              • Xóa field hiện có<br>
+              • Đổi tên field<br>
+              • Đổi kiểu dữ liệu field<br>
+              • Đổi URL endpoint
+            </div>
+            <div class="d-sub d-mt-1" style="font-style: italic;">Consumer cũ sẽ LỖI!</div>
+          </div>
+          <!-- Arrow explicitly pointing down to the cluster -->
+          <svg width="2" height="24" style="overflow:visible; display:block; margin: 8px auto -16px; position: relative; z-index: 2;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Versioning strategies (bottom, under right branch) -->
+    <div class="d-cluster">
+      <span class="d-label">Chiến lược versioning khi có breaking change</span>
+
+      <div class="d-grid-3 d-gap-2 d-mt-2">
+
+        <div class="d-box d-service">
+          <div class="d-title">URL Path</div>
+          <div class="d-code d-mt-1" style="padding: 4px;">/api/v1/users → /v2/</div>
+          <div class="d-sub d-mt-1">Dễ test, rõ ràng, phổ biến nhất</div>
+        </div>
+
+        <div class="d-box d-note">
+          <div class="d-title">Header</div>
+          <div class="d-code d-mt-1" style="padding: 4px;">Accept: application/vnd.v2+json</div>
+          <div class="d-sub d-mt-1">RESTful hơn, URL sạch</div>
+        </div>
+
+        <div class="d-box d-highlight">
+          <div class="d-title">Query Param</div>
+          <div class="d-code d-mt-1" style="padding: 4px;">/api/users?version=2</div>
+          <div class="d-sub d-mt-1">Dễ test qua browser</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

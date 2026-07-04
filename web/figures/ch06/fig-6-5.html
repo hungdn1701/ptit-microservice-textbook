@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.5 — Race Condition without Idempotency
+    =========================================================
+    Tier 1 HTML migration từ fig-6-5.svg
+    Layout: Side-by-side concurrent sagas → lost update; solution note below
+    Capture: gen-diagrams.ps1 → fig-6-5.png → Typst image()
+  -->
+  <title>Fig 6.5 — Race Condition — Thiếu Idempotency | Ch.6</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 580px;" data-ref="CH06-SEC">
+
+    <div class="d-col d-center" style="width: 760px; margin: 0 auto;">
+      
+      <!-- Two concurrent sagas -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%;">
+        
+        <!-- Saga A -->
+        <div class="d-cluster" style="border-color: var(--diagram-color-info-border); background: var(--diagram-color-surface);">
+          <span class="d-label d-text-info" style="background: var(--diagram-color-surface);">Saga A — Submit #1</span>
+          <div class="d-stack d-mt-1 d-gap-1">
+            <div class="d-sub">
+              <span class="d-step">1</span> Đọc điểm hiện tại: <strong>100</strong>
+            </div>
+            <div class="d-sep"></div>
+            <div class="d-sub">
+              <span class="d-step">2</span> Tính toán: 100 + 10 = 110<br>
+              <span class="d-text-muted" style="font-style:italic; font-size: 11px;">(Trả lời đúng hoàn toàn)</span>
+            </div>
+            <div class="d-sep"></div>
+            <div class="d-sub d-text-danger fw-semibold">
+              <span class="d-step" style="background: var(--diagram-color-danger-bg); border-color: var(--diagram-color-danger-border); color: var(--diagram-color-danger-text);">3</span> Chuẩn bị ghi: <strong>110</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saga B -->
+        <div class="d-cluster" style="border-color: var(--diagram-color-warning-border); background: var(--diagram-color-surface);">
+          <span class="d-label d-text-warning" style="background: var(--diagram-color-surface);">Saga B — Submit #2 (concurrent)</span>
+          <div class="d-stack d-mt-1 d-gap-1">
+            <div class="d-sub">
+              <span class="d-step">1</span> Đọc điểm hiện tại: <strong>100</strong>
+              <span class="d-zone-danger" style="margin-left:4px; padding: 2px 6px; font-size: 10px; background: var(--diagram-color-danger-bg); border: 1px solid var(--diagram-color-danger-border); color: var(--diagram-color-danger-text);">cùng thời điểm</span>
+            </div>
+            <div class="d-sep"></div>
+            <div class="d-sub">
+              <span class="d-step">2</span> Tính toán: 100 + 5 = 105<br>
+              <span class="d-text-muted" style="font-style:italic; font-size: 11px;">(Trả lời đúng một nửa)</span>
+            </div>
+            <div class="d-sep"></div>
+            <div class="d-sub d-text-danger fw-semibold">
+              <span class="d-step" style="background: var(--diagram-color-danger-bg); border-color: var(--diagram-color-danger-border); color: var(--diagram-color-danger-text);">3</span> Chuẩn bị ghi: <strong>105</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Converging Arrows to DB -->
+      <div style="position:relative; width: 100%; height: 90px;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible;">
+          <defs><marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" /></marker></defs>
+          <line x1="25%" y1="0" x2="48%" y2="86" stroke="var(--diagram-color-danger-border)" stroke-width="2" marker-end="url(#arr-red)" />
+          <line x1="75%" y1="0" x2="52%" y2="86" stroke="var(--diagram-color-danger-border)" stroke-width="2" marker-end="url(#arr-red)" />
+        </svg>
+        <div class="d-arrow-label d-text-danger fw-semibold" style="position:absolute; left: 16%; top: 40px; border: none; background: var(--diagram-color-surface);">Thực hiện Ghi: 110</div>
+        <div class="d-arrow-label d-text-danger fw-semibold" style="position:absolute; left: 84%; top: 40px; transform: translateX(-100%); border: none; background: var(--diagram-color-surface);">GHI ĐÈ LÊN: 105</div>
+      </div>
+
+      <!-- Shared DB - Result of Race -->
+      <div class="d-box d-danger text-center d-mb-2" style="width: 480px; border-width: 2px;">
+        <div class="d-title d-text-danger">Score Database — Final Result</div>
+        <div class="d-mt-1 d-mb-1 d-text-danger fw-bold" style="font-size:24px;">
+          105 <span class="d-text-muted" style="font-size:13px; text-decoration: line-through;">(Đáng lẽ phải là 115)</span>
+        </div>
+        <div class="d-sub d-text-danger fw-semibold">
+          Lost update — Ghi chú của Saga A bị bốc hơi hoàn toàn!
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Solution note -->
+    <div class="d-box d-note">
+      <div class="d-label d-mb-1">Giải pháp</div>
+      <div class="d-sub d-mb-1">
+        <strong class="d-text-success">1. Idempotency key:</strong> mỗi submission có unique ID, DB UNIQUE constraint ngăn xử lý trùng
+      </div>
+      <div class="d-sub d-mb-1">
+        <strong class="d-text-success">2. Optimistic locking:</strong> version field — <code>UPDATE score SET value=? WHERE id=? AND version=N</code>
+      </div>
+      <div class="d-sub d-mb-1">
+        <strong class="d-text-success">3. Database constraint:</strong> <code>UNIQUE(submission_id)</code> trong score table — lỗi nếu duplicate
+      </div>
+      <div class="d-sep"></div>
+      <div class="d-text-danger" style="font-style:italic;">
+        LMS hiện tại: Chưa có idempotency key → contest mode có thể bị duplicate submission khi network retry.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

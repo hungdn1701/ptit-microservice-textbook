@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles/base-style.css?v=336a05ce">
+  <style>
+    body {
+      background: transparent;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      font-family: var(--font-mono);
+    }
+    
+    .author-card {
+      width: 100%;
+      max-width: 860px;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn var(--duration-enter) var(--ease-out);
+    }
+    
+
+    
+    .card-body {
+      display: flex;
+      padding: 40px;
+      gap: 48px;
+    }
+    
+    /* Photo styling */
+    .photo-col {
+      flex-shrink: 0;
+      width: 220px;
+    }
+    
+    .photo-wrapper {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-elevated);
+      transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .photo-wrapper:hover {
+      border-radius: 12px;
+    }
+    
+    .photo-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+    
+    .author-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease, transform 0.4s ease;
+      
+      /* Default Dark Theme Styling */
+      border: 3px solid #334155;
+      box-sizing: border-box;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      filter: grayscale(15%) contrast(1.05) brightness(0.95);
+    }
+    
+    .photo-wrapper:hover .author-photo {
+      transform: scale(1.05);
+    }
+    
+    html.light .author-photo {
+      border: 3px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      filter: grayscale(0%) contrast(1.02) brightness(1.02);
+    }
+    
+    html.theme-monokai .author-photo {
+      border: 3px solid #414339;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      filter: sepia(10%) contrast(1.05) brightness(0.95);
+    }
+    
+    html.theme-dracula .author-photo {
+      border: 3px solid #6272a4;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      filter: hue-rotate(-5deg) contrast(1.05) brightness(0.95);
+    }
+    
+    html.light .photo-wrapper::after {
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Info styling */
+    .info-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .sys-info {
+      margin-bottom: 24px;
+    }
+    
+    .sys-line {
+      display: flex;
+      font-size: 13px;
+      line-height: 2;
+    }
+    
+    .sys-key {
+      color: var(--primary);
+      width: 100px;
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+    
+    .sys-val {
+      color: var(--text-main);
+    }
+    .sys-val a {
+      color: var(--info);
+      text-decoration: none;
+      transition: color var(--duration-fast);
+    }
+    .sys-val a:hover {
+      text-decoration: underline;
+      color: var(--primary);
+    }
+    
+    /* Terminal Styles */
+    .terminal-container {
+      margin-top: 24px;
+      background: #0f141b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      height: 250px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .terminal-header {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      position: absolute;
+      left: 16px;
+    }
+    
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .terminal-dot.close { background: #ff5f56; }
+    .terminal-dot.minimize { background: #ffbd2e; }
+    .terminal-dot.maximize { background: #27c93f; }
+    
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      user-select: none;
+    }
+    
+    .terminal-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: text;
+      scrollbar-width: thin;
+    }
+    
+    html.light .terminal-container {
+      background: #f6f8fa;
+    }
+    html.light .terminal-body {
+      background: #fafafa;
+      color: #24292f;
+    }
+    
+    html.theme-monokai .terminal-container {
+      background: #1e1f1c;
+    }
+    html.theme-monokai .terminal-body {
+      background: #272822;
+      color: #f8f8f2;
+    }
+    
+    html.theme-dracula .terminal-container {
+      background: #21222c;
+    }
+    html.theme-dracula .terminal-body {
+      background: #282a36;
+      color: #f8f8f2;
+    }
+    
+    .terminal-output {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    
+    .terminal-input-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    
+    .terminal-prompt {
+      color: var(--success);
+      font-weight: 600;
+      white-space: nowrap;
+      user-select: none;
+    }
+    
+    #terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      outline: none;
+      padding: 0;
+      caret-color: var(--primary);
+    }
+    
+    .cmd-highlight {
+      color: var(--info);
+      font-weight: 600;
+    }
+    
+    .cmd-success {
+      color: var(--success);
+    }
+    
+    .cmd-error {
+      color: var(--danger);
+    }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    @media (max-width: 768px) {
+      body { padding: 20px; }
+      .card-body { flex-direction: column; align-items: center; padding: 0; gap: 32px; }
+      .photo-col { width: 180px; }
+      .sys-line { flex-direction: column; line-height: 1.6; margin-bottom: 8px; }
+      .sys-key { width: auto; margin-bottom: 2px; }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="author-card">
+    
+    <div class="card-body">
+      <div class="photo-col">
+        <div class="photo-wrapper">
+          <img src="images/author-original.jpg?v=43f199d2" class="author-photo" alt="Đặng Ngọc Hùng">
+        </div>
+      </div>
+      
+      <div class="info-col">
+        <div class="sys-info">
+          <div class="sys-line"><span class="sys-key">OS:</span><span class="sys-val">Lecturer | Developer</span></div>
+          <div class="sys-line"><span class="sys-key">Kernel:</span><span class="sys-val">Software Architecture, Microservices, System Design</span></div>
+          <div class="sys-line"><span class="sys-key">Uptime:</span><span class="sys-val">Teaching & Building Systems since 2013</span></div>
+          <div class="sys-line"><span class="sys-key">Shell:</span><span class="sys-val">Java, Go, TypeScript, PostgreSQL</span></div>
+          <div class="sys-line"><span class="sys-key">Contact:</span><span class="sys-val"><a href="mailto:hungdn@ptit.edu.vn">hungdn@ptit.edu.vn</a></span></div>
+          <div class="sys-line"><span class="sys-key">Links:</span><span class="sys-val"><a href="https://hungdn1701.github.io" target="_blank">Portfolio</a> • <a href="https://github.com/hungdn1701" target="_blank">GitHub</a></span></div>
+        </div>
+        
+        <div class="terminal-container">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot close"></span>
+              <span class="terminal-dot minimize"></span>
+              <span class="terminal-dot maximize"></span>
+            </div>
+            <div class="terminal-title">hungdn@ptit: ~</div>
+          </div>
+          <div class="terminal-body" id="terminal-body">
+            <div class="terminal-output" id="terminal-output">Welcome to PTIT Microservices Terminal v1.1.2
+Type <span class="cmd-highlight">help</span> to see a list of available commands.
+
+</div>
+            <div class="terminal-input-line">
+              <span class="terminal-prompt">hungdn@ptit:~$</span>
+              <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const imgEl = document.querySelector('.author-photo');
+    
+    function applyTheme(theme) {
+      document.documentElement.className = ''; // reset
+      if (theme === 'light') {
+        document.documentElement.classList.add('light');
+      } else if (theme && theme !== 'dark') {
+        document.documentElement.classList.add('theme-' + theme);
+      }
+      
+      // Removed the logic that changes imgEl.src dynamically
+      // The CSS filters (grayscale, sepia, etc.) handle the theme adjustments directly!
+    }
+
+    // Initialize theme synchronously from localStorage to prevent FOUC / image swap delay
+    // Wrapped in try-catch to prevent crash if cross-origin localStorage is blocked
+    let savedTheme = 'dark';
+    try {
+      savedTheme = localStorage.getItem('ide-theme') || 'dark';
+    } catch (e) {
+      console.warn('localStorage is blocked in this context. Using default theme.', e);
+    }
+    applyTheme(savedTheme);
+
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'SET_THEME') {
+        let theme = e.data.theme || (e.data.isLight ? 'light' : 'dark');
+        applyTheme(theme);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+    // Terminal Simulator
+    const terminalBody = document.getElementById('terminal-body');
+    const terminalOutput = document.getElementById('terminal-output');
+    const terminalInput = document.getElementById('terminal-input');
+    
+    // Focus input helper
+    function focusTerminal() {
+      if (terminalInput) {
+        terminalInput.focus();
+      }
+    }
+
+    // Focus input when terminal body or document is clicked
+    terminalBody.addEventListener('click', (e) => {
+      focusTerminal();
+    });
+    
+    window.addEventListener('focus', () => {
+      focusTerminal();
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      focusTerminal();
+    });
+    
+    // Immediate autofocus trigger
+    setTimeout(() => {
+      window.focus();
+      focusTerminal();
+    }, 100);
+    
+    const VIRTUAL_FILES = {
+      'about.txt': `Tác giả cuốn sách "Kiến trúc SOA & Microservices".\n\nVới nhiều năm kinh nghiệm thiết kế các hệ thống phân tán, cloud-native và các giải pháp hướng dịch vụ. Anh tập trung nghiên cứu ứng dụng Domain-Driven Design và Observability vào thực tiễn, nhằm mang lại các bài giảng trực quan nhất cho cộng đồng kỹ sư.`,
+      'contact.txt': `Email: hungdn@ptit.edu.vn\nGitHub: https://github.com/hungdn1701\nPortfolio: https://hungdn1701.github.io`,
+      'books.pdf': `[PDF] Giáo trình Kiến trúc SOA & Microservices - Tài liệu giảng dạy chính thức tại PTIT.`
+    };
+    
+    terminalInput.addEventListener('keydown', (e) => {
+      // Prevent keydown events from bubbling up to parent window (avoids shortcut interference)
+      e.stopPropagation();
+      
+      if (e.key === 'Enter') {
+        const fullCmd = terminalInput.value.trim();
+        const parts = fullCmd.split(/\s+/);
+        const cmd = parts[0].toLowerCase();
+        const arg = parts[1];
+        
+        // Append input line to output
+        terminalOutput.innerHTML += `hungdn@ptit:~$ ${fullCmd}\n`;
+        
+        if (fullCmd) {
+          executeCommand(cmd, arg, fullCmd);
+        }
+        
+        terminalInput.value = '';
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+      }
+    });
+    
+    function executeCommand(cmd, arg, fullCmd) {
+      let output = '';
+      
+      switch (cmd) {
+        case 'clear':
+          terminalOutput.innerHTML = '';
+          return;
+          
+        case 'help':
+          output = `Available commands:\n` +
+                   `  <span class="cmd-highlight">help</span>      - Show list of available commands\n` +
+                   `  <span class="cmd-highlight">whoami</span>    - Display information about the author\n` +
+                   `  <span class="cmd-highlight">about</span>     - Output textbook author overview\n` +
+                   `  <span class="cmd-highlight">ls / dir</span>  - List available files and documents\n` +
+                   `  <span class="cmd-highlight">cat</span> &lt;f&gt;   - Output the content of a file\n` +
+                   `  <span class="cmd-highlight">theme</span> &lt;t&gt; - Cycle or change theme (light|dark|monokai|dracula)\n` +
+                   `  <span class="cmd-highlight">pattern</span> &lt;p&gt;- Open a specific pattern (e.g. pattern circuit)\n` +
+                   `  <span class="cmd-highlight">diagram</span> &lt;d&gt;- Open a specific diagram (e.g. diagram auth)\n` +
+                   `  <span class="cmd-highlight">chapter</span> &lt;c&gt;- Open a book chapter (e.g. chapter 01)\n` +
+                   `  <span class="cmd-highlight">date</span>      - Display current date and time\n` +
+                   `  <span class="cmd-highlight">clear</span>     - Clear the terminal screen\n`;
+          break;
+          
+        case 'whoami':
+          output = `Name:       Đặng Ngọc Hùng (hungdn1701)\n` +
+                   `Role:       Lecturer & Developer\n` +
+                   `Affiliation:PTIT (Post and Telecommunications Institute of Technology)\n` +
+                   `Interests:  SOA, Microservices, DDD, System Architecture, Observability\n`;
+          break;
+          
+        case 'about':
+          output = VIRTUAL_FILES['about.txt'] + '\n';
+          break;
+          
+        case 'ls':
+        case 'dir':
+          output = Object.keys(VIRTUAL_FILES).join('\n') + '\n';
+          break;
+          
+        case 'cat':
+          if (!arg) {
+            output = `<span class="cmd-error">Usage: cat &lt;filename&gt; (e.g., cat about.txt)</span>\n`;
+          } else if (VIRTUAL_FILES[arg]) {
+            output = VIRTUAL_FILES[arg] + '\n';
+          } else {
+            output = `<span class="cmd-error">cat: ${arg}: No such file or directory</span>\n`;
+          }
+          break;
+          
+        case 'theme':
+          const currentTheme = document.documentElement.classList.contains('light') ? 'light' : 
+                               (document.documentElement.classList.contains('theme-monokai') ? 'monokai' :
+                               (document.documentElement.classList.contains('theme-dracula') ? 'dracula' : 'dark'));
+          
+          if (!arg) {
+            output = `Active theme: <span class="cmd-highlight">${currentTheme}</span>\n` +
+                     `Usage: theme &lt;light|dark|monokai|dracula&gt;\n`;
+          } else {
+            const targetTheme = arg.toLowerCase();
+            const validThemes = ['light', 'dark', 'monokai', 'dracula'];
+            if (validThemes.includes(targetTheme)) {
+              window.parent.postMessage({ type: 'SET_THEME_FROM_TERMINAL', theme: targetTheme }, '*');
+              output = `<span class="cmd-success">Theme updated to ${targetTheme}!</span>\n`;
+            } else {
+              output = `<span class="cmd-error">theme: '${targetTheme}' is not a valid theme. Try: dark, light, monokai, or dracula.</span>\n`;
+            }
+          }
+          break;
+          
+        case 'pattern':
+        case 'diagram':
+        case 'chapter':
+          if (!arg) {
+            output = `<span class="cmd-error">Usage: ${cmd} &lt;name or ID&gt; (e.g., ${cmd} ${cmd === 'chapter' ? '01' : 'auth'})</span>\n`;
+          } else {
+            window.parent.postMessage({ type: 'OPEN_FILE', itemType: cmd, id: arg }, '*');
+            output = `<span class="cmd-success">Opening ${cmd}: ${arg}...</span>\n`;
+          }
+          break;
+          
+        case 'date':
+          output = new Date().toString() + '\n';
+          break;
+          
+        default:
+          output = `-bash: ${cmd}: command not found\n`;
+          break;
+      }
+      
+      terminalOutput.innerHTML += output;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.7 — SLI / SLO / SLA | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.7">
+    <div class="d-box d-danger text-center" style="padding: 24px;">
+      <div class="d-title d-title-lg d-mb-1">SLA (Service Level Agreement)</div>
+      <div class="d-sub d-mb-1">Cam kết với sinh viên (VD: uptime ≥ 99.5%, vi phạm → xử lý bù)</div>
+
+      <div class="d-box d-event text-center" style="padding: 24px; margin-top: 16px;">
+        <div class="d-title d-title-lg d-mb-1">SLO (Service Level Objective)</div>
+        <div class="d-sub d-mb-1">Mục tiêu nội bộ, nghiêm ngặt hơn SLA (VD: uptime ≥ 99.9%)</div>
+
+        <div class="d-box d-service text-center" style="padding: 24px; margin-top: 16px;">
+          <div class="d-title d-title-lg d-mb-1">SLI (Service Level Indicator)</div>
+          <div class="d-sub d-mb-2">Chỉ số thực tế đo đạc được</div>
+          <div class="d-row d-gap-1 d-center">
+            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">latency p99</div>
+            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">error_rate</div>
+            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">availability</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

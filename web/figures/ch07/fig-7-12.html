@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.12 — Event Sourcing — Snapshot Optimization
+    =========================================================
+    Tier 1 HTML migration từ fig-7-12.svg
+    Layout: Horizontal timeline with snapshot marker — events 1..100, snapshot, events 101..105
+    Capture: gen-diagrams.ps1 → fig-7-12.png → Typst image()
+  -->
+  <title>Fig 7.12 — Event Sourcing — Snapshot Optimization | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.12" data-ref="CH07-SEC">
+
+    <!-- Timeline visualization -->
+    <div class="d-col d-center d-mb-2" style="position: relative; width: 640px; margin: 0 auto; padding-top: 40px;">
+
+      <!-- Timeline wrapper -->
+      <div style="position: relative; width: 100%; height: 60px;">
+        
+        <!-- Events 1-100 (Width 440px) -->
+        <div class="d-note" style="position: absolute; top: 0; left: 0; width: 440px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; border-radius: 8px; border: 1.5px solid; text-align: center; box-sizing: border-box;">
+          <div>
+            <div class="fw-bold">Event 1 → Event 100</div>
+            <div class="d-text-muted" style="font-size: 11px;">100 events lịch sử</div>
+          </div>
+        </div>
+
+        <!-- Snapshot marker (Vertical line at 460px) -->
+        <!-- Center is 440 + 20 (gap) = 460px -->
+        <div style="position: absolute; top: -20px; left: 460px; width: 4px; height: 90px; background: var(--diagram-color-success-border); transform: translateX(-50%); z-index: 3;">
+          <div class="fw-bold" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--diagram-color-success-border); white-space: nowrap;">[Snapshot]</div>
+        </div>
+
+        <!-- Events 101-105 (Width 140px, starts at 480px) -->
+        <div class="d-note" style="position: absolute; top: 0; left: 480px; width: 160px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; border-radius: 8px; border: 1.5px solid; text-align: center; box-sizing: border-box;">
+          <div>
+            <div class="fw-bold">101 → 105</div>
+            <div class="d-text-muted" style="font-size: 11px;">5 events mới</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Arrow down to snapshot box (starts from the bottom of the timeline marker) -->
+      <div style="position: relative; width: 100%; height: 40px;">
+        <!-- Stem down from marker -->
+        <div class="d-tree-stem-down arrow success" style="top: 10px; bottom: auto; left: 460px; --stem-len: 30px;"></div>
+      </div>
+
+      <!-- Snapshot box (stored) - Centered at 460px -->
+      <div style="position: relative; width: 100%; height: 60px;">
+        <div class="d-box d-highlight text-center" style="position: absolute; top: 0; left: 460px; transform: translateX(-50%); width:320px;">
+          <div class="d-title">Snapshot — state tại event 100</div>
+          <div class="d-sub">score=80, attempts=3, status=JUDGED</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="d-sep d-mt-2 d-mb-2"></div>
+
+    <!-- Comparison: with vs without snapshot -->
+    <div class="d-grid-2 d-gap-2 d-mb-2">
+
+      <!-- WITHOUT snapshot — slow -->
+      <div class="d-box d-danger">
+        <div class="d-title d-mb-1">Không có Snapshot</div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">Replay <strong>105 events</strong> từ đầu</div>
+          <div class="d-sub">Event 1 → Event 2 → … → Event 105</div>
+          <div class="d-zone d-zone-danger d-mt-1">CHẬM — O(n) events</div>
+        </div>
+      </div>
+
+      <!-- WITH snapshot — fast -->
+      <div class="d-box d-success">
+        <div class="d-title d-mb-1">OK Có Snapshot</div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">Load <strong>snapshot(100)</strong> → replay <strong>5 events</strong></div>
+          <div class="d-sub">Event 101 → Event 102 → … → Event 105</div>
+          <div class="d-zone d-zone-success d-mt-1">NHANH — O(recent events)</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Rule note -->
+    <div class="d-box d-note text-center">
+      <div class="d-title"> Rule of thumb: tạo Snapshot mỗi N events (vd: N=100)</div>
+      <div class="d-sub">Snapshot không thay thế events — events vẫn được giữ nguyên cho audit/replay đầy đủ.</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.8 — API Composition Pattern
+    =========================================================
+    Tier 1 HTML migration từ fig-7-8.svg
+    Layout: Client → Composer (Gateway/BFF) → 3 services in parallel → compose
+    Capture: gen-diagrams.ps1 → fig-7-8.png → Typst image()
+  -->
+  <title>Fig 7.8 — API Composition Pattern | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.8" data-ref="CH07-SEC">
+
+    <div style="position: relative; width: 600px; height: 460px; margin: 0 auto;">
+      <!-- SVG Layer -->
+      <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0; overflow: visible;">
+        <defs>
+          <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+          <marker id="arr-success" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
+        </defs>
+
+        <!-- Client to Composer -->
+        <line x1="300" y1="70" x2="300" y2="100" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        
+        <!-- Composer to 3 Services -->
+        <!-- Center of Composer is 300, y=170. Branches to X=100, 300, 500 at y=230 -->
+        <path d="M 300 170 L 300 195 L 100 195 L 100 230" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <line x1="300" y1="170" x2="300" y2="230" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <path d="M 300 170 L 300 195 L 500 195 L 500 230" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+
+        <!-- 3 Services to Merge Box -->
+        <!-- Services end at y=310 (approx). Branches merge at y=370, Center 300 -->
+        <path d="M 100 310 L 100 345 L 300 345 L 300 370" fill="none" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-success)"/>
+        <line x1="300" y1="310" x2="300" y2="370" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-success)"/>
+        <path d="M 500 310 L 500 345 L 300 345 L 300 370" fill="none" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-success)"/>
+      </svg>
+
+      <!-- HTML Elements Layer -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        
+        <!-- Client -->
+        <div class="d-box d-legacy text-center" style="position: absolute; top: 0px; left: 200px; width: 200px;">
+          <div class="d-title">Client</div>
+          <div class="d-sub">Web / Mobile App</div>
+        </div>
+
+        <!-- API Composer -->
+        <div class="d-box d-domain text-center" style="position: absolute; top: 100px; left: 140px; width: 320px;">
+          <div class="d-title">API Composer</div>
+          <div class="d-sub">Gateway / BFF — nhận 1 request, gọi parallel N services</div>
+        </div>
+
+        <!-- Services Row -->
+        <div class="d-box d-service text-center" style="position: absolute; top: 230px; left: 10px; width: 180px;">
+          <div class="d-title">Service A</div>
+          <div class="d-sub">student data</div>
+        </div>
+        <div class="d-box d-service text-center" style="position: absolute; top: 230px; left: 210px; width: 180px;">
+          <div class="d-title">Service B</div>
+          <div class="d-sub">assignment data</div>
+        </div>
+        <div class="d-box d-service text-center" style="position: absolute; top: 230px; left: 410px; width: 180px;">
+          <div class="d-title">Service C</div>
+          <div class="d-sub">grade data</div>
+        </div>
+
+        <!-- Merge Box -->
+        <div class="d-box d-success text-center" style="position: absolute; top: 370px; left: 140px; width: 320px;">
+          <div class="d-title">Merge &amp; Compose Response</div>
+          <div class="d-sub">1 response duy nhất trả về Client</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Explanation note -->
+    <div class="d-box d-note d-mt-1">
+      <div class="d-row d-gap-2" style="flex-wrap:wrap; align-items:flex-start;">
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">Composer thực hiện</div>
+          <div class="d-sub">Gọi <strong>parallel</strong> 3 services, merge kết quả, trả về client 1 response duy nhất.</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:var(--diagram-color-line-muted); margin:0;"></div>
+        <div style="flex:1; min-width:200px;">
+          <div class="d-title">LMS Dashboard</div>
+          <div class="d-sub">Gateway làm composer cho dashboard page: student info + assignments + grades → 1 API call từ client.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

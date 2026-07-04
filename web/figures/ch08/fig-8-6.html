@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.6 — Gateway JWT Filter — Request Rejected
+    =========================================================
+    Tier 1 HTML migration
+    Layout: Sequence diagram
+    Capture: gen-diagrams.ps1 -> fig-8-6.png -> Typst image()
+  -->
+  <title>Fig 8.6 — Gateway JWT Filter — Request Rejected | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.6">
+
+    <div class="d-seq-container">
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-highlight">Gateway</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+      </div>
+
+      <!-- SCENARIO 1: Invalid token -->
+      <div class="d-sep-title d-mt-2 d-mb-1">
+        <span class="fw-semibold d-text-muted" style="font-size: 13px;">Scenario 1: Invalid Token</span>
+      </div>
+
+      <div class="d-seq-messages">
+        <!-- Request with invalid token -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/admin (invalid token)</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- Token check -->
+        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
+          <div style="flex:0.5;"></div>
+          <div style="flex:1; display:flex; justify-content:center;">
+            <div class="d-zone d-zone-danger text-center" style="font-size: 12px; padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Token INVALID</div>
+          </div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- 401 back -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line dashed danger reverse" style="flex:1;"><span class="d-seq-msg-text d-text-danger fw-semibold">401 Unauthorized</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <div class="text-center" style="margin:2px 0;"><span class="d-sub d-text-danger" style="font-style:italic;">Request DOES NOT reach Core Service</span></div>
+      </div>
+
+      <!-- SCENARIO 2: Valid token -->
+      <div class="d-sep-title d-mt-3 d-mb-1">
+        <span class="fw-semibold d-text-muted" style="font-size: 13px;">Scenario 2: Valid Token</span>
+      </div>
+
+      <div class="d-seq-messages">
+        <!-- Request with valid token -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/questions (valid token)</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- Token check -->
+        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
+          <div style="flex:0.5;"></div>
+          <div style="flex:1; display:flex; justify-content:center;">
+            <div class="d-zone d-zone-success text-center" style="font-size: 12px; padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Token valid</div>
+          </div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- Forward -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Forward + X-User-Id, X-User-Roles header</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
+        <!-- Response back -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
+        <!-- To client -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to client</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+      </div>
+    </div><!-- /.d-seq-container -->
+
+  </div>
+</body>
+</html>

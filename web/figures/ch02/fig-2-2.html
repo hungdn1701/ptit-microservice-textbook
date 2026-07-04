@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.2 — Mô hình Spotify: Tribe, Squad, Chapter, Guild
+    =========================================================
+    Tier 1 HTML migration từ fig-2-2.svg
+    Layout: Tribe cluster with 3 Squads + Chapter column + Guild
+    Capture: gen-diagrams.ps1 → fig-2-2.png → Typst image()
+  -->
+  <title>Fig 2.2 — Mô hình Spotify: Tribe, Squad, Chapter, Guild | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  <style>
+    .spotify-grid {
+      display: grid;
+      grid-template-columns: 160px 100px 100px 100px;
+      gap: 16px 12px;
+      align-items: center;
+      position: relative;
+      padding-top: 40px;
+      padding-bottom: 10px;
+    }
+    .squad-bg {
+      grid-column: 1 / 5;
+      height: 100%;
+      border-radius: 8px;
+      border: 2px solid var(--diagram-color-line-muted);
+      background: var(--diagram-color-surface);
+      z-index: 0;
+    }
+    .chapter-bg {
+      grid-column: 3;
+      grid-row: 1 / 5;
+      border-radius: 8px;
+      border: 2px dashed var(--diagram-color-info-border);
+      background: rgba(59, 130, 246, 0.08);
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .member-pill {
+      border-radius: 6px;
+      border: 1.5px solid var(--diagram-color-line);
+      background: var(--diagram-color-surface);
+      padding: 6px 0;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.2">
+    
+    <!-- Tribe cluster -->
+    <div class="d-cluster" style="padding: 24px; position: relative; margin: 0 auto; width: fit-content;">
+      <div class="d-label d-mb-1 text-center" style="position: static;">Tribe (40–150 người)</div>
+
+      <div class="spotify-grid">
+        <!-- Chapter vertical column background -->
+        <div class="chapter-bg"></div>
+        
+        <!-- Chapter Title (Row 1) -->
+        <div class="text-center" style="grid-column: 3; grid-row: 1; margin-top: -36px; z-index: 2;">
+          <div class="d-title d-text-info">Chapter</div>
+          <div class="d-sub">(Backend)</div>
+        </div>
+
+        <!-- Squad 1 (Row 2) -->
+        <div class="squad-bg" style="grid-row: 2;"></div>
+        <div style="grid-column: 1; grid-row: 2; padding-left: 16px; z-index: 2;" class="d-title">Squad: Search</div>
+        <div class="member-pill" style="grid-column: 2; grid-row: 2;">FE Dev</div>
+        <div class="member-pill d-text-info" style="grid-column: 3; grid-row: 2; border-color: var(--diagram-color-info-border);">BE Dev</div>
+        <div class="member-pill" style="grid-column: 4; grid-row: 2;">Tester</div>
+
+        <!-- Squad 2 (Row 3) -->
+        <div class="squad-bg" style="grid-row: 3; border-color: var(--diagram-color-warning-border);"></div>
+        <div style="grid-column: 1; grid-row: 3; padding-left: 16px; z-index: 2;" class="d-title">Squad: Player</div>
+        <div class="member-pill" style="grid-column: 2; grid-row: 3;">FE Dev</div>
+        <div class="member-pill d-text-info" style="grid-column: 3; grid-row: 3; border-color: var(--diagram-color-info-border);">BE Dev</div>
+        <div class="member-pill" style="grid-column: 4; grid-row: 3;">Data</div>
+
+        <!-- Squad 3 (Row 4) -->
+        <div class="squad-bg" style="grid-row: 4;"></div>
+        <div style="grid-column: 1; grid-row: 4; padding-left: 16px; z-index: 2;" class="d-title">Squad: Social</div>
+        <div class="member-pill" style="grid-column: 2; grid-row: 4;">FE Dev</div>
+        <div class="member-pill d-text-info" style="grid-column: 3; grid-row: 4; border-color: var(--diagram-color-info-border);">BE Dev</div>
+        <div class="member-pill" style="grid-column: 4; grid-row: 4;">UX</div>
+      </div>
+    </div>
+
+    <!-- Guild -->
+    <div class="d-cluster d-col d-center d-mt-4" style="border: 2px dashed var(--diagram-color-warning-border); background: rgba(245, 158, 11, 0.05); border-radius: 14px; padding: 20px; width: fit-content; margin: 24px auto 0;">
+      <div class="d-title text-center d-text-warning">Guild (Cộng đồng xuyên Tribe)</div>
+      <div class="d-sub text-center d-mt-1">Ví dụ: Web Performance Guild (Tự nguyện, chia sẻ kiến thức, không quản lý theo dự án)</div>
+      
+      <!-- Floating members to show cross-cutting -->
+      <div class="d-row d-gap-3 d-mt-3">
+        <div class="member-pill d-text-warning" style="border-color: var(--diagram-color-warning-border); width: 100px;">FE Dev</div>
+        <div class="member-pill d-text-warning" style="border-color: var(--diagram-color-warning-border); width: 100px;">Tester</div>
+        <div class="member-pill d-text-warning" style="border-color: var(--diagram-color-warning-border); width: 100px;">UX</div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

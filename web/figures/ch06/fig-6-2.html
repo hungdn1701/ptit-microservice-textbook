@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 6.2 — Choreography Saga — Steps & Compensation
+    =========================================================
+    Tier 1 HTML migration từ fig-6-2.svg
+    Layout: Happy path (4 boxes) + Compensation (2 boxes) + explanation note
+    Capture: gen-diagrams.ps1 → fig-6-2.png → Typst image()
+  -->
+  <title>Fig 6.2 — Choreography Saga — Steps và Compensation | Ch.6</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" style="min-height: 600px;" data-ref="CH06-SEC">
+
+    <div class="d-col d-center" style="width: 880px; margin: 0 auto;">
+      
+      <!-- Shared Arrow Defs -->
+      <svg width="0" height="0" style="position:absolute;">
+        <defs>
+          <marker id="arr-purp" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-gateway-border)"/></marker>
+          <marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)"/></marker>
+        </defs>
+      </svg>
+
+      <!-- Happy path -->
+      <div class="d-mb-3" style="width: 100%;">
+        <div class="d-section-title d-mb-2 d-text-success">Happy Path</div>
+        <div class="d-pipeline">
+          
+          <!-- Box 1 -->
+          <div class="d-box d-service text-center" style="height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">T1: Create Submission</div>
+            <div class="d-sub d-mt-1">Core Service</div>
+            <div class="d-sub d-text-success fw-semibold">status = PENDING</div>
+          </div>
+          
+          <!-- Arrow 1 -->
+          <div class="d-arrow-svg-wrapper" style="width: 80px;">
+            <div class="d-arrow-label-top" style="color:var(--diagram-color-gateway-border);">SubmissionCreated</div>
+            <svg width="80" height="12"><line x1="0" y1="6" x2="64" y2="6" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-purp)"/></svg>
+          </div>
+
+          <!-- Box 2 -->
+          <div class="d-box d-event text-center" style="height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title d-text-info">T2: Execute SQL</div>
+            <div class="d-sub d-mt-1">Judge Service</div>
+            <div class="d-sub d-text-info fw-semibold">run on sandbox</div>
+          </div>
+
+          <!-- Arrow 2 -->
+          <div class="d-arrow-svg-wrapper" style="width: 80px;">
+            <div class="d-arrow-label-top" style="color:var(--diagram-color-gateway-border);">SubmissionJudged</div>
+            <svg width="80" height="12"><line x1="0" y1="6" x2="64" y2="6" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-purp)"/></svg>
+          </div>
+
+          <!-- Box 3 -->
+          <div class="d-box d-service text-center" style="height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">T3: Update Score</div>
+            <div class="d-sub d-mt-1">Core Service</div>
+            <div class="d-sub d-text-success fw-semibold">status = JUDGED</div>
+          </div>
+
+          <!-- Arrow 3 -->
+          <div class="d-arrow-svg-wrapper" style="width: 80px;">
+            <div class="d-arrow-label-top" style="color:var(--diagram-color-gateway-border);">ScoreUpdated</div>
+            <svg width="80" height="12"><line x1="0" y1="6" x2="64" y2="6" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-purp)"/></svg>
+          </div>
+
+          <!-- Box 4 -->
+          <div class="d-box d-note text-center" style="height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">T4: Notify Student</div>
+            <div class="d-sub d-mt-1">Notification Svc</div>
+            <div class="d-sub fw-semibold">push result</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="d-sep" style="width: 100%;"></div>
+
+      <!-- Compensation path -->
+      <div class="d-mt-1 d-mb-2" style="width: 100%;">
+        <div class="d-section-title d-mb-2 d-text-danger">Compensation — khi T2 thất bại</div>
+        <div class="d-row" style="align-items: center; width: 100%;">
+          
+          <!-- Box C1 -->
+          <div class="d-box d-danger text-center" style="width: 160px; height: 90px; display: flex; flex-direction: column; justify-content: center; border-width: 2px;">
+            <div class="d-title d-text-danger">C1: Mark ERROR</div>
+            <div class="d-sub d-mt-1">Core Service</div>
+            <div class="d-sub d-text-danger fw-semibold">status = ERROR</div>
+          </div>
+          
+          <!-- Arrow C1 -> CN -->
+          <div class="d-col d-center" style="width: 80px; position:relative;">
+            <div class="fw-semibold d-text-danger" style="position:absolute; top:-20px; font-size:11px; white-space:nowrap;">SubmissionFailed</div>
+            <svg width="80" height="12"><line x1="0" y1="6" x2="72" y2="6" stroke="var(--diagram-color-danger-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-red)"/></svg>
+          </div>
+
+          <!-- Box CN -->
+          <div class="d-box d-warning text-center" style="width: 160px; height: 90px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">CN: Error Notification</div>
+            <div class="d-sub d-mt-1">Notification Svc</div>
+            <div class="d-sub fw-semibold">Vui lòng thử lại</div>
+          </div>
+
+          <!-- Skip spacer (Arrow 2 + Box 3 + Arrow 3 + Box 4 = 80+160+80+160 = 480px) -->
+          <div class="d-center" style="width: 480px; padding-left: 40px;">
+            <div class="d-zone d-zone-warning text-center" style="padding:12px; width: 100%;">
+              <strong>T3, T4 bị hủy bỏ</strong> — Saga kết thúc sớm tại C1
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="d-sep"></div>
+
+    <!-- Explanation note -->
+    <div class="d-box d-note d-mt-1">
+      <div class="d-label d-mb-1">Cơ chế Choreography</div>
+      <div class="d-stack d-gap-1">
+        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">1</span> Core gửi <code>SubmissionCreated</code> event lên Kafka</div>
+        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">2</span> Judge lắng nghe, execute SQL, gửi <code>SubmissionJudged</code> event</div>
+        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">3</span> Core lắng nghe <code>SubmissionJudged</code>, update score, gửi <code>ScoreUpdated</code></div>
+        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">4</span> Notification lắng nghe <code>ScoreUpdated</code>, gửi push notification cho student</div>
+      </div>
+      <div class="d-sep"></div>
+      <div>
+        <strong>Ưu điểm:</strong> đơn giản, không cần orchestrator trung tâm &nbsp;|&nbsp;
+        <strong>Nhược điểm:</strong> khó theo dõi toàn bộ flow, khó debug khi có lỗi
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

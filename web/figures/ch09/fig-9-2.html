@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.2 — Defense in Depth — 4 Layers | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.2">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col d-center">
+      <!-- Layer 1 -->
+      <div class="d-box d-danger" style="width: 500px; padding:16px;">
+        <div class="d-row d-gap-2">
+          <div class="d-title" style="min-width:140px;">Layer 1: Network</div>
+          <div class="d-sub">TLS, firewall, VPC isolation</div>
+        </div>
+      </div>
+
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Layer 2 -->
+      <div class="d-box d-warning" style="width: 500px; padding:16px;">
+        <div class="d-row d-gap-2">
+          <div class="d-title" style="min-width:140px;">Layer 2: Gateway</div>
+          <div class="d-sub">JWT validation, rate limiting, CORS</div>
+        </div>
+      </div>
+
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Layer 3 -->
+      <div class="d-box d-service" style="width: 500px; padding:16px;">
+        <div class="d-row d-gap-2">
+          <div class="d-title" style="min-width:140px;">Layer 3: Service</div>
+          <div class="d-sub">Authorization, input validation, business rules</div>
+        </div>
+      </div>
+
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Layer 4 -->
+      <div class="d-box d-storage" style="width: 500px; padding:16px;">
+        <div class="d-row d-gap-2">
+          <div class="d-title" style="min-width:140px;">Layer 4: Data</div>
+          <div class="d-sub">Encryption at rest, column-level encryption, audit logs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

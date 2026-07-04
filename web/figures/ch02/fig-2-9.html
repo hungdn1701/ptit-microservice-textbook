@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.8 — Tách thư viện dùng chung (Shared Library Split)
+    =========================================================
+    Tier 1 HTML migration từ fig-2-8.svg
+    Layout: Before/After comparison + dependency table
+    Capture: gen-diagrams.ps1 → fig-2-8.png → Typst image()
+  -->
+  <title>Fig 2.8 — Tách thư viện dùng chung | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.9" data-ref="CH02-SEC">
+
+    <!-- Before / After comparison -->
+    <div class="d-row d-gap-2 d-mb-2" style="align-items: flex-start;">
+
+      <!-- BEFORE -->
+      <div class="d-cluster" style="flex: 1;">
+        <span class="d-label">Before: Single Shared Library</span>
+        <div class="d-box d-danger d-mt-1">
+          <div class="d-title d-mb-1 text-center">shared-library</div>
+          <div class="d-sub d-mb-1 text-center">(23 files — monolithic)</div>
+          <div class="d-sub" style="padding: 3px 0; border-bottom: 1px solid var(--diagram-color-line-muted); opacity: 0.8;">BaseEntity, BaseResponse</div>
+          <div class="d-sub" style="padding: 3px 0; border-bottom: 1px solid var(--diagram-color-line-muted); opacity: 0.8;">JWT, Security Config</div>
+          <div class="d-sub" style="padding: 3px 0; border-bottom: 1px solid var(--diagram-color-line-muted); opacity: 0.8;">CompareUtil, SqlUtil</div>
+          <div class="d-sub" style="padding: 3px 0; opacity: 0.8;">TypeQuestion, AnswerStatus</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="d-gap-1 d-col" style="display: flex; align-items: center; padding-top: 60px; flex-shrink: 0; position: relative;">
+        <div class="d-arrow-label d-mb-1 d-text-info" style="border-color: var(--diagram-color-info-border);">Chia nhỏ<br>(Refactor)</div>
+        <svg width="60" height="12"><defs><marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)" /></marker></defs><line x1="0" y1="6" x2="52" y2="6" stroke="var(--diagram-color-info-border)" stroke-width="2" marker-end="url(#arrow-blue)" /></svg>
+      </div>
+
+      <!-- AFTER -->
+      <div class="d-cluster" style="flex: 1.4;">
+        <span class="d-label">After: Split by purpose</span>
+        <div class="d-stack d-mt-1 d-gap-1">
+
+          <div class="d-row d-gap-1">
+            <div class="d-box d-zone d-zone-info d-grow text-center">
+              <div class="d-title">lms-security</div>
+              <div class="d-sub">(JWT, auth)</div>
+            </div>
+            <div class="d-box d-service d-grow text-center">
+              <div class="d-title">lms-common</div>
+              <div class="d-sub">(base, response)</div>
+            </div>
+          </div>
+
+          <div class="d-box d-zone d-zone-warning">
+            <div class="d-title d-mb-1">Domain logic back to services</div>
+            <div class="d-sub">CompareUtil → Judge</div>
+            <div class="d-sub">SqlUtil → Core</div>
+            <div class="d-sub">TypeQuestion → Core</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /.before-after -->
+
+    <!-- Dependencies result -->
+    <div class="d-box d-note">
+      <div class="d-title d-mb-1" >Result: Minimal required dependencies</div>
+
+      <div class="d-row" style="padding: 5px 0; border-bottom: 1px solid var(--diagram-color-line-muted);">
+        <div class="d-zone d-zone-info" style="min-width: 140px;">Auth Service</div>
+        <span class="d-sub" style="opacity: 0.7;">deps:</span>
+        <div class="d-mono" style="opacity: 0.9;">lms-security</div>
+      </div>
+      <div class="d-row" style="padding: 5px 0; border-bottom: 1px solid var(--diagram-color-line-muted);">
+        <div class="d-zone d-zone-success" style="min-width: 140px;">Core Service</div>
+        <span class="d-sub" style="opacity: 0.7;">deps:</span>
+        <div class="d-mono" style="opacity: 0.9;">lms-security, lms-common</div>
+      </div>
+      <div class="d-row" style="padding: 5px 0; border-bottom: 1px solid var(--diagram-color-line-muted);">
+        <div class="d-zone d-zone-warning" style="min-width: 140px;">Judge Service</div>
+        <span class="d-sub" style="opacity: 0.7;">deps:</span>
+        <div class="d-mono" style="opacity: 0.9;">lms-security, domain/judge</div>
+      </div>
+      <div class="d-row" style="padding: 5px 0;">
+        <div class="d-zone d-zone-info" style="min-width: 140px;">Assignment Svc</div>
+        <span class="d-sub" style="opacity: 0.7;">deps:</span>
+        <div class="d-mono" style="opacity: 0.9;">lms-security, lms-common</div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

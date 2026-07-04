@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit Breaker — Pattern Story | Ch.4 Resilience KBM</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    /* Custom styling for Circuit Breaker simulation */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .state-cards {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 600px) {
+      .state-cards {
+        flex-direction: column;
+      }
+    }
+
+    .state-card {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .state-card::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    /* Active States */
+    .state-card.active-closed {
+      border-color: rgba(34, 211, 160, 0.4);
+      background: rgba(34, 211, 160, 0.03);
+      box-shadow: 0 0 20px rgba(34, 211, 160, 0.08);
+    }
+    .state-card.active-closed::after {
+      border-color: var(--success);
+      box-shadow: 0 0 10px var(--success-dim);
+    }
+    .state-card.active-open {
+      border-color: rgba(244, 63, 94, 0.4);
+      background: rgba(244, 63, 94, 0.03);
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.08);
+    }
+    .state-card.active-open::after {
+      border-color: var(--danger);
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+    }
+    .state-card.active-half {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.03);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.08);
+    }
+    .state-card.active-half::after {
+      border-color: var(--warning);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    .state-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      background: var(--text-dim);
+      transition: all 0.3s ease;
+    }
+    .active-closed .state-indicator { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .active-open .state-indicator { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+    .active-half .state-indicator { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
+
+    .state-name {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .active-closed .state-name { color: var(--success); }
+    .active-open .state-name { color: var(--danger); }
+    .active-half .state-name { color: var(--warning); }
+
+    .state-brief {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .sim-controls {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .sim-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .sim-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .sim-btn:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .sim-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .sim-btn.primary-action {
+      background: var(--primary);
+      color: #000;
+      border: none;
+    }
+    .sim-btn.primary-action:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .sim-dashboard {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dashboard-title {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .metric-lbl { color: var(--text-secondary); }
+    .metric-val { font-family: var(--font-mono); font-weight: 700; }
+
+    .gauge-container {
+      height: 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .gauge-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--success);
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .sim-log {
+      grid-column: span 2;
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      height: 160px;
+      overflow-y: auto;
+      box-shadow: var(--terminal-shadow);
+    }
+    @media (max-width: 900px) {
+      .sim-log {
+        grid-column: span 1;
+      }
+    }
+    .log-line {
+      margin-bottom: 6px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+    .log-time { color: var(--text-dim); margin-right: 8px; }
+    .log-success { color: var(--success); }
+    .log-error { color: var(--danger); }
+    .log-warn { color: var(--warning); }
+    .log-system { color: var(--info); }
+  </style>
+</head>
+<body>
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Circuit Breaker</h1>
+  <p class="pattern-subtitle">Ngắt mạch bảo vệ hệ thống khỏi Cascading Failures</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Michael Nygard (Release It! - 2007) · [5]</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 4 — §4.3</span></div>
+    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">Core Service & Judge Service</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Cascading Failure & Retry Storm</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Trong kiến trúc Microservices, một request thường đi qua chuỗi dịch vụ phân tán. Nếu dịch vụ downstream bị chậm hoặc lỗi, các dịch vụ upstream phải chờ đợi. Sự chờ đợi này dẫn đến cạn kiệt tài nguyên (thread pool) và gây sập hệ thống dây chuyền.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Lỗi dây chuyền</div></div>
+      <h3>Cascading Failures</h3>
+      <p>Service A gọi Service B. Khi B phản hồi chậm (latency cao), các thread tại A bị block chờ đợi. Lượng request tăng làm thread pool cạn kiệt, khiến A không thể xử lý thêm request và sập theo B.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Bão retry</div></div>
+      <h3>Retry Storm</h3>
+      <p>Khi B gặp sự cố, các service upstream tự động retry liên tục. Traffic khổng lồ này dồn vào B khi nó đang cố gắng khởi động lại, khiến B liên tục bị overload và mất khả năng tự phục hồi.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Cơ chế ngắt mạch tự động</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Giám sát các network calls. Khi error rate hoặc slow call rate vượt ngưỡng cấu hình, circuit breaker chuyển sang OPEN, từ chối forward request đến dịch vụ lỗi để ngăn cạn kiệt thread pool. Pattern áp dụng Fail Fast bằng cách ném Exception hoặc kích hoạt Fallback logic ngay lập tức.
+    </p>
+    <div class="definition-attribution">— Michael Nygard · Release It! (2007) · [5]</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Tương tự cầu dao điện bảo vệ thiết bị khi quá tải, Circuit Breaker ngắt kết nối ngay lập tức thay vì để hệ thống tiếp tục chịu tải và sụp đổ.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Circuit Breaker Proxy</h4>
+      <p>Proxy đứng giữa Caller và Callee để điều hướng cuộc gọi. Trong Spring Boot, thường được triển khai qua annotation <code>@CircuitBreaker</code> của Resilience4j.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>State Machine</h4>
+      <p>Quản lý trạng thái Circuit Breaker: <code>CLOSED</code> (hoạt động bình thường), <code>OPEN</code> (chặn hoàn toàn, Fail Fast), và <code>HALF-OPEN</code> (cho phép lượng nhỏ request để thăm dò sự phục hồi).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Fallback Handler</h4>
+      <p>Logic thay thế khi Circuit Breaker OPEN hoặc có lỗi. Trả về cached data, đẩy message vào Message Queue, hoặc fallback response mặc định.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng State Machine Simulator</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Trình mô phỏng cách Resilience4j State Machine chuyển đổi trạng thái dựa trên kết quả của các requests.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Left panel: interactive state card and controls -->
+    <div class="sim-controls">
+      <div class="state-cards">
+        <div class="state-card" id="card-closed">
+          <div class="state-indicator"></div>
+          <div class="state-name">CLOSED</div>
+          <div class="state-brief">Mạch đóng.<br>Requests đi tới Judge.</div>
+        </div>
+        <div class="state-card" id="card-open">
+          <div class="state-indicator"></div>
+          <div class="state-name">OPEN</div>
+          <div class="state-brief">Ngắt mạch.<br>Requests bị chặn ngay.</div>
+        </div>
+        <div class="state-card" id="card-half">
+          <div class="state-indicator"></div>
+          <div class="state-name">HALF-OPEN</div>
+          <div class="state-brief">Mở một nửa.<br>Gửi request thử nghiệm.</div>
+        </div>
+      </div>
+
+      <div class="sim-buttons">
+        <button class="sim-btn primary-action" id="btn-success" onclick="simCall(true)">
+          <span>[OK] Gọi thành công (Success)</span>
+          <span style="font-family:var(--font-mono); font-size:11px;">Latency &lt; 200ms</span>
+        </button>
+        <button class="sim-btn" id="btn-failure" onclick="simCall(false)" style="border-color: rgba(244,63,94,0.3);">
+          <span style="color:var(--danger)">[Error] Gọi thất bại (Timeout/Error)</span>
+          <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim)">Latency &gt; 5000ms</span>
+        </button>
+        <button class="sim-btn" id="btn-wait" onclick="simWait()" disabled>
+          <span>[Wait] Đợi thời gian phục hồi (waitDuration)</span>
+          <span style="font-family:var(--font-mono); font-size:11px;">Mô phỏng 10 giây</span>
+        </button>
+        <button class="sim-btn" id="btn-reset" onclick="simReset()">
+          <span>[Reset] Reset trạng thái Circuit Breaker</span>
+          <span style="font-family:var(--font-mono); font-size:11px;">Về CLOSED</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right panel: Dashboard metrics -->
+    <div class="sim-dashboard">
+      <div class="dashboard-title">Resilience4j Metrics</div>
+      
+      <div class="metric-row">
+        <span class="metric-lbl">Trạng thái hiện tại</span>
+        <span class="metric-val" id="val-state" style="color:var(--success)">CLOSED</span>
+      </div>
+
+      <div class="metric-row">
+        <span class="metric-lbl">Số cuộc gọi trượt (Sliding Window)</span>
+        <span class="metric-val" id="val-window">0 / 5</span>
+      </div>
+
+      <div>
+        <div class="metric-row">
+          <span class="metric-lbl">Tỷ lệ lỗi hiện tại (Error Rate)</span>
+          <span class="metric-val" id="val-rate">0%</span>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge-bar" id="gauge-bar"></div>
+        </div>
+        <div style="font-size:10px; color:var(--text-dim); margin-top:5px; text-align:right;">
+          Ngưỡng ngắt mạch (threshold): 50% lỗi trong 5 cuộc gọi gần nhất
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <span class="metric-lbl">Các cuộc gọi thành công liên tiếp</span>
+        <span class="metric-val" id="val-probe">0 / 3</span>
+      </div>
+    </div>
+
+    <!-- Console log below -->
+    <div class="sim-log" id="sim-log">
+      <div><span class="log-time">[14:17:15]</span> <span class="log-system">Khởi tạo Resilience4j Circuit Breaker. Trạng thái: CLOSED. Sliding window size: 5 calls. Ngưỡng lỗi: 50%.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Giải pháp KBM & Lộ trình áp dụng</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Áp dụng Circuit Breaker cho các service calls trọng yếu trong KBM LMS giúp bảo vệ hệ thống khỏi các hiệu ứng quá tải cục bộ.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Gap Analysis & Cấu hình Circuit Breaker KBM</h3>
+  <div class="sub-label">Đánh giá rủi ro và các tham số cấu hình Resilience4j phù hợp</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Service Call</th>
+          <th>Vấn đề xảy ra</th>
+          <th>Rủi ro</th>
+          <th>Cấu hình Circuit Breaker phù hợp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">kbm-core → kbm-judge-sql</td>
+          <td>Quá trình chấm bài lâu, làm cạn kiệt thread pool của core service.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Ngưỡng: 50%, waitDuration: 30s. Fallback: Đẩy submission vào RabbitMQ/Kafka để xử lý bất đồng bộ.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">kbm-gateway → kbm-auth</td>
+          <td>Gateway mất kết nối tới Auth, gây block mọi route API.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Ngưỡng: 40%, waitDuration: 20s. Fallback: Sử dụng cached public keys để xác minh JWT stateless.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">kbm-core → kbm-notification</td>
+          <td>Dịch vụ gửi thông báo chậm, làm kẹt luồng trả kết quả thi.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Ngưỡng: 60%, waitDuration: 60s. Fallback: Ghi nhận log và đẩy sang dịch vụ queue gửi bù sau.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">kbm-academic → kbm-core</td>
+          <td>Lỗi đồng bộ điểm thi, đứt kết nối với Database.</td>
+          <td><span class="b-low">LOW</span></td>
+          <td>Ngưỡng: 70%, waitDuration: 45s. Fallback: Lưu trữ điểm cục bộ tại Assignment DB và kích hoạt sync-scheduler.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai (Implementation Roadmap)</h3>
+  <div class="sub-label">Các bước thực hiện đưa Circuit Breaker lên Production</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1</div>
+      <h4>Tích hợp Thư viện & Cấu hình</h4>
+      <p>Tích hợp <code>spring-cloud-starter-circuitbreaker-resilience4j</code>. Cấu hình <code>failure-rate-threshold</code> và <code>sliding-window-size</code> qua <code>application.yml</code>. Khai báo <code>@CircuitBreaker</code> trên Feign client.</p>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2</div>
+      <h4>Xây dựng Fallback Handler</h4>
+      <p>Implement Fallback methods cho từng Feign client. Fallback logic có thể trả về cached data hoặc publish event vào Message Queue. Thực hiện chaos testing (tắt các downstream services) để kiểm tra.</p>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3</div>
+      <h4>Observability & Monitoring</h4>
+      <p>Export Resilience4j metrics qua Spring Boot Actuator. Đưa metrics <code>resilience4j.circuitbreaker.state</code> và <code>resilience4j.circuitbreaker.failure.rate</code> tới Prometheus. Xây dựng Grafana dashboard để monitor real-time.</p>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4</div>
+      <h4>Auto-tuning Threshold</h4>
+      <p>Dựa trên tải thực tế, tuning thông số: giảm <code>wait-duration-in-open-state</code> hoặc tinh chỉnh <code>sliding-window-size</code> để giảm độ nhạy sai và tối ưu latency.</p>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Nên dùng Circuit Breaker khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Remote Procedure Calls (HTTP/gRPC/Thrift) đồng bộ.</li>
+        <li>Database queries với latency không ổn định.</li>
+        <li>Tích hợp 3rd-party APIs (Payment, SMS Gateway).</li>
+        <li>Ngăn lỗi lan rộng khi tài nguyên downstream hữu hạn.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>In-process method calls (trong cùng một JVM).</li>
+        <li>Hệ thống message-driven dùng broker bất đồng bộ (Kafka/RabbitMQ).</li>
+        <li>Các luồng yêu cầu strict consistency (ACID) không chấp nhận fallback data.</li>
+        <li>Hệ thống ultra-low latency, overhead của Circuit Breaker là không thể chấp nhận.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Circuit Breaker, Retry Storm, Bulkhead, và các chiến lược resilience khác trong tài liệu lý thuyết.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-04'}, '*'); return false;">📖 Chương 4 — Giao tiếp Đồng bộ →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+let state = 'CLOSED'; // CLOSED, OPEN, HALF-OPEN
+let history = []; // sliding window, max 5, true = success, false = failure
+let consecutiveSuccessCount = 0; // count success in HALF-OPEN
+let logEl = document.getElementById('sim-log');
+
+function addLog(msg, type = 'system') {
+  const time = new Date().toLocaleTimeString();
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function updateVisuals() {
+  // Update state card styling
+  document.getElementById('card-closed').className = 'state-card' + (state === 'CLOSED' ? ' active-closed' : '');
+  document.getElementById('card-open').className = 'state-card' + (state === 'OPEN' ? ' active-open' : '');
+  document.getElementById('card-half').className = 'state-card' + (state === 'HALF-OPEN' ? ' active-half' : '');
+
+  // Update text & values
+  const stateValEl = document.getElementById('val-state');
+  stateValEl.textContent = state;
+  if (state === 'CLOSED') {
+    stateValEl.style.color = 'var(--success)';
+  } else if (state === 'OPEN') {
+    stateValEl.style.color = 'var(--danger)';
+  } else {
+    stateValEl.style.color = 'var(--warning)';
+  }
+
+  // Update failure rate
+  const errors = history.filter(x => x === false).length;
+  document.getElementById('val-window').textContent = `${errors} / ${history.length}`;
+  
+  const rate = history.length === 0 ? 0 : Math.round((errors / history.length) * 100);
+  document.getElementById('val-rate').textContent = `${rate}%`;
+  
+  const gaugeBar = document.getElementById('gauge-bar');
+  gaugeBar.style.width = `${rate}%`;
+  gaugeBar.style.backgroundColor = rate >= 50 ? 'var(--danger)' : 'var(--success)';
+
+  // Update probe success counts
+  document.getElementById('val-probe').textContent = state === 'HALF-OPEN' ? `${consecutiveSuccessCount} / 3` : 'N/A';
+
+  // Enable/disable wait button
+  document.getElementById('btn-wait').disabled = (state !== 'OPEN');
+}
+
+function simCall(success) {
+  if (state === 'OPEN') {
+    addLog("[Warning] Circuit Breaker đang NGẮT (OPEN). Chặn request ngay lập tức và kích hoạt Fallback handler.", "warn");
+    updateVisuals();
+    return;
+  }
+
+  if (state === 'CLOSED') {
+    history.push(success);
+    if (history.length > 5) {
+      history.shift();
+    }
+    
+    if (success) {
+      addLog("[OK] Gửi request thành công đến Judge Service.", "success");
+    } else {
+      addLog("[Error] Lỗi mạng hoặc Timeout xảy ra khi gọi Judge Service.", "error");
+    }
+
+    // Check threshold
+    const errors = history.filter(x => x === false).length;
+    const rate = (errors / history.length);
+    if (history.length >= 5 && rate >= 0.5) {
+      state = 'OPEN';
+      addLog("🚨 Tỷ lệ lỗi đạt " + Math.round(rate * 100) + "% (>= 50%). Circuit Breaker tự động nhảy sang trạng thái OPEN để bảo vệ hệ thống!", "error");
+    }
+  } else if (state === 'HALF-OPEN') {
+    if (success) {
+      consecutiveSuccessCount++;
+      addLog(`[CASE] Thử nghiệm thành công (${consecutiveSuccessCount}/3).`, "success");
+      if (consecutiveSuccessCount >= 3) {
+        state = 'CLOSED';
+        history = [];
+        consecutiveSuccessCount = 0;
+        addLog("[OK] 3/3 cuộc gọi thăm dò thành công liên tục. Judge Service đã ổn định trở lại. Khôi phục mạch điện (CLOSED)!", "success");
+      }
+    } else {
+      state = 'OPEN';
+      consecutiveSuccessCount = 0;
+      history = [false]; // Reset window with initial failure
+      addLog("[Error] Thử nghiệm thất bại. Judge Service vẫn chưa ổn định. Ngắt Circuit Breaker trở lại (OPEN)!", "error");
+    }
+  }
+
+  updateVisuals();
+}
+
+function simWait() {
+  if (state !== 'OPEN') return;
+  addLog("⏳ Đã trôi qua 10 giây (waitDurationInOpenState). Chuyển mạch điện sang trạng thái HALF-OPEN để thăm dò.", "system");
+  state = 'HALF-OPEN';
+  consecutiveSuccessCount = 0;
+  updateVisuals();
+}
+
+function simReset() {
+  state = 'CLOSED';
+  history = [];
+  consecutiveSuccessCount = 0;
+  addLog("↺ Circuit Breaker được đặt lại thủ công về CLOSED. Làm sạch sliding window.", "system");
+  updateVisuals();
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+updateVisuals();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+<script>
+
+    // ── Theme sync ──
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'SET_THEME') {
+        document.documentElement.classList.toggle('light', e.data.isLight);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+</script>
+</body>
+</html>
+
+
+
+

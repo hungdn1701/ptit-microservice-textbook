@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.3 — CAP Theorem trong Microservices
+    =========================================================
+    Tier 1 HTML migration từ fig-7-3.svg
+    Layout: CP vs AP side-by-side + top danger banner + bottom note
+    Capture: gen-diagrams.ps1 → fig-7-3.png → Typst image()
+  -->
+  <title>Fig 7.3 — CAP Theorem trong Microservices | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.3" data-ref="CH07-SEC">
+
+    <!-- Network Partition banner -->
+    <div class="d-box d-danger text-center d-mb-2" style="padding:10px 14px;">
+      <div class="d-title">[Event] Network Partition xảy ra — phải chọn 1 trong 2: Consistency hoặc Availability</div>
+    </div>
+
+    <!-- CAP Triangle visual -->
+    <div style="display: flex; justify-content: center; position: relative; height: 160px; margin-top: 32px; margin-bottom: 56px;">
+      
+      <!-- C (Top) -->
+      <div class="fw-bold" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; border: 2px solid; background:var(--diagram-color-info-bg); border-color:var(--diagram-color-info-border); color:var(--diagram-color-info-text); z-index: 2;">C</div>
+      <div class="fw-semibold" style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%); color: var(--diagram-color-info-text); font-size: 13px; white-space: nowrap;">Consistency</div>
+      
+      <!-- A (Bottom Left) -->
+      <div class="fw-bold" style="position: absolute; bottom: 0; left: calc(50% - 70px); transform: translateX(-50%); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; border: 2px solid; background:var(--diagram-color-success-bg); border-color:var(--diagram-color-success-border); color:var(--diagram-color-success-text); z-index: 2;">A</div>
+      <div class="fw-semibold" style="position: absolute; bottom: -24px; left: calc(50% - 70px); transform: translateX(-50%); color: var(--diagram-color-success-text); font-size: 13px; white-space: nowrap;">Availability</div>
+      
+      <!-- P (Bottom Right) -->
+      <div class="fw-bold" style="position: absolute; bottom: 0; left: calc(50% + 70px); transform: translateX(-50%); display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; border: 2px solid; background:var(--diagram-color-warning-bg); border-color:var(--diagram-color-warning-border); color:var(--diagram-color-warning-text); z-index: 2;">P</div>
+      <div class="fw-semibold" style="position: absolute; bottom: -24px; left: calc(50% + 70px); transform: translateX(-50%); color: var(--diagram-color-warning-text); font-size: 13px; white-space: nowrap;">Partition Tolerance</div>
+      
+      <!-- Triangle Edges (SVG overlay) -->
+      <!-- Center is at 100 in a 200px wide SVG. Top node center is (100, 22). Bottom left is (30, 138). Bottom right is (170, 138). -->
+      <svg width="200" height="160" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 1;">
+        <!-- C to A -->
+        <line x1="100" y1="22" x2="30" y2="138" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
+        <!-- C to P -->
+        <line x1="100" y1="22" x2="170" y2="138" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
+        <!-- A to P -->
+        <line x1="30" y1="138" x2="170" y2="138" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
+      </svg>
+
+      <div class="d-text-muted" style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); font-size:13px; white-space: nowrap;">
+        — chỉ đảm bảo được 2/3 khi có Partition —
+      </div>
+    </div>
+
+    <div class="d-grid-2 d-gap-2 d-mb-2">
+
+      <!-- CP System -->
+      <div class="d-box d-note">
+        <div class="d-row d-gap-1 d-mb-1" style="align-items:center;">
+          <div class="fw-bold" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; font-size: 14px; border: 2px solid; flex-shrink: 0; background:var(--diagram-color-info-bg); border-color:var(--diagram-color-info-border); color:var(--diagram-color-info-text);">CP</div>
+          <div>
+            <div class="d-title">CP System — Chọn Consistency</div>
+            <div class="d-sub">Consistency + Partition Tolerance</div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-stack">
+          <div style="font-size:12px;">
+            OK Trả lời <strong>THẤT BẠI</strong> (error/timeout) thay vì trả data sai
+          </div>
+          <div style="font-size:12px;">
+             Ví dụ: <strong>PostgreSQL</strong> (single leader replication)
+          </div>
+          <div style="font-size:12px;">
+            LMS: <strong>Auth Service</strong> — user data phải chính xác
+          </div>
+        </div>
+      </div>
+
+      <!-- AP System -->
+      <div class="d-box d-event">
+        <div class="d-row d-gap-1 d-mb-1" style="align-items:center;">
+          <div class="fw-bold" style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; font-size: 14px; border: 2px solid; flex-shrink: 0; background:var(--diagram-color-warning-bg); border-color:var(--diagram-color-warning-border); color:var(--diagram-color-warning-text);">AP</div>
+          <div>
+            <div class="d-title">AP System — Chọn Availability</div>
+            <div class="d-sub">Availability + Partition Tolerance</div>
+          </div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-stack">
+          <div style="font-size:12px;">
+            OK Trả data <strong>CÓ THỂ CŨ</strong> nhưng luôn sẵn sàng (never fails)
+          </div>
+          <div style="font-size:12px;">
+             Ví dụ: <strong>Cassandra, DynamoDB</strong>
+          </div>
+          <div style="font-size:12px;">
+            LMS: <strong>Leaderboard</strong> — eventual consistency chấp nhận được
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BASE note -->
+    <div class="d-box d-note">
+      <div class="d-row d-gap-2">
+        <div>
+          <div class="d-title d-mb-1">Thực tế: Microservices mặc định là BASE</div>
+          <div class="d-sub"><strong>B</strong>asically Available · <strong>S</strong>oft-state · <strong>E</strong>ventually consistent</div>
+        </div>
+        <div class="d-sep" style="width:1px; height:auto; background:var(--diagram-color-line-muted); margin:0;"></div>
+        <div>
+          <div class="d-title d-mb-1">Không có CA trong distributed system</div>
+          <div class="d-sub">Network partition <strong>LUÔN có thể xảy ra</strong> — không thể bỏ qua P</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

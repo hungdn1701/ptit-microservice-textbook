@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.10 — CQRS Flow (Sequence Diagram)
+    =========================================================
+    Tier 1 HTML migration từ fig-7-10.svg
+    Layout: 4-actor sequence diagram — Client, Write Side, Kafka, Read Side
+    Capture: gen-diagrams.ps1 → fig-7-10.png → Typst image()
+  -->
+  <title>Fig 7.10 — CQRS Flow | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.10" style="min-height:600px;" data-ref="CH07-SEC">
+
+    <div class="d-seq-container">
+
+      <!-- 4 Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Write Side<br><small>(Core Service)</small></div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Read Side<br><small>(Leaderboard)</small></div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- Row 1: Client(0) → Write(1) -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">POST /submit (write command)</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <!-- Row 2: Note at Write(1) — Save to Write DB -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:1"></div>
+          <div class="d-zone d-zone-success text-center" style="flex:1;">
+            Save to Write DB<br>
+            <span>PostgreSQL — commit</span>
+          </div>
+          <div style="flex:2"></div>
+        </div>
+
+        <!-- Row 3: Write(1) → Kafka(2) — publish event -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Pub: SubmissionJudged</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Row 4: Kafka(2) → Read(3) — consume -->
+        <div class="d-seq-msg">
+          <div style="flex:2.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Consume: SubmissionJudged</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Row 5: Note at Read(3) — update ranking -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:3"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:1;">
+            Update ranking table<br>
+            <span>materialized view</span>
+          </div>
+        </div>
+
+        <!-- Row 6: Client(0) → Read(3) — query leaderboard -->
+        <div class="d-seq-msg d-mt-2">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:3">
+            <span class="d-seq-msg-text">GET /leaderboard (read query)</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Row 7: Read(3) → Client(0) dashed — sorted ranking -->
+        <div class="d-seq-msg d-mt-1">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:3">
+            <span class="d-seq-msg-text">Sorted ranking (pre-computed)</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+      </div><!-- /messages area -->
+
+    </div><!-- /seq-container -->
+
+    <!-- Key benefit note -->
+    <div class="d-box d-note d-mt-2">
+      <div class="d-title">Read và Write tách biệt — không block nhau</div>
+      <div class="d-sub">
+        Write không block Read. Read có thể scale độc lập. Leaderboard read model cực nhanh vì pre-computed.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

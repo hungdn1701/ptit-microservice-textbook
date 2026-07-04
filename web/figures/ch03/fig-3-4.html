@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 3.4 — DTO Pattern | Ch.3</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-3.4">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row d-gap-2">
+
+      <!-- Luồng truyền dữ liệu -->
+      <div class="d-col" style="flex: 1; align-items: center;">
+
+        <!-- Client -->
+        <div class="d-box d-legacy text-center" style="width: 360px; position: relative; z-index: 2;">
+          <div class="d-title">Client (Browser / Mobile)</div>
+          <div class="d-mono d-mt-1 d-text-info">UserDTO</div>
+        </div>
+
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- Controller -->
+        <div class="d-box d-zone d-zone-info text-center" style="width: 360px; padding: 12px 16px; position: relative; z-index: 2;">
+          <div class="d-title">Controller</div>
+          <div class="d-sub d-mt-1">Map <code>UserDTO</code> ↔ <code>User</code> Entity</div>
+        </div>
+
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- Service -->
+        <div class="d-box d-service text-center" style="width: 360px; position: relative; z-index: 2;">
+          <div class="d-title">Service</div>
+          <div class="d-sub d-mt-1">Business Logic với <code>User</code> Entity</div>
+        </div>
+
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- Repository -->
+        <div class="d-box d-storage text-center" style="width: 360px; position: relative; z-index: 2;">
+          <div class="d-title">Repository</div>
+          <div class="d-sub d-mt-1">Lưu <code>User</code> Entity</div>
+        </div>
+
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- Database -->
+        <div class="d-box d-storage text-center" style="width: 360px; border-style: dashed; position: relative; z-index: 2;">
+          <div class="d-title">Database</div>
+        </div>
+
+      </div>
+
+      <!-- Giải thích -->
+      <div style="width: 250px; flex-shrink: 0;">
+        <div class="d-box d-note" style="height: 100%; box-sizing: border-box;">
+          <div class="d-title d-mb-1">DTO Pattern</div>
+          <div class="d-sub" style="line-height: 1.7; opacity: 0.8;">
+            <div><span class="d-step">1</span> Client gửi/nhận <b>UserDTO</b>.</div>
+            <div><span class="d-step">2</span> Controller chuyển đổi giữa DTO và Entity.</div>
+            <div><span class="d-step">3</span> Service &amp; Repository chỉ làm việc với <b>User Entity</b> (Internal Model).</div>
+            <div><span class="d-step d-step-ghost">✓</span> <b>Lợi ích:</b> Tách biệt external contract và internal model, ẩn giấu dữ liệu nhạy cảm.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

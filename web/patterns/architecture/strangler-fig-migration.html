@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strangler Fig Migration — Pattern Story | Ch.10 KBM</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    /* ── ACT 3: Stepper ── */
+    .stepper { display: flex; gap: 0; margin: 28px 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
+    .step-controls { display: flex; flex-direction: column; width: 210px; flex-shrink: 0; border-right: 1px solid var(--border); }
+    @media (max-width:720px) {
+      .stepper { flex-direction: column; }
+      .step-controls { width: 100%; border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; overflow-x: auto; }
+    }
+    .step-btn {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--text-secondary); text-align: left; font-family: var(--font-sans);
+      border-left: 2px solid transparent; transition: all .2s ease;
+    }
+    .step-btn:hover { background: var(--primary-dim); color: var(--text-main); }
+    .step-btn.active { background: var(--primary-dim); color: var(--primary); border-left-color: var(--primary); }
+    .step-btn.done { color: var(--success); }
+    .step-dot {
+      width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; flex-shrink: 0; transition: all .2s ease;
+    }
+    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: #000; }
+    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: #000; }
+    .step-label { font-size: 11.5px; font-weight: 600; line-height: 1.35; }
+    .step-sub { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
+    .step-content-area { flex: 1; padding: 28px 28px; }
+    @media (max-width:720px) { .step-content-area { padding: 20px 0 0; } }
+    .step-panel { display: none; animation: fadeInUp .28s ease; }
+    .step-panel.active { display: block; }
+
+    .step-headline { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .step-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 18px; max-width: 500px; }
+
+    /* Architecture Diagram */
+    .arch-diagram {
+      background: rgba(0,0,0,.28); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 20px; min-height: 160px;
+    }
+    .arch-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .arch-arrow { color: var(--text-dim); font-size: 15px; transition: color .4s; }
+    .arch-arrow.live { color: var(--primary); }
+    .arch-node {
+      padding: 9px 14px; border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+      border: 1px solid; text-align: center; white-space: nowrap; transition: all .35s ease;
+    }
+    .n-client  { border-color: var(--info);     color: var(--info);     background: rgba(96,165,250,.07); }
+    .n-gateway { border-color: var(--warning);  color: var(--warning);  background: rgba(245,158,11,.07); border-style: dashed; }
+    .n-mono    { border-color: var(--text-dim); color: var(--text-secondary); background: rgba(255,255,255,.02); min-width: 200px; }
+    .n-svc     { border-color: var(--primary);  color: var(--primary);  background: var(--primary-dim); }
+    .n-auth    { border-color: var(--success);  color: var(--success);  background: var(--success-dim); }
+    .n-db      { border-color: var(--text-dim); color: var(--text-dim); background: rgba(0,0,0,.3); }
+    .n-highlight { box-shadow: 0 0 18px rgba(255,122,0,.22); }
+    .n-faded   { opacity: .22; transform: scale(.94); border-style: dashed; }
+    .canary-label { font-size: 9.5px; color: var(--success); font-family: var(--font-mono); }
+
+    .step-nav-btns { display: flex; gap: 8px; margin-top: 20px; }
+    .snb {
+      padding: 7px 18px; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-secondary); font-family: var(--font-sans); transition: all .18s ease;
+    }
+    .snb:hover { border-color: var(--border-hover); color: var(--text-main); }
+    .snb.primary { background: var(--primary); border-color: var(--primary); color: #000; font-weight: 700; }
+    .snb.primary:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- Sticky Act Nav -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" onclick="scrollToAct('act1')" id="nav-act1"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" onclick="scrollToAct('act2')" id="nav-act2"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" onclick="scrollToAct('act3')" id="nav-act3"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" onclick="scrollToAct('act4')" id="nav-act4"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
+</nav>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Strangler Fig Migration</h1>
+  <p class="pattern-subtitle">
+    Migrate từ monolith sang microservices theo từng bước — luôn đảm bảo deployable và reversible.
+  </p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Architecture</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Martin Fowler</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2004</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.10 §10.2</span></div>
+  </div>
+</header>
+
+<!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
+  </div>
+
+  <p class="section-intro">
+    Hệ thống scale up, team mở rộng, thời gian deploy tăng dần. Yêu cầu chuyển đổi sang microservices trở nên cấp thiết, nhưng việc "rewrite toàn bộ" tiềm ẩn rủi ro quá lớn.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Coupling</div></div>
+      <h3>Tight Coupling</h3>
+      <p>Các module (Auth, Course, Judge) share chung database. Một schema migration có thể gây table lock toàn hệ thống, dẫn đến rủi ro sập production.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-warning">Bottleneck</div></div>
+      <h3>All-or-Nothing Deploy</h3>
+      <p>Thời gian release phụ thuộc chéo giữa các team. Mỗi lần deploy là một quá trình kéo dài và rủi ro.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-info">Scale</div></div>
+      <h3>Inability to Scale Independently</h3>
+      <p>Tăng tải cục bộ đòi hỏi scale toàn bộ monolith. Gây lãng phí tài nguyên và ảnh hưởng performance các module khác.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon"><div class="badge badge-danger">Risk</div></div>
+      <h3>The Big Bang Rewrite Trap</h3>
+      <p>Dự án "rewrite toàn bộ" kéo dài, thiếu feature parity, và thất bại, để lại monolith với technical debt lớn hơn.</p>
+    </div>
+  </div>
+
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Tách dần chức năng khỏi monolith theo từng sprint, duy trì monolith phục vụ traffic hiện tại. Sử dụng API Gateway làm <em>seam</em> để route traffic sang service mới hoặc fallback về monolith. Quá trình thay thế diễn ra liên tục cho đến khi loại bỏ hoàn toàn monolith.
+    </p>
+    <div class="definition-attribution">— Strangler Fig Application · Martin Fowler (2004) · [W2]</div>
+  </div>
+
+  <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.65; max-width: 600px;">
+    Lấy cảm hứng từ loại cây strangler fig — bám vào cây chủ và dần thay thế cho đến khi cây chủ biến mất hoàn toàn.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>API Gateway (The Seam)</h4>
+      <p>Entry point duy nhất điều hướng traffic. Transparent với client về việc backend là monolith hay microservice.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>New Service</h4>
+      <p>Phát triển song song, deploy độc lập, database riêng biệt. Tiếp nhận traffic sau khi verify qua Canary hoặc Parallel Run.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Monolith (Legacy)</h4>
+      <p>Tiếp tục xử lý traffic cho các module chưa tách. Kích thước giảm dần, tiến tới retire hoàn toàn hoặc làm fallback.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 3 — HOW IT WORKS ══════════════════════════════ -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
+  </div>
+
+  <p class="section-intro">
+    Quy trình 4 bước extract service khỏi monolith với zero downtime. Click để xem kiến trúc thay đổi.
+  </p>
+
+  <div class="stepper">
+    <!-- Controls -->
+    <div class="step-controls">
+      <button class="step-btn active" onclick="goToStep(0)" id="sb0">
+        <div class="step-dot">1</div>
+        <div><div class="step-label">Identify the Seam</div><div class="step-sub">Xác định ranh giới</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(1)" id="sb1">
+        <div class="step-dot">2</div>
+        <div><div class="step-label">Install Gateway</div><div class="step-sub">Thiết lập routing</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(2)" id="sb2">
+        <div class="step-dot">3</div>
+        <div><div class="step-label">Build &amp; Route</div><div class="step-sub">Deploy &amp; điều hướng traffic</div></div>
+      </button>
+      <button class="step-btn" onclick="goToStep(3)" id="sb3">
+        <div class="step-dot">4</div>
+        <div><div class="step-label">Retire Old Code</div><div class="step-sub">Loại bỏ legacy code</div></div>
+      </button>
+    </div>
+
+    <!-- Panels -->
+    <div class="step-content-area">
+
+      <!-- Step 0 -->
+      <div class="step-panel active" id="p0">
+        <div class="step-tag tag-before">Baseline</div>
+        <h3 class="step-headline">Identify "seam" — Ranh giới clear-cut</h3>
+        <p class="step-body">Ưu tiên các bounded context có clear API và loose database coupling. KBM chọn Auth do có HTTP boundary rõ ràng và ít shared database state với Core.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow">↓</span></div>
+          <div class="arch-row">
+            <div class="arch-node n-mono">
+              <h3>[Legacy] KBM Monolith</h3>
+              <div style="font-size:9.5px;color:var(--text-dim);margin-top:7px;font-weight:400;">Auth · Course · Assignment · Judge · Notification</div>
+            </div>
+          </div>
+          <div class="arch-row"><span class="arch-arrow">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-db">Shared PostgreSQL DB</div></div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb primary" onclick="goToStep(1)">Bước tiếp → Install Gateway</button>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-panel" id="p1">
+        <div class="step-tag tag-process">Add Seam Layer</div>
+        <h3 class="step-headline">Triển khai API Gateway</h3>
+        <p class="step-body">Deploy API Gateway phía trước monolith. Đóng vai trò transparent proxy pass-through 100% traffic. Transparent với client và fully reversible.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">[API] API Gateway<br><span style="font-size:9.5px;font-weight:400;">Spring Cloud Gateway</span></div></div>
+          <div class="arch-row"><span class="arch-arrow" style="font-size:11px;color:var(--text-dim);">↓ 100% traffic pass-through</span></div>
+          <div class="arch-row"><div class="arch-node n-mono">[Legacy] KBM Monolith<div style="font-size:9.5px;color:var(--text-dim);margin-top:7px;font-weight:400;">Auth · Course · Assignment · Judge · Notification</div></div></div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(0)">← Trước</button>
+          <button class="snb primary" onclick="goToStep(2)">Bước tiếp → Build &amp; Route</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-panel" id="p2">
+        <div class="step-tag tag-process">Extract &amp; Canary</div>
+        <h3 class="step-headline">Phát triển Service &amp; Điều hướng traffic</h3>
+        <p class="step-body">Auth Service được build mới với database riêng, deploy độc lập. Gateway điều hướng traffic <code>/api/auth/*</code> theo Canary deployment (10% → 50% → 100%). Monolith đóng vai trò fallback.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">[API] API Gateway</div></div>
+          <div class="arch-row" style="gap:28px;margin-top:8px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span class="canary-label">/auth/* → 100%</span>
+              <div class="arch-node n-auth">[Ready] Auth Service<br><span style="font-size:9.5px;font-weight:400;">Own DB · Own deploy</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <span style="font-size:9.5px;color:var(--text-dim);font-family:var(--font-mono);">/* → 100%</span>
+              <div class="arch-node n-mono">[Legacy] Monolith<div style="font-size:9.5px;color:var(--text-dim);margin-top:6px;font-weight:400;">Course · Assignment · Judge · Notif</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(1)">← Trước</button>
+          <button class="snb primary" onclick="goToStep(3)">Bước tiếp → Retire Old Code</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-panel" id="p3">
+        <div class="step-tag tag-after">Migration Complete</div>
+        <h3 class="step-headline">Loại bỏ legacy code và lặp lại quy trình</h3>
+        <p class="step-body">Sau khi Auth Service đạt độ ổn định (0% error rate, latency OK trong 48h+), loại bỏ Auth module khỏi monolith. Lặp lại quy trình cho các service khác để giảm tải monolith.</p>
+        <div class="arch-diagram">
+          <div class="arch-row"><div class="arch-node n-client">Client Browser</div></div>
+          <div class="arch-row"><span class="arch-arrow live">↓</span></div>
+          <div class="arch-row"><div class="arch-node n-gateway n-highlight">[API] API Gateway</div></div>
+          <div class="arch-row" style="gap:8px;flex-wrap:wrap;margin-top:8px;">
+            <div class="arch-node n-auth" style="font-size:10px;padding:7px 11px;">[Ready] Auth</div>
+            <div class="arch-node n-svc" style="font-size:10px;padding:7px 11px;">🔄 Course <span style="font-size:8.5px;opacity:.7;">(next)</span></div>
+            <div class="arch-node n-mono" style="font-size:9.5px;padding:7px 11px;min-width:unset;">[Legacy] Assignment · Judge · Notif</div>
+          </div>
+          <div style="margin-top:12px;padding:9px 14px;background:var(--success-dim);border:1px solid rgba(34,211,160,.2);border-radius:var(--radius-sm);font-size:11px;color:var(--success);font-family:var(--font-mono);">
+            ✓ Auth Service: 0 incidents · independent deploys · own DB
+          </div>
+        </div>
+        <div class="step-nav-btns">
+          <button class="snb" onclick="goToStep(2)">← Trước</button>
+          <button class="snb primary" onclick="scrollToAct('act4')">Xem KBM apply it →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 4 — KBM: APPLY IT ══════════════════════════ -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBM: Apply It</h2></div>
+  </div>
+
+  <p class="section-intro">
+    KBM LMS đang phục vụ production traffic hàng ngày. Không thể thực hiện Big Bang rewrite. Dưới đây là migration roadmap áp dụng Strangler Fig theo mức độ ưu tiên.
+  </p>
+
+  <!-- Gap Analysis -->
+  <h3 class="sub-heading">Gap Analysis</h3>
+  <p class="sub-label">Các module cần extract, sắp xếp theo risk level</p>
+
+  <table class="gap-table">
+    <tr>
+      <th>Module</th><th>Current Issues</th><th>Risk</th><th>Strangler Strategy</th>
+    </tr>
+    <tr>
+      <td class="gap-label">Auth</td>
+      <td>Sử dụng shared secret HS256, stateful session, thiếu cơ chế token revocation</td>
+      <td class="b-high">HIGH</td>
+      <td>Route-based: <code>/auth/*</code> → Keycloak</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Core ↔ Assignment</td>
+      <td>Shared database gây schema lock incidents khi high traffic</td>
+      <td class="b-high">HIGH</td>
+      <td>Schema sep → view abstraction → separate DB + Outbox</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Judge (SQL)</td>
+      <td>CPU bottleneck, không có khả năng scale độc lập</td>
+      <td class="b-med">MED</td>
+      <td>Event-based: Kafka topic → Judge workers độc lập</td>
+    </tr>
+    <tr>
+      <td class="gap-label">Notification</td>
+      <td>Tight coupling Email/WebSocket với Core Service</td>
+      <td class="b-low">LOW</td>
+      <td>Async: Core publish events → Notification subscriber</td>
+    </tr>
+  </table>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Migration Timeline</h3>
+  <p class="sub-label">Ưu tiên Quick Wins, mitigate High-Risk tasks sau</p>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Animate Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 1–2 · Phase 0</div>
+      <h4>Triển khai API Gateway</h4>
+      <p>Deploy Spring Cloud Gateway phía trước monolith. Ensure 100% request pass-through với latency &lt; 5ms. Fully reversible.</p>
+      <span class="t-badge orange">Effort: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tuần 3–4 · Phase 1</div>
+      <h4>Extract Auth → Keycloak (Canary Deploy)</h4>
+      <p>Deploy Keycloak, migrate credentials. Canary route /auth/* sang Keycloak 10%. Monitor telemetry 48h, switch 100%, tiến hành delete Auth code khỏi monolith.</p>
+      <span class="t-badge green">✓ Independent deploy achieved</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 2–3 · Phase 2</div>
+      <h4>Database Schema Separation</h4>
+      <p>Tách shared PostgreSQL. Implement Outbox Pattern cho distributed events. Sử dụng database views làm abstraction layer bảo đảm zero downtime.</p>
+      <span class="t-badge orange">Effort: 2 devs × 3 tuần</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Tháng 4–6 · Phase 3</div>
+      <h4>Extract Judge Service (Event-driven)</h4>
+      <p>Judge workers consume Kafka topic. Cho phép scale độc lập CPU/Memory khi tải cao. Parallel run 2 tuần trước khi cutover.</p>
+      <span class="t-badge green">✓ Independent scaling achieved</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">Yes</div></div>
+        <div class="decision-title">Phù hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống chạy production yêu cầu zero downtime</li>
+        <li>Yêu cầu gradual migration, hỗ trợ rollback dễ dàng</li>
+        <li>Domain có bounded context rõ ràng</li>
+        <li>Team đủ resource cho parallel development</li>
+        <li>Architecture hỗ trợ tích hợp API Gateway</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">No</div></div>
+        <div class="decision-title">Không phù hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống nhỏ, chi phí vận hành (overhead) cao</li>
+        <li>Monolith có kiến trúc modular tốt</li>
+        <li>Thiếu observability, khó monitor migration process</li>
+        <li>Database coupling sâu (stored procedures, triggers)</li>
+        <li>Team thiếu kinh nghiệm distributed systems</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Chapter Link Bar -->
+<div class="chapter-bar">
+  <p>Tham khảo chi tiết về Strangler Fig, Anti-Corruption Layer, Branch by Abstraction, và Migration Roadmap trong textbook.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-10'}, '*'); return false;"><div class="badge badge-info">Read</div> Chương 10 — Chuyển đổi Thực tế →</a>
+</div>
+
+<script>
+// ── Scroll Progress ───────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ─────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Stepper ───────────────────────────────────────────────
+function goToStep(n) {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('sb'+i).classList.remove('active','done');
+    document.getElementById('p'+i).classList.remove('active');
+    if (i < n) document.getElementById('sb'+i).classList.add('done');
+  }
+  document.getElementById('sb'+n).classList.add('active');
+  document.getElementById('p'+n).classList.add('active');
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+updateNav();
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+<script>
+
+    // ── Theme sync ──
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'SET_THEME') {
+        document.documentElement.classList.toggle('light', e.data.isLight);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+</script>
+</body>
+</html>
+
+
+
+

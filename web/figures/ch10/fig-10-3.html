@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.3 — Database: Shared vs Per-Service | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.3">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-grid-2 d-gap-2" style="align-items:start;">
+      <!-- Left: Shared DB -->
+      <div class="d-cluster" style="padding:16px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;">Shared Database</div>
+        <div class="d-row d-gap-1 d-mb-1" style="justify-content:center;">
+          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Core</div></div>
+          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Assignment</div></div>
+        </div>
+        <div class="d-row d-gap-1 d-mb-1">
+          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+        </div>
+        <div class="d-box d-storage text-center" style="padding:12px;">
+          <div class="d-title">Shared DB</div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-zone d-zone-danger" >Tight coupling · Schema changes affect all</div>
+      </div>
+
+      <!-- Right: Per-Service -->
+      <div class="d-cluster" style="padding:16px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;">Database-per-Service</div>
+        <div class="d-row d-gap-1 d-mb-1" style="justify-content:center;">
+          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Core</div></div>
+          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Assignment</div></div>
+        </div>
+        <div class="d-row d-gap-1 d-mb-1">
+          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+        </div>
+        <div class="d-row d-gap-1">
+          <div class="d-box d-storage text-center" style="flex:1; padding:12px;"><div class="d-title">Core DB</div></div>
+          <div class="d-box d-storage text-center" style="flex:1; padding:12px;"><div class="d-title">Assignment DB</div></div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-zone d-zone-success" >Loosely coupled · Independent deployment</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

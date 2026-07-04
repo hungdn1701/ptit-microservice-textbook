@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.7 — KBM Contest Mode — Full Async Architecture
+    =========================================================
+    Tier 1 HTML migration from fig-5-7.svg
+    Layout: Vertical fan-out — Core → Kafka → Judge + Leaderboard + Notification
+    Capture: gen-diagrams.ps1 → fig-5-7.png → Typst image()
+  -->
+  <title>Fig 5.7 — KBM Contest Mode — Full Async Architecture | Ch.5</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-5.7" data-ref="CH05-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col d-mt-1 d-mb-2 d-gap-2" style="align-items: center;">
+
+      <!-- Frontend -->
+      <div class="d-box d-infra text-center" style="width:240px;">
+        <div class="d-title">User Interface</div>
+        <div class="d-sub">sends submissions, receives results via WebSocket</div>
+      </div>
+
+      <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Core Service -->
+      <div class="d-box d-domain text-center" style="width:300px;">
+        <div class="d-title">Core Service</div>
+        <div class="d-sub">Produce + Consume — single entry point</div>
+      </div>
+
+      <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Kafka -->
+      <div class="d-box d-event text-center" style="width:640px; max-width:100%; position: relative; z-index: 2;">
+        <div class="d-title">Apache Kafka</div>
+        <div class="d-sub">submission-topic · result-topic · notification-topic</div>
+        <!-- Center stem down -->
+        <div class="d-tree-stem-down" style="--stem-len: 16px;"></div>
+      </div>
+
+      <!-- Orthogonal Fan-out for Downstream Services -->
+      <div class="d-row d-center" style="position: relative; width: 640px; gap: 16px;">
+        
+        <!-- Horizontal branch bar (432px width = distance between centers of the two outer 200px boxes) -->
+        <div class="d-tree-bus" style="width: 432px; left: 50%; transform: translateX(-50%);"></div>
+
+        <div class="d-col d-center" style="position: relative;">
+           <!-- Arrow down to Consumer 1 -->
+           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
+           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
+             <span class="d-label">Consumer 1</span>
+             <div class="d-box d-domain d-mt-1">
+               <div class="d-title">Judge Service</div>
+               <div class="d-sub">Execute SQL on sandbox</div>
+             </div>
+           </div>
+        </div>
+
+        <div class="d-col d-center" style="position: relative;">
+           <!-- Arrow down to Consumer 2 -->
+           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
+           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
+             <span class="d-label">Consumer 2</span>
+             <div class="d-box d-domain d-mt-1">
+               <div class="d-title">Leaderboard Service</div>
+               <div class="d-sub">Aggregates scores, ranks</div>
+             </div>
+           </div>
+        </div>
+
+        <div class="d-col d-center" style="position: relative;">
+           <!-- Arrow down to Consumer 3 -->
+           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
+           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
+             <span class="d-label">Consumer 3</span>
+             <div class="d-box d-infra d-mt-1">
+               <div class="d-title">Notification Service</div>
+               <div class="d-sub">WebSocket pushes to students</div>
+             </div>
+           </div>
+        </div>
+
+      </div><!-- /.d-row -->
+
+    </div><!-- /.d-col -->
+
+    <!-- Benefits note -->
+    <div class="d-box d-note">
+      <div class="d-label d-mb-1">Benefits of asynchronous architecture</div>
+      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">1</span> <strong>Non-blocking:</strong> Core Service is not blocked by slow judging</div>
+      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">2</span> <strong>Extensibility:</strong> Adding new consumers (Analytics, Replay) without modifying core code</div>
+      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">3</span> <strong>Fault Tolerance:</strong> Judge down → messages wait in Kafka, no loss, reprocessed upon recovery</div>
+      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">4</span> <strong>Independent Scaling:</strong> Scale Judge pods according to contest load</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.9 — Parallel Run Pattern | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.9">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col" style="align-items:center; width: 500px; margin: 0 auto;">
+      <!-- Request -->
+      <div class="d-box d-legacy text-center" style="width:200px; padding:12px;">
+        <div class="d-title">Request</div>
+      </div>
+      
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      
+      <!-- Parallel Runner -->
+      <div class="d-box d-gateway text-center" style="width:280px; padding:12px;">
+        <div class="d-title">Parallel Runner</div>
+        <div class="d-sub d-mt-1">Gửi request cho cả 2 implementations</div>
+      </div>
+
+      <!-- Branching Out -->
+      <svg width="500" height="46" style="display:block; overflow:visible; margin: 8px 0;">
+        <defs>
+          <marker id="arrow-diag-out" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)" />
+          </marker>
+        </defs>
+        <line x1="250" y1="0" x2="119" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag-out)" />
+        <line x1="250" y1="0" x2="381" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag-out)" />
+      </svg>
+
+      <!-- Old / New Logic -->
+      <div class="d-row d-gap-3" style="align-items:stretch; width:100%;">
+        <div class="d-box d-legacy text-center" style="flex:1; padding:14px;">
+          <div class="d-title">Old Logic</div>
+          <div class="d-sub">(legacy code)</div>
+          <div class="d-zone d-zone-info d-mt-1" >Result: dùng cho response</div>
+        </div>
+        <div class="d-box d-service text-center" style="flex:1; padding:14px;">
+          <div class="d-title">New Logic</div>
+          <div class="d-sub">(microservice)</div>
+          <div class="d-zone d-zone-warning d-mt-1" >Result: so sánh, không dùng</div>
+        </div>
+      </div>
+
+      <!-- Branching In -->
+      <svg width="500" height="46" style="display:block; overflow:visible; margin: 8px 0;">
+        <defs>
+          <marker id="arrow-diag-in" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)" />
+          </marker>
+        </defs>
+        <line x1="119" y1="0" x2="230" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag-in)" />
+        <line x1="381" y1="0" x2="270" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag-in)" />
+      </svg>
+
+      <!-- Compare Results -->
+      <div class="d-box d-note text-center" style="width:280px; padding:12px;">
+        <div class="d-title">Compare Results</div>
+        <div class="d-sub d-mt-1">Log differences → fix new logic</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

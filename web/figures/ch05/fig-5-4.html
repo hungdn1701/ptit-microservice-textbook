@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.4 — RabbitMQ Architecture: DevOps Job Queue
+    =========================================================
+  -->
+  <title>Fig 5.4 — RabbitMQ Architecture: DevOps Job Queue | Ch.5</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-5.4" data-ref="CH05-SEC">
+
+    <!-- Main pipeline -->
+    <div style="display: grid; grid-template-columns: auto 40px auto 40px auto 40px auto; gap: 16px 0; align-items: center; justify-content: center; width: 100%; margin: 32px 0;">
+      
+      <!-- Producer -->
+      <div style="grid-column: 1; grid-row: 2; z-index: 2;">
+        <div class="d-box d-service text-center" style="width:130px; position: relative;">
+          <div class="d-title">CI/CD Pipeline</div>
+          <div class="d-sub">Jenkins / GitLab CI</div>
+          <!-- Arrow to Exchange -->
+          <div style="position: absolute; right: -42px; top: 50%; width: 40px; height: 2px; background: var(--diagram-color-line-muted); z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Exchange -->
+      <div style="grid-column: 3; grid-row: 2; z-index: 2;">
+        <div class="d-box d-event text-center" style="width:130px; position: relative;">
+          <div class="d-title">Exchange</div>
+          <div class="d-sub">type: topic routing</div>
+          <!-- Stem out to the branch -->
+          <div style="position: absolute; right: -22px; top: 50%; width: 22px; height: 2px; background: var(--diagram-color-line-muted); z-index: 1;"></div>
+        </div>
+      </div>
+
+      <!-- Fan-out to Queues & Workers -->
+
+      <!-- Row 1: Queue 1 & Worker 1 -->
+      <div style="grid-column: 4; grid-row: 1; align-self: stretch; display: flex; flex-direction: column; margin-left: 20px;">
+        <div style="flex: 1;"></div>
+        <div style="flex: 1; border-left: 2px solid var(--diagram-color-line-muted); border-top: 2px solid var(--diagram-color-line-muted); position: relative; z-index: 1;">
+          <div style="position: absolute; right: -2px; top: -6px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+        </div>
+      </div>
+      <div style="grid-column: 5; grid-row: 1; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-warning text-center" style="width:180px; position: relative;">
+          <div class="d-title">build-frontend-queue</div>
+          <div class="d-sub">routing: build.frontend</div>
+          <!-- Arrow to Worker -->
+          <div style="position: absolute; right: -42px; top: 50%; width: 40px; height: 2px; background: var(--diagram-color-line-muted); z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="grid-column: 7; grid-row: 1; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-note text-center" style="min-width:110px;">
+          <div class="d-title">Worker 1</div>
+          <div class="d-sub">Frontend Builder</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Queue 2 & Worker 2 -->
+      <div style="grid-column: 4; grid-row: 2; align-self: stretch; position: relative; z-index: 1; border-left: 2px solid var(--diagram-color-line-muted); margin-left: 20px;">
+        <div style="position: absolute; left: 0; top: 50%; width: 100%; height: 2px; background: var(--diagram-color-line-muted);"></div>
+        <div style="position: absolute; right: -2px; top: calc(50% - 5px); border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+      </div>
+      <div style="grid-column: 5; grid-row: 2; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-warning text-center" style="width:180px; position: relative;">
+          <div class="d-title">build-backend-queue</div>
+          <div class="d-sub">routing: build.backend</div>
+          <!-- Arrow to Worker -->
+          <div style="position: absolute; right: -42px; top: 50%; width: 40px; height: 2px; background: var(--diagram-color-line-muted); z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="grid-column: 7; grid-row: 2; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-note text-center" style="min-width:110px;">
+          <div class="d-title">Worker 2</div>
+          <div class="d-sub">Backend Builder</div>
+        </div>
+      </div>
+
+      <!-- Row 3: Queue 3 & Worker 3 -->
+      <div style="grid-column: 4; grid-row: 3; align-self: stretch; display: flex; flex-direction: column; margin-left: 20px;">
+        <div style="flex: 1; border-left: 2px solid var(--diagram-color-line-muted); border-bottom: 2px solid var(--diagram-color-line-muted); position: relative; z-index: 1;">
+          <div style="position: absolute; right: -2px; bottom: -6px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+        </div>
+        <div style="flex: 1;"></div>
+      </div>
+      <div style="grid-column: 5; grid-row: 3; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-warning text-center" style="width:180px; position: relative;">
+          <div class="d-title">deploy-queue</div>
+          <div class="d-sub">routing: deploy.#</div>
+          <!-- Arrow to Worker -->
+          <div style="position: absolute; right: -42px; top: 50%; width: 40px; height: 2px; background: var(--diagram-color-line-muted); z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="grid-column: 7; grid-row: 3; padding-left: 12px; z-index: 2;">
+        <div class="d-box d-note text-center" style="min-width:110px;">
+          <div class="d-title">Agent</div>
+          <div class="d-sub">Deployment Agent</div>
+        </div>
+      </div>
+
+    </div><!-- /.d-row main pipeline -->
+
+    <!-- Routing note -->
+    <div class="d-box d-note">
+      <div class="d-label d-mb-1">Routing rules — Exchange type: topic</div>
+      <div style="font-size:12px; line-height:1.7;">
+        <div>
+          <span style="background: var(--diagram-color-surface); border: 1px solid var(--diagram-color-line-muted); border-radius: 4px; padding: 1px 5px; white-space: nowrap;">build.frontend</span>
+          → queue <code>build-frontend-queue</code> → Worker 1 executes frontend build job
+        </div>
+        <div>
+          <span style="background: var(--diagram-color-surface); border: 1px solid var(--diagram-color-line-muted); border-radius: 4px; padding: 1px 5px; white-space: nowrap;">build.backend</span>
+          → queue <code>build-backend-queue</code> → Worker 2 executes backend build job
+        </div>
+        <div>
+          <span style="background: var(--diagram-color-surface); border: 1px solid var(--diagram-color-line-muted); border-radius: 4px; padding: 1px 5px; white-space: nowrap;">deploy.#</span>
+          → queue <code>deploy-queue</code> → Deployment Agent executes rollout to environment
+        </div>
+        <div class="d-mt-1" style="font-style:italic;">
+          Each queue only receives jobs matching the routing key — Workers scale independently based on job load.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

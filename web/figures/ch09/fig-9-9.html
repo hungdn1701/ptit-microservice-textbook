@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.9 — Security Flow | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.9">
+
+    <div class="d-seq-container d-mb-2">
+      <div class="d-seq-participants">
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-domain">Auth Service</div></div>
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-infra">Vault</div></div>
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-storage">Database</div></div>
+      </div>
+
+    <div class="d-seq-messages">
+      <!-- 1. Request credentials -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Request DB credentials</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 2. Generate -->
+      <div class="d-center" style="margin:4px 0;">
+        <div class="d-zone d-zone-info" >Generate short-lived credentials</div>
+      </div>
+      <!-- 3. Return -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">temp_user / temp_pass (TTL: 30min)</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 4. Connect to DB -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Connect with temp credentials</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- 5. Access granted -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Access granted</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Benefits -->
+    <div class="d-box d-success d-mt-3" style="padding:12px 18px; position:relative; z-index:2;">
+      <div class="d-title d-mb-1">Lợi ích</div>
+      <div class="d-sub" style="line-height:1.5;">Credentials tự hết hạn. Không hardcode password. Vault tự rotate. Audit trail cho mọi access.</div>
+    </div>
+
+  </div>
+</body>
+</html>

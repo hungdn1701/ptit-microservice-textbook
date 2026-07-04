@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.5 — Blue-Green Deployment | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-12.5">
+    <div class="d-col" style="align-items:center; width: 500px; margin: 0 auto;">
+      <!-- Load Balancer -->
+      <div class="d-box d-gateway text-center" style="width:280px; padding:12px; z-index:2;">
+        <div class="d-title">Load Balancer</div>
+        <div class="d-sub d-mt-1">Switch traffic instantly</div>
+      </div>
+
+      <!-- SVG Arrows -->
+      <div style="position: relative; width: 100%; height: 60px; margin: 4px 0;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible;">
+          <defs>
+            <marker id="arrow-diag-out" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)" />
+            </marker>
+            <marker id="arrow-diag-out-muted" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)" />
+            </marker>
+          </defs>
+          <line x1="250" y1="0" x2="120" y2="56" stroke="var(--diagram-color-info-border)" stroke-width="3" marker-end="url(#arrow-diag-out)" />
+          <line x1="250" y1="0" x2="380" y2="56" stroke="var(--diagram-color-muted)" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrow-diag-out-muted)" />
+        </svg>
+        <div class="d-arrow-label fw-bold" style="top: 28px; left: 160px; border: 2px solid var(--diagram-color-info-border); color: var(--diagram-color-info-border); z-index:2;">100%</div>
+        <div class="d-arrow-label" style="top: 28px; left: 340px; color: var(--diagram-color-muted); z-index:2;">0%</div>
+      </div>
+
+      <!-- Targets -->
+      <div class="d-row d-gap-3" style="align-items:stretch; width:100%;">
+        <!-- Blue -->
+        <div class="d-box d-note d-col text-center" style="flex:1; padding:16px; border: 2px solid var(--diagram-color-info-border);">
+          <div class="d-title d-title-lg">Blue (v1.0)</div>
+          <div class="d-sub d-mt-1">Currently serving traffic</div>
+          <div class="d-sep"></div>
+          <div class="d-col d-gap-1">
+            <div class="d-box d-note text-center" style="padding:8px;">Instance 1</div>
+            <div class="d-box d-note text-center" style="padding:8px;">Instance 2</div>
+          </div>
+        </div>
+        <!-- Green -->
+        <div class="d-box d-service d-col text-center" style="flex:1; padding:16px; opacity: 0.6; border: 1px dashed var(--diagram-color-service-border);">
+          <div class="d-title d-title-lg">Green (v2.0)</div>
+          <div class="d-sub d-mt-1">Ready, waiting for switch</div>
+          <div class="d-sep"></div>
+          <div class="d-col d-gap-1">
+            <div class="d-box d-service text-center" style="padding:8px;">Instance 1</div>
+            <div class="d-box d-service text-center" style="padding:8px;">Instance 2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-box d-note d-mt-2" style="padding:10px 18px;">
+      <div class="d-sub text-center">Rollback = chuyển LB quay lại Blue. Instant, zero-downtime.</div>
+    </div>
+  </div>
+</body>
+</html>

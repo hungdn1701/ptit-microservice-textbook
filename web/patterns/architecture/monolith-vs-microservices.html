@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monolith vs Microservices — Ch.1 | KBM LMS</title>
+  <meta name="description" content="So sánh kiến trúc Monolithic và Microservices qua case study KBM LMS — khi nào chọn cái nào?">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    .arch-card { animation: fadeInUp var(--duration-enter) var(--ease-out) both; }
+    .arch-card:nth-child(2) { animation-delay: 80ms; }
+  </style>
+</head>
+<body>
+  <div id="progress-bar" class="progress-bar-top"></div>
+
+  <div class="page-container">
+
+  <!-- ── Act Nav ── -->
+  <nav class="act-nav" id="act-nav">
+    <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">
+      <span class="act-num">1</span> <span class="act-btn-label">Problem</span>
+    </button>
+    <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">
+      <span class="act-num">2</span> <span class="act-btn-label">Pattern</span>
+    </button>
+    <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">
+      <span class="act-num">3</span> <span class="act-btn-label">Simulation</span>
+    </button>
+    <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">
+      <span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span>
+    </button>
+  </nav>
+
+  <!-- ── Pattern Header ── -->
+  <header class="pattern-header">
+    <h1 class="pattern-title">Monolith vs Microservices</h1>
+    <p class="pattern-subtitle">So sánh hai kiến trúc qua case study KBM LMS — khi nào chọn kiến trúc nào?</p>
+    <div class="pattern-meta">
+      <div class="meta-item">
+        <span class="meta-label">category</span>
+        <span class="meta-value">Architecture</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">book ref</span>
+        <span class="meta-value">Chương 1 — § 1.1</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">context</span>
+        <span class="meta-value">System Wide (KBM)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── ACT 1: Problem ── -->
+  <section class="act-section" id="act1" data-collapsible>
+    <div class="act-label">
+      <div class="act-number">1</div>
+      <div>
+        <div class="act-tag">Act 01</div>
+        <h2 class="act-title">Giới hạn của kiến trúc Monolithic</h2>
+      </div>
+    </div>
+
+    <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+      Khi hệ thống KBM LMS phát triển, kiến trúc Monolithic — nơi toàn bộ modules nằm trong cùng một deployment unit — bộc lộ nhiều hạn chế nghiêm trọng về khả năng scale, tốc độ triển khai, và tính độc lập của đội phát triển.
+    </p>
+
+    <div class="problem-grid">
+      <div class="problem-card danger">
+        <div class="badge badge-danger" style="margin-bottom: 12px;">Perf Constraint</div>
+        <h3>Deployment Bottleneck</h3>
+        <p>Mỗi thay đổi nhỏ (ví dụ: sửa bug trong module Judge) đều yêu cầu rebuild và redeploy toàn bộ ứng dụng. Thời gian deploy tăng tuyến tính theo kích thước codebase.</p>
+      </div>
+      <div class="problem-card danger">
+        <div class="badge badge-warning" style="margin-bottom: 12px;">Scale Limit</div>
+        <h3>Scaling Constraint</h3>
+        <p>Module <code>kbm-judge-sql</code> cần scale gấp 10× vào mùa thi, nhưng kiến trúc monolith buộc phải scale toàn bộ app — lãng phí tài nguyên cho Auth, Notification, Assignment vốn không cần thêm capacity.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 2: Pattern ── -->
+  <section class="act-section" id="act2" data-collapsible>
+    <div class="act-label">
+      <div class="act-number">2</div>
+      <div>
+        <div class="act-tag">Act 02</div>
+        <h2 class="act-title">Microservices Architecture</h2>
+      </div>
+    </div>
+
+    <div class="pattern-definition">
+      <p class="definition-text">
+        Phân tách ứng dụng thành các dịch vụ nhỏ, độc lập, mỗi dịch vụ sở hữu database riêng và có thể deploy, scale, phát triển độc lập bởi các đội khác nhau.
+      </p>
+      <div class="definition-attribution">— Microservices Architecture · Sam Newman, "Building Microservices" (O'Reilly)</div>
+    </div>
+
+    <!-- Architecture Comparison Cards -->
+    <div class="arch-compare">
+      <div class="arch-card" id="card-mono" onclick="selectArch('monolith')">
+        <div class="badge badge-primary" style="margin-bottom: 14px;">Monolithic</div>
+        <h3>Monolithic Architecture</h3>
+        <p class="arch-desc">Toàn bộ modules trong một deployment unit duy nhất</p>
+        <div class="mono-block">
+          <div class="block-label">Single WAR / JAR</div>
+          <div class="modules-wrap" id="modules-wrap">
+            <span class="module-pill" data-mod="auth">kbm-auth</span>
+            <span class="module-pill" data-mod="app">kbm-core</span>
+            <span class="module-pill" data-mod="judge">kbm-judge-sql</span>
+            <span class="module-pill" data-mod="assign">kbm-academic</span>
+            <span class="module-pill" data-mod="notify">kbm-notification</span>
+          </div>
+          <div class="connector-v" style="height: 24px; margin-bottom: 10px;"></div>
+          <div class="db-block">Shared Database (PostgreSQL)</div>
+        </div>
+      </div>
+
+      <div class="arch-card" id="card-ms" onclick="selectArch('micro')">
+        <div class="badge badge-success" style="margin-bottom: 14px;">Microservices</div>
+        <h3>Microservices Architecture</h3>
+        <p class="arch-desc">Mỗi service deploy và scale độc lập</p>
+        <div class="services-grid" id="services-grid">
+          <div class="service-box" data-svc="auth">
+            <div class="service-label" style="color: var(--primary)">kbm-auth</div>
+            <div class="service-name">Auth</div>
+            <div class="service-db">auth_db</div>
+          </div>
+          <div class="service-box" data-svc="app">
+            <div class="service-label" style="color: var(--success)">kbm-core</div>
+            <div class="service-name">Core App</div>
+            <div class="service-db">core_db</div>
+          </div>
+          <div class="service-box" data-svc="judge">
+            <div class="service-label" style="color: var(--warning)">kbm-judge-sql</div>
+            <div class="service-name">Judge</div>
+            <div class="service-db">judge_db</div>
+          </div>
+          <div class="service-box" data-svc="assign">
+            <div class="service-label" style="color: var(--info)">kbm-academic</div>
+            <div class="service-name">Assignment</div>
+            <div class="service-db">assign_db</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 3: Simulation ── -->
+  <section class="act-section" id="act3">
+    <div class="act-label">
+      <div class="act-number">3</div>
+      <div>
+        <div class="act-tag">Act 03</div>
+        <h2 class="act-title">Deploy Simulation & Trade-off Analysis</h2>
+      </div>
+    </div>
+
+    <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+      So sánh thời gian deploy khi chỉ cần cập nhật module Judge. Click nút để chạy simulation.
+    </p>
+
+    <div class="controls" style="margin: 0 0 20px;">
+      <button class="btn btn-primary" onclick="simulateDeploy()">
+        Run Deploy Simulation
+        <span class="btn-icon">▶</span>
+      </button>
+      <button class="btn" onclick="resetDeploy()">Reset</button>
+    </div>
+
+    <div>
+      <div class="deploy-label">Monolith — rebuild &amp; deploy toàn bộ app</div>
+      <div class="deploy-track">
+        <div class="deploy-bar" id="deploy-mono" style="width: 0%; background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(244,63,94,0.3);">
+          <span id="mono-pct"></span>
+        </div>
+      </div>
+      <div class="deploy-label" style="margin-top: 14px;">Microservices — deploy Judge only</div>
+      <div class="deploy-track">
+        <div class="deploy-bar" id="deploy-ms" style="width: 0%; background: var(--success-dim); color: var(--success); border: 1px solid rgba(34,211,160,0.3);">
+          <span id="ms-pct"></span>
+        </div>
+      </div>
+      <div id="deploy-result"></div>
+    </div>
+
+    <!-- Trade-off Table -->
+    <div class="card standalone" style="margin-top: 24px;">
+      <div class="card-title">Trade-off Comparison</div>
+      <div class="table-wrapper">
+        <table class="gap-table">
+          <thead>
+            <tr>
+              <th>Tiêu chí</th>
+              <th>Monolith</th>
+              <th>Microservices</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="gap-label">Deploy speed</td>
+              <td><span class="cross">✗</span> Toàn bộ app</td>
+              <td><span class="tick">✓</span> Từng service</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Scalability</td>
+              <td><span class="cross">✗</span> Scale cả khối</td>
+              <td><span class="tick">✓</span> Scale từng phần</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Complexity</td>
+              <td><span class="tick">✓</span> Đơn giản</td>
+              <td><span class="cross">✗</span> Distributed</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Data consistency</td>
+              <td><span class="tick">✓</span> ACID tự nhiên</td>
+              <td><span class="cross">✗</span> Saga / eventual</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Team autonomy</td>
+              <td><span class="cross">✗</span> Coordination cao</td>
+              <td><span class="tick">✓</span> Deploy độc lập</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Debugging</td>
+              <td><span class="tick">✓</span> Breakpoint trực tiếp</td>
+              <td><span class="cross">✗</span> Distributed tracing</td>
+            </tr>
+            <tr>
+              <td class="gap-label">Tech stack</td>
+              <td><span class="cross">✗</span> Đồng nhất</td>
+              <td><span class="tick">✓</span> Polyglot</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ACT 4: KBM Apply ── -->
+  <section class="act-section" id="act4">
+    <div class="act-label">
+      <div class="act-number">4</div>
+      <div>
+        <div class="act-tag">Act 04</div>
+        <h2 class="act-title">KBM LMS — Quyết định chuyển đổi</h2>
+      </div>
+    </div>
+
+    <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+      Hệ thống KBM bắt đầu là một monolith Spring Boot duy nhất. Khi module Judge cần scale riêng
+      vào mùa thi (xử lý SQL submission đồng thời), team buộc phải tách <code>kbm-judge-sql</code>
+      ra thành microservice độc lập — đây là tín hiệu tự nhiên cho microservices decomposition.
+    </p>
+  </section>
+
+  <!-- ── Chapter Link Bar ── -->
+  <div class="chapter-bar">
+    <p>Đọc chi tiết về kiến trúc SOA và Microservices trong sách.</p>
+    <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-01'}, '*'); return false;">Chương 1 — Tổng quan SOA &amp; Microservices →</a>
+  </div>
+
+  </div>
+
+  <script>
+    // ── Scroll Progress & Active Nav ──
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+      updateNav();
+    }, { passive: true });
+
+    const acts = ['act1', 'act2', 'act3', 'act4'];
+    function updateNav() {
+      let cur = 'act1';
+      for (const id of acts) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 90) cur = id;
+      }
+      acts.forEach(id => {
+        const btn = document.getElementById('nav-' + id);
+        if (btn) btn.classList.toggle('active', id === cur);
+      });
+    }
+    function scrollToAct(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Architecture Selection ──
+    let selectedArch = null;
+    function selectArch(arch) {
+      selectedArch = arch;
+      const cardMono = document.getElementById('card-mono');
+      const cardMs   = document.getElementById('card-ms');
+      cardMono.classList.remove('selected', 'selected-ms');
+      cardMs.classList.remove('selected', 'selected-ms');
+      if (arch === 'monolith') {
+        cardMono.classList.add('selected');
+        document.querySelectorAll('.module-pill').forEach((el, i) => {
+          setTimeout(() => {
+            el.classList.add('highlight');
+            setTimeout(() => el.classList.remove('highlight'), 700);
+          }, i * 100);
+        });
+      } else {
+        cardMs.classList.add('selected-ms');
+        document.querySelectorAll('.service-box').forEach((el, i) => {
+          el.classList.remove('active');
+          setTimeout(() => el.classList.add('active'), i * 120);
+        });
+      }
+    }
+
+    // ── Deploy Simulation ──
+    function simulateDeploy() {
+      const mono = document.getElementById('deploy-mono');
+      const ms = document.getElementById('deploy-ms');
+      const monoPct = document.getElementById('mono-pct');
+      const msPct = document.getElementById('ms-pct');
+      const result = document.getElementById('deploy-result');
+      mono.style.width = '0%'; ms.style.width = '0%';
+      monoPct.textContent = ''; msPct.textContent = '';
+      result.className = ''; result.innerHTML = '';
+      setTimeout(() => { ms.style.width = '100%'; msPct.textContent = 'Done — 30s'; }, 300);
+      setTimeout(() => { mono.style.width = '25%'; monoPct.textContent = '25%'; }, 600);
+      setTimeout(() => { mono.style.width = '55%'; monoPct.textContent = '55%'; }, 1300);
+      setTimeout(() => { mono.style.width = '80%'; monoPct.textContent = '80%'; }, 2000);
+      setTimeout(() => { mono.style.width = '100%'; monoPct.textContent = 'Done — 5 phút'; }, 2800);
+      setTimeout(() => {
+        result.className = 'visible';
+        result.innerHTML =
+          'Microservice: <strong style="color:var(--success)">~30 giây</strong> (Judge only) — ' +
+          'Monolith: <strong style="color:var(--danger)">~5 phút</strong> (toàn bộ app). ' +
+          'Lợi thế microservices: <strong style="color:var(--primary)">10× nhanh hơn</strong> trong kịch bản này.';
+      }, 3100);
+    }
+
+    function resetDeploy() {
+      document.getElementById('deploy-mono').style.width = '0%';
+      document.getElementById('deploy-ms').style.width = '0%';
+      document.getElementById('mono-pct').textContent = '';
+      document.getElementById('ms-pct').textContent = '';
+      const result = document.getElementById('deploy-result');
+      result.className = ''; result.innerHTML = '';
+    }
+
+    // ── Theme sync ──
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'SET_THEME') {
+        document.documentElement.classList.toggle('light', e.data.isLight);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+    // ── Collapsible Act 1 & 2 ──
+    document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+      const label = section.querySelector('.act-label');
+      if (!label || section.querySelector('.act-content')) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'act-content';
+      while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+      section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

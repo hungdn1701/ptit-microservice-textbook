@@ -1,0 +1,87 @@
+/* AUTO-GENERATED from design/tokens.json by scripts/gen-tokens.py — DO NOT EDIT. */
+
+:root {
+  /* Diagram fonts */
+  --diagram-font-heading: "Geist", "Outfit", "Segoe UI Semibold", "Segoe UI", sans-serif;
+  --diagram-font-body: "Geist", "Outfit", "Segoe UI", "Helvetica Neue", sans-serif;
+  --diagram-font-mono: "Geist Mono", "Cascadia Code", "Consolas", monospace;
+
+  /* Diagram colors (navy book palette) */
+  --diagram-color-bg: #FFFFFF;
+  --diagram-color-surface: #FFFFFF;
+  --diagram-color-line: #2C5282;
+  --diagram-color-line-muted: #9CA3AF;
+  --diagram-color-text: #1B2A4A;
+  --diagram-color-muted: #6B7280;
+  --diagram-color-label-text: #374151;
+  --diagram-color-service-bg: #EFF6FF;
+  --diagram-color-service-border: #2C5282;
+  --diagram-color-service-text: #1B2A4A;
+  --diagram-color-domain-bg: #F0FDF4;
+  --diagram-color-domain-border: #10B981;
+  --diagram-color-domain-text: #276749;
+  --diagram-color-database-bg: #F9FAFB;
+  --diagram-color-database-border: #2C5282;
+  --diagram-color-database-text: #1B2A4A;
+  --diagram-color-queue-bg: #FFFBEB;
+  --diagram-color-queue-border: #F59E0B;
+  --diagram-color-queue-text: #744210;
+  --diagram-color-gateway-bg: #F3F4F6;
+  --diagram-color-gateway-border: #6B7280;
+  --diagram-color-gateway-text: #374151;
+  --diagram-color-warning-bg: #FFFBEB;
+  --diagram-color-warning-border: #F59E0B;
+  --diagram-color-warning-text: #744210;
+  --diagram-color-infra-bg: #EFF6FF;
+  --diagram-color-infra-border: #3182CE;
+  --diagram-color-infra-text: #1B2A4A;
+  --diagram-color-info-bg: #EFF6FF;
+  --diagram-color-info-border: #3182CE;
+  --diagram-color-info-text: #1B2A4A;
+  --diagram-color-success-bg: #F0FDF4;
+  --diagram-color-success-border: #10B981;
+  --diagram-color-success-text: #276749;
+  --diagram-color-danger-bg: #FEF2F2;
+  --diagram-color-danger-border: #DC2626;
+  --diagram-color-danger-text: #7F1D1D;
+  --diagram-color-note-bg: #F9FAFB;
+  --diagram-color-note-border: #9CA3AF;
+  --diagram-color-note-text: #6B7280;
+  --diagram-color-cluster-bg: #F9FAFB;
+  --diagram-color-cluster-border: #D1D5DB;
+
+  /* Book semantic colors (shared with HTML book chapters) */
+  --book-navy: #1B2A4A;
+  --book-blue: #2C5282;
+  --book-accent: #3182CE;
+  --book-green: #276749;
+  --book-amber: #744210;
+  --book-gray-dark: #374151;
+  --book-gray-mid: #6B7280;
+  --book-gray-light: #F3F4F6;
+  --book-rule: #D1D5DB;
+  --book-bg-principle: #EFF6FF;
+  --book-bg-warning: #FFFBEB;
+  --book-bg-tip: #F0FDF4;
+  --book-bg-analysis: #EFF6FF;
+  --book-bg-note: #F9FAFB;
+  --book-bg-casestudy: #F0F9FF;
+  --book-border-principle: #3B82F6;
+  --book-border-warning: #F59E0B;
+  --book-border-tip: #10B981;
+  --book-border-analysis: #6366F1;
+  --book-border-note: #9CA3AF;
+  --book-border-casestudy: #0EA5E9;
+  --book-code-block-bg: #F7F8FA;
+  --book-code-block-text: #1F2933;
+  --book-code-block-border: #D8DEE6;
+  --book-code-block-rule: #2C5282;
+  --book-code-inline-bg: #F1F5F9;
+  --book-code-inline-text: #C7253E;
+  --book-table-row-alt: #F8FAFC;
+
+  /* Book fonts (HTML book chapters) */
+  --book-font-body: "Source Serif 4", "Libertinus Serif", "Georgia", "Times New Roman";
+  --book-font-sans: "Source Sans 3", "Segoe UI", "Calibri";
+  --book-font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", "Courier New";
+}

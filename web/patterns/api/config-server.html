@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Config Server — Pattern Story | Ch.8 Edge KBM</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    /* Custom CSS for Config Server Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-flex {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .arch-node {
+      padding: 12px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      min-width: 110px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-medium);
+    }
+    .arch-node.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+      background: var(--primary-dim);
+    }
+    .arch-arrow {
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .env-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.02);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .env-btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .env-btn:hover {
+      color: var(--text-main);
+    }
+    .env-btn.active {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .config-list-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+
+    .config-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .config-entry:last-child {
+      border-bottom: none;
+    }
+    .config-entry.changed {
+      background: rgba(255, 122, 0, 0.04);
+      border-left: 3px solid var(--primary);
+    }
+    .config-key {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--primary);
+    }
+    .config-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-main);
+      word-break: break-all;
+      padding: 0 10px;
+    }
+    .config-source {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 99px;
+      background: var(--bg-surface);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .sim-log {
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 140px;
+      overflow-y: auto;
+      box-shadow: var(--terminal-shadow);
+      margin-top: 14px;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-info { color: var(--info); }
+    .log-success { color: var(--success); }
+    .log-warn { color: var(--warning); }
+  </style>
+</head>
+<body>
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Centralized Configuration</h1>
+  <p class="pattern-subtitle">Config Server — Quản lý cấu hình tập trung và tự động nạp nóng (Hot Reload)</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">implementation</span><span class="meta-value">Spring Cloud Config & Spring Cloud Bus</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 8 — §8.5</span></div>
+    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">Git-Backed Config Service</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Distributed Configuration & Configuration Drift</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi mở rộng lên hàng chục microservices, việc lưu file cấu hình (database URL, credentials, timeouts) cục bộ trong từng container gây khó khăn lớn cho quá trình vận hành.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">[Down Trend]</div>
+      <h3>Configuration Drift</h3>
+      <p>Các môi trường (Dev, Staging, Prod) yêu cầu tham số khác nhau. Lưu cấu hình cục bộ dễ dẫn đến sai sót khi deploy (VD: quên đổi tham số trên Staging, vô tình kết nối nhầm DB Production).</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">[Error]</div>
+      <h3>Rebuild & Restart Overhead</h3>
+      <p>Điều chỉnh một tham số nhỏ (VD: tăng Connection Pool size, giảm Timeout) đòi hỏi sửa file, build lại JAR và restart toàn bộ container, gây downtime không đáng có.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Centralized Configuration Management</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Sử dụng <strong>Config Server</strong> kết nối với Git Repository chứa toàn bộ file cấu hình. Microservices truy vấn Config Server lúc khởi động để tải cấu hình theo Profile. Khi có thay đổi, chỉ cần push lên Git và trigger Bus refresh để hot-reload cấu hình cho các downstream services mà không cần restart.
+    </p>
+    <div class="definition-attribution">— Centralized Configuration · Spring Cloud Config & Bus</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    <strong>Spring Cloud Bus</strong> kết hợp Message Broker (VD: Kafka) broadcast tín hiệu refresh cấu hình đến mọi service instance gần như tức thời.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Git Config Repo</h4>
+      <p>Centralized repository chứa các file YAML (VD: <code>application-prod.yml</code>). Được quản lý bằng Git version control, dễ dàng audit và rollback cấu hình.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Config Server</h4>
+      <p>Middle service đọc cấu hình từ Git và expose qua REST API (định dạng JSON). Hỗ trợ mã hóa (encryption) cho các thông tin nhạy cảm (credentials, tokens).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Spring Cloud Bus (Reload)</h4>
+      <p>Message bus đồng bộ cấu hình. Khi gọi API <code>/actuator/busrefresh</code>, một event được đẩy lên Kafka, yêu cầu toàn bộ client hot-reload cấu hình.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Hot Reload Simulation</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Chọn Environment Profile để xem các tham số cấu hình tương ứng. Bấm <strong>Push Config Change</strong> để giả lập quá trình hot-reload không downtime.
+  </p>
+
+  <div class="simulator-container">
+    
+    <!-- Left panel: Env switcher and Configs -->
+    <div class="card card-flex">
+      <div>
+        <div class="dashboard-title" style="margin-bottom:12px;">Git Profiles Profile Selector</div>
+        <div class="env-selector" id="env-selector">
+          <button class="env-btn active" id="btn-dev" onclick="switchEnv('dev')">dev (Phát triển)</button>
+          <button class="env-btn" id="btn-staging" onclick="switchEnv('staging')">staging (Kiểm thử)</button>
+          <button class="env-btn" id="btn-prod" onclick="switchEnv('prod')">prod (Vận hành)</button>
+        </div>
+        <div class="config-list-box" id="config-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: Flow and Hot Reload console -->
+    <div class="card card-flex">
+      <div>
+        <div class="dashboard-title">Architecture Flow</div>
+        <div class="arch-flow">
+          <div class="arch-node" id="node-git">
+            <span style="font-size:16px;">💾</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">Git Config</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node active" id="node-config">
+            <span style="font-size:16px;">🌐</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--primary);">Config Server</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node" id="node-services">
+            <span style="font-size:16px;">[System]</span>
+            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">kbm-services</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border); padding-top:14px;">
+        <div class="dashboard-title" style="margin-bottom:8px;">Spring Cloud Bus Refresh Console</div>
+        <button class="btn btn-primary" onclick="hotReload()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">Push Config Change (Nạp nóng)</button>
+        <div class="sim-log" id="reload-log">
+          <div><span class="log-time">[14:20:52]</span> <span class="log-info">Config server initialized. Reading git backend...</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">KBM Configuration Strategy</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Config Server giúp KBM đảm bảo tính nhất quán (consistency) cấu hình xuyên suốt các môi trường mà không gây gián đoạn hệ thống.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Configuration Management Solutions Comparison</h3>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>Local Hardcoded Configuration</th>
+          <th>Spring Cloud Config Server</th>
+          <th>Kubernetes ConfigMap/Secret</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Lưu trữ tập trung</td>
+          <td>Không (Lưu phân tán).</td>
+          <td><span class="b-high">Có</span> (Lưu tại Git Repository).</td>
+          <td>Có (Lưu tại K8s etcd).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Hot Reload</td>
+          <td>Không (Yêu cầu rebuild & restart).</td>
+          <td>Hỗ trợ tốt (Qua Kafka Bus Refresh).</td>
+          <td>Có (Yêu cầu ứng dụng có cơ chế file-watching).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Bảo mật dữ liệu nhạy cảm</td>
+          <td>Kém (Clear text trong source code).</td>
+          <td>Cao (AES/RSA encryption).</td>
+          <td>Cao (K8s Secret, RBAC).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Môi trường triển khai (KBM)</td>
+          <td>Deprecated.</td>
+          <td>Local Development (Docker Compose).</td>
+          <td>Production (Kubernetes).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Config Server Deployment Roadmap</h3>
+  <div class="sub-label">Các bước chuẩn hóa configuration</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Khởi tạo Git Config Repository</h4>
+      <p>Tạo private Git repo chứa các file <code>application*.yml</code>. Migrate toàn bộ local properties của các service sang repo này.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Deploy Config Server Project</h4>
+      <p>Khởi tạo Spring Boot Config Server project. Cấu hình kết nối SSH tới Git Repo. Bật annotation <code>@EnableConfigServer</code> và verify REST API.</p>
+      <span class="t-badge green">✓ Verify cấu hình JSON qua API thành công</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Tích hợp Spring Cloud Bus với Kafka</h4>
+      <p>Tích hợp <code>spring-cloud-starter-bus-kafka</code> vào downstream services. Gắn annotation <code>@RefreshScope</code> cho các config bean để hỗ trợ hot-reload.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Sensitive Data Encryption</h4>
+      <p>Cấu hình JCE (Java Cryptography Extension) trên Config Server. Mã hóa mật khẩu DB thành format <code>{cipher}***</code> trên Git, ngăn ngừa lộ lọt credentials.</p>
+      <span class="t-badge green">✓ Triển khai Secure Configuration & Hot Reload thành công</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Use Cases / Anti-patterns</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Use cases</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống có nhiều microservices độc lập.</li>
+        <li>Triển khai đa môi trường (Dev, Staging, Prod).</li>
+        <li>Cần điều chỉnh runtime parameters thường xuyên (timeout, threadpool size).</li>
+        <li>Yêu cầu centralized configuration, version control và audit logging qua Git.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Anti-patterns</div>
+      </div>
+      <ul class="decision-list">
+        <li>Monolith hoặc hệ thống đơn giản (over-engineering).</li>
+        <li>Môi trường Cloud-Native 100% Kubernetes (Nên dùng K8s ConfigMap/Secret).</li>
+        <li>Thiếu hạ tầng Private Git repository an toàn.</li>
+        <li>Team chưa có kinh nghiệm vận hành asynchronous Event Bus/Message Broker.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Centralized Configuration, Spring Cloud Config Server, Spring Cloud Bus, và mã hóa thông tin nhạy cảm trong sách.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-08'}, '*'); return false;">📖 Chương 8 — API Gateway →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const configs = {
+  dev: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://localhost:5432/kbm_dev', src: 'application-dev.yml' },
+    { key: 'spring.datasource.pool-size', val: '5', src: 'application-dev.yml' },
+    { key: 'kbm.judge.timeout-ms', val: '30000', src: 'application.yml' },
+    { key: 'kbm.judge.sandbox.enabled', val: 'false', src: 'application-dev.yml' },
+    { key: 'eureka.client.service-url', val: 'http://localhost:8761/eureka', src: 'bootstrap.yml' },
+    { key: 'spring.kafka.bootstrap-servers', val: 'localhost:9092', src: 'application-dev.yml' },
+    { key: 'logging.level.root', val: 'DEBUG', src: 'application-dev.yml' },
+  ],
+  staging: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://staging-db:5432/kbm_staging', src: 'application-staging.yml', diff: true },
+    { key: 'spring.datasource.pool-size', val: '15', src: 'application-staging.yml', diff: true },
+    { key: 'kbm.judge.timeout-ms', val: '15000', src: 'application-staging.yml', diff: true },
+    { key: 'kbm.judge.sandbox.enabled', val: 'true', src: 'application-staging.yml', diff: true },
+    { key: 'eureka.client.service-url', val: 'http://eureka-staging:8761/eureka', src: 'bootstrap.yml', diff: true },
+    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-staging:9092', src: 'application-staging.yml', diff: true },
+    { key: 'logging.level.root', val: 'INFO', src: 'application-staging.yml', diff: true },
+  ],
+  prod: [
+    { key: 'spring.datasource.url', val: 'jdbc:postgresql://prod-db-cluster:5432/kbm_prod', src: 'application-prod.yml', diff: true },
+    { key: 'spring.datasource.pool-size', val: '40', src: 'application-prod.yml', diff: true },
+    { key: 'kbm.judge.timeout-ms', val: '8000', src: 'application-prod.yml', diff: true },
+    { key: 'kbm.judge.sandbox.enabled', val: 'true', src: 'application-prod.yml', diff: true },
+    { key: 'eureka.client.service-url', val: 'http://eureka-a:8761,http://eureka-b:8761/eureka', src: 'bootstrap.yml', diff: true },
+    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-a:9092,kafka-b:9092,kafka-c:9092', src: 'application-prod.yml', diff: true },
+    { key: 'logging.level.root', val: 'WARN', src: 'application-prod.yml', diff: true },
+  ]
+};
+
+let currentEnv = 'dev';
+const logEl = document.getElementById('reload-log');
+
+function switchEnv(env) {
+  currentEnv = env;
+  document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`btn-${env}`).classList.add('active');
+  
+  // Highlight active node in flow
+  document.getElementById('node-git').className = 'arch-node active';
+  setTimeout(() => {
+    document.getElementById('node-git').className = 'arch-node';
+    document.getElementById('node-config').className = 'arch-node active';
+  }, 300);
+
+  renderConfig();
+  logSys(`Hệ thống: Vừa tải Profile [${env.toUpperCase()}]. Đọc từ ${env === 'dev' ? 'application-dev.yml' : 'application-' + env + '.yml'}`, 'info');
+}
+
+function renderConfig() {
+  const el = document.getElementById('config-list');
+  el.innerHTML = configs[currentEnv].map(c => `
+    <div class="config-entry ${c.diff ? 'changed' : ''}">
+      <div>
+        <span class="config-key">${c.key}</span>
+        <div class="config-val" style="margin-top:4px;">${c.val}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <span class="config-source">${c.src}</span>
+        ${c.diff ? '<span style="font-size:9px; font-weight:700; color:var(--primary); font-family:var(--font-mono)">CHANGED</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function logSys(msg, type = 'sys') {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function hotReload() {
+  logSys('POST /actuator/bus-refresh', 'info');
+  document.getElementById('node-config').className = 'arch-node active';
+  
+  setTimeout(() => {
+    logSys('Kafka Bus: Phát tán RefreshRemoteApplicationEvent...', 'warn');
+  }, 200);
+
+  setTimeout(() => {
+    logSys('kbm-auth: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+  }, 500);
+
+  setTimeout(() => {
+    logSys('kbm-core: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+  }, 800);
+
+  setTimeout(() => {
+    logSys('kbm-judge-sql: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
+    document.getElementById('node-services').className = 'arch-node active';
+  }, 1100);
+
+  setTimeout(() => {
+    logSys('Hệ thống: Tất cả các instances đã cập nhật cấu hình mới. 0 restarts required.', 'ok');
+    document.getElementById('node-services').className = 'arch-node';
+  }, 1400);
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────
+renderConfig();
+
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.1 — Tiến hóa kiến trúc phần mềm doanh nghiệp
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.1 — Evolution of Enterprise Software Architecture | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-1.1" data-ref="CH01-INTRO">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-cluster">
+      <span class="d-label">Evolution of Enterprise Software Architecture</span>
+      
+      <div class="d-row d-gap-2 d-mt-2" style="align-items: stretch;">
+        
+        <!-- 1990s — Monolith -->
+        <div class="d-box d-legacy d-grow d-col text-left">
+          <div class="d-mb-1 fw-bold" style="font-size: 15px;">1990s</div>
+          <div class="d-title d-mb-2">Monolithic Architecture</div>
+          <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
+            <li>Single unified unit</li>
+            <li>Simple, easy initial testing & deployment</li>
+            <li>Limited when scaling organization & system</li>
+          </ul>
+        </div>
+
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- 2000s — SOA -->
+        <div class="d-box d-event d-grow d-col text-left">
+          <div class="d-mb-1 fw-bold" style="font-size: 15px;">2000s</div>
+          <div class="d-title d-mb-2">Service-Oriented Architecture (SOA)</div>
+          <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
+            <li>Focus on enterprise-level reuse</li>
+            <li>High dependency on Middleware (ESB, SOAP)</li>
+            <li>High complexity, difficult distributed governance</li>
+          </ul>
+        </div>
+
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- 2010s — Microservices -->
+        <div class="d-box d-service d-grow d-col text-left">
+          <div class="d-mb-1 fw-bold" style="font-size: 15px;">2010s</div>
+          <div class="d-title d-mb-2">Microservices Architecture</div>
+          <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
+            <li>Emphasizes Independent Deployability</li>
+            <li>Network-based communication (REST, gRPC, Messaging)</li>
+            <li>Driven by Containerization & Cloud Native</li>
+          </ul>
+        </div>
+
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+        <!-- 2020s — Evolved MS -->
+        <div class="d-box d-storage d-grow d-col text-left">
+          <div class="d-mb-1 fw-bold" style="font-size: 15px;">2020s</div>
+          <div class="d-title d-mb-2">Domain-Driven Architecture</div>
+          <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
+            <li>Domain-Oriented Microservices (DOMA)</li>
+            <li>The return of Modular Monolith</li>
+            <li>Optimized for fast flow delivery</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

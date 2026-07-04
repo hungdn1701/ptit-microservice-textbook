@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.9 — LMS Observability — Hiện trạng | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.9">
+    <div class="d-row d-gap-2" style="align-items:stretch;">
+      <div class="d-box d-note" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center">Logs</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">• Spring Boot default (console)</div>
+          <div class="d-sub">• Log qua MDC</div>
+          <div class="d-sub">• No centralized aggregation</div>
+        </div>
+        <div class="d-zone d-zone-warning d-mt-1" >Cần: JSON format + ELK/Loki</div>
+      </div>
+      <div class="d-box d-service" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center">Metrics</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">• Actuator /health, /info</div>
+          <div class="d-sub">• Prometheus/Grafana</div>
+          <div class="d-sub">• No custom metrics</div>
+        </div>
+        <div class="d-zone d-zone-warning d-mt-1" >Cần: Micrometer + Grafana</div>
+      </div>
+      <div class="d-box d-highlight" style="flex:1; padding:14px;">
+        <div class="d-title d-mb-1 text-center">Traces</div>
+        <div class="d-sep"></div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub">• No distributed tracing</div>
+          <div class="d-sub">• Correlation ID</div>
+          <div class="d-sub">• Debug = manual log grep</div>
+        </div>
+        <div class="d-zone d-zone-danger d-mt-1" >Cần: Zipkin / Jaeger</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

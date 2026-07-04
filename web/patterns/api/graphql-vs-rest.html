@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GraphQL vs REST — Pattern Story | Ch.3 API KBM</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    /* Custom CSS for GraphQL vs REST Simulator */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .architecture-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+    .architecture-box:hover {
+      border-color: var(--border-hover);
+    }
+    .architecture-box.rest-side {
+      border-color: rgba(96, 165, 250, 0.2);
+    }
+    .architecture-box.rest-side:hover {
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .architecture-box.gql-side {
+      border-color: rgba(244, 63, 94, 0.2);
+    }
+    .architecture-box.gql-side:hover {
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+
+    .box-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .network-canvas {
+      height: 200px;
+      border: 1px dashed var(--border);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-md);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .client-node {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      background: var(--primary-dim);
+      border: 2px solid var(--primary);
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--primary);
+      z-index: 2;
+      font-size: 11px;
+    }
+
+    .server-node {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: var(--info-dim);
+      border: 2px solid var(--info);
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--info);
+      z-index: 2;
+      font-size: 11px;
+    }
+    
+    .db-node {
+      position: absolute;
+      top: 50%;
+      right: -60px;
+      transform: translateY(-50%);
+      background: var(--warning-dim);
+      border: 2px solid var(--warning);
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 18px;
+      z-index: 2;
+      box-shadow: var(--shadow-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .request-packet {
+      position: absolute;
+      top: 50%;
+      left: 100px;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success-glow);
+      opacity: 0;
+    }
+    
+    @keyframes flyToBackend {
+      0% { left: 100px; opacity: 1; }
+      100% { left: calc(100% - 120px); opacity: 1; }
+    }
+    
+    @keyframes flyToClient {
+      0% { left: calc(100% - 120px); opacity: 1; background: var(--info); box-shadow: 0 0 10px var(--info); }
+      100% { left: 100px; opacity: 1; background: var(--info); box-shadow: 0 0 10px var(--info); }
+    }
+
+    @keyframes flyToDb {
+      0% { right: 80px; top: 50%; opacity: 1; background: var(--warning); box-shadow: 0 0 10px var(--warning); }
+      50% { right: 0px; top: 50%; opacity: 1; }
+      100% { right: 80px; top: 50%; opacity: 1; background: var(--success); box-shadow: 0 0 10px var(--success); }
+    }
+
+    .anim-req { animation: flyToBackend 0.5s ease-in forwards; }
+    .anim-res { animation: flyToClient 0.5s ease-out forwards; }
+    .anim-db { animation: flyToDb 0.4s ease-in-out forwards; }
+
+    .query-log {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      background: var(--bg-terminal, #0a0b0f);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      height: 140px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      box-shadow: var(--terminal-shadow);
+      margin-top: 12px;
+    }
+    .query-log div {
+      margin-bottom: 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding-bottom: 3px;
+      line-height: 1.4;
+    }
+    .query-log .req { color: var(--success); }
+    .query-log .db { color: var(--warning); }
+    .query-log .sys { color: var(--info); }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dotted var(--border);
+    }
+    .metric-row:last-child {
+      border-bottom: none;
+    }
+    .metric-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">GraphQL vs REST</h1>
+  <p class="pattern-subtitle">So sánh giao thức và giải quyết bài toán truy vấn phân cấp N+1 Queries</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">API Gateway & Client Queries</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 3 — §3.4</span></div>
+    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">kbm-gateway & Assignment Services</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">N+1 Queries & Over-fetching</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi frontend (Web/Mobile) cần hiển thị dữ liệu phân cấp (VD: danh sách bài tập, đi kèm danh sách nộp bài của từng bài tập), việc sử dụng REST API truyền thống bộc lộ nhiều hạn chế.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon">🐢</div>
+      <h3>N+1 Network Roundtrips</h3>
+      <p>Client gọi 1 request lấy danh sách N bài tập, sau đó phải gọi thêm N request độc lập để lấy lượt nộp bài tương ứng. Tổng cộng N+1 network requests, gây latency cao trên kết nối chậm (3G/4G).</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon">📦</div>
+      <h3>Over-fetching</h3>
+      <p>REST endpoint thường trả về toàn bộ fields của entity. Frontend chỉ cần tiêu đề và điểm số, nhưng lại nhận được cả source code, logs... Điều này làm tăng kích thước payload, lãng phí bandwidth.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">GraphQL & DataLoader Pattern</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      <strong>GraphQL:</strong> Cung cấp single endpoint. Client gửi Query DSL xác định chính xác cấu trúc và fields cần thiết. Server trả về đúng payload yêu cầu trong 1 request.<br>
+      <strong>DataLoader:</strong> Cơ chế batching và caching ở server. Ngăn chặn việc đẩy bài toán N+1 từ network xuống database (SQL N+1).
+    </p>
+    <div class="definition-attribution">— GraphQL Architecture · Facebook (2015)</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Sử dụng <strong>DataLoader</strong>, các DB query rời rạc trong Resolver được batching thành 1 câu SQL <code>IN (?,?,...)</code> duy nhất để tối ưu performance.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Single Endpoint</h4>
+      <p>Client gọi POST <code>/graphql</code> với Query JSON định nghĩa chính xác data schema.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Field Resolvers</h4>
+      <p>Hàm xử lý fetch dữ liệu cho từng field trong Schema, cho phép tổng hợp data từ nhiều nguồn (DB, Cache, REST APIs).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>DataLoader Batching</h4>
+      <p>Hoãn thực thi các câu SQL đơn lẻ, gom nhóm IDs từ các Parent Resolvers để chạy 1 batch query, loại bỏ N+1 Database problem.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">N+1 Network vs. GraphQL Simulation</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Chạy mô phỏng để so sánh Network Requests và Database Queries giữa REST và GraphQL.
+  </p>
+
+  <div class="simulator-container">
+    
+    <!-- REST Approach -->
+    <div class="architecture-box rest-side">
+      <div class="box-title">
+        <span style="color:var(--info)">📡 REST API: The N+1 Problem</span>
+      </div>
+      <div class="network-canvas" id="canvas-rest">
+        <div class="client-node">Client</div>
+        <div class="request-packet" id="pkt-rest"></div>
+        <div class="server-node">REST API</div>
+        <div class="db-node">💾</div>
+      </div>
+      
+      <div class="sim-buttons" style="display:flex; gap:8px;">
+        <button class="sim-btn" onclick="runRest()" style="flex:1;">Chạy luồng REST</button>
+        <button class="sim-btn" onclick="clearLogs('rest')" style="flex:0.3;">Clear</button>
+      </div>
+
+      <div class="query-log" id="log-rest">
+        <div style="color: var(--text-dim); font-style: italic;">Đang chờ kích hoạt REST (GET /api/questions)...</div>
+      </div>
+      
+      <div style="margin-top: 14px;">
+        <div class="metric-row"><span>Network Requests</span><span class="metric-val" id="m-rest-net">0</span></div>
+        <div class="metric-row"><span>Database Queries</span><span class="metric-val" id="m-rest-db">0</span></div>
+        <div class="metric-row"><span>Data Over-fetching</span><span class="metric-val" style="color: var(--danger)">Rất Cao (High)</span></div>
+      </div>
+    </div>
+
+    <!-- GraphQL Approach -->
+    <div class="architecture-box gql-side">
+      <div class="box-title">
+        <span style="color:var(--primary)">🔮 GraphQL: Single Request + DataLoader</span>
+      </div>
+      <div class="network-canvas" id="canvas-gql">
+        <div class="client-node">Client</div>
+        <div class="request-packet" id="pkt-gql"></div>
+        <div class="server-node" style="border-color:var(--primary); color:var(--primary);">GraphQL Server</div>
+        <div class="db-node">💾</div>
+      </div>
+      
+      <div class="sim-buttons" style="display:flex; gap:8px;">
+        <button class="sim-btn primary-action" onclick="runGraphql()" style="flex:1;">Chạy luồng GraphQL</button>
+        <button class="sim-btn" onclick="clearLogs('gql')" style="flex:0.3;">Clear</button>
+      </div>
+
+      <div class="query-log" id="log-gql">
+        <div style="color: var(--text-dim); font-style: italic;">Đang chờ kích hoạt GraphQL (POST /graphql)...</div>
+      </div>
+      
+      <div style="margin-top: 14px;">
+        <div class="metric-row"><span>Network Requests</span><span class="metric-val" id="m-gql-net">0</span></div>
+        <div class="metric-row"><span>Database Queries</span><span class="metric-val" id="m-gql-db">0</span></div>
+        <div class="metric-row"><span>Data Over-fetching</span><span class="metric-val" style="color: var(--success)">Không (Zero)</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">KBM API Optimization</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBM triển khai GraphQL BFF (Backend-for-Frontend) làm data aggregator cho giao diện Web/Mobile.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">API Solutions Comparison</h3>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th>REST API</th>
+          <th>GraphQL Gateway</th>
+          <th>Quyết định áp dụng tại KBM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Network Requests (Dashboard)</td>
+          <td><span class="b-high">21 requests</span> (N+1 bottleneck)</td>
+          <td><span class="b-low">1 request</span></td>
+          <td>Áp dụng cho trang chủ Dashboard chứa dữ liệu tổng hợp từ nhiều nguồn.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Field Selection</td>
+          <td>Không (Fixed payload).</td>
+          <td>Linh hoạt qua Query DSL.</td>
+          <td>Tiết kiệm tới 65% băng thông payload cho Mobile app chạy 4G.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Security Management (DDoS)</td>
+          <td><span class="b-low">Đơn giản</span> (Rate Limit theo URL).</td>
+          <td><span class="b-high">Phức tạp</span> (Nested Query DDoS risk).</td>
+          <td>Cấu hình Query Depth Limiter tối đa 5 cấp.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">GraphQL Deployment Roadmap</h3>
+  <div class="sub-label">Các bước tích hợp GraphQL</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1 · Tuần 1</div>
+      <h4>Define Schema & Queries</h4>
+      <p>Khởi tạo Spring Boot GraphQL. Định nghĩa <code>schema.graphqls</code> mô tả types: <code>Assignment</code>, <code>Submission</code>, <code>User</code> và queries.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2 · Tuần 2</div>
+      <h4>Implement Resolvers</h4>
+      <p>Implement Controller Resolvers mapping tới Repositories. Test qua GraphiQL playground.</p>
+      <span class="t-badge green">✓ Hoàn thành các query lấy dữ liệu cơ bản</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3 · Tuần 3</div>
+      <h4>Optimize Database with DataLoader</h4>
+      <p>Đăng ký <code>DataLoader</code> bean. Thay thế single DB queries bằng batching (<code>IN (?,?,...)</code>) để chặn N+1 queries.</p>
+      <span class="t-badge orange">Dự kiến: 1 dev × 4 ngày</span>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4 · Tuần 4</div>
+      <h4>Query Complexity Limiting</h4>
+      <p>Ngăn chặn nested queries (VD: A->B->A->B...). Cấu hình <code>MaxQueryDepthInstrumentation</code> (Max depth = 5) chống DDoS.</p>
+      <span class="t-badge green">✓ Hệ thống API GraphQL an toàn hoạt động 100%</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Use Cases / Anti-patterns</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Use cases</div>
+      </div>
+      <ul class="decision-list">
+        <li>Xây dựng Backend-for-Frontend (BFF) phục vụ đa client (Web, Mobile).</li>
+        <li>Data model phân cấp sâu, quan hệ phức tạp.</li>
+        <li>Ứng dụng mobile cần tối ưu network payload (bandwidth-constrained).</li>
+        <li>Yêu cầu UI linh hoạt, tránh API versioning liên tục.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Anti-patterns</div>
+      </div>
+      <ul class="decision-list">
+        <li>CRUD đơn giản, data phẳng (REST là đủ).</li>
+        <li>Xử lý File Upload/Download nhị phân lớn.</li>
+        <li>Yêu cầu HTTP/CDN caching (GraphQL dùng POST, khó cache native).</li>
+        <li>Hệ thống public API không kiểm soát được query complexity (nguy cơ DDoS).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về GraphQL, REST API, DataLoader Pattern, N+1 Queries, và thiết kế API Gateway BFF trong sách.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-03'}, '*'); return false;">📖 Chương 3 — Thiết kế Dịch vụ & API →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const N_QUESTIONS = 5;
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function clearLogs(type) {
+  document.getElementById(`log-${type}`).innerHTML = '';
+  document.getElementById(`m-${type}-net`).textContent = '0';
+  document.getElementById(`m-${type}-db`).textContent = '0';
+  const pkt = document.getElementById(`pkt-${type}`);
+  pkt.className = 'request-packet';
+  pkt.style.opacity = 0;
+}
+
+function addLog(type, msg, cssClass) {
+  const log = document.getElementById(`log-${type}`);
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  log.innerHTML += `<div class="${cssClass}"><span style="color:var(--text-dim)">[${time}]</span> ${msg}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+function animatePacket(type, animClass) {
+  return new Promise(resolve => {
+    const pkt = document.getElementById(`pkt-${type}`);
+    pkt.className = 'request-packet'; // reset
+    pkt.style.opacity = 1;
+    void pkt.offsetWidth; // trigger reflow
+    pkt.classList.add(animClass);
+    setTimeout(resolve, 500);
+  });
+}
+
+async function runRest() {
+  clearLogs('rest');
+  let netCount = 0;
+  let dbCount = 0;
+  const updateMetrics = () => {
+    document.getElementById('m-rest-net').textContent = netCount;
+    document.getElementById('m-rest-db').textContent = dbCount;
+  };
+
+  // 1. Get Questions
+  addLog('rest', 'Client: GET /api/questions', 'req');
+  await animatePacket('rest', 'anim-req');
+  netCount++; updateMetrics();
+  
+  addLog('rest', 'REST Server: SELECT * FROM assignments LIMIT 5', 'db');
+  await animatePacket('rest', 'anim-db');
+  dbCount++; updateMetrics();
+
+  addLog('rest', 'REST Server -> Client: Trả về [A1, A2, A3, A4, A5] (Dư thừa payload)', 'req');
+  await animatePacket('rest', 'anim-res');
+
+  // 2. N+1 Problem: Get Submissions for EACH question
+  for (let i = 1; i <= N_QUESTIONS; i++) {
+    addLog('rest', `Client: GET /api/assignments/${i}/submissions`, 'req');
+    await animatePacket('rest', 'anim-req');
+    netCount++; updateMetrics();
+
+    addLog('rest', `REST Server: SELECT * FROM submissions WHERE ass_id=${i}`, 'db');
+    await animatePacket('rest', 'anim-db');
+    dbCount++; updateMetrics();
+
+    addLog('rest', `REST Server -> Client: Trả về [Lượt nộp của A${i}]`, 'req');
+    await animatePacket('rest', 'anim-res');
+  }
+  
+    addLog('rest', '[Success] Hoàn tất: Minh họa nút thắt cổ chai N+1 và Over-fetching thành công.', 'sys');
+}
+
+async function runGraphql() {
+  clearLogs('gql');
+  let netCount = 0;
+  let dbCount = 0;
+  const updateMetrics = () => {
+    document.getElementById('m-gql-net').textContent = netCount;
+    document.getElementById('m-gql-db').textContent = dbCount;
+  };
+
+  // 1. Single Graph Request
+  addLog('gql', 'Client: POST /graphql { assignments { id title submissions { id score } } }', 'req');
+  await animatePacket('gql', 'anim-req');
+  netCount++; updateMetrics();
+  
+  // 2. Server processes (Optimized with DataLoader)
+  addLog('gql', 'GQL Server: SELECT id, title FROM assignments LIMIT 5', 'db');
+  await animatePacket('gql', 'anim-db');
+  dbCount++; updateMetrics();
+
+  addLog('gql', 'GQL Server (DataLoader): SELECT id, score, ass_id FROM submissions WHERE ass_id IN (1,2,3,4,5)', 'db');
+  await animatePacket('gql', 'anim-db');
+  dbCount++; updateMetrics();
+
+  // 3. Single Response
+  addLog('gql', 'GQL Server -> Client: Trả về Graph Tree gộp gọn nhẹ (Không over-fetch)', 'req');
+  await animatePacket('gql', 'anim-res');
+    addLog('gql', '[Success] Hoàn tất: 1 Network Request, 2 Optimized Database Queries.', 'sys');
+}
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Theme Integration ─────────────────────────────────────
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+</body>
+</html>
+
+
+
+

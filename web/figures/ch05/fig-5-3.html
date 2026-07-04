@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.3 — Durable Broker (Kafka) vs Ephemeral Broker (RabbitMQ)
+    =========================================================
+    Tier 1 HTML migration from fig-5-3.svg
+    Layout: 2-column Grid (Kafka retain / RabbitMQ delete) + LMS notes
+    Capture: gen-diagrams.ps1 → fig-5-3.png → Typst image()
+  -->
+  <title>Fig 5.3 — Durable Broker vs Ephemeral Broker | Ch.5</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-5.3" data-ref="CH05-SEC">
+
+    <div class="d-grid-2 d-mb-2" style="align-items: start;">
+
+      <!-- LEFT: Kafka — Durable -->
+      <div class="d-cluster" style="display: flex; flex-direction: column;">
+        <span class="d-label">Durable Broker — Kafka</span>
+        <div class="d-col d-center d-mt-2" style="width: 100%;">
+          
+          <!-- Producer -->
+          <div class="d-box d-service d-mb-2 text-center" style="width:120px; position: relative; z-index: 2;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+            <!-- Arrow down -->
+            <div class="d-tree-stem-down arrow" style="--stem-len: 16px;"></div>
+          </div>
+
+          <!-- Event Log -->
+          <div class="d-box d-storage text-center" style="width:180px; position: relative; z-index: 2;">
+            <div class="d-title">Event Log</div>
+            <div class="d-sub">append-only, persistent</div>
+          </div>
+
+          <!-- Retained badge -->
+          <div class="d-success d-mt-1 d-mb-2 fw-bold" style="display: inline-block; padding: 2px 10px; border-radius: 6px; position: relative; z-index: 2;">
+            Retained — Replay anytime
+            <!-- Stem down from badge -->
+            <div class="d-tree-stem-down" style="--stem-len: 16px;"></div>
+          </div>
+
+          <!-- Orthogonal Fan-out for Consumers -->
+          <div class="d-row d-center" style="position: relative; width: 148px; gap: 48px; margin-top: 16px;">
+            <!-- Horizontal branch bar (100px width = distance between centers of two 100px boxes with 48px gap) -->
+            <div class="d-tree-bus" style="top: -16px;"></div>
+
+            <div class="d-col d-center" style="position: relative;">
+               <!-- Arrow down to Consumer A -->
+               <div style="position: absolute; top: -16px; left: 50%; width: 2px; height: 16px; background: var(--diagram-color-line-muted); transform: translateX(-50%);">
+                  <div style="position: absolute; bottom: -2px; left: -5px; border-top: 6px solid var(--diagram-color-line-muted); border-left: 6px solid transparent; border-right: 6px solid transparent;"></div>
+               </div>
+               <div class="d-box d-note text-center" style="width:100px; z-index: 2;">
+                 <div class="d-title">Consumer A</div>
+                 <div class="d-sub">Judge Svc</div>
+               </div>
+            </div>
+
+            <div class="d-col d-center" style="position: relative;">
+               <!-- Arrow down to Consumer B -->
+               <div style="position: absolute; top: -16px; left: 50%; width: 2px; height: 16px; background: var(--diagram-color-line-muted); transform: translateX(-50%);">
+                  <div style="position: absolute; bottom: -2px; left: -5px; border-top: 6px solid var(--diagram-color-line-muted); border-left: 6px solid transparent; border-right: 6px solid transparent;"></div>
+               </div>
+               <div class="d-box d-note text-center" style="width:100px; z-index: 2;">
+                 <div class="d-title">Consumer B</div>
+                 <div class="d-sub">Leaderboard</div>
+               </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="d-sep d-mt-2"></div>
+        <div class="d-text-info" style="line-height:1.6; margin-top: auto;">
+          Message <strong>is saved</strong> in log.<br>
+          New consumers can reread from the first offset.
+        </div>
+      </div>
+
+      <!-- RIGHT: RabbitMQ — Ephemeral -->
+      <div class="d-cluster" style="display: flex; flex-direction: column;">
+        <span class="d-label">Ephemeral Broker — RabbitMQ</span>
+        <div class="d-col d-center d-mt-2" style="width: 100%;">
+          
+          <!-- Producer -->
+          <div class="d-box d-service d-mb-2 text-center" style="width:120px; position: relative; z-index: 2;">
+            <div class="d-title">Producer</div>
+            <div class="d-sub">Core Service</div>
+            <!-- Arrow down -->
+            <div class="d-tree-stem-down arrow" style="--stem-len: 16px;"></div>
+          </div>
+
+          <!-- Queue -->
+          <div class="d-box d-event text-center" style="width:160px; position: relative; z-index: 2;">
+            <div class="d-title">Queue</div>
+            <div class="d-sub">in-memory / durable</div>
+          </div>
+
+          <!-- Deleted badge -->
+          <div class="d-danger d-mt-1 d-mb-2 fw-bold" style="display: inline-block; padding: 2px 10px; border-radius: 6px; position: relative; z-index: 2;">
+            Deleted after ACK
+            <!-- Arrow down -->
+            <div class="d-tree-stem-down arrow" style="--stem-len: 16px;"></div>
+          </div>
+
+          <!-- Single Consumer -->
+          <div class="d-box d-note text-center" style="width:120px; z-index: 2;">
+            <div class="d-title">Consumer</div>
+            <div class="d-sub">Notification Svc</div>
+          </div>
+
+          <!-- Extra spacer to match height of the Left Fan-out tree -->
+          <div style="height: 16px;"></div>
+
+        </div>
+
+        <div class="d-sep d-mt-2"></div>
+        <div class="d-text-danger" style="line-height:1.6; margin-top: auto;">
+          Message <strong>is deleted</strong> after consumer ACKs.<br>
+          Cannot be replayed — suitable for simple task queues.
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- LMS note -->
+    <div class="d-box d-note">
+      <div class="d-label d-mb-1">LMS chose Kafka because</div>
+      <div class="d-mb-1" style="font-size: 12px; line-height: 1.5;"><strong><span class="d-step">1</span> Replay:</strong> If Judge fails, messages can be replayed from old offsets without data loss</div>
+      <div class="d-mb-1" style="font-size: 12px; line-height: 1.5;"><strong><span class="d-step">2</span> Multi-consumer:</strong> Judge + Leaderboard + Notification read the same topic with independent offsets</div>
+      <div class="d-mb-1" style="font-size: 12px; line-height: 1.5;"><strong><span class="d-step">3</span> Event log:</strong> Complete audit trail for every submission in the contest</div>
+      <div class="d-mb-1" style="font-size: 12px; line-height: 1.5;"><strong><span class="d-step">4</span> Throughput:</strong> Kafka handles 100K+ msg/s — suitable for concurrent contest mode</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

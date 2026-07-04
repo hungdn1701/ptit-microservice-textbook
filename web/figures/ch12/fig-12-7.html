@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.7 — Service Mesh — Sidecar Proxy | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-12.7">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-col" style="align-items:center; width: 620px; margin: 0 auto;">
+      <!-- DATA PLANE -->
+      <div class="d-row d-gap-2" style="align-items:stretch; width:100%; z-index:2;">
+        <!-- Service A -->
+        <div class="d-cluster d-col" style="flex:1; padding:16px; background:#ffffff;">
+          <div class="d-label d-mb-2 text-center" style="position:static;">Service Instance A</div>
+          <div class="d-row d-gap-1 d-grow" style="align-items:stretch;">
+            <div class="d-box d-service d-col d-center text-center" style="flex:1; padding:12px;">
+              <div class="d-title">Core</div>
+              <div class="d-sub d-mt-1">Business logic</div>
+            </div>
+            <div class="d-box d-gateway d-col d-center text-center" style="flex:1; padding:12px; border: 2px solid var(--diagram-color-gateway-border);">
+              <div class="d-title" style="color: var(--diagram-color-gateway-border);">Envoy</div>
+              <div class="d-sub d-mt-1">Sidecar</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- mTLS Connection -->
+        <div class="d-col d-center" style="width:80px;">
+          <div class="d-arrow-label d-mb-1 fw-semibold" style="color:var(--diagram-color-success-border);">mTLS</div>
+          <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        </div>
+
+        <!-- Service B -->
+        <div class="d-cluster d-col" style="flex:1; padding:16px; background:#ffffff;">
+          <div class="d-label d-mb-2 text-center" style="position:static;">Service Instance B</div>
+          <div class="d-row d-gap-1 d-grow" style="align-items:stretch;">
+            <div class="d-box d-gateway d-col d-center text-center" style="flex:1; padding:12px; border: 2px solid var(--diagram-color-gateway-border);">
+              <div class="d-title" style="color: var(--diagram-color-gateway-border);">Envoy</div>
+              <div class="d-sub d-mt-1">Sidecar</div>
+            </div>
+            <div class="d-box d-service d-col d-center text-center" style="flex:1; padding:12px;">
+              <div class="d-title">Judge</div>
+              <div class="d-sub d-mt-1">Business logic</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Plane Connection (SVG) -->
+      <div style="position: relative; width: 100%; height: 60px; margin-top:-2px;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible;">
+          <defs>
+            <marker id="arrow-up" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-gateway-border)" />
+            </marker>
+          </defs>
+          <line x1="310" y1="60" x2="190" y2="0" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-up)" />
+          <line x1="310" y1="60" x2="430" y2="0" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-up)" />
+        </svg>
+        <div class="d-arrow-label" style="top: 30px; left: 250px; color:var(--diagram-color-gateway-border);">xDS API</div>
+        <div class="d-arrow-label" style="top: 30px; left: 370px; color:var(--diagram-color-gateway-border);">certs</div>
+      </div>
+
+      <!-- Control Plane -->
+      <div class="d-box text-center" style="width:360px; padding:16px; background: var(--diagram-color-surface); border: 2px dashed var(--diagram-color-gateway-border); z-index:2;">
+        <div class="d-title d-title-lg">Control Plane (Istio / Linkerd)</div>
+        <div class="d-sub d-mt-1">Config, telemetry, certificates</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,476 @@
+/* ==========================================================================
+   book-terminal.css
+   Style for the HTML version of the Typst book, fully aligned with the
+   Companion Web IDE/Terminal aesthetic.
+   ========================================================================== */
+
+/* Local fonts (Geist + JetBrains Mono, incl. Vietnamese subset). No external CDN. */
+@import url('./fonts.css');
+
+:root {
+  /* Aligned with Shell Tokens from companion-style.css */
+  --term-bg: #0b0f14;
+  --term-paper: #11161d;
+  --term-surface: #151c25;
+  --term-text: #edf2f7;
+  --term-muted: #94a3b8;
+  --term-border: #243041;
+  --term-border-strong: #334155;
+  --term-primary: #5fd1b0;
+  --term-primary-dim: rgba(95, 209, 176, 0.12);
+  --term-code-bg: #000000;
+  
+  /* Semantic Colors for Callouts */
+  --term-success: #5fd1b0;
+  --term-warning: #e2b93d;
+  --term-danger: #f43f5e;
+  --term-info: #3b82f6;
+  --term-principle: #c084fc;
+  --term-casestudy: #f97316;
+  
+  --term-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --term-font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  --term-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  /* Diagrams are captured navy-on-light for print; on the dark reading page
+     they sit on a light card so the navy lines/labels stay readable. */
+  --term-img-bg: #ffffff;
+  --term-callout-bg: rgba(17, 22, 29, 0.8);
+  --term-callout-border: rgba(36, 48, 65, 0.8);
+}
+
+:root.light, html.light {
+  --term-bg: #f8fafc;
+  --term-paper: #ffffff;
+  --term-surface: #eef2f7;
+  --term-text: #0f172a;
+  --term-muted: #475569;
+  --term-border: #e2e8f0;
+  --term-border-strong: #cbd5e1;
+  --term-primary: #0f766e;
+  --term-primary-dim: rgba(15, 118, 110, 0.08);
+  --term-code-bg: #f1f5f9;
+  
+  --term-success: #0f766e;
+  --term-warning: #d97706;
+  --term-danger: #e11d48;
+  --term-info: #2563eb;
+  --term-principle: #9333ea;
+  --term-casestudy: #ea580c;
+  
+  --term-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06);
+  --term-img-bg: transparent;
+  --term-callout-bg: rgba(255, 255, 255, 0.8);
+  --term-callout-border: rgba(226, 232, 240, 0.8);
+}
+
+html.light body {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--term-bg);
+}
+
+body {
+  margin: 0;
+  background: var(--term-bg);
+  color: var(--term-text);
+  font-family: var(--term-font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+
+/* Custom Scrollbar (IDE Style) */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--term-bg); }
+::-webkit-scrollbar-thumb { 
+  background: rgba(128, 128, 128, 0.4); 
+  border: 3px solid var(--term-bg); 
+  border-radius: 6px; 
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.7); }
+
+/* Main Layout */
+.book {
+  width: min(900px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 60px 32px 100px;
+  position: relative;
+}
+
+/* Headings with Terminal Aesthetic */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--term-text);
+  line-height: 1.3;
+  font-family: var(--term-font-mono);
+  font-weight: 700;
+  margin: 3rem 0 1.2rem;
+  transition: color 0.3s ease;
+}
+
+h1 {
+  font-size: 2.6rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--term-border-strong);
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+}
+h1::before {
+  content: ">_ ";
+  color: var(--term-primary);
+  opacity: 0.9;
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: var(--term-text);
+  position: relative;
+  margin-top: 4rem;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+h2::before {
+  content: "$";
+  color: var(--term-primary);
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-size: 1.3rem;
+  color: var(--term-text);
+  margin-top: 2.5rem;
+}
+h3::before {
+  content: "##";
+  color: var(--term-primary);
+  opacity: 0.7;
+  margin-right: 8px;
+  font-weight: 400;
+}
+
+/* Links */
+a {
+  color: var(--term-primary);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--term-primary-dim);
+  transition: all 0.2s ease;
+}
+a:hover {
+  color: var(--term-success);
+  border-bottom-color: var(--term-success);
+  background: var(--term-primary-dim);
+  border-radius: 2px;
+}
+
+/* Table of Contents */
+nav[role="doc-toc"] {
+  margin: 2.5rem 0 4rem;
+  padding: 2rem;
+  background: var(--term-paper);
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  box-shadow: var(--term-shadow);
+}
+nav[role="doc-toc"] h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+}
+nav[role="doc-toc"] h2::before {
+  display: none;
+}
+nav[role="doc-toc"] ol {
+  padding-left: 1.5rem;
+  font-family: var(--term-font-mono);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+nav[role="doc-toc"] li { margin: 0.8rem 0; }
+nav[role="doc-toc"] a {
+  border: none;
+  color: var(--term-muted);
+}
+nav[role="doc-toc"] a:hover {
+  color: var(--term-primary);
+  background: transparent;
+}
+
+/* Text */
+p { margin: 1.2rem 0; color: var(--term-text); }
+strong, b { font-weight: 600; color: var(--term-primary); }
+
+/* Lists */
+ul, ol {
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+}
+li {
+  margin: 0.5rem 0;
+  line-height: 1.7;
+}
+ul {
+  list-style: none;
+}
+ul > li::before {
+  content: "»";
+  color: var(--term-primary);
+  font-weight: bold;
+  display: inline-block;
+  width: 1.2rem;
+  margin-left: -1.2rem;
+}
+
+/* Blockquotes */
+blockquote {
+  margin: 2rem 0;
+  padding: 1.2rem 1.5rem;
+  border-left: 4px solid var(--term-border-strong);
+  background: var(--term-surface);
+  color: var(--term-muted);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+/* Code & Preformatted Text */
+code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-family: var(--term-font-mono);
+  font-size: 0.85em;
+  background-color: var(--term-primary-dim);
+  border-radius: 4px;
+  color: var(--term-primary);
+}
+
+pre {
+  overflow-x: auto;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 8px;
+  background: var(--term-code-bg);
+  border: 1px solid var(--term-border);
+  color: var(--term-text);
+  font-family: var(--term-font-mono);
+  font-size: 0.9em;
+  line-height: 1.6;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+html.light pre { box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+
+/* Mac-like dots for code blocks */
+pre::before {
+  content: '';
+  display: block;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+  margin-bottom: 1rem;
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1em;
+}
+
+/* Tables (Terminal data grid style) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2.5rem 0;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--term-border);
+}
+th, td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--term-border);
+  vertical-align: top;
+  color: var(--term-text);
+}
+th {
+  background: var(--term-surface);
+  font-weight: 600;
+  text-align: left;
+  font-family: var(--term-font-mono);
+  color: var(--term-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+}
+tr { background: var(--term-bg); }
+tr:nth-child(even) { background: var(--term-paper); }
+tr:hover td { background: var(--term-primary-dim); }
+
+/* Figures & Images */
+figure {
+  margin: 3rem 0;
+  text-align: center;
+  background: var(--term-paper);
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  padding: 2rem 1rem 1rem;
+}
+figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background-color: var(--term-img-bg);
+  padding: 12px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+}
+figcaption {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--term-muted);
+  font-family: var(--term-font-mono);
+  padding-top: 1rem;
+  border-top: 1px dashed var(--term-border);
+}
+
+/* ==========================================================================
+   Typst Special Structures (IDE Diagnostics Look via Structural Selectors)
+   ========================================================================== */
+
+/* 1. Epigraph */
+main.book > div:has(> em:first-child) {
+  margin: 2.5rem auto;
+  padding: 1.5rem 2rem;
+  background: var(--term-surface);
+  border-left: 4px solid var(--term-primary);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: var(--term-shadow);
+  color: var(--term-muted);
+  font-family: var(--term-font-mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+main.book > div:has(> em:first-child) em:first-child {
+  display: block;
+  font-style: normal;
+  color: var(--term-text);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+main.book > div:has(> em:first-child) br { display: none; }
+
+/* 2. Learning Objectives (MỤC TIÊU HỌC TẬP) */
+main.book > div:has(> div:first-child + div:last-child > ul) {
+  background-color: var(--term-surface);
+  border: 1px solid var(--term-border-strong);
+  border-radius: 8px;
+  margin: 3rem 0;
+  box-shadow: var(--term-shadow);
+  overflow: hidden;
+}
+main.book > div:has(> div:first-child + div:last-child > ul) > div:first-child {
+  background-color: var(--term-border-strong);
+  color: var(--term-text);
+  font-family: var(--term-font-mono);
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+main.book > div:has(> div:first-child + div:last-child > ul) > div:first-child::before {
+  content: '>';
+  color: var(--term-info);
+  margin-right: 0.75rem;
+  font-weight: bold;
+}
+main.book > div:has(> div:first-child + div:last-child > ul) > div:last-child { padding: 1.5rem; }
+main.book > div:has(> div:first-child + div:last-child > ul) > div:last-child ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+main.book > div:has(> div:first-child + div:last-child > ul) > div:last-child li { margin-bottom: 0.75rem; }
+main.book > div:has(> div:first-child + div:last-child > ul) > div:last-child li:last-child { margin-bottom: 0; }
+
+/* 3. Callout Blocks */
+main.book > div:has(> p:first-child > strong:first-child > img:first-child) {
+  background-color: var(--term-paper) !important;
+  color: var(--term-text) !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  border-radius: 4px 8px 8px 4px !important;
+  margin: 2rem 0 !important;
+  padding: 1.5rem !important;
+  border-top: 1px solid var(--term-border) !important;
+  border-right: 1px solid var(--term-border) !important;
+  border-bottom: 1px solid var(--term-border) !important;
+  box-shadow: var(--term-shadow) !important;
+  position: relative;
+  border-left-color: var(--term-muted) !important;
+}
+
+main.book > div:has(> p:first-child > strong:first-child > img:first-child) > p:first-child { margin-top: 0; }
+main.book > div:has(> p:first-child > strong:first-child > img:first-child) > p:first-child > strong:first-child {
+  font-family: var(--term-font-mono) !important;
+  font-size: 0.9em !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex !important;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--term-muted);
+}
+main.book > div:has(> p:first-child > strong:first-child > img:first-child) > p:first-child > strong:first-child > p {
+  margin: 0;
+  display: inline-block;
+}
+main.book > div:has(> p:first-child > strong:first-child > img:first-child) > p:first-child > strong:first-child > img {
+  margin-right: 8px;
+}
+
+/* Callout Variations via Base64 Color Matching */
+/* Principle: #3B82F6 -> M2I4MmY2 */
+main.book > div:has(> p > strong > img[src*="M2I4MmY2"]) { border-left-color: var(--term-principle) !important; }
+main.book > div:has(> p > strong > img[src*="M2I4MmY2"]) > p:first-child > strong { color: var(--term-principle) !important; }
+
+/* Warning: #F59E0B -> ZjU5ZTBi */
+main.book > div:has(> p > strong > img[src*="ZjU5ZTBi"]) { border-left-color: var(--term-warning) !important; }
+main.book > div:has(> p > strong > img[src*="ZjU5ZTBi"]) > p:first-child > strong { color: var(--term-warning) !important; }
+
+/* Tip: #10B981 -> MTBiOTgx */
+main.book > div:has(> p > strong > img[src*="MTBiOTgx"]) { border-left-color: var(--term-success) !important; }
+main.book > div:has(> p > strong > img[src*="MTBiOTgx"]) > p:first-child > strong { color: var(--term-success) !important; }
+
+/* Analysis: #6366F1 -> NjM2NmYx */
+main.book > div:has(> p > strong > img[src*="NjM2NmYx"]) { border-left-color: var(--term-primary) !important; }
+main.book > div:has(> p > strong > img[src*="NjM2NmYx"]) > p:first-child > strong { color: var(--term-primary) !important; }
+
+/* Note: #9CA3AF -> OWNhM2Fm */
+main.book > div:has(> p > strong > img[src*="OWNhM2Fm"]) { border-left-color: var(--term-muted) !important; }
+main.book > div:has(> p > strong > img[src*="OWNhM2Fm"]) > p:first-child > strong { color: var(--term-muted) !important; }
+
+/* Case: #0EA5E9 -> MGVhNWU5 */
+main.book > div:has(> p > strong > img[src*="MGVhNWU5"]) { border-left-color: var(--term-casestudy) !important; }
+main.book > div:has(> p > strong > img[src*="MGVhNWU5"]) > p:first-child > strong { color: var(--term-casestudy) !important; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .book { padding: 30px 20px 60px; }
+  h1 { font-size: 2.2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; }
+  main.book > div:has(> p:first-child > strong:first-child > img:first-child) { padding: 1.2rem !important; }
+}

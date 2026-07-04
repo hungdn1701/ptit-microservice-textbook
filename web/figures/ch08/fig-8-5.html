@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.5 — Gateway + Eureka — Load Balanced Routing
+    =========================================================
+    Tier 1 HTML migration
+    Layout: Sequence diagram
+    Capture: gen-diagrams.ps1 -> fig-8-5.png -> Typst image()
+  -->
+  <title>Fig 8.5 — Gateway + Eureka — Load Balanced Routing | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.5">
+
+    <div class="d-seq-container">
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-highlight">Gateway</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-infra">Eureka Registry</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">kbm-core #1</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core #2</div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+        <!-- 1. Client → Gateway -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/questions</span></div>
+          <div style="flex:3.5;"></div>
+        </div>
+        <!-- 2. Gateway → Eureka -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Query: kbm-core instances?</span></div>
+          <div style="flex:2.5;"></div>
+        </div>
+        <!-- 3. Eureka → Gateway (response) -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">[core:8080, core:8081]</span></div>
+          <div style="flex:2.5;"></div>
+        </div>
+        <!-- LB decision -->
+        <div class="d-seq-msg d-mt-1 d-mb-1" style="min-height:auto;">
+          <div style="flex:1.5;"></div>
+          <div style="flex:1; display:flex; justify-content:center;">
+            <div class="d-box d-highlight" style="padding:4px 14px; font-size: 12px; white-space:nowrap;">
+              <div class="d-title">Round-Robin: choose kbm-core #1</div>
+            </div>
+          </div>
+          <div style="flex:2.5;"></div>
+        </div>
+        <!-- 4. Gateway → kbm-core #1 -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Forward request</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- 5. kbm-core #1 → Gateway (response) -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Response</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <!-- 6. Gateway → Client (response) -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to client</span></div>
+          <div style="flex:3.5;"></div>
+        </div>
+      </div>
+    </div><!-- /.d-seq-container -->
+
+  </div>
+</body>
+</html>

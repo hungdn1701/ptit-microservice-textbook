@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.2 — API Gateway — Single Entry Point
+    =========================================================
+    Tier 1 HTML migration
+    Layout: Gateway -> 5 Services fan-out
+    Capture: gen-diagrams.ps1 -> fig-8-2.png -> Typst image()
+  -->
+  <title>Fig 8.2 — API Gateway — Single Entry Point | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.2">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col d-center">
+      <!-- Client -->
+      <div class="d-box d-note text-center" style="min-width:220px; padding:12px 24px;">
+        <div class="d-title">Frontend (React)</div>
+      </div>
+
+      <!-- Arrow down to gateway -->
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Gateway -->
+      <div class="d-box d-gateway text-center" style="min-width:320px; padding:12px 24px;">
+        <div class="d-title">kbm-gateway</div>
+        <div class="d-sub">(Spring Cloud Gateway) :9001</div>
+      </div>
+
+      <!-- Arrow down to services -->
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Services Cluster -->
+      <div class="d-cluster">
+        <div class="d-label d-mb-2 text-center" style="position:static;">Microservices</div>
+        <div class="d-row d-center d-gap-2" style="flex-wrap:wrap;">
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">kbm-core</div>
+            <div class="d-sub">:8080</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">kbm-academic</div>
+            <div class="d-sub">:8088</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">kbm-auth</div>
+            <div class="d-sub">:9005</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">kbm-judge-sql</div>
+            <div class="d-sub">:8082</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">kbm-notification</div>
+            <div class="d-sub">:8084</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits callout -->
+    <div class="d-box d-success d-mt-3" style="padding:14px 18px;">
+      <div class="d-title d-mb-1">Benefits</div>
+      <div class="d-stack d-gap-1">
+        <div class="d-sub"><span class="d-step">1</span> Frontend only knows 1 URL (:9001). Gateway routes to the correct service.</div>
+        <div class="d-sub"><span class="d-step">2</span> JWT validation, CORS, and logging are CENTRALIZED in the Gateway.</div>
+        <div class="d-sub"><span class="d-step">3</span> Backend port/URL changes = only update Gateway config, no Frontend changes.</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

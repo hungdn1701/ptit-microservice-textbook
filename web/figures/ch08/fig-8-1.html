@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.1 — No Gateway — Direct Client Calls
+    =========================================================
+    Tier 1 HTML migration
+    Layout: 1 Client -> 5 Services fan-out
+    Capture: gen-diagrams.ps1 -> fig-8-1.png -> Typst image()
+  -->
+  <title>Fig 8.1 — No Gateway — Direct Client Calls | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.1">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col d-center">
+      <!-- Client -->
+      <div class="d-box d-note text-center" style="min-width:220px; padding:12px 24px;">
+        <div class="d-title">Frontend (React)</div>
+      </div>
+
+      <!-- Arrow down -->
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Services Cluster -->
+      <div class="d-cluster">
+        <div class="d-label d-mb-2 text-center" style="position:static;">Microservices</div>
+        <div class="d-row d-center d-gap-2" style="flex-wrap:wrap;">
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">Core Service</div>
+            <div class="d-sub">:8080</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">Assignment</div>
+            <div class="d-sub">:8088</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">Auth Service</div>
+            <div class="d-sub">:9005</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">Judge Service</div>
+            <div class="d-sub">:8082</div>
+          </div>
+          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
+            <div class="d-title">Notification</div>
+            <div class="d-sub">:8084</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem callout -->
+    <div class="d-box d-danger d-mt-3" style="padding:14px 18px;">
+      <div class="d-title d-mb-1">Problems</div>
+      <div class="d-stack d-gap-1">
+        <div class="d-sub"><span class="d-step">1</span> Frontend must know URL + port of EVERY service (tight coupling)</div>
+        <div class="d-sub"><span class="d-step">2</span> CORS, JWT validation, and rate limiting must be implemented in EVERY service</div>
+        <div class="d-sub"><span class="d-step">3</span> Port/URL changes require Frontend updates</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

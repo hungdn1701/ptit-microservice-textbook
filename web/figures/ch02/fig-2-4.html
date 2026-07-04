@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.4 — Ubiquitous Language: "Submission" trong 3 Bounded Contexts
+    =========================================================
+    Tier 1 HTML migration từ fig-2-4.svg
+    Layout: 3-column bounded contexts, each with Submission + child entities
+    Capture: gen-diagrams.ps1 → fig-2-4.png → Typst image()
+  -->
+  <title>Fig 2.4 — Ubiquitous Language: Submission trong 3 Bounded Contexts | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  <style>
+    .bc-cluster {
+      border-radius: 14px;
+      border: 1.5px dashed var(--diagram-color-line-muted);
+      background: var(--diagram-color-surface);
+      padding: 14px;
+      flex: 1;
+    }
+    .bc-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+      color: var(--diagram-color-text);
+    }
+    .entity-box {
+      border-radius: 8px;
+      border: 1.5px solid var(--diagram-color-warning-border);
+      background: var(--diagram-color-surface);
+      padding: 8px 10px;
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--diagram-color-text);
+      font-weight: 500;
+    }
+    .root-box {
+      border-radius: 8px;
+      border: 1.5px solid var(--diagram-color-danger-border);
+      background: var(--diagram-color-surface);
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .same-word-badge {
+      
+      color: var(--diagram-color-text);
+      background: var(--diagram-color-surface);
+      border: 1px dashed var(--diagram-color-danger-border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      text-align: center;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.4" data-ref="CH02-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row" style="align-items: stretch; justify-content: center; gap: 16px;">
+      <!-- BC 1 -->
+      <div class="d-cluster d-col d-center" style="width: 220px;">
+        <div class="d-label d-mb-2" style="position:static;">Bối cảnh: Bài tập SQL</div>
+        <div class="d-box d-danger text-center" style="width: 100%; border: 2px solid var(--diagram-color-danger-border);">
+          <div class="d-title">Submission</div>
+          <div class="d-sub d-mt-1">= câu trả lời SQL</div>
+        </div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Question</div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Judgement</div>
+      </div>
+
+      <!-- Arrow 1 -->
+      <div class="d-col d-center" style="width: 120px;">
+        <div class="d-arrow-label text-center d-mb-1 d-text-danger" style="border-color: var(--diagram-color-danger-border);">Cùng từ<br>khác nghĩa</div>
+        <svg width="120" height="20">
+          <defs>
+            <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" />
+            </marker>
+          </defs>
+          <line x1="0" y1="10" x2="110" y2="10" stroke="var(--diagram-color-danger-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-red)" />
+        </svg>
+      </div>
+
+      <!-- BC 2 -->
+      <div class="d-cluster d-col d-center" style="width: 220px;">
+        <div class="d-label d-mb-2" style="position:static;">Bối cảnh: Khóa học</div>
+        <div class="d-box d-danger text-center" style="width: 100%; border: 2px solid var(--diagram-color-danger-border);">
+          <div class="d-title">Submission</div>
+          <div class="d-sub d-mt-1">= bài nộp theo rubric</div>
+        </div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Assignment</div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Grade</div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div class="d-col d-center" style="width: 120px;">
+        <div class="d-arrow-label text-center d-mb-1 d-text-danger" style="border-color: var(--diagram-color-danger-border);">Khác ngữ cảnh</div>
+        <svg width="120" height="20">
+          <line x1="0" y1="10" x2="110" y2="10" stroke="var(--diagram-color-danger-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-red)" />
+        </svg>
+      </div>
+
+      <!-- BC 3 -->
+      <div class="d-cluster d-col d-center" style="width: 220px;">
+        <div class="d-label d-mb-2" style="position:static;">Bối cảnh: Kỳ thi</div>
+        <div class="d-box d-danger text-center" style="width: 100%; border: 2px solid var(--diagram-color-danger-border);">
+          <div class="d-title">Submission</div>
+          <div class="d-sub d-mt-1">= bài thi (có time limit)</div>
+        </div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Exam</div>
+        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-note text-center" style="width: 100%;">Proctor (giám sát)</div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

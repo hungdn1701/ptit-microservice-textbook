@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.3 — DDD Building Blocks
+    =========================================================
+    Tier 1 HTML migration từ fig-2-3.svg
+    Layout: Aggregate cluster center + outside blocks (Repository, Domain Service, Factory)
+    Capture: gen-diagrams.ps1 → fig-2-3.png → Typst image()
+  -->
+  <title>Fig 2.3 — DDD Building Blocks | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.3" data-ref="CH02-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row d-gap-3" style="align-items: center;">
+
+      <!-- Left column: outside blocks -->
+      <div class="d-col d-gap-2" style="width: 180px; flex-shrink: 0;">
+
+        <div class="d-box d-storage text-center">
+          <div class="d-title">Repository</div>
+          <div class="d-sub">(CRUD interface)</div>
+        </div>
+
+        <div class="d-box d-highlight text-center">
+          <div class="d-title">Domain Service</div>
+          <div class="d-sub">(cross-entity logic)</div>
+        </div>
+
+        <div class="d-box d-event text-center">
+          <div class="d-title">Factory</div>
+          <div class="d-sub">(tạo Aggregate)</div>
+        </div>
+
+      </div>
+
+      <!-- Arrow pointing to Aggregate -->
+      <div class="d-col d-center">
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+
+      <!-- Center: Aggregate cluster -->
+      <div class="d-cluster d-grow">
+        <span class="d-label">Aggregate</span>
+
+        <!-- Aggregate Root -->
+        <div class="d-box d-service d-mt-1 text-center" style="margin-left: auto; margin-right: auto; width: 100%; max-width: 320px; z-index: 2;">
+          <div class="d-title">Aggregate Root</div>
+          <div class="d-sub">(Entity chính — điểm vào duy nhất)</div>
+        </div>
+
+        <!-- SVG Branching Arrows -->
+        <div style="position: relative; width: 100%; height: 40px; margin: 4px 0;">
+          <svg width="100%" height="100%" style="display:block; overflow:visible;">
+            <defs>
+              <marker id="arrow-diag" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)" />
+              </marker>
+            </defs>
+            <line x1="50%" y1="0" x2="25%" y2="36" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag)" />
+            <line x1="50%" y1="0" x2="75%" y2="36" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag)" />
+          </svg>
+        </div>
+
+        <!-- Entity + Value Object Layout -->
+        <div class="d-grid-2 d-gap-2 d-mb-1">
+          <!-- Left branch: Entity & Child Entity -->
+          <div class="d-col d-center">
+            <div class="d-box d-note text-center" style="width: 100%;">
+              <div class="d-title">Entity</div>
+              <div class="d-sub">(có identity)</div>
+            </div>
+            <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+            <div class="d-box d-note text-center" style="width: 100%;">
+              <div class="d-title">Entity con</div>
+            </div>
+          </div>
+
+          <!-- Right branch: Value Object -->
+          <div class="d-col d-center" style="justify-content: flex-start;">
+            <div class="d-box d-event text-center" style="width: 100%;">
+              <div class="d-title">Value Object</div>
+              <div class="d-sub">(không có identity)</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.row -->
+
+    <!-- Legend / Example -->
+    <div class="d-box d-note d-mt-2">
+      <div class="d-title d-mb-1">Ví dụ LMS:</div>
+      <div class="d-sub"><strong>Aggregate Root</strong> = Contest &nbsp;|&nbsp; <strong>Entity</strong> = ContestQuestion &nbsp;|&nbsp; <strong>Value Object</strong> = Score(85/100)</div>
+      <div class="d-sub d-mt-1" ><strong>Repository</strong> = ContestRepository &nbsp;|&nbsp; <strong>Domain Service</strong> = SqlEvaluationService &nbsp;|&nbsp; <strong>Factory</strong> = ContestFactory.create(...)</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

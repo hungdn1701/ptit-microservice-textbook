@@ -1,0 +1,295 @@
+/* ============================================================
+   diagram-book-theme.css — One-book visual language for figures
+   Color + font tokens come from web/styles/_tokens.css, generated from
+   design/tokens.json (BOOK world, navy palette). Do not hardcode palette
+   hexes here — edit design/tokens.json and run scripts/gen-tokens.py.
+   ============================================================ */
+
+@import './_tokens.css';
+
+/* Local Geist fonts — used for offline-safe Puppeteer/Playwright captures */
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 400; font-display: block;
+  src: url('./fonts/Geist-Regular.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 500; font-display: block;
+  src: url('./fonts/Geist-Medium.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 600; font-display: block;
+  src: url('./fonts/Geist-SemiBold.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 700; font-display: block;
+  src: url('./fonts/Geist-Bold.ttf') format('truetype'); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 800; font-display: block;
+  src: url('./fonts/Geist-ExtraBold.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 400; font-display: block;
+  src: url('./fonts/GeistMono-Regular.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 500; font-display: block;
+  src: url('./fonts/GeistMono-Medium.ttf') format('truetype'); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 700; font-display: block;
+  src: url('./fonts/GeistMono-Bold.ttf') format('truetype'); }
+
+:root {
+  /* Typography + color tokens are provided by _tokens.css (imported above). */
+
+  /* Scale */
+  --diagram-size-title: 28px;
+  --diagram-size-section: 18px;
+  --diagram-size-node-title: 14px;
+  --diagram-size-node-body: 13px;
+  --diagram-size-meta: 12px;
+
+  /* Geometry + rhythm */
+  --diagram-space-1: 8px;
+  --diagram-space-2: 16px;
+  --diagram-space-3: 24px;
+  --diagram-space-4: 32px;
+  --diagram-space-5: 40px;
+  --diagram-space-6: 48px;
+
+  --diagram-radius-card: 14px;
+  --diagram-radius-pill: 999px;
+  --diagram-border-default: 1px;
+  --diagram-border-emphasis: 2px;
+
+  --diagram-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --diagram-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --diagram-shadow-elevation-1: 0 10px 26px rgba(0, 0, 0, 0.45);
+
+  --diagram-motion-fast: 180ms;
+  --diagram-motion-normal: 280ms;
+  --diagram-motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.diagram-mode {
+  background: var(--diagram-color-bg) !important;
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .diagram-canvas {
+  background: var(--diagram-color-surface) !important;
+  color: var(--diagram-color-text) !important;
+  padding: var(--diagram-space-4) !important;
+  border: 1px solid var(--diagram-color-line-muted) !important;
+  background-image: none !important;
+}
+
+.diagram-mode .d-title-page {
+  font-family: var(--diagram-font-mono) !important;
+  font-size: var(--diagram-size-section) !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .d-title,
+.diagram-mode .svg-title {
+  font-family: var(--diagram-font-mono) !important;
+  font-size: var(--diagram-size-node-title) !important;
+  font-weight: 600 !important;
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .d-sub,
+.diagram-mode .svg-subtitle,
+.diagram-mode .svg-small,
+.diagram-mode .d-label,
+.diagram-mode .d-arrow-label,
+.diagram-mode .d-caption {
+  font-family: var(--diagram-font-mono) !important;
+  font-size: var(--diagram-size-meta) !important;
+  color: var(--diagram-color-label-text) !important;
+}
+
+.diagram-mode .diagram-canvas::before,
+.diagram-mode .diagram-canvas::after {
+  color: var(--diagram-color-line-muted) !important;
+}
+
+/* Enforce minimum readable text size on inline-styled labels */
+.diagram-mode [style*="font-size:10px"],
+.diagram-mode [style*="font-size: 10px"],
+.diagram-mode [style*="font-size:11px"],
+.diagram-mode [style*="font-size: 11px"] {
+  font-size: var(--diagram-size-meta) !important;
+}
+
+.diagram-mode .d-mono,
+.diagram-mode .svg-mono,
+.diagram-mode .d-code,
+.diagram-mode .code-note {
+  font-family: var(--diagram-font-mono) !important;
+}
+
+.diagram-mode .d-box,
+.diagram-mode .node,
+.diagram-mode .badge {
+  border-radius: var(--diagram-radius-card) !important;
+  border-width: var(--diagram-border-default) !important;
+  box-shadow: none !important;
+  transition: transform var(--diagram-motion-fast) var(--diagram-motion-ease);
+}
+
+.diagram-mode .d-box:not(.d-box-ghost),
+.diagram-mode .d-box:not(.d-box-ghost) * {
+  color: var(--diagram-color-text) !important;
+}
+
+.diagram-mode .d-box-ghost,
+.diagram-mode .d-box-ghost * {
+  color: var(--diagram-color-muted) !important;
+}
+
+/* Ensure step badges inside boxes keep their intended colors */
+.diagram-mode .d-box:not(.d-box-ghost) .d-step {
+  color: var(--diagram-color-surface) !important;
+}
+.diagram-mode .d-box:not(.d-box-ghost) .d-step-ghost {
+  color: var(--diagram-color-muted) !important;
+}
+
+.diagram-mode .d-step-ghost {
+  background: transparent !important;
+  color: var(--diagram-color-muted) !important;
+  border-color: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-cluster,
+.diagram-mode .group {
+  border-radius: var(--diagram-radius-card) !important;
+  border-width: var(--diagram-border-default) !important;
+  box-shadow: none !important;
+}
+
+.diagram-mode .d-service,
+.diagram-mode .node-service {
+  background: var(--diagram-color-service-bg) !important;
+  border-color: var(--diagram-color-service-border) !important;
+  color: var(--diagram-color-service-text) !important;
+}
+
+.diagram-mode .d-domain,
+.diagram-mode .node-domain {
+  background: var(--diagram-color-domain-bg) !important;
+  border-color: var(--diagram-color-domain-border) !important;
+  color: var(--diagram-color-domain-text) !important;
+}
+
+.diagram-mode .d-storage,
+.diagram-mode .node-database {
+  background: var(--diagram-color-database-bg) !important;
+  border-color: var(--diagram-color-database-border) !important;
+  color: var(--diagram-color-database-text) !important;
+}
+
+.diagram-mode .d-event,
+.diagram-mode .node-queue {
+  background: var(--diagram-color-queue-bg) !important;
+  border-color: var(--diagram-color-queue-border) !important;
+  color: var(--diagram-color-queue-text) !important;
+}
+
+.diagram-mode .d-highlight,
+.diagram-mode .d-info,
+.diagram-mode .node-gateway {
+  background: var(--diagram-color-gateway-bg) !important;
+  border-color: var(--diagram-color-gateway-border) !important;
+  color: var(--diagram-color-gateway-text) !important;
+}
+
+.diagram-mode .d-infra,
+.diagram-mode .node-infrastructure {
+  background: var(--diagram-color-infra-bg) !important;
+  border-color: var(--diagram-color-infra-border) !important;
+  color: var(--diagram-color-infra-text) !important;
+}
+
+.diagram-mode .d-warning {
+  background: var(--diagram-color-warning-bg) !important;
+  border-color: var(--diagram-color-warning-border) !important;
+  color: var(--diagram-color-warning-text) !important;
+}
+
+.diagram-mode .d-success {
+  background: var(--diagram-color-success-bg) !important;
+  border-color: var(--diagram-color-success-border) !important;
+  color: var(--diagram-color-success-text) !important;
+}
+
+.diagram-mode .d-danger {
+  background: var(--diagram-color-danger-bg) !important;
+  border-color: var(--diagram-color-danger-border) !important;
+  color: var(--diagram-color-danger-text) !important;
+}
+
+.diagram-mode .d-note {
+  background: var(--diagram-color-note-bg) !important;
+  border-color: var(--diagram-color-note-border) !important;
+  color: var(--diagram-color-note-text) !important;
+}
+
+.diagram-mode .d-arrow,
+.diagram-mode .edge,
+.diagram-mode .connector-layer .arrow {
+  color: var(--diagram-color-line) !important;
+  stroke: var(--diagram-color-line) !important;
+  stroke-width: var(--diagram-border-default) !important;
+}
+
+.diagram-mode .d-arrow-h-dashed,
+.diagram-mode .d-arrow-v-dashed,
+.diagram-mode .edge--async,
+.diagram-mode .connector-layer .arrow-dashed {
+  color: var(--diagram-color-line-muted) !important;
+  stroke: var(--diagram-color-line-muted) !important;
+  stroke-width: var(--diagram-border-default) !important;
+  stroke-dasharray: 6 3 !important;
+}
+
+.diagram-mode .connector-layer .separator,
+.diagram-mode .d-sep,
+.diagram-mode .d-sep-title::before,
+.diagram-mode .d-sep-title::after {
+  stroke: var(--diagram-color-line-muted) !important;
+  background: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-cluster {
+  background: var(--diagram-color-cluster-bg) !important;
+  border-color: var(--diagram-color-cluster-border) !important;
+}
+
+.diagram-mode .d-arrow-label,
+.diagram-mode .d-seq-msg-text {
+  background: var(--diagram-color-surface) !important;
+  border: none !important;
+}
+
+.diagram-mode .d-seq-participants {
+  border-bottom-color: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-seq-msg-line {
+  background: var(--diagram-color-line) !important;
+}
+
+.diagram-mode .d-seq-msg-line::after {
+  color: var(--diagram-color-line) !important;
+}
+
+.diagram-mode .d-seq-msg-line.dashed {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--diagram-color-line-muted) 0,
+    var(--diagram-color-line-muted) 4px,
+    transparent 4px,
+    transparent 8px
+  ) !important;
+}
+
+.diagram-mode .d-timeline-axis {
+  background: var(--diagram-color-line-muted) !important;
+}
+
+.diagram-mode .d-timeline-dot {
+  background: var(--diagram-color-line) !important;
+  border-color: var(--diagram-color-surface) !important;
+  box-shadow: 0 0 0 2px var(--diagram-color-line) !important;
+}

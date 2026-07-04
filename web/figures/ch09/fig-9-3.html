@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.3 — JSON Web Token (JWT) — Cấu trúc | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.3">
+
+    <div class="d-row d-gap-2" style="align-items:stretch;">
+      <!-- Header -->
+      <div class="d-box d-danger text-center" style="flex:1; padding:14px 12px;">
+        <div class="d-title">Header</div>
+        <div class="d-sub">(algorithm, type)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style=" word-break:break-all;">eyJhbGciOiJIUzI1NiJ9</div>
+      </div>
+
+      <!-- Payload -->
+      <div class="d-box d-warning text-center" style="flex:1.5; padding:14px 12px;">
+        <div class="d-title">Payload</div>
+        <div class="d-sub">(claims: userId, roles, exp)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style=" word-break:break-all;">eyJ1c2VySWQiOiJ1c2VyLTEyMyIsInJvbGVzIjoiU1RVREVOVCIsImV4cCI6MTcxMDAwMDAwMH0</div>
+      </div>
+
+      <!-- Signature -->
+      <div class="d-box d-service text-center" style="flex:1; padding:14px 12px;">
+        <div class="d-title">Signature</div>
+        <div class="d-sub">HMAC-SHA256(header + payload, secret)</div>
+        <div class="d-sep"></div>
+        <div class="d-mono" style=" word-break:break-all;">SflKxwRJSM...kqtQ</div>
+      </div>
+    </div>
+
+    <div class="d-mt-2 text-center">
+      <div class="d-mono">header<span class="d-text-danger fw-bold">.</span>payload<span class="d-text-danger fw-bold">.</span>signature</div>
+    </div>
+
+    <!-- Note -->
+    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
+      <div class="d-title d-mb-1">[Idea] Lưu ý</div>
+      <div class="d-sub" style="line-height:1.5;">JWT chỉ được <strong>ký</strong> (signed), không mã hóa. Ai cũng có thể decode payload — không lưu thông tin nhạy cảm.</div>
+    </div>
+  </div>
+</body>
+</html>

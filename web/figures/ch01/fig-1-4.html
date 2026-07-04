@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.4 — Cây quyết định chuyển đổi kiến trúc
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.4 — Architecture Transition Decision Tree | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-1.4" data-ref="CH01-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div style="display: grid; grid-template-columns: 240px 60px 260px 60px 240px; align-items: center; justify-items: center; gap: 12px 0; margin: 0 auto; width: fit-content;">
+
+      <!-- Start Node -->
+      <div style="grid-column: 3; grid-row: 1; width: 100%;">
+        <div class="d-box d-danger fw-bold text-center">
+          <div class="d-title">Start: Monolith reaches limits</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 2;">
+        <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+
+      <!-- Decision 1 -->
+      <div style="grid-column: 1; grid-row: 3; width: 100%;">
+        <div class="d-box d-legacy text-center">
+          <div class="d-title">Vertical / Horizontal Scaling</div>
+          <div class="d-sub">Continue maintaining Monolith</div>
+        </div>
+      </div>
+      <div style="grid-column: 2; grid-row: 3;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      </div>
+      </div>
+      <div style="grid-column: 3; grid-row: 3; width: 100%;">
+        <div class="d-box d-warning text-center">
+          <div class="d-title">Can traditional scaling handle the load?</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 4;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      </div>
+      </div>
+
+      <!-- Decision 2 -->
+      <div style="grid-column: 1; grid-row: 5; width: 100%;">
+        <div class="d-box d-domain text-center">
+          <div class="d-title">Modular Monolith</div>
+          <div class="d-sub">Refactor internally</div>
+        </div>
+      </div>
+      <div style="grid-column: 2; grid-row: 5;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      </div>
+      </div>
+      <div style="grid-column: 3; grid-row: 5; width: 100%;">
+        <div class="d-box d-warning text-center">
+          <div class="d-title">Development team size &gt; 10 engineers?</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 6;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      </div>
+      </div>
+
+      <!-- Milestone -->
+      <div style="grid-column: 3; grid-row: 7; width: 100%;">
+        <div class="d-box d-service text-center">
+          <div class="d-title">Microservices Architecture</div>
+          <div class="d-sub">(Often starts with a Hybrid Approach)</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 8;">
+        <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+
+      <!-- Decision 3 -->
+      <div style="grid-column: 3; grid-row: 9; width: 100%;">
+        <div class="d-box d-warning text-center">
+          <div class="d-title">Increased complexity due to too many Microservices?</div>
+        </div>
+      </div>
+      <div style="grid-column: 4; grid-row: 9;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="0" y1="12" x2="58" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      </div>
+      </div>
+      <div style="grid-column: 5; grid-row: 9; width: 100%;">
+        <div class="d-box d-domain text-center">
+          <div class="d-title">Domain-Oriented Microservices</div>
+          <div class="d-sub">Group services by Domain (DOMA)</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 10;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      </div>
+      </div>
+
+      <!-- Final -->
+      <div style="grid-column: 3; grid-row: 11; width: 100%;">
+        <div class="d-box d-success text-center">
+          <div class="d-title">Continue evolving architecture</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

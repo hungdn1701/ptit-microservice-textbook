@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.1 — Strangler Fig Pattern — 3 giai đoạn | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.1">
+
+    <!-- Global Arrows -->
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-row" style="justify-content: center; gap: 30px;">
+      
+      <!-- Phase 1 -->
+      <div class="d-cluster" style="width: 320px; height: 320px; position: relative; padding: 0;">
+        <div class="d-label" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap;">
+          <span class="d-step">1</span> Phase 1: 90% Monolith
+        </div>
+
+        <!-- SVG Connections -->
+        <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0;">
+          <!-- Gateway to Monolith -->
+          <path d="M 160 60 L 160 100 L 90 100 L 90 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+          <!-- Gateway to Svc A -->
+          <path d="M 160 60 L 160 100 L 230 100 L 230 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        </svg>
+
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+          <!-- Gateway -->
+          <div class="d-box d-highlight text-center" style="position: absolute; top: 20px; left: 100px; width: 120px;">
+            <div class="d-title">Gateway</div>
+          </div>
+
+          <!-- Monolith -->
+          <div class="d-box d-legacy text-center" style="position: absolute; top: 150px; left: 35px; width: 110px;">
+            <div class="d-title">Monolith</div>
+            <div class="d-sub">90% traffic</div>
+          </div>
+
+          <!-- Svc A -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 175px; width: 110px;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">10% traffic</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="d-cluster" style="width: 320px; height: 320px; position: relative; padding: 0;">
+        <div class="d-label" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap;">
+          <span class="d-step">2</span> Phase 2: 50/50
+        </div>
+
+        <!-- SVG Connections -->
+        <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0;">
+          <!-- Gateway to Monolith -->
+          <path d="M 160 60 L 160 100 L 60 100 L 60 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+          <!-- Gateway to Svc A -->
+          <line x1="160" y1="60" x2="160" y2="140" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+          <!-- Gateway to Svc B -->
+          <path d="M 160 60 L 160 100 L 260 100 L 260 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        </svg>
+
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+          <!-- Gateway -->
+          <div class="d-box d-highlight text-center" style="position: absolute; top: 20px; left: 100px; width: 120px;">
+            <div class="d-title">Gateway</div>
+          </div>
+
+          <!-- Monolith -->
+          <div class="d-box d-legacy text-center" style="position: absolute; top: 150px; left: 15px; width: 90px;">
+            <div class="d-title">Monolith</div>
+            <div class="d-sub">50% traffic</div>
+          </div>
+
+          <!-- Svc A -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 115px; width: 90px;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">25% traffic</div>
+          </div>
+
+          <!-- Svc B -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 215px; width: 90px;">
+            <div class="d-title">Service B</div>
+            <div class="d-sub">25% traffic</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="d-cluster" style="width: 320px; height: 320px; position: relative; padding: 0;">
+        <div class="d-label" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap;">
+          <span class="d-step">3</span> Phase 3: 100% Services
+        </div>
+
+        <!-- SVG Connections -->
+        <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0;">
+          <!-- Gateway to Svc A -->
+          <path d="M 160 60 L 160 100 L 60 100 L 60 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+          <!-- Gateway to Svc B -->
+          <line x1="160" y1="60" x2="160" y2="140" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+          <!-- Gateway to Svc C -->
+          <path d="M 160 60 L 160 100 L 260 100 L 260 140" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        </svg>
+
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+          <!-- Gateway -->
+          <div class="d-box d-highlight text-center" style="position: absolute; top: 20px; left: 100px; width: 120px;">
+            <div class="d-title">Gateway</div>
+          </div>
+
+          <!-- Svc A -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 15px; width: 90px;">
+            <div class="d-title">Service A</div>
+          </div>
+
+          <!-- Svc B -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 115px; width: 90px;">
+            <div class="d-title">Service B</div>
+          </div>
+
+          <!-- Svc C -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 150px; left: 215px; width: 90px;">
+            <div class="d-title">Service C</div>
+          </div>
+
+          <!-- Retired Monolith -->
+          <div class="d-box text-center" style="position: absolute; top: 250px; left: 60px; width: 200px; border: 2px dashed var(--diagram-color-line-muted); background: var(--diagram-color-surface);">
+            <div class="d-title" style="text-decoration: line-through;">Monolith</div>
+            <div class="d-sub">Retired</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

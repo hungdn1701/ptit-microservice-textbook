@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.1 — Automated Pipeline vs Manual Deployment | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-12.1">
+
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-grid-2 d-gap-4" style="align-items:stretch;">
+      <!-- Automated -->
+      <div class="d-cluster" style="padding:24px 20px; display:flex; flex-direction:column; align-items:center;">
+        <div class="d-label d-mb-3" style="position:static;">Automated Pipeline</div>
+        
+        <div class="d-col d-center" style="gap: 8px;">
+          <div class="d-box d-service text-center fw-semibold" style="width:160px; padding:12px;">Git Push</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-note text-center fw-semibold" style="width:160px; padding:12px;">CI Build</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-event text-center fw-semibold" style="width:160px; padding:12px;">Test</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-success text-center fw-semibold" style="width:160px; padding:12px;">Deploy</div>
+        </div>
+
+        <div style="flex-grow: 1;"></div>
+        <div class="d-zone d-zone-success text-center" style="margin-top: 32px; width: 100%;">Repeatable · Fast · Zero human error</div>
+      </div>
+      
+      <!-- Manual -->
+      <div class="d-cluster" style="padding:24px 20px; display:flex; flex-direction:column; align-items:center;">
+        <div class="d-label d-mb-3" style="position:static;">Manual Deployment</div>
+        
+        <div class="d-col d-center" style="gap: 8px;">
+          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">Build locally</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">SCP to server</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">SSH restart</div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-danger text-center fw-semibold" style="width:160px; padding:12px;">Manual deploy</div>
+        </div>
+
+        <div style="flex-grow: 1;"></div>
+        <div class="d-zone d-zone-danger text-center" style="margin-top: 32px; width: 100%;">Error-prone · Slow · "Works on my machine"</div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.5 — Security Flow | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.5">
+
+    <div class="d-seq-container">
+    <div class="d-seq-participants">
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-legacy">Client</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-highlight">Gateway</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-domain">Auth Service</div></div>
+    </div>
+
+    <div class="d-seq-messages">
+      <!-- 1. Expired token request -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/data (expired access token)</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- JWT expired check -->
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-danger" >JWT expired!</div>
+      </div>
+      <!-- 401 -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed danger reverse" style="flex:1;"><span class="d-seq-msg-text d-text-danger">401 Unauthorized</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- separator -->
+      <div class="d-mt-1 d-mb-1" style="border-top:1px dashed var(--diagram-color-line-muted);"></div>
+      <!-- 2. Refresh request -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">POST /auth/refresh (refresh token)</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- Validate refresh token -->
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-success" >Validate refresh token → Generate new JWT pair</div>
+      </div>
+      <!-- New tokens back -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">New access + refresh tokens</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- separator -->
+      <div class="d-mt-1 d-mb-1" style="border-top:1px dashed var(--diagram-color-line-muted);"></div>
+      <!-- 3. Retry with new token -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/data (new access token)</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-success" >Valid</div>
+      </div>
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">200 OK + data</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

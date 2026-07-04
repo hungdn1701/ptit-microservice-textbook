@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.7 — Data Replication via Events
+    =========================================================
+    Tier 1 HTML migration từ fig-7-7.svg
+    Layout: Sequence diagram 3 actors — Auth Service, Kafka, Assignment Service
+    Capture: gen-diagrams.ps1 → fig-7-7.png → Typst image()
+  -->
+  <title>Fig 7.7 — Data Replication via Events | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.7" style="min-height:560px;" data-ref="CH07-SEC">
+
+    <div class="d-seq-container">
+
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-domain">Auth Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-event">Kafka</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Assignment Service</div>
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <div class="d-seq-messages">
+
+        <!-- Row 1: Note at Auth(0) — user updated -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div class="d-zone d-zone-info text-center" style="flex:1;">
+            User cập nhật tên<br>
+            <span>(name change event)</span>
+          </div>
+          <div style="flex:2"></div>
+        </div>
+
+        <!-- Row 2: Auth(0) → Kafka(1) — publish event -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Pub: UserUpdated {userId, name}</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Row 3: Kafka(1) → Assignment(2) — consume -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">Consume: UserUpdated</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Row 4: Note at Assignment(2) — cache update -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:2"></div>
+          <div class="d-zone d-zone-warning text-center" style="flex:1;">
+            Cập nhật local cache<br>
+            <span>user_cache[userId] = name</span>
+          </div>
+        </div>
+
+        <!-- Row 5: Note at Assignment(2) — read local copy -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:2"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:1;">
+            Khi hiển thị:<br>
+            <span>đọc local copy (no network call)</span>
+          </div>
+        </div>
+
+      </div><!-- /messages area -->
+
+    </div><!-- /seq-container -->
+
+    <!-- Eventual consistency note -->
+    <div class="d-box d-note d-mt-2">
+      <div class="d-title">Eventual Consistency — chấp nhận được ở đây</div>
+      <div class="d-sub">
+        Assignment có thể hiển thị tên cũ vài giây sau khi Auth cập nhật.
+        Đánh đổi lấy: <strong>zero network calls</strong> khi hiển thị assignment list.
+        Không cần gọi Auth mỗi lần render.
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

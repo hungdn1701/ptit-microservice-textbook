@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.8 — Kiến trúc tổng quan KBM LMS
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.8 — KBM LMS Overall Architecture | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-1.8" data-ref="CH01-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <!-- Frontend layer -->
+    <div class="d-cluster d-col">
+      <span class="d-label d-mb-1">Presentation Layer (Frontend)</span>
+      <div class="d-box d-infra text-center">
+        <div class="d-title">Client Applications (Web / CMS / Lab UI)</div>
+      </div>
+    </div>
+
+    <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+    <!-- Edge/Gateway layer -->
+    <div class="d-cluster d-col">
+      <span class="d-label d-mb-1">Edge Layer (Gateway)</span>
+      <div class="d-row d-gap-2">
+        <div class="d-box d-infra d-grow text-center">
+          <div class="d-title">API Gateway (Spring Cloud)</div>
+          <div class="d-sub">HTTP Routing / API Routing</div>
+        </div>
+        <div class="d-box d-infra d-grow text-center">
+          <div class="d-title">Lab Router (Go)</div>
+          <div class="d-sub">TCP/UDP Routing for Labs</div>
+        </div>
+        <div class="d-box d-infra d-grow text-center" style="min-width: 160px;">
+          <div class="d-title">Service Discovery</div>
+          <div class="d-sub">Eureka / Config Server</div>
+        </div>
+      </div>
+    </div>
+
+    <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+    <!-- Domain services layer -->
+    <div class="d-cluster d-col">
+      <span class="d-label d-mb-1">Domain Services Layer</span>
+      <div class="d-row d-gap-1">
+
+        <div class="d-box d-domain d-grow text-center">
+          <span style="font-size: 18px; display: block; margin-bottom: 4px;">ID</span>
+          <div class="d-title">Identity Service</div>
+          <div class="d-mono d-mt-1">kbm-auth</div>
+          <div class="d-sub">JWT, OAuth2, SSO</div>
+        </div>
+
+        <div class="d-box d-service d-grow text-center">
+          <span style="font-size: 18px; display: block; margin-bottom: 4px;">SQL</span>
+          <div class="d-title">SQL Lab Service</div>
+          <div class="d-mono d-mt-1">kbm-core + judge</div>
+          <div class="d-sub">Practice / Contests</div>
+        </div>
+
+        <div class="d-box d-service d-grow text-center">
+          <span style="font-size: 18px; display: block; margin-bottom: 4px;">NET</span>
+          <div class="d-title">Network Lab Service</div>
+          <div class="d-mono d-mt-1">kbm-judge-network</div>
+          <div class="d-sub">TCP, UDP, RMI, gRPC</div>
+        </div>
+
+        <div class="d-box d-domain d-grow text-center">
+          <span style="font-size: 18px; display: block; margin-bottom: 4px;">ACD</span>
+          <div class="d-title">Academic Service</div>
+          <div class="d-mono d-mt-1">kbm-academic</div>
+          <div class="d-sub">Courses, Grades, Assignments</div>
+        </div>
+
+        <div class="d-box d-infra d-grow text-center">
+          <span style="font-size: 18px; display: block; margin-bottom: 4px;">OPS</span>
+          <div class="d-title">DevOps Lab Service</div>
+          <div class="d-mono d-mt-1">kbm-devops-api / kbm-devops-infra</div>
+          <div class="d-sub">Orchestration k3s</div>
+        </div>
+
+      </div>
+    </div>
+
+    <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+    <!-- Async/Integration layer -->
+    <div class="d-cluster d-col">
+      <span class="d-label d-mb-1">Integration &amp; Event Layer</span>
+      <div class="d-row d-gap-2">
+        <div class="d-box d-event d-grow text-center">
+          <div class="d-title">Message Broker (Kafka)</div>
+          <div class="d-sub">Event-Driven Integration (Submission, Notifications)</div>
+        </div>
+        <div class="d-box d-warning d-grow text-center">
+          <div class="d-title">External Integration (ACL)</div>
+          <div class="d-sub">Anti-Corruption Layer integrating Student Portal / GitHub</div>
+        </div>
+      </div>
+    </div>
+
+    <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+    <!-- Data/Infra layer -->
+    <div class="d-cluster d-col">
+      <span class="d-label d-mb-1">Data &amp; Infrastructure Layer</span>
+      <div class="d-grid-4">
+        <div class="d-box d-storage text-center">
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">Database-per-Service (Schemas)</div>
+        </div>
+        <div class="d-box d-storage text-center">
+          <div class="d-title">Sandbox Databases</div>
+          <div class="d-sub">Isolated MySQL / SQL Server</div>
+        </div>
+        <div class="d-box d-storage text-center">
+          <div class="d-title">Container Platform</div>
+          <div class="d-sub">k3s + Sysbox (Isolated Pods)</div>
+        </div>
+        <div class="d-box d-note text-center">
+          <div class="d-title">Observability</div>
+          <div class="d-sub">Metrics, Logs, Distributed Tracing</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>
+
+<!-- Trigger CI sync -->

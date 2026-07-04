@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.6 — Security Flow | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.6">
+
+    <div class="d-grid-2 d-gap-3" style="align-items:stretch;">
+      <!-- Left: Auth Service (Full validation) -->
+      <div class="d-box d-note" style="padding:16px;">
+        <div class="d-title d-mb-1 text-center">Auth Service — Full Validation</div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub"><span class="d-step">1</span> Verify JWT signature (secret key)</div>
+          <div class="d-sub"><span class="d-step">2</span> Check expiry (exp claim)</div>
+          <div class="d-sub"><span class="d-step">3</span> Query DB: user exists? active?</div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-zone d-zone-warning d-mt-1">Nặng, nhưng chính xác nhất</div>
+      </div>
+
+      <!-- Right: Core/Judge (Claims-only) -->
+      <div class="d-box d-service" style="padding:16px;">
+        <div class="d-title d-mb-1 text-center">Core/Judge — Claims-Only</div>
+        <div class="d-stack d-gap-1">
+          <div class="d-sub"><span class="d-step">1</span> Verify JWT signature (secret key)</div>
+          <div class="d-sub"><span class="d-step">2</span> Check expiry (exp claim)</div>
+          <div class="d-sub"><span class="d-step">3</span> Trust claims (userId, roles)</div>
+        </div>
+        <div class="d-sep"></div>
+        <div class="d-zone d-zone-success d-mt-1">Nhanh, không query DB</div>
+      </div>
+    </div>
+
+    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
+      <div class="d-title d-mb-1">[Idea] Kết luận</div>
+      <div class="d-sub" style="line-height:1.5;">Gateway thực hiện Full Validation khi login. Các service khác chỉ cần Claims-Only — tin tưởng JWT đã được Gateway kiểm tra.</div>
+    </div>
+  </div>
+</body>
+</html>

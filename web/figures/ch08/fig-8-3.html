@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 8.3 — API Gateway vs Backend for Frontend (BFF)
+    =========================================================
+    Tier 1 HTML migration
+    Layout: Side by side comparison of Gateway vs BFF
+    Capture: gen-diagrams.ps1 -> fig-8-3.png -> Typst image()
+  -->
+  <title>Fig 8.3 — API Gateway vs Backend for Frontend (BFF) | Ch.8</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-8.3">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-grid-2 d-gap-3" style="align-items:start;">
+
+      <!-- LEFT: Single Gateway -->
+      <div class="d-cluster" style="padding:18px;">
+        <div class="d-label d-mb-2 text-center" style="position:static;">API Gateway (Single)</div>
+
+        <div class="d-col d-center">
+          <!-- Clients row -->
+          <div class="d-cluster" style="padding:8px 12px;">
+            <div class="d-label d-mb-1 text-center" style="position:static;">Clients</div>
+            <div class="d-row d-gap-2" style="justify-content:center;">
+              <div class="d-box d-note text-center" style="flex:1; min-width:80px; padding:10px 8px;">
+                <div class="d-title">Web</div>
+              </div>
+              <div class="d-box d-note text-center" style="flex:1; min-width:80px; padding:10px 8px;">
+                <div class="d-title">Mobile</div>
+              </div>
+            </div>
+          </div>
+
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+          <!-- Gateway -->
+          <div class="d-box d-gateway text-center" style="width:100%; padding:10px;">
+            <div class="d-title">API Gateway</div>
+          </div>
+
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+          <!-- Services -->
+          <div class="d-cluster" style="width:100%; padding:10px;">
+            <div class="d-box d-service text-center" style="padding:10px;">
+              <div class="d-title">Services</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="d-sep d-mt-2 d-mb-1"></div>
+        <div class="d-sub text-center" style="line-height:1.5;">
+          1 gateway for all clients<br>
+          Simple, but hard to optimize for each client type
+        </div>
+      </div>
+
+      <!-- RIGHT: BFF -->
+      <div class="d-cluster" style="padding:18px;">
+        <div class="d-label d-mb-2 text-center" style="position:static;">Backend for Frontend (BFF)</div>
+
+        <div class="d-col d-center">
+          <!-- Clients row -->
+          <div class="d-row d-gap-2" style="width:100%;">
+            <div class="d-box d-note text-center" style="flex:1; padding:10px 8px;">
+              <div class="d-title">Web</div>
+            </div>
+            <div class="d-box d-note text-center" style="flex:1; padding:10px 8px;">
+              <div class="d-title">Mobile</div>
+            </div>
+          </div>
+
+          <!-- Separate arrows -->
+          <div class="d-row d-gap-2" style="width:100%;">
+            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+          </div>
+
+          <!-- Separate BFFs -->
+          <div class="d-row d-gap-2" style="width:100%;">
+            <div class="d-box d-gateway text-center" style="flex:1; padding:10px 8px;">
+              <div class="d-title">Web BFF</div>
+            </div>
+            <div class="d-box d-gateway text-center" style="flex:1; padding:10px 8px;">
+              <div class="d-title">Mobile BFF</div>
+            </div>
+          </div>
+
+          <!-- Converge arrows -->
+          <div class="d-row d-gap-2" style="width:100%;">
+            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+          </div>
+
+          <!-- Services -->
+          <div class="d-cluster" style="width:100%; padding:10px;">
+            <div class="d-box d-service text-center" style="padding:10px;">
+              <div class="d-title">Services</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="d-sep d-mt-2 d-mb-1"></div>
+        <div class="d-sub text-center" style="line-height:1.5;">
+          Separate BFF for each client type<br>
+          Optimize response for each client type
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

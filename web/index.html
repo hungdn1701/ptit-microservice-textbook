@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
+  <title>SOA & Microservices Textbook — Portal</title>
+  <meta name="description" content="Giáo trình SOA và Microservices từ lý thuyết đến thực tiễn. 12 chương, sơ đồ tương tác, và tài nguyên học tập cho sinh viên.">
+  <meta property="og:title" content="Kiến trúc SOA & Microservices — Giáo trình (v1.1.2)">
+  <meta property="og:description" content="Từ lý thuyết đến thực tiễn: 12 chương, patterns, case study KBM LMS. Dành cho sinh viên CNTT và kỹ sư phần mềm.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hungdn1701.github.io/ptit-microservice-textbook/">
+  <meta name="book-version" content="1.1.2">
+  <meta name="book-author" content="Đặng Ngọc Hùng">
+  <link rel="icon" type="image/png" href="favicon.png?v=9fd867f7">
+    <link rel="stylesheet" href="styles/fonts.css?v=e7c2cf96">
+  <link rel="stylesheet" href="styles/base-style.css?v=336a05ce">
+  <script src="js/nav.js?v=c6a2e982"></script>
+  <link rel="stylesheet" href="styles/companion-style.css?v=cc6d974d">
+</head>
+<body>
+    <svg style="display: none;" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <symbol id="icon-folder" viewBox="0 0 24 24">
+      <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+    </symbol>
+    <symbol id="icon-md" viewBox="0 0 24 24">
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" />
+    </symbol>
+    <symbol id="icon-ts" viewBox="0 0 24 24">
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="m10 13-2 2 2 2" /><path d="m14 17 2-2-2-2" />
+    </symbol>
+    <symbol id="icon-diagram" viewBox="0 0 24 24">
+      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+    </symbol>
+    <symbol id="icon-config" viewBox="0 0 24 24">
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <circle cx="12" cy="12" r="3" />
+    </symbol>
+    <symbol id="icon-palette" viewBox="0 0 24 24">
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+    </symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24">
+      <line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24">
+      <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+    </symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24">
+      <path d="m6 9 6 6 6-6" />
+    </symbol>
+    <symbol id="icon-github" viewBox="0 0 24 24">
+      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3c3-.6 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 4.9 6 5.5-.8.6-1.2 1.5-1.2 2.7V22" />
+      <path d="M9 20c-4 1-5-2.5-7-3" />
+    </symbol>
+    <symbol id="icon-terminal" viewBox="0 0 24 24">
+      <polyline points="4 17 10 11 4 5" /><line x1="12" x2="20" y1="19" y2="19" />
+    </symbol>
+  </svg>
+
+  <div class="ide-layout">
+    <!-- IDE Titlebar -->
+    <header class="ide-titlebar">
+      <div class="window-controls hide-on-mobile">
+        <button class="dot close" aria-label="Close" tabindex="-1"></button><button class="dot min" aria-label="Minimize" tabindex="-1"></button><button class="dot max" aria-label="Maximize" tabindex="-1"></button>
+      </div>
+      <div class="title-text">
+        <span class="repo-name">hungdn1701/ptit-microservice-textbook</span> 
+        <span class="path-separator">—</span>
+        <div class="path-dropdown-container">
+          <span id="title-path" aria-haspopup="menu" aria-expanded="false" aria-controls="path-dropdown-menu" class="path-dropdown-trigger" role="button" tabindex="0">
+            <span id="title-path-text">~/patterns</span>
+            <svg aria-hidden="true" class="chevron-icon" width="10" height="10"><use href="#icon-chevron" xlink:href="#icon-chevron"></use></svg>
+          </span>
+          <div class="path-dropdown-menu" id="path-dropdown-menu" role="menu">
+            <div class="path-dropdown-item active" role="menuitem" tabindex="0" data-target="patterns">~/patterns</div>
+            <div class="path-dropdown-item" role="menuitem" tabindex="0" data-target="diagrams">~/diagrams</div>
+            <div class="path-dropdown-item" role="menuitem" tabindex="0" data-target="book">~/book</div>
+            <div class="path-dropdown-item" role="menuitem" tabindex="0" data-target="author">~/author</div>
+          </div>
+        </div>
+      </div>
+      <div class="title-actions" id="site-header-actions"></div>
+    </header>
+
+    <div class="ide-body">
+      <!-- Activity Bar -->
+      <div class="ide-activity-bar">
+        <a href="#patterns" class="activity-icon active" title="Patterns Explorer" data-target="patterns">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </a>
+        <a href="#diagrams" class="activity-icon" title="Diagram Library" data-target="diagrams">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </a>
+        <a href="#book" class="activity-icon" title="Read Book Online" data-target="book">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </a>
+        <a href="#author" class="activity-icon" title="Author Profile" data-target="author" style="margin-top: auto; margin-bottom: 8px;">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+        </a>
+      </div>
+
+      <!-- IDE Sidebar -->
+      <div class="mobile-backdrop" id="mobile-backdrop"></div>
+      <aside class="ide-sidebar" id="sidebar-content">
+        <!-- Sidebar: Patterns -->
+        <div id="sidebar-patterns" class="sidebar-pane">
+          <div class="explorer-title">PATTERNS</div>
+          <div class="sidebar-scrollable">
+            <div class="sidebar-search">
+              <input type="text" class="search-input" id="search-patterns" placeholder="Search patterns..." aria-label="Search patterns">
+            </div>
+            <div class="filters" id="filters">
+              <button class="filter-btn active" data-filter="all">ALL</button>
+              <button class="filter-btn" data-filter="architecture">ARCH</button>
+              <button class="filter-btn" data-filter="api">API</button>
+              <button class="filter-btn" data-filter="data">DATA</button>
+              <button class="filter-btn" data-filter="security">SEC</button>
+              <button class="filter-btn" data-filter="ops">OPS</button>
+            </div>
+            <div class="pattern-list" id="pattern-list"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Diagrams -->
+        <div id="sidebar-diagrams" class="sidebar-pane" style="display:none;">
+          <div class="explorer-title">DIAGRAMS</div>
+          <div class="sidebar-scrollable">
+            <div class="sidebar-search">
+              <input type="text" id="search-diagrams" class="search-input" placeholder="Search diagrams..." autocomplete="off" aria-label="Search diagrams">
+            </div>
+            <div class="sidebar-chapters" id="chapterList"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Book -->
+        <div id="sidebar-book" class="sidebar-pane" style="display:none;">
+          <div class="explorer-title">BOOK CHAPTERS</div>
+          <div class="sidebar-scrollable">
+            <div class="sidebar-search">
+              <input type="text" class="search-input" id="search-book" placeholder="Search chapters..." aria-label="Search chapters">
+            </div>
+            <div class="pattern-list" id="book-chapter-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+
+      </aside>
+
+      <!-- IDE Editor -->
+      <main class="ide-editor">
+        <div class="editor-tabs" id="editor-tabs" role="tablist">
+          <div class="editor-tab active" role="tab" tabindex="0" id="tab-welcome">welcome.md <span class="tab-close" aria-label="Close tab">×</span></div>
+          <div class="editor-tab" role="tab" tabindex="-1" id="tab-pdf" style="display:none;">chapter.pdf <span class="tab-close" aria-label="Close tab">×</span></div>
+          <div class="editor-tab" role="tab" tabindex="-1" id="tab-secondary" style="display:none;">chapter.html <span class="tab-close" aria-label="Close tab">×</span></div>
+          <div style="flex:1;"></div>
+          <!-- Diagram specific controls -->
+          <div class="preview-controls" style="padding-right: 16px;">
+            <div class="preview-tabs" id="previewTabs" style="display:none; margin-top: 6px;">
+              <button class="preview-tab active" type="button" data-view="html">HTML</button>
+              <button class="preview-tab" type="button" data-view="png">PNG</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="editor-content" id="editor-content">
+          <div class="welcome-screen" id="welcome-screen" role="tabpanel">
+            <h1>> SOA & Microservices Patterns</h1>
+            <p>Select an item from the Explorer to begin.</p>
+            <p><span class="shortcut">Ctrl+K</span> to search</p>
+          </div>
+          <div class="reading-progress-container" id="reading-progress-container">
+            <div class="reading-progress-bar" id="reading-progress-bar"></div>
+          </div>
+          <!-- Main viewer -->
+          <iframe id="viewer" role="tabpanel" src="about:blank" title="Diagram Preview" style="width: 100%; height: 100%; border: none; background: transparent; position: relative; z-index: 2; display: none;"></iframe>
+          <!-- Secondary viewer -->
+          <iframe id="viewer-secondary" role="tabpanel" src="about:blank" title="Diagram Preview" style="width: 100%; height: 100%; border: none; background: transparent; position: relative; z-index: 2; display: none;"></iframe>
+          <!-- PDF viewer -->
+          <iframe id="viewer-pdf" role="tabpanel" src="about:blank" title="PDF Preview" style="width: 100%; height: 100%; border: none; background: transparent; position: relative; z-index: 2; display: none;"></iframe>
+          <!-- Diagram preview container (for PNG/HTML inject) -->
+          <div class="preview-canvas" id="previewCanvas" role="tabpanel" style="display:none; flex: 1; height: 100%; width: 100%; position: relative; z-index: 2;">
+            <div class="preview-frame" id="previewContainer" style="width: 100%; height: 100%;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- IDE Statusbar -->
+    <footer class="ide-statusbar">
+      <div class="status-left">
+        <span class="status-item" id="repo-stars" title="GitHub Stars"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ...</span>
+        <span class="status-item hide-on-mobile" id="repo-forks" title="GitHub Forks"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18V6M9 9l3-3 3 3M18 21H6M18 15v3M6 15v3"/></svg> ...</span>
+        <span class="status-item hide-on-mobile" id="repo-commits" title="GitHub Commits"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/></svg> ...</span>
+        <span class="status-item" id="repo-updated" title="Last Updated" style="margin-left: 4px;">...</span>
+        <span class="status-item hide-on-mobile" id="build-hash" title="Build (commit)"></span>
+        <span class="status-item" id="statsTotal"></span>
+      </div>
+      <div class="status-right">
+        <span class="status-item hide-on-mobile">UTF-8</span>
+        <span class="status-item" id="previewSize" style="display:none;">HTML</span>
+        <span class="status-item hide-on-mobile">v1.1.2</span>
+        <span class="status-item hide-on-mobile">Đặng Ngọc Hùng</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="floating-feedback-container" id="feedback-widget">
+    <div class="feedback-popover" id="feedback-popover">
+      <div class="feedback-popover-header">
+        <span>Góp ý & Báo lỗi</span>
+        <button class="feedback-popover-close" id="feedback-popover-close" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="feedback-popover-body">
+        <p>Phát hiện lỗi chính tả, sai kiến thức, hoặc muốn đóng góp thêm? Hãy tạo Issue trên GitHub để tác giả cập nhật nhé!</p>
+        <button class="feedback-action-btn" id="feedback-action-btn">
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3c3-.6 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 4.9 6 5.5-.8.6-1.2 1.5-1.2 2.7V22" /><path d="M9 20c-4 1-5-2.5-7-3" /></svg>
+          Mở GitHub Issue
+        </button>
+      </div>
+    </div>
+    <button class="floating-feedback-btn" id="floating-feedback-btn" aria-label="Góp ý" title="Góp ý">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    </button>
+  </div>
+
+  <script src="./figures/diagram-manifest.js?v=42be1ea5"></script>
+  <script src="js/app.js?v=7c391b53"></script>
+</body>
+</html>
+
+

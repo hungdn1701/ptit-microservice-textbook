@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.2 — Strangler Fig — Gateway-based Routing | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.2">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col" style="align-items:center; width: 500px; margin: 0 auto;">
+      <!-- Client -->
+      <div class="d-box d-legacy text-center" style="width:200px; padding:12px;">
+        <div class="d-title">Client</div>
+      </div>
+      
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      
+      <!-- Gateway -->
+      <div class="d-box d-gateway text-center" style="width:280px; padding:12px;">
+        <div class="d-title">API Gateway</div>
+        <div class="d-sub d-mt-1">Route rules quyết định traffic</div>
+      </div>
+
+      <!-- Split Diagonal Arrows -->
+      <svg width="500" height="46" style="display:block; overflow:visible; margin: 8px 0;">
+        <defs>
+          <marker id="arrow-diag" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)" />
+          </marker>
+        </defs>
+        <line x1="250" y1="0" x2="121" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag)" />
+        <line x1="250" y1="0" x2="379" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow-diag)" />
+      </svg>
+
+      <!-- Services -->
+      <div class="d-row d-gap-2" style="width:100%; align-items:stretch;">
+        <!-- Monolith -->
+        <div class="d-box d-legacy text-center" style="flex:1; padding:14px;">
+          <div class="d-title">Monolith</div>
+          <div class="d-sub">(legacy)</div>
+          <div class="d-sep"></div>
+          <div class="d-mono">/api/old/**</div>
+        </div>
+        <!-- New Service -->
+        <div class="d-box d-service text-center" style="flex:1; padding:14px;">
+          <div class="d-title">New Service</div>
+          <div class="d-sub">(microservice)</div>
+          <div class="d-sep"></div>
+          <div class="d-mono">/api/new/**</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-box d-note d-mt-2" style="padding:10px 18px;">
+      <div class="d-sub text-center" style="line-height:1.5;">Gateway dần chuyển route từ Monolith sang New Service. Rollback = đổi config gateway.</div>
+    </div>
+  </div>
+</body>
+</html>

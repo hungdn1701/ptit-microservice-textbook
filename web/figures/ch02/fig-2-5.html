@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.5 — Context Map — KBM LMS
+    =========================================================
+    Tier 1 HTML migration từ fig-2-5.svg
+    Layout: Grid of bounded contexts with relationship arrows
+    Capture: gen-diagrams.ps1 → fig-2-5.png → Typst image()
+  -->
+  <title>Fig 2.5 — Context Map KBM LMS | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  <style>
+    .ctx-box {
+      border-radius: 12px;
+      border: 1.5px solid;
+      padding: 10px 12px;
+      text-align: center;
+      flex: 1;
+    }
+    .ctx-title { font-size: 13px; font-weight: 700; }
+    .ctx-role  {  font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; opacity: 0.75; }
+    .ctx-sub   {  color: var(--diagram-color-muted); margin-top: 4px; }
+    .rel-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+      min-width: 50px;
+    }
+    .rel-label {
+      
+      color: var(--diagram-color-muted);
+      background: var(--diagram-color-surface);
+      border: 1px solid var(--diagram-color-line-muted);
+      border-radius: 4px;
+      padding: 1px 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.5" data-ref="CH02-SEC">
+
+    <div class="d-col" style="width: 1000px; margin: 0 auto; gap: 48px; position: relative;">
+      <!-- Shared Arrow Defs -->
+      <svg width="0" height="0" style="position:absolute;">
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- TOP ROW -->
+      <div class="d-row" style="gap: 0; align-items: stretch;">
+        <!-- Box 1 -->
+        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px; position: relative;">
+          <div class="d-title">Identity Service</div>
+          <div class="d-sub d-text-info fw-bold d-mt-1">UPSTREAM</div>
+          <div class="d-sub d-mt-1">JWT / OAuth2</div>
+          
+          <!-- Arrow Down to Shared Kernel -->
+          <div style="position: absolute; bottom: -48px; left: 50%; transform: translateX(-50%); height: 48px;">
+            <svg width="12" height="48" style="display:block;"><line x1="6" y1="0" x2="6" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
+          </div>
+        </div>
+        
+        <!-- Arrow 1->2 Spacer -->
+        <div class="d-col d-center" style="width: 66px; position: relative;">
+          <div class="d-arrow-label" style="position: absolute; top: -14px;">auth</div>
+          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
+        </div>
+
+        <!-- Box 2 -->
+        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">SQL Lab</div>
+          <div class="d-sub d-text-success fw-bold d-mt-1">CORE DOMAIN</div>
+          <div class="d-sub d-mt-1">Questions, exams</div>
+        </div>
+
+        <!-- Arrow 2->3 Spacer -->
+        <div class="d-col d-center" style="width: 66px; position: relative;">
+          <div class="d-arrow-label" style="position: absolute; top: -14px;">protocol</div>
+          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
+        </div>
+
+        <!-- Box 3 -->
+        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">Network Lab</div>
+          <div class="d-sub fw-bold d-mt-1">PROTOCOL DOMAIN</div>
+          <div class="d-sub d-mt-1">TCP/UDP/RMI</div>
+        </div>
+
+        <!-- Arrow 3->4 Spacer -->
+        <div class="d-col d-center" style="width: 66px; position: relative;">
+          <div class="d-arrow-label" style="position: absolute; top: -14px; white-space: nowrap;">shared JWT</div>
+          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
+        </div>
+
+        <!-- Box 4 -->
+        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">DevOps Lab</div>
+          <div class="d-sub fw-bold d-mt-1">POLYGLOT</div>
+          <div class="d-sub d-mt-1">Go + k3s</div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW -->
+      <div class="d-row" style="gap: 0; align-items: stretch;">
+        <!-- Box 5 (Under Box 1) -->
+        <div class="d-box d-danger d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">Shared Kernel</div>
+          <div class="d-sub d-mt-1">(shared library)</div>
+          <div class="d-sub d-mt-1">JWT, BaseEntity</div>
+        </div>
+
+        <!-- Arrow 5->6 Spacer -->
+        <div class="d-col d-center" style="width: 66px; position: relative;">
+          <div class="d-arrow-label d-text-danger" style="position: absolute; top: -14px; border-color: var(--diagram-color-danger-border); white-space: nowrap;">Shared DB</div>
+          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-danger-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/></svg>
+        </div>
+
+        <!-- Box 6 (Under Box 2) -->
+        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">Academic Service</div>
+          <div class="d-sub d-text-success fw-bold d-mt-1">CONTEXT</div>
+          <div class="d-sub d-mt-1">Courses, grades</div>
+        </div>
+
+        <!-- Arrow 6->7 Spacer -->
+        <div class="d-col d-center" style="width: 66px; position: relative;">
+          <div class="d-arrow-label" style="position: absolute; top: -14px;">events</div>
+          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
+        </div>
+
+        <!-- Box 7 (Under Box 3) -->
+        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px;">
+          <div class="d-title">Communication</div>
+          <div class="d-sub fw-bold d-mt-1">SUPPORTING</div>
+          <div class="d-sub d-mt-1">Kafka, WS</div>
+        </div>
+
+        <!-- Spacer to keep layout balanced (since top row has 4 boxes) -->
+        <div style="width: 66px;"></div>
+        <div style="width: 200px;"></div>
+      </div>
+
+      <!-- Legend / issues -->
+      <div class="d-box d-note d-mt-2">
+        <div class="d-title d-mb-1" >Relationships &amp; Issues:</div>
+        <div class="d-sub">Identity is <strong>Upstream</strong> — SQL/Network/DevOps share authentication | Communication is <strong>Supporting</strong></div>
+        <div class="d-sub d-mt-1 d-text-danger"><strong>Issue:</strong> Shared DB between SQL and Academic creates coupling; Shared Kernel is too broad (23 files)</div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

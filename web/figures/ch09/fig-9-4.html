@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.4 — JWT Authentication Flow | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+  
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.4">
+
+    <div class="d-seq-container">
+    <div class="d-seq-participants">
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-legacy">User</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-highlight">Gateway</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-domain">Auth Service</div></div>
+      <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Core Service</div></div>
+    </div>
+
+    <div class="d-seq-messages">
+      <!-- 1. Login -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">POST /login (username, password)</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      <!-- 2. Forward -->
+      <div class="d-seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Forward to auth</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 3. Validate -->
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-info" >Validate credentials → Generate JWT</div>
+      </div>
+      <!-- 4. Return JWT -->
+      <div class="d-seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">JWT token</span></div>
+        <div style="flex:1.5;"></div>
+      </div>
+      <!-- 5. JWT to user -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">200 OK + JWT</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      <!-- separator -->
+      <div class="d-mt-1 d-mb-1" style="border-top:1px dashed var(--diagram-color-line-muted);"></div>
+      <!-- 6. API call with JWT -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/data (Bearer JWT)</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      <!-- 7. Verify JWT -->
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-success" >Verify JWT signature</div>
+      </div>
+      <!-- 8. Forward -->
+      <div class="d-seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Forward + X-User-Id, X-User-Roles</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- 9. Response -->
+      <div class="d-seq-msg">
+        <div style="flex:1.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Response</span></div>
+        <div style="flex:0.5;"></div>
+      </div>
+      <!-- 10. To user -->
+      <div class="d-seq-msg">
+        <div style="flex:0.5;"></div>
+        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to user</span></div>
+        <div style="flex:2.5;"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

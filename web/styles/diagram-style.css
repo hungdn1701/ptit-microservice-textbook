@@ -1,0 +1,979 @@
+@import url('./diagram-book-theme.css');
+
+/* ============================================================
+   diagram-style.css — Static Diagram Design System
+   SOA & Microservices Textbook · v2.0
+   Upgraded: frontend-design + high-end-visual-design skills
+   Aesthetic: Editorial precision, print-safe, transparent-friendly
+
+   USAGE:
+     Static figures (→ Playwright PNG → Typst):
+       <link rel="stylesheet" href="../../interactive/base-style.css">
+       <link rel="stylesheet" href="../../interactive/diagram-style.css">
+       <body class="diagram-mode">
+
+     Interactive demos (web):
+       <link rel="stylesheet" href="../interactive/base-style.css">
+       (diagram-style.css không cần thiết)
+
+   DESIGN TOKENS: dùng các biến --diagram-color-* (navy book palette) sinh
+   từ design/tokens.json → _tokens.css (import qua diagram-book-theme.css).
+   KHÔNG dùng --primary/--success/--danger/--warning/--info: đó là token
+   thế giới PORTAL (cam/neon) định nghĩa trong base-style.css — dùng vào
+   diagram sẽ rò màu thương hiệu sang bản in. Không hardcode hex ở file này.
+   ============================================================ */
+
+/* ── Diagram Mode Override ── */
+.diagram-mode {
+  background: var(--diagram-color-bg, #ffffff) !important;
+  color: var(--diagram-color-text, #0a0a0a) !important;
+  min-height: unset;
+  padding: 32px 16px !important;
+}
+
+.diagram-mode::before,
+.diagram-mode::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Diagram viewport — optimized for high-quality capture */
+.diagram-canvas {
+  width: min(100%, 1100px);
+  min-height: 540px;
+  padding: 40px;
+  margin: 0 auto;
+  background: #ffffff;
+  background-image: none;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* Export mode keeps transparent background for PNG generation */
+.diagram-mode.png-export {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.diagram-mode.png-export .diagram-canvas {
+  background: transparent !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  min-height: unset !important;
+}
+
+/* Export mode rule: image title/caption belong to Typst, not HTML figure */
+.diagram-mode .d-title-page,
+.diagram-mode .d-caption,
+.diagram-mode .fig-caption,
+.diagram-mode .caption {
+  display: none !important;
+}
+
+/* ── Layout Primitives used by figure HTML files ── */
+.d-row {
+  --d-gap: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--d-gap);
+}
+
+.d-col {
+  --d-gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--d-gap);
+}
+
+.d-stack {
+  --d-gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--d-gap);
+}
+
+.d-sub {
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.d-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.d-grow {
+  flex: 1 1 auto;
+}
+
+.d-grid-2 {
+  --d-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--d-gap);
+}
+
+.d-grid-3 {
+  --d-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--d-gap);
+}
+
+.d-grid-4 {
+  --d-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--d-gap);
+}
+
+/* ── Spacing Utilities (Dùng thay cho inline styles) ── */
+.d-mt-1 { margin-top: 8px; }
+.d-mt-2 { margin-top: 16px; }
+.d-mt-3 { margin-top: 24px; }
+.d-mt-4 { margin-top: 32px; }
+.d-mb-1 { margin-bottom: 8px; }
+.d-mb-2 { margin-bottom: 16px; }
+.d-mb-3 { margin-bottom: 24px; }
+.d-mb-4 { margin-bottom: 32px; }
+.d-gap-1 { --d-gap: 8px; gap: var(--d-gap) !important; }
+.d-gap-2 { --d-gap: 16px; gap: var(--d-gap) !important; }
+.d-gap-3 { --d-gap: 24px; gap: var(--d-gap) !important; }
+.d-gap-4 { --d-gap: 32px; gap: var(--d-gap) !important; }
+
+/* No technical watermark/decorations in export assets */
+.diagram-canvas::before,
+.diagram-canvas::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* ── Typography Scale — Refined ── */
+.d-title-page {
+  font-family: var(--diagram-font-heading);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--diagram-color-text);
+  text-align: center;
+  margin-bottom: 28px;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.d-title {
+  font-family: var(--diagram-font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--diagram-color-text);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.d-label {
+  font-family: var(--diagram-font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--diagram-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  line-height: 1.5;
+}
+
+.d-mono {
+  font-family: var(--diagram-font-mono);
+  font-size: 11px;
+  color: var(--diagram-color-muted);
+  letter-spacing: 0.02em;
+}
+
+/* Emphasis modifiers — a heading one notch above the base scale.
+   Additive only (no effect unless applied); used for deliberate
+   in-figure title/section hierarchy. Must follow .d-title/.d-label
+   so font-size wins on equal specificity. */
+.d-title-lg { font-size: 16px; }
+.d-label-lg { font-size: 14px; }
+
+/* ── Box Primitives — Refined ── */
+.d-box {
+  box-sizing: border-box;
+  border-radius: var(--diagram-radius-card);
+  border: 1.5px solid var(--diagram-color-line-muted);
+  padding: 12px 16px;
+  background: var(--diagram-color-surface);
+  box-shadow: none;
+}
+
+/* Service / Domain — nghiệp vụ (left-accent accent bar) */
+.d-service {
+  background: var(--diagram-color-service-bg);
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-service-border);
+  padding-left: 14px;
+}
+.d-service .d-title { color: var(--diagram-color-service-border); }
+.d-service .d-label  { color: var(--diagram-color-service-border); opacity: 0.7; }
+
+.d-domain {
+  background: var(--diagram-color-domain-bg);
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-domain-border);
+  padding-left: 14px;
+}
+.d-domain .d-title { color: var(--diagram-color-domain-border); }
+.d-domain .d-label  { color: var(--diagram-color-domain-border); opacity: 0.7; }
+
+/* Storage / Infrastructure — hạ tầng */
+.d-storage {
+  background: var(--diagram-color-database-bg);
+  border: 1.5px solid var(--diagram-color-database-border);
+  border-top: 3px solid var(--diagram-color-database-border);
+}
+.d-storage .d-title { color: var(--diagram-color-database-border); }
+
+.d-infra {
+  background: var(--diagram-color-infra-bg);
+  border-color: var(--diagram-color-line-muted);
+  border-left: 3px solid var(--diagram-color-infra-border);
+  padding-left: 14px;
+}
+.d-infra .d-title { color: var(--diagram-color-infra-border); }
+
+/* Event — Message / Queue (pill shape) */
+.d-event {
+  background: var(--diagram-color-queue-bg);
+  border: 1.5px solid var(--diagram-color-queue-border);
+  border-radius: 999px;
+  padding: 8px 18px;
+}
+.d-event .d-title { color: var(--diagram-color-queue-border); }
+
+/* Legacy — Industrial Gray */
+.d-legacy {
+  background: #f8fafc;
+  border: 1.5px solid #94a3b8;
+  color: #334155;
+}
+.d-legacy .d-title { color: #475569; }
+
+/* Cluster — dashed bounding zone */
+.d-cluster {
+  background: rgba(248, 250, 252, 0.6);
+  border: 1.5px dashed var(--diagram-color-line-muted);
+  border-radius: var(--diagram-radius-card);
+  padding: 20px;
+}
+
+/* Gateway / API Surface */
+.d-gateway {
+  background: var(--diagram-color-gateway-bg);
+  border: 1.5px solid var(--diagram-color-gateway-border);
+  border-top: 3px solid var(--diagram-color-gateway-border);
+}
+.d-gateway .d-title { color: var(--diagram-color-gateway-border); }
+
+/* Warning / Anti-pattern zone */
+.d-warning {
+  background: var(--diagram-color-warning-bg);
+  border: 1.5px solid var(--diagram-color-warning-border);
+  border-left: 3px solid var(--diagram-color-warning-border);
+  padding-left: 14px;
+}
+.d-warning .d-title { color: var(--diagram-color-warning-border); }
+
+/* Other States */
+.d-success {
+  background: var(--diagram-color-success-bg);
+  border-color: var(--diagram-color-success-border);
+}
+.d-success .d-title { color: var(--diagram-color-success-border); }
+
+.d-danger {
+  background: var(--diagram-color-danger-bg);
+  border-color: var(--diagram-color-danger-border);
+}
+.d-danger .d-title { color: var(--diagram-color-danger-border); }
+
+.d-note {
+  background: var(--diagram-color-note-bg);
+  border-color: var(--diagram-color-note-border);
+}
+.d-note .d-title { color: var(--diagram-color-note-border); }
+
+/* Condition / Decision Block (Diamond shape) */
+.d-condition {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  z-index: 1;
+}
+.d-condition::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 96px;
+  height: 96px;
+  background: var(--diagram-color-surface);
+  border: 1.5px solid var(--diagram-color-line-muted);
+  border-radius: 6px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  z-index: -1;
+  box-shadow: none;
+}
+
+.d-condition.d-warning::before {
+  background: var(--diagram-color-warning-bg);
+  border-color: var(--diagram-color-warning-border);
+}
+.d-condition.d-warning .d-title {
+  color: var(--diagram-color-warning-border);
+}
+
+.d-condition.d-note::before {
+  background: var(--diagram-color-note-bg);
+  border-color: var(--diagram-color-note-border);
+}
+.d-condition.d-note .d-title {
+  color: var(--diagram-color-note-border);
+}
+
+.d-condition .d-title {
+  max-width: 120px;
+  line-height: 1.3;
+  z-index: 2;
+}
+
+
+/* Context / Ghost Node — dành cho thành phần phụ trợ (muted) */
+.d-box-ghost {
+  border-radius: var(--diagram-radius-card);
+  border: 1.5px dashed var(--diagram-color-line-muted);
+  padding: 12px 16px;
+  background: transparent;
+  color: var(--diagram-color-muted);
+  box-shadow: none;
+}
+.d-box-ghost .d-title {
+  color: var(--diagram-color-muted);
+  font-weight: 500;
+}
+.d-box-ghost .d-label {
+  color: var(--diagram-color-muted);
+  opacity: 0.6;
+}
+
+/* ── Arrow & Connector Utilities ── */
+/* Vector-style arrows using pseudo-elements */
+.d-arrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--diagram-color-line-muted, #94a3b8);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Horizontal Arrow */
+.d-arrow-h, .d-arrow-h-dashed {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  flex-shrink: 0;
+  color: var(--diagram-color-line-muted, #94a3b8);
+}
+.d-arrow-h::before, .d-arrow-h-dashed::before {
+  content: '';
+  position: absolute;
+  top: calc(50% - 1px);
+  left: calc(var(--d-gap, 20px) * -1);
+  right: calc(var(--d-gap, 20px) * -1 + 5px);
+  height: 2px;
+  background-color: currentColor;
+  z-index: 0;
+}
+.d-arrow-h-dashed::before {
+  background-color: transparent;
+  background-image: linear-gradient(to right, currentColor 50%, transparent 50%);
+  background-size: 8px 100%;
+}
+.d-arrow-h::after, .d-arrow-h-dashed::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--d-gap, 20px) * -1);
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid currentColor;
+  z-index: 1;
+}
+
+/* Horizontal Reverse */
+.d-arrow-h.d-arrow-reverse::before, .d-arrow-h-dashed.d-arrow-reverse::before {
+  left: calc(var(--d-gap, 20px) * -1 + 5px);
+  right: calc(var(--d-gap, 20px) * -1);
+}
+.d-arrow-h.d-arrow-reverse::after, .d-arrow-h-dashed.d-arrow-reverse::after {
+  right: auto;
+  left: calc(var(--d-gap, 20px) * -1);
+  border-left: none;
+  border-right: 6px solid currentColor;
+}
+
+/* Vertical Arrow */
+.d-arrow-v, .d-arrow-v-dashed {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  flex-shrink: 0;
+  margin: 0 auto;
+  color: var(--diagram-color-line-muted, #94a3b8);
+}
+.d-arrow-v::before, .d-arrow-v-dashed::before {
+  content: '';
+  position: absolute;
+  left: calc(50% - 1px);
+  top: calc(var(--d-gap, 16px) * -1);
+  bottom: calc(var(--d-gap, 16px) * -1 + 5px);
+  width: 2px;
+  background-color: currentColor;
+  z-index: 0;
+}
+.d-arrow-v-dashed::before {
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, currentColor 50%, transparent 50%);
+  background-size: 100% 8px;
+}
+.d-arrow-v::after, .d-arrow-v-dashed::after {
+  content: '';
+  position: absolute;
+  bottom: calc(var(--d-gap, 16px) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  z-index: 1;
+}
+
+/* Vertical Reverse */
+.d-arrow-v.d-arrow-reverse::before, .d-arrow-v-dashed.d-arrow-reverse::before {
+  top: calc(var(--d-gap, 16px) * -1 + 5px);
+  bottom: calc(var(--d-gap, 16px) * -1);
+}
+.d-arrow-v.d-arrow-reverse::after, .d-arrow-v-dashed.d-arrow-reverse::after {
+  bottom: auto;
+  top: calc(var(--d-gap, 16px) * -1);
+  border-top: none;
+  border-bottom: 6px solid currentColor;
+}
+
+/* Labeled arrow row */
+.d-arrow-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: #475569;
+  background: var(--diagram-color-surface, #ffffff);
+  padding: 1px 5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ── Modern SVG Pipeline Utilities (v2.1) ── */
+
+/* Strict centered flex container for horizontal processing pipelines */
+.d-pipeline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.d-pipeline > .d-box {
+  flex: 1; /* Make all boxes equal width automatically */
+}
+
+/* Wrapper for explicit SVG arrows */
+.d-arrow-svg-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  padding: 0 8px; /* Breathing room */
+}
+
+/* Floating labels for SVG arrows (avoids obscuring the line) */
+.d-arrow-label-top {
+  position: absolute;
+  bottom: calc(50% + 6px); /* Hovering just above the center */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.d-arrow-label-bottom {
+  position: absolute;
+  top: calc(50% + 6px); /* Hovering just below the center */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ── Modern Orthogonal Tree Utilities (v2.2) ── */
+/* Phục vụ sơ đồ phân nhánh (Fan-out / Fan-in / CQRS / API Composition) */
+
+.d-tree-bus {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--diagram-color-muted);
+}
+.d-tree-bus.danger { background-color: var(--diagram-color-danger); }
+.d-tree-bus.success { background-color: var(--diagram-color-success); }
+
+.d-tree-stem-down {
+  position: absolute;
+  bottom: calc(-1 * var(--stem-len, 24px));
+  left: 50%;
+  width: 2px;
+  height: var(--stem-len, 24px);
+  background-color: var(--diagram-color-muted);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.d-tree-stem-up {
+  position: absolute;
+  top: calc(-1 * var(--stem-len, 24px));
+  left: 50%;
+  width: 2px;
+  height: var(--stem-len, 24px);
+  background-color: var(--diagram-color-muted);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.d-tree-stem-down.danger, .d-tree-stem-up.danger {
+  background-color: var(--diagram-color-danger);
+}
+.d-tree-stem-down.success, .d-tree-stem-up.success {
+  background-color: var(--diagram-color-success);
+}
+
+/* Arrow heads */
+.d-tree-stem-down.arrow::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: -5px;
+  border-top: 6px solid var(--diagram-color-muted);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+.d-tree-stem-down.arrow.danger::after { border-top-color: var(--diagram-color-danger); }
+.d-tree-stem-down.arrow.success::after { border-top-color: var(--diagram-color-success); }
+
+.d-tree-stem-up.arrow::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -5px;
+  border-bottom: 6px solid var(--diagram-color-muted);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+.d-tree-stem-up.arrow.danger::after { border-bottom-color: var(--diagram-color-danger); }
+.d-tree-stem-up.arrow.success::after { border-bottom-color: var(--diagram-color-success); }
+
+/* ── Workflow / Sequence Badges ── */
+.d-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  background: var(--diagram-color-text);
+  color: var(--diagram-color-surface) !important;
+  font-family: var(--diagram-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.d-step-ghost {
+  background: transparent;
+  color: var(--diagram-color-muted) !important;
+  border: 1.5px dashed var(--diagram-color-line-muted);
+}
+
+/* ── Sequence Diagram Primitives ── */
+.d-seq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-bottom: 24px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.d-seq-participants {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid #cbd5e1;
+  padding-bottom: 14px;
+  margin-bottom: 0;
+  position: relative;
+  overflow: visible;
+}
+
+.d-seq-actor {
+  flex: 1;
+  text-align: center;
+  padding: 8px 6px;
+  position: relative;
+}
+
+.d-seq-actor::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  height: 2000px;
+  width: 1.5px;
+  background: repeating-linear-gradient(
+    180deg,
+    #94a3b8 0,
+    #94a3b8 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  z-index: 0;
+}
+
+.d-seq-actor-box {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid;
+}
+
+.d-seq-messages {
+  display: flex;
+  flex-direction: column;
+  padding-top: 12px;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.d-seq-msg {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  position: relative;
+  font-size: 11px;
+}
+
+.d-seq-msg > div {
+  min-width: 0;
+}
+
+.d-seq-msg-line {
+  flex: 1;
+  height: 1.5px;
+  background: #64748b;
+  position: relative;
+  min-width: 0;
+}
+
+.d-seq-msg-line::after {
+  content: '▶';
+  position: absolute;
+  right: -4px;
+  top: -7px;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.d-seq-msg-line.reverse::after {
+  content: '◀';
+  left: -2px;
+  right: auto;
+}
+
+.d-seq-msg-line.dashed {
+  background: repeating-linear-gradient(
+    to right, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+  );
+}
+
+.d-seq-msg-line.dashed.reverse {
+  background: repeating-linear-gradient(
+    to left, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+  );
+}
+
+.d-seq-msg-text {
+  font-size: 11px;
+  color: #334155;
+  background: #ffffff;
+  padding: 1px 6px;
+  white-space: nowrap;
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── Timeline Bar ── */
+.d-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.d-timeline-axis {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 16px 0;
+  height: 3px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.d-timeline-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.d-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0f766e;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #0f766e;
+}
+
+/* ── Highlighted Zone (activation, blocking) ── */
+.d-zone {
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.d-zone-danger  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.d-zone-warning { background: #fff7ed; color: #ea580c; border: 1px solid #fdba74; }
+.d-zone-info    { background: #eff6ff; color: #3b82f6; border: 1px solid #93c5fd; }
+.d-zone-success { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+
+/* ── Code Snippet (inline trong diagram) ── */
+.d-code {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.d-code .kw  { color: #0284c7; font-weight: 600; }
+.d-code .str { color: #16a34a; }
+.d-code .cmt { color: #64748b; font-style: italic; }
+.d-code .ann { color: #d946ef; font-weight: 600; }
+
+/* ── Separator ── */
+.d-sep {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 10px 0;
+}
+
+.d-sep-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.d-sep-title::before,
+.d-sep-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+/* ── Metrics / Stats ── */
+.d-metric {
+  text-align: center;
+  padding: 10px 8px;
+}
+
+.d-metric-value {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.d-metric-label {
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* ── Figure Caption (below diagram) ── */
+.d-caption {
+  font-size: 11px;
+  color: #64748b;
+  text-align: center;
+  margin-top: 12px;
+  font-style: italic;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+}
+
+
+
+/* ── Watermark / Debug aid (stripped at print) ── */
+@media screen {
+  .diagram-canvas {
+    outline: 1px dashed #e2e8f0; /* thấy boundary khi xem trong browser */
+  }
+
+  .diagram-mode.png-export .diagram-canvas {
+    outline: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .diagram-canvas {
+    width: 100%;
+    min-height: auto;
+    padding: 28px;
+  }
+
+  .d-grid-3,
+  .d-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .d-row {
+    flex-wrap: wrap;
+  }
+
+  .d-grid-2,
+  .d-grid-3,
+  .d-grid-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/*      Typography & Layout Utilities      */
+.fw-bold { font-weight: 700 !important; }
+.fw-semibold { font-weight: 600 !important; }
+.fw-normal { font-weight: 400 !important; }
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+/* Accent text utilities — saturated family hue (-border level) for short
+   emphasis labels. Body text inside boxes is set by the box class, not these.
+   Use these INSTEAD of inline `color:`; never reference web-brand tokens
+   (--success/--danger/--info) here — those are the orange portal world. */
+.d-text-base    { color: var(--diagram-color-text) !important; }   /* navy #1B2A4A */
+.d-text-muted   { color: var(--diagram-color-muted) !important; }  /* gray #6B7280 */
+.d-text-accent  { color: var(--diagram-color-line) !important; }   /* blue #2C5282 */
+.d-text-info    { color: var(--diagram-color-info-border) !important; }    /* #3182CE */
+.d-text-success { color: var(--diagram-color-success-border) !important; } /* #10B981 */
+.d-text-danger  { color: var(--diagram-color-danger-border) !important; }  /* #DC2626 */
+.d-text-warning { color: var(--diagram-color-warning-border) !important; } /* #F59E0B */
+
+.d-section-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.d-badge-phase {
+  font-weight: 700;
+  color: var(--diagram-color-text);
+  background: var(--diagram-color-surface);
+  border: 1px solid var(--diagram-color-line-muted);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 6px 0 2px;
+  display: inline-block;
+}
+
+/* ── Comparison Table (Compact) ── */
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.55;
+  margin-top: 8px;
+}
+.cmp-table th, .cmp-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--diagram-color-line-muted);
+  text-align: left;
+  vertical-align: top;
+}
+.cmp-table th {
+  font-weight: 700;
+  color: var(--diagram-color-text);
+  font-family: var(--diagram-font-heading);
+  background: rgba(0, 0, 0, 0.02);
+}
+.cmp-table tbody tr:last-child td {
+  border-bottom: none;
+}

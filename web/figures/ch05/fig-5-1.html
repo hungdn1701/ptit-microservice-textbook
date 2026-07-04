@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 5.1 — Synchronous vs Asynchronous Communication Comparison
+    =========================================================
+    Tier 1 HTML migration from fig-5-1.svg
+    Layout: 2-column Grid (Sync/Async) + comparison table
+    Capture: gen-diagrams.ps1 → fig-5-1.png → Typst image()
+  -->
+  <title>Fig 5.1 — Synchronous vs Asynchronous Communication Comparison | Ch.5</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-5.1" data-ref="CH05-SEC">
+
+    <!-- Two-column overview -->
+    <div class="d-grid-2 d-mb-2" style="align-items: start;">
+
+      <!-- LEFT: Sync -->
+      <div class="d-cluster" style="display: flex; flex-direction: column;">
+        <span class="d-label">Synchronous (Sync) — Tight Coupling</span>
+        
+        <div class="d-row d-center" style="width: 100%; margin: 32px 0;">
+          <!-- Service A -->
+          <div class="d-box d-danger text-center" style="width: 100px; z-index: 2;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">caller</div>
+          </div>
+
+          <!-- Arrow Area -->
+          <div style="flex: 1; height: 40px; position: relative; margin: 0 4px; z-index: 1;">
+            <!-- Top Arrow (Call) -->
+            <div style="position: absolute; top: 8px; left: 0; width: 100%; height: 2px; background: var(--diagram-color-danger-border);">
+              <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-danger-border); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+              <div class="d-label d-text-danger" style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--diagram-color-surface); padding: 0 4px;">HTTP call</div>
+            </div>
+
+            <!-- Bottom Arrow (Response) -->
+            <div style="position: absolute; bottom: 8px; left: 0; width: 100%; border-bottom: 2px dashed var(--diagram-color-line-muted);">
+              <div style="position: absolute; left: -2px; top: -4px; border-right: 6px solid var(--diagram-color-line-muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+              <div class="d-label d-text-muted" style="position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--diagram-color-surface); padding: 0 4px;">response</div>
+            </div>
+          </div>
+
+          <!-- Service B -->
+          <div class="d-box d-danger text-center" style="width: 100px; z-index: 2;">
+            <div class="d-title">Service B</div>
+            <div class="d-sub">callee</div>
+          </div>
+        </div>
+
+        <div class="d-text-danger" style="line-height: 1.7; padding: 0 4px; margin-top: auto;">
+          <div>Drawback: A is <strong>blocked</strong> while waiting for B's response</div>
+          <div>Drawback: B down → A down (cascading failure)</div>
+          <div>Drawback: Throughput is limited by B</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Async -->
+      <div class="d-cluster" style="display: flex; flex-direction: column;">
+        <span class="d-label">Asynchronous (Async) — Loose Coupling</span>
+        
+        <div class="d-row d-center" style="width: 100%; margin: 32px 0;">
+          <!-- Service A -->
+          <div class="d-box d-success text-center" style="width: 90px; z-index: 2;">
+            <div class="d-title">Service A</div>
+            <div class="d-sub">producer</div>
+          </div>
+
+          <!-- Arrow 1 (Publish) -->
+          <div style="flex: 1; height: 2px; background: var(--diagram-color-success-border); position: relative; margin: 0 4px; z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-success-border); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+            <div class="d-label d-text-success" style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--diagram-color-surface); padding: 0 4px;">publish</div>
+          </div>
+
+          <!-- Broker -->
+          <div class="d-box d-event text-center" style="width: 100px; z-index: 2;">
+            <div class="d-title">Broker</div>
+            <div class="d-sub">Kafka / RabbitMQ</div>
+          </div>
+
+          <!-- Arrow 2 (Subscribe) -->
+          <div style="flex: 1; height: 2px; background: var(--diagram-color-success-border); position: relative; margin: 0 4px; z-index: 1;">
+            <div style="position: absolute; right: -2px; top: -5px; border-left: 6px solid var(--diagram-color-success-border); border-top: 6px solid transparent; border-bottom: 6px solid transparent;"></div>
+            <div class="d-label d-text-success" style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--diagram-color-surface); padding: 0 4px;">subscribe</div>
+          </div>
+
+          <!-- Service B -->
+          <div class="d-box d-success text-center" style="width: 90px; z-index: 2;">
+            <div class="d-title">Service B</div>
+            <div class="d-sub">consumer</div>
+          </div>
+        </div>
+
+        <div class="d-text-success" style="line-height: 1.7; padding: 0 4px; margin-top: auto;">
+          <div>Advantage: A sends a message and <strong>continues</strong> immediately</div>
+          <div>Advantage: B processes when ready — independent of A</div>
+          <div>Advantage: Broker buffer → higher throughput</div>
+        </div>
+      </div>
+
+    </div><!-- /.d-grid-2 -->
+
+    <!-- Comparison table -->
+    <div class="d-box d-note">
+      <div class="d-label d-mb-1">Comparison Table</div>
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Criteria</th>
+            <th>Sync (REST / gRPC)</th>
+            <th>Async (Kafka / RabbitMQ)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Latency</td>
+            <td>Low — direct response</td>
+            <td>Higher — via broker</td>
+          </tr>
+          <tr>
+            <td>Coupling</td>
+            <td>High — A depends directly on B</td>
+            <td>Low — A is unaware of B</td>
+          </tr>
+          <tr>
+            <td>Failure Mode</td>
+            <td>Cascading — failures spread</td>
+            <td>Isolated — failure contained at B</td>
+          </tr>
+          <tr>
+            <td>Throughput</td>
+            <td>Limited by B's processing speed</td>
+            <td>Buffered by broker — independent scaling</td>
+          </tr>
+          <tr>
+            <td>Complexity</td>
+            <td>Simple — clear request/response</td>
+            <td>More complex (idempotency, ordering)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

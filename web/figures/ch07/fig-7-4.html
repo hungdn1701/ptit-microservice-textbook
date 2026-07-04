@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.4 — Các chiến lược Cache
+    =========================================================
+    Legacy SVG migration (no gen script)
+    Source: figures/ch07/fig-7-4.svg
+    Layout: 3-column cache strategies (Cache-Aside, Read-Through, Write-Behind)
+    Capture: gen-diagrams.ps1 → fig-7-4.png → Typst image()
+  -->
+  <title>Fig 7.4 — Các chiến lược Cache | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.4" data-ref="CH07-SEC">
+    
+    <!-- Global Arrow Definitions -->
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)"/></marker>
+        <marker id="arr-info-rev" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto"><polygon points="8 0, 0 4, 8 8" fill="var(--diagram-color-info-border)"/></marker>
+        <marker id="arr-success" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
+        <marker id="arr-success-rev" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto"><polygon points="8 0, 0 4, 8 8" fill="var(--diagram-color-success-border)"/></marker>
+        <marker id="arr-warning" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-warning-border)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-row d-gap-2" style="align-items:stretch;">
+
+      <!-- 1. Cache-Aside -->
+      <div class="d-cluster" style="flex: 1; border-color:var(--diagram-color-info-border); background:var(--diagram-color-surface); display: flex; flex-direction: column;">
+        <span class="d-label d-text-info" style="background:var(--diagram-color-surface);">1. Cache-Aside (Lazy Loading)</span>
+      
+        <div style="position: relative; width: 100%; height: 180px; margin-top: 30px;">
+          <!-- App -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px;">App</div>
+          
+          <!-- Cache -->
+          <div class="d-box d-event text-center" style="position: absolute; bottom: 0; left: 5%; width: 110px;">Cache</div>
+      
+          <!-- DB -->
+          <div class="d-box d-storage text-center" style="position: absolute; bottom: 0; right: 5%; width: 110px;">DB</div>
+      
+          <!-- SVG Arrows -->
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: -1; overflow: visible;">
+            <!-- App <-> Cache -->
+            <line x1="40%" y1="40" x2="25%" y2="135" stroke="var(--diagram-color-info-border)" stroke-width="2" marker-end="url(#arr-info)" marker-start="url(#arr-info-rev)"/>
+            <!-- App <-> DB -->
+            <line x1="60%" y1="40" x2="75%" y2="135" stroke="var(--diagram-color-info-border)" stroke-width="2" marker-end="url(#arr-info)" marker-start="url(#arr-info-rev)"/>
+          </svg>
+          
+          <!-- Labels -->
+          <div style="position: absolute; top: 70px; left: 0%; font-size: 11px; color: var(--diagram-color-info-text); background: var(--diagram-color-surface); padding: 2px;">1. Đọc/Ghi Cache</div>
+          <div style="position: absolute; top: 70px; right: 0%; font-size: 11px; color: var(--diagram-color-info-text); background: var(--diagram-color-surface); padding: 2px;">2. Đọc DB (nếu Miss)</div>
+        </div>
+      
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; margin-top: 20px;">
+          <div class="d-box d-note" style="border-color: var(--diagram-color-info-border); background: var(--diagram-color-info-bg);">
+            <div class="d-title d-text-info d-mb-1">Đặc điểm</div>
+            <div class="d-sub">
+              - App tự làm việc với cả Cache & DB.<br>
+              - Luồng Miss: App đọc DB → App ghi Cache.<br>
+              - Dễ triển khai, phổ biến nhất (Redis).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Read/Write-Through -->
+      <div class="d-cluster" style="flex: 1; border-color:var(--diagram-color-success-border); background:var(--diagram-color-surface); display: flex; flex-direction: column;">
+        <span class="d-label d-text-success" style="background:var(--diagram-color-surface);">2. Read/Write-Through</span>
+      
+        <div style="position: relative; width: 100%; height: 180px; margin-top: 30px;">
+          <!-- App -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px;">App</div>
+          
+          <!-- Cache -->
+          <div class="d-box d-event text-center" style="position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 120px;">Cache Layer</div>
+      
+          <!-- DB -->
+          <div class="d-box d-storage text-center" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px;">DB</div>
+      
+          <!-- SVG Arrows -->
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: -1; overflow: visible;">
+            <!-- App <-> Cache -->
+            <line x1="50%" y1="40" x2="50%" y2="70" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-success)" marker-start="url(#arr-success-rev)"/>
+            <!-- Cache <-> DB -->
+            <line x1="50%" y1="115" x2="50%" y2="145" stroke="var(--diagram-color-success-border)" stroke-width="2" marker-end="url(#arr-success)" marker-start="url(#arr-success-rev)"/>
+          </svg>
+          
+          <!-- Labels -->
+          <div style="position: absolute; top: 45px; left: 55%; font-size: 11px; color: var(--diagram-color-success-text); background: var(--diagram-color-surface); padding: 2px;">App đọc/ghi</div>
+          <div style="position: absolute; top: 120px; left: 55%; font-size: 11px; color: var(--diagram-color-success-text); background: var(--diagram-color-surface); padding: 2px;">Cache đồng bộ DB</div>
+        </div>
+      
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; margin-top: 20px;">
+          <div class="d-box d-note" style="border-color: var(--diagram-color-success-border); background: var(--diagram-color-success-bg);">
+            <div class="d-title d-text-success d-mb-1">Đặc điểm</div>
+            <div class="d-sub">
+              - App chỉ biết đến Cache Layer.<br>
+              - Cache tự động đọc/ghi đồng bộ (Sync) với DB.<br>
+              - Code App cực sạch (Transparent to app).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Write-Behind -->
+      <div class="d-cluster" style="flex: 1; border-color:var(--diagram-color-warning-border); background:var(--diagram-color-surface); display: flex; flex-direction: column;">
+        <span class="d-label d-text-warning" style="background:var(--diagram-color-surface);">3. Write-Behind (Async)</span>
+      
+        <div style="position: relative; width: 100%; height: 180px; margin-top: 30px;">
+          <!-- App -->
+          <div class="d-box d-service text-center" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px;">App</div>
+          
+          <!-- Cache -->
+          <div class="d-box d-event text-center" style="position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 120px;">Cache Layer</div>
+      
+          <!-- DB -->
+          <div class="d-box d-storage text-center" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px;">DB</div>
+      
+          <!-- SVG Arrows -->
+          <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: -1; overflow: visible;">
+            <!-- App <-> Cache -->
+            <line x1="50%" y1="40" x2="50%" y2="70" stroke="var(--diagram-color-warning-border)" stroke-width="2" marker-end="url(#arr-warning)" marker-start="url(#arr-warning-rev)"/>
+            <!-- Cache -> DB (dashed) -->
+            <line x1="50%" y1="115" x2="50%" y2="145" stroke="var(--diagram-color-warning-border)" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arr-warning)"/>
+          </svg>
+          
+          <!-- Labels -->
+          <div style="position: absolute; top: 45px; left: 55%; font-size: 11px; color: var(--diagram-color-warning-text); background: var(--diagram-color-surface); padding: 2px;">Ghi siêu tốc</div>
+          <div style="position: absolute; top: 120px; left: 55%; font-size: 11px; color: var(--diagram-color-warning-text); background: var(--diagram-color-surface); padding: 2px;">Ghi gộp (Async/Batch)</div>
+        </div>
+      
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; margin-top: 20px;">
+          <div class="d-box d-note" style="border-color: var(--diagram-color-warning-border); background: var(--diagram-color-warning-bg);">
+            <div class="d-title d-text-warning d-mb-1">Đặc điểm</div>
+            <div class="d-sub">
+              - App ghi vào Cache là trả về ngay lập tức.<br>
+              - Cache xả dữ liệu xuống DB định kỳ (Eventual).<br>
+              - Throughput siêu cao, có rủi ro mất data.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /d-row -->
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

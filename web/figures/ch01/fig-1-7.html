@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.7 — Decision Framework — 3 câu hỏi trước khi áp dụng Microservices
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.7 — Decision Framework: 3 Microservices Questions | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-1.7" data-ref="CH01-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div style="display: grid; grid-template-columns: 240px 60px 320px; align-items: center; justify-items: center; gap: 12px 0; margin: 0 auto; width: fit-content;">
+
+      <!-- Q1 -->
+      <div style="grid-column: 1; grid-row: 1; width: 100%;">
+        <div class="d-box d-warning text-center">
+          <div class="d-title">Microservices Not Needed Yet</div>
+          <div class="d-sub">Prioritize refactoring current system</div>
+        </div>
+      </div>
+      <div style="grid-column: 2; grid-row: 1;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Unclear</span>
+      </div>
+      </div>
+      <div style="grid-column: 3; grid-row: 1; width: 100%;">
+        <div class="d-condition d-note">
+          <div class="d-title"><span class="d-step">1</span> What is the core problem to solve?</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 2;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Clear</span>
+      </div>
+      </div>
+
+      <!-- Q2 -->
+      <div style="grid-column: 1; grid-row: 3; width: 100%;">
+        <div class="d-box d-domain text-center">
+          <div class="d-title">Try Modular Monolith</div>
+          <div class="d-sub">Lower risk, easier to operate</div>
+        </div>
+      </div>
+      <div style="grid-column: 2; grid-row: 3;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      </div>
+      </div>
+      <div style="grid-column: 3; grid-row: 3; width: 100%;">
+        <div class="d-condition d-note">
+          <div class="d-title"><span class="d-step">2</span> Can it be solved with a simpler solution?</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 4;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      </div>
+      </div>
+
+      <!-- Q3 -->
+      <div style="grid-column: 1; grid-row: 5; width: 100%;">
+        <div class="d-box d-warning text-center">
+          <div class="d-title">Prioritize Training</div>
+          <div class="d-sub">Invest in DevOps &amp; Distributed Systems</div>
+        </div>
+      </div>
+      <div style="grid-column: 2; grid-row: 5;">
+        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
+        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      </div>
+      </div>
+      <div style="grid-column: 3; grid-row: 5; width: 100%;">
+        <div class="d-condition d-note">
+          <div class="d-title"><span class="d-step">3</span> Does the team have enough operational maturity?</div>
+        </div>
+      </div>
+
+      <!-- Arrow Down -->
+      <div style="grid-column: 3; grid-row: 6;">
+        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
+        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      </div>
+      </div>
+
+      <!-- Outcome: Go Microservices -->
+      <div style="grid-column: 3; grid-row: 7; width: 100%;">
+        <div class="d-box d-success text-center">
+          <div class="d-title">Consider adopting Microservices Architecture</div>
+          <div class="d-sub">Start with 1-2 services, avoid Big Bang Rewrite</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.1 — Microservices — N điểm bảo vệ | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.1">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-grid-2" style="gap: 48px; align-items: start; margin-bottom: 32px;">
+      
+      <!-- LEFT: MONOLITH -->
+      <div class="d-col d-center">
+        <div class="d-title d-mb-1 text-center" style="font-size: 16px;">Monolith</div>
+        <div class="d-sub d-mb-3 text-center d-text-muted">1 điểm bảo vệ (Perimeter Security)</div>
+
+        <div class="d-cluster d-col d-center d-gap-3" style="width: 100%; border-color: var(--diagram-color-danger-border); background: rgba(239, 68, 68, 0.05); padding: 32px 24px;">
+          <div class="d-label d-text-danger" style="font-size: 13px;">Trusted Internal Network</div>
+          
+          <div class="d-box d-danger text-center" style="width: 220px; box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
+            <div class="d-title">Firewall</div>
+            <div class="d-sub">Điểm bảo vệ duy nhất</div>
+          </div>
+          
+          <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-service text-center" style="width: 220px; background: #fff;">
+            <div class="d-title">Monolith Application</div>
+            <div class="d-sub">Tất cả module (In-process)</div>
+          </div>
+          
+          <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-storage text-center" style="width: 220px; background: #fff;">
+            <div class="d-title">Monolith DB</div>
+            <div class="d-sub">Chung một database</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: MICROSERVICES -->
+      <div class="d-col d-center">
+        <div class="d-title d-mb-1 text-center" style="font-size: 16px;">Microservices</div>
+        <div class="d-sub d-mb-3 text-center d-text-muted">N điểm bảo vệ (Defense in Depth / Zero Trust)</div>
+
+        <div class="d-cluster d-col d-center d-gap-3" style="width: 100%; border-color: var(--diagram-color-line-muted); border-style: dashed; background: transparent; padding: 32px 24px;">
+          <div class="d-label" style="font-size: 13px;">Untrusted / Zero Trust Network</div>
+          
+          <div class="d-box d-danger text-center" style="width: 220px;">
+            <div class="d-title">Firewall</div>
+            <div class="d-sub">Lớp bảo vệ 1</div>
+          </div>
+          
+          <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          
+          <div class="d-box d-gateway text-center" style="width: 220px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2); position: relative;">
+            <div class="d-title">API Gateway</div>
+            <div class="d-sub">Lớp bảo vệ 2 (Authn/Authz)</div>
+            <!-- Stem down -->
+            <div class="d-tree-stem-down" style="--stem-len: 24px;"></div>
+          </div>
+          
+          <!-- Fan-out to services -->
+          <div class="d-row d-center" style="position: relative; gap: 40px; width: 100%;">
+            <!-- Horizontal bus (width = 160 + 40 = 200px) -->
+            <div class="d-tree-bus" style="width: 200px; left: 50%; transform: translateX(-50%); top: 0;"></div>
+            
+            <!-- Service A -->
+            <div class="d-col d-center d-gap-3" style="position: relative; padding-top: 24px;">
+              <div class="d-tree-stem-down arrow" style="--stem-len: 24px; top: 0; bottom: auto;"></div>
+              <div class="d-box d-service text-center" style="width: 160px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
+                <div class="d-title">Service A</div>
+                <div class="d-sub">Lớp bảo vệ 3 (Tự xác thực)</div>
+              </div>
+              <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-storage text-center" style="width: 160px;">
+                <div class="d-title">DB A</div>
+              </div>
+            </div>
+            
+            <!-- Service B -->
+            <div class="d-col d-center d-gap-3" style="position: relative; padding-top: 24px;">
+              <div class="d-tree-stem-down arrow" style="--stem-len: 24px; top: 0; bottom: auto;"></div>
+              <div class="d-box d-service text-center" style="width: 160px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
+                <div class="d-title">Service B</div>
+                <div class="d-sub">Lớp bảo vệ 3 (Tự xác thực)</div>
+              </div>
+              <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-storage text-center" style="width: 160px;">
+                <div class="d-title">DB B</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Warning note -->
+    <div class="d-box d-warning">
+      <div class="d-title d-mb-1">Lưu ý: Zero Trust & Defense in Depth</div>
+      <div class="d-sub" style="line-height: 1.6;">Trong kiến trúc Microservices, mỗi service là một ranh giới bảo vệ (security boundary) độc lập. Không thể chỉ dựa vào một điểm bảo vệ duy nhất là Gateway hay Firewall. Các lệnh gọi nội bộ (Service-to-service call) cũng bắt buộc phải được xác thực (Authentication) và phân quyền (Authorization).</div>
+    </div>
+  </div>
+</body>
+</html>

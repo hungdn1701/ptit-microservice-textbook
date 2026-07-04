@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.2 — Kiến trúc phân cấp SOA theo Erl
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.2 — Erl's SOA Layered Architecture | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-1.2" data-ref="CH01-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-cluster d-col" style="padding: 24px;">
+      
+      <!-- Headers for the two aspects -->
+      <div class="d-row" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--diagram-color-line-muted);">
+        <div class="d-grow d-col" style="gap: 4px;">
+          <div class="d-title d-title-lg d-text-success">Khía cạnh Nghiệp vụ / Logic</div>
+          <div class="d-sub d-text-muted">Mô hình phân cấp kiến trúc (Thomas Erl)</div>
+        </div>
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-col" style="width: 280px; flex-shrink: 0; gap: 4px;">
+          <div class="d-title d-title-lg d-text-info">Khía cạnh Công nghệ / Triển khai</div>
+          <div class="d-sub d-text-muted">Các mẫu kiến trúc trong thực tiễn</div>
+        </div>
+      </div>
+
+      <!-- Level 4: Enterprise -->
+      <div class="d-row" style="margin-bottom: 24px;">
+        <div class="d-grow">
+          <span class="d-label d-mb-0">Service-Oriented Enterprise Architecture</span>
+        </div>
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+        <div class="d-box d-legacy d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
+          <div class="d-title">Traditional SOA</div>
+          <div class="d-sub">Focus on enterprise-level design</div>
+        </div>
+      </div>
+
+      <!-- Level 3: Inventory -->
+      <div class="d-box d-col" style="padding: 24px; border: 1.5px dashed var(--diagram-color-line-muted); background: var(--diagram-color-surface);">
+        
+        <div class="d-row" style="margin-bottom: 24px;">
+          <div class="d-grow">
+            <div class="d-title">Service Inventory Architecture</div>
+          </div>
+          <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-note d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
+            <div class="d-title">Service Registry &amp; Discovery</div>
+            <div class="d-sub">Global service catalog and routing</div>
+          </div>
+        </div>
+
+        <!-- Level 2: Composition -->
+        <div class="d-box d-col" style="padding: 24px; border: 1.5px dashed var(--diagram-color-line-muted); background: var(--diagram-color-surface);">
+          
+          <div class="d-row" style="margin-bottom: 24px;">
+            <div class="d-grow">
+              <div class="d-title">Service Composition Architecture</div>
+            </div>
+            <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+            <div class="d-box d-warning d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
+              <div class="d-title">Saga Pattern, API Gateway</div>
+              <div class="d-sub">Service Composition / Orchestration</div>
+            </div>
+          </div>
+
+          <!-- Level 1: Service -->
+          <div class="d-box d-service d-col" style="padding: 24px;">
+            <div class="d-row">
+              <div class="d-col d-gap-1 d-grow">
+                <div class="d-title">Service Architecture</div>
+                <div class="d-sub" style="opacity: 0.85;">Focus on internal structure of an independent service</div>
+              </div>
+              <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-service d-col d-gap-1" style="width: 280px; flex-shrink: 0; background: var(--diagram-color-surface);">
+                <div class="d-title">Microservices Architecture</div>
+                <div class="d-sub">Focus on service-level design</div>
+              </div>
+            </div>
+          </div>
+          <!-- /Level 1 -->
+
+        </div>
+        <!-- /Level 2 -->
+
+      </div>
+      <!-- /Level 3 -->
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

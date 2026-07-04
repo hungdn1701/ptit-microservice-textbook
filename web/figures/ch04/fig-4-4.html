@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 4.4 — Server-side Discovery
+    =========================================================
+    Tier 1 HTML migration từ fig-4-4.svg
+    Layout: Sequence diagram — Load Balancer intermediary
+    Capture: gen-diagrams.ps1 → fig-4-4.png → Typst image()
+  -->
+  <title>Fig 4.4 — Server-side Discovery | Ch.4</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-4.4" data-ref="CH04-SEC">
+
+    <div class="d-seq-container">
+
+      <!-- Participants: Core Service (0), Load Balancer (1), Judge #1 (2), Judge #2 (3) -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Core Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-infra">Load Balancer<br><span class="fw-normal">AWS ALB / Nginx / k8s</span></div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-domain">Judge #1</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-domain">Judge #2</div>
+        </div>
+      </div>
+
+      <div class="d-seq-messages">
+
+        <!-- 1. Core → Load Balancer (0→1): left=1, line=2, right=5 -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;">
+            <span class="d-seq-msg-text"><span class="d-step">1</span> POST /judge/execute</span>
+          </div>
+          <div style="flex:2.5;"></div>
+        </div>
+
+        <!-- 2. LB internal: note -->
+        <div class="d-row" style="min-height: 36px; align-items: center; gap: 0;">
+          <div style="flex:1.5; min-width: 0;"></div>
+          <div style="flex:0; padding:0 4px; display:flex; justify-content:center;">
+            <div class="d-zone d-zone-warning text-center" style="padding: 4px 10px; white-space: nowrap; border-width: 1.5px; z-index: 2;"><span class="d-step">2</span> Chọn instance<br><span class="fw-normal">query Service Registry</span></div>
+          </div>
+          <div style="flex:2.5; min-width: 0;"></div>
+        </div>
+
+        <!-- 3. LB → Judge #1 (1→2): left=3, line=2, right=3 -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;">
+            <span class="d-seq-msg-text"><span class="d-step">3</span> Forward to healthy instance</span>
+          </div>
+          <div style="flex:1.5;"></div>
+        </div>
+
+        <!-- 4. Judge #1 → LB (2→1): dashed, reverse: left=3, line=2, right=3 -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;">
+            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> Result</span>
+          </div>
+          <div style="flex:1.5;"></div>
+        </div>
+
+        <!-- 5. LB → Core (1→0): dashed, reverse: left=1, line=2, right=5 -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;">
+            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> Forward response</span>
+          </div>
+          <div style="flex:2.5;"></div>
+        </div>
+
+      </div><!-- /.d-seq-messages -->
+
+    </div><!-- /.d-seq-container -->
+
+    <!-- Notes -->
+    <div class="d-box d-note d-mt-2">
+      <div class="d-row d-gap-2" style="flex-wrap:wrap;">
+        <div>
+          <span class="d-title">LB là trung gian: </span>
+          <span class="d-sub">AWS ALB, Nginx, Kubernetes Service. Client không cần biết instance nào.</span>
+        </div>
+        <div>
+          <span class="d-title">Trade-off: </span>
+          <span class="d-sub">Thêm 1 hop mạng, nhưng client đơn giản hơn — không cần tích hợp thư viện LB.</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

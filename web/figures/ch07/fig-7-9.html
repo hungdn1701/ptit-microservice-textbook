@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.9 — CQRS Architecture
+    =========================================================
+    Tier 1 HTML migration từ fig-7-9.svg
+    Layout: Write side (left) ↔ Kafka (center) ↔ Read side (right) with Client on top
+    Capture: gen-diagrams.ps1 → fig-7-9.png → Typst image()
+  -->
+  <title>Fig 7.9 — CQRS Architecture | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.9" data-ref="CH07-SEC">
+
+    <div style="position: relative; width: 760px; height: 380px; margin: 0 auto;">
+      <!-- SVG Layer -->
+      <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0; overflow: visible;">
+        <defs>
+          <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+          <marker id="arr-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)"/></marker>
+          <marker id="arr-success" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
+        </defs>
+
+        <!-- Client to Write Side (Command) -->
+        <path d="M 380 70 L 380 90 L 160 90 L 160 130" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <text x="260" y="85" font-size="12" fill="var(--diagram-color-muted)" font-weight="600" text-anchor="middle" background="white">Command</text>
+
+        <!-- Client to Read Side (Query) -->
+        <path d="M 380 70 L 380 90 L 600 90 L 600 130" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <text x="500" y="85" font-size="12" fill="var(--diagram-color-muted)" font-weight="600" text-anchor="middle" background="white">Query</text>
+
+        <!-- Internal Write Side Arrow -->
+        <line x1="160" y1="200" x2="160" y2="230" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+
+        <!-- Write DB to Kafka -->
+        <line x1="280" y1="265" x2="310" y2="265" stroke="var(--diagram-color-warning-border)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <text x="295" y="255" font-size="11" fill="var(--diagram-color-muted)" text-anchor="middle">events</text>
+
+        <!-- Internal Read Side Arrow -->
+        <line x1="600" y1="200" x2="600" y2="230" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
+
+        <!-- Kafka to Read Side -->
+        <line x1="450" y1="265" x2="480" y2="265" stroke="var(--diagram-color-warning-border)" stroke-width="2" marker-end="url(#arr-gray)"/>
+        <text x="465" y="255" font-size="11" fill="var(--diagram-color-muted)" text-anchor="middle">events</text>
+      </svg>
+
+      <!-- HTML Elements Layer -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        
+        <!-- Client -->
+        <div class="d-box d-legacy text-center" style="position: absolute; top: 0px; left: 270px; width: 220px;">
+          <div class="d-title">Client</div>
+          <div class="d-sub">Command (write) hoặc Query (read)</div>
+        </div>
+
+        <!-- Write Side -->
+        <!-- Center X = 160. Width 240. Left = 160 - 120 = 40. Top = 130. Height = 180. -->
+        <div class="d-cluster" style="position: absolute; top: 110px; left: 40px; width: 240px; height: 210px; padding-top: 10px;">
+          <span class="d-label">Write Side</span>
+          <div class="d-box d-service text-center" style="margin: 20px auto 0; width: 200px;">
+            <div class="d-title">Command Model</div>
+            <div class="d-sub">write-optimized</div>
+          </div>
+          <!-- Arrow is drawn via SVG -->
+          <div class="d-box d-storage text-center" style="margin: 50px auto 0; width: 200px;">
+            <div class="d-title">Write DB</div>
+            <div class="d-sub">PostgreSQL — normalized</div>
+          </div>
+        </div>
+
+        <!-- Kafka -->
+        <!-- Center X = 380. Top = 240. Width = 140. Left = 380 - 70 = 310. -->
+        <div class="d-box d-event text-center" style="position: absolute; top: 235px; left: 310px; width: 140px;">
+          <div class="d-title">Kafka</div>
+          <div class="d-sub">Event Pipeline</div>
+        </div>
+
+        <!-- Read Side -->
+        <!-- Center X = 600. Width 240. Left = 600 - 120 = 480. Top = 130. Height = 180. -->
+        <div class="d-cluster" style="position: absolute; top: 110px; left: 480px; width: 240px; height: 210px; padding-top: 10px;">
+          <span class="d-label">Read Side</span>
+          <div class="d-box d-note text-center" style="margin: 20px auto 0; width: 200px;">
+            <div class="d-title">Query Model</div>
+            <div class="d-sub">read-optimized</div>
+          </div>
+          <!-- Arrow is drawn via SVG -->
+          <div class="d-box d-storage text-center" style="margin: 50px auto 0; width: 200px;">
+            <div class="d-title">Read DB</div>
+            <div class="d-sub">có thể khác tech (Redis, ES…)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LMS Application note -->
+    <div class="d-box d-note d-mt-1">
+      <div class="d-title d-mb-1">LMS ứng dụng CQRS</div>
+      <div class="d-stack d-gap-1">
+        <div style="font-size:12px;">
+          <span class="fw-semibold">Write:</span>
+          Core Service ghi submissions vào PostgreSQL (normalized write model)
+        </div>
+        <div style="font-size:12px;">
+          <span class="fw-semibold">Read:</span>
+          Leaderboard Aggregator đọc từ materialized view (pre-computed ranking)
+        </div>
+        <div style="font-size:12px;">
+          <span class="fw-semibold">Event:</span>
+          Kafka đồng bộ write → read. Eventual consistency (vài giây delay).
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

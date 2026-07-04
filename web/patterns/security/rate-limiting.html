@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Limiting — Pattern Story | Ch.8 API Gateway KBM</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    /* Custom CSS for Rate Limiting Token Bucket Simulation */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    @media (max-width: 900px) {
+      .simulator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .bucket-visualization {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .bucket {
+      width: 140px;
+      height: 180px;
+      border: 4px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 24px 24px;
+      position: relative;
+      display: flex;
+      flex-wrap: wrap-reverse;
+      align-content: flex-start;
+      padding: 12px;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      box-shadow: inset 0 -20px 40px rgba(0,0,0,0.6);
+      transition: transform 0.15s ease-in-out;
+    }
+    
+    .bucket::before {
+      content: 'MAX CAPACITY (10)';
+      position: absolute;
+      top: -24px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+    }
+
+    .token {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.4), 0 0 8px var(--primary-glow);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .token.entering { animation: dropIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .token.leaving { animation: flyOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+    @keyframes dropIn {
+      0% { transform: translateY(-80px) scale(0); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes flyOut {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: translate(60px, 60px) scale(0); opacity: 0; }
+    }
+
+    .sim-dashboard {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .dashboard-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .metric-lbl { color: var(--text-secondary); }
+    .metric-val { font-family: var(--font-mono); font-weight: 700; }
+
+    .sim-log {
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      box-shadow: var(--terminal-shadow);
+      margin-top: 16px;
+    }
+    .log-line {
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-success { color: var(--success); }
+    .log-error { color: var(--danger); }
+  </style>
+</head>
+<body>
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Rate Limiting</h1>
+  <p class="pattern-subtitle">Thuật toán Token Bucket bảo vệ API chống quá tải và brute-force</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">implementation</span><span class="meta-value">Spring Cloud Gateway + Redis RateLimiter</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 8 — §8.4</span></div>
+    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">API Gateway (kbm-gateway)</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">Request Flood & Tấn công Brute-Force</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi expose public APIs, nếu không kiểm soát tần suất request, hệ thống sẽ dễ overload do lượng truy cập đột biến (cả vô ý lẫn cố tình DDoS).
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Exhaustion</div></div>
+      <h3>Cạn kiệt tài nguyên (Resource Exhaustion)</h3>
+      <p>Spam requests (ví dụ: data scraping, retry loops) chiếm dụng hoàn toàn thread pool và CPU. Gateway bị block, không thể route requests hợp lệ khác.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Brute-Force</div></div>
+      <h3>Tấn công Brute-Force & Credential Stuffing</h3>
+      <p>Attacker dùng botnet để dò mật khẩu liên tục qua Auth API. Nếu không có Rate Limiting, hacker có thể dò ra tài khoản và đồng thời làm sập Auth Service.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">Traffic Filtering & Rate Limiter</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Đặt một Filter tại API Gateway để đếm số lượng requests từ Client (theo IP, API Key, User ID). Nếu vượt ngưỡng, Gateway từ chối xử lý và trả về lỗi <code>429 Too Many Requests</code> kèm HTTP header <code>Retry-After</code>.
+    </p>
+    <div class="definition-attribution">— Rate Limiting Pattern · API Gateway Architecture</div>
+  </div>
+
+  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
+    Thuật toán **Token Bucket** là giải pháp phổ biến: một bucket có dung lượng tối đa (Burst Capacity) được nạp token tự động ở tốc độ cố định (Replenish Rate). Mỗi request đi qua tiêu tốn 1 token. Khi bucket rỗng, request bị block.
+  </p>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Key Resolver</h4>
+      <p>Định danh Client để áp dụng rate limit. Thường resolve qua: Địa chỉ IP (public route), User ID (từ JWT), hoặc Client/App ID (B2B API).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Distributed State với Redis</h4>
+      <p>Lưu trữ state của token bucket. Sử dụng Redis (thông qua atomic Lua script) đảm bảo giới hạn chính xác khi scale Gateway ra nhiều instances (Distributed Rate Limiting).</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>HTTP 429 Handler</h4>
+      <p>Trả về mã 429 và inject headers <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code> để chỉ dẫn Client thực hiện backoff.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">Mô phỏng thuật toán Token Bucket</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Nhấp liên tục **Gửi Request** để tiêu tốn token. Quan sát quá trình Replenish và cách Gateway trả về 429 khi bucket rỗng.
+  </p>
+
+  <div class="simulator-container">
+    <!-- Visualization container -->
+    <div class="bucket-visualization">
+      <div class="bucket" id="bucket">
+        <!-- Rendered by JS -->
+      </div>
+      
+      <div style="margin-top:20px; width:100%;">
+        <button class="btn btn-primary" onclick="sendRequest()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000;">Gửi Request (-1 Token)</button>
+      </div>
+    </div>
+
+    <!-- Configuration and Logs -->
+    <div class="sim-dashboard">
+      <div>
+        <div class="dashboard-title" style="margin-bottom:12px;">Gateway RateLimiter Config</div>
+        <div class="dashboard-metrics">
+          <div class="metric-row">
+            <span class="metric-lbl">Tốc độ nạp (Replenish Rate)</span>
+            <span class="metric-val">2 tokens / giây</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-lbl">Dung lượng xô (Burst Capacity)</span>
+            <span class="metric-val">10 tokens</span>
+          </div>
+          <div class="metric-row" style="border-top:1px solid var(--border); padding-top:10px;">
+            <span class="metric-lbl">Số token hiện tại</span>
+            <span class="metric-val" id="val-tokens" style="color:var(--primary); font-size:18px;">10</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-log" id="sim-log">
+        <div><span class="log-time">[14:20:52]</span> <span class="log-success">Khởi tạo Token Bucket. Trạng thái: Sẵn sàng.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04</div>
+      <h2 class="act-title">Thiết lập cấu hình KBM Gateway</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Cấu hình Rate Limiting chi tiết tại <code>kbm-gateway</code> cho từng API route riêng biệt để tối ưu tài nguyên.
+  </p>
+
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Cấu hình chi tiết các Endpoint KBM</h3>
+  <div class="sub-label">Quyết định cấu hình xô token dựa trên độ nhạy cảm của API</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>API Routes</th>
+          <th>Key Resolver</th>
+          <th>Replenish Rate</th>
+          <th>Burst Capacity</th>
+          <th>Mục đích bảo vệ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label"><code>/api/v1/auth/login</code></td>
+          <td>Client IP Address</td>
+          <td>1 token / 3 giây</td>
+          <td>5 tokens</td>
+          <td><span class="b-high">CRITICAL</span>: Ngăn chặn Brute-force, Credential Stuffing.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/v1/assignments/*/submit</code></td>
+          <td>Student ID (JWT)</td>
+          <td>1 token / 5 giây</td>
+          <td>3 tokens</td>
+          <td><span class="b-high">HIGH</span>: Ngăn spam submissions, tránh quá tải Judge engine.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/api/v1/courses/**</code> (Queries)</td>
+          <td>Student ID (JWT)</td>
+          <td>10 tokens / giây</td>
+          <td>20 tokens</td>
+          <td><span class="b-med">MED</span>: Đảm bảo UX mượt mà, giới hạn spam API.</td>
+        </tr>
+        <tr>
+          <td class="gap-label"><code>/static/**</code> (Assets)</td>
+          <td>Không áp dụng</td>
+          <td>∞</td>
+          <td>∞</td>
+          <td><span class="b-low">LOW</span>: Static assets đã cache qua CDN/Nginx, không cần filter.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình triển khai Rate Limiting</h3>
+  <div class="sub-label">Tiến trình triển khai an toàn từ Dev đến Production</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1</div>
+      <h4>Setup Distributed Redis Cache</h4>
+      <p>Thiết lập Redis cluster. Cấu hình Spring Cloud Gateway dùng <code>RedisRateLimiter</code>. Implement <code>IpKeyResolver</code> lấy IP Client thật (X-Forwarded-For).</p>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2</div>
+      <h4>Configure Route YAML & Headers</h4>
+      <p>Khai báo <code>RequestRateLimiter</code> filter theo từng route. Cấu hình custom headers báo hiệu Rate Limit cho client-side.</p>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3</div>
+      <h4>Custom 429 Response & UI</h4>
+      <p>Format lại JSON error message chuẩn xác cho mã 429. Frontend bắt lỗi và hiển thị UI Countdown chờ retry.</p>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4</div>
+      <h4>Observability & Alerting</h4>
+      <p>Export metrics sang Prometheus. Cảnh báo qua Grafana nếu lỗi 429 spike (phát hiện DDoS/Brute-force) để tự động block IP qua Cloudflare.</p>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Nên dùng Rate Limiting khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Public APIs expose cho bên thứ 3, Mobile/Web Client.</li>
+        <li>Compute-heavy endpoints (Báo cáo, Fuzzy Search, AI).</li>
+        <li>Auth APIs, OTP generation để chống spam.</li>
+        <li>Bảo vệ Database connection pool khỏi cạn kiệt.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Không nên dùng khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Internal service-to-service calls qua Private Network.</li>
+        <li>Static Assets (CSS, JS, Image) được phục vụ qua CDN.</li>
+        <li>Real-time streaming (WebSockets) không giới hạn bandwidth.</li>
+        <li>Chưa có Key Resolver đáng tin cậy (VD: vướng NAT IP chung).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về API Gateway Filter, RedisRateLimiter, KeyResolver, và cấu hình Spring Cloud Gateway trong sách.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-08'}, '*'); return false;">📖 Chương 8 — API Gateway →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+// ── Act Nav highlight ────────────────────────────────────
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulator Logic ──────────────────────────────────────
+const MAX_CAPACITY = 10;
+const REPLENISH_RATE = 2; // tokens per second
+let currentTokens = MAX_CAPACITY;
+let replenishInterval;
+const logEl = document.getElementById('sim-log');
+
+function addLog(msg, type) {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const entry = document.createElement('div');
+  entry.className = 'log-line';
+  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function renderTokens(isEntering = false) {
+  const bucket = document.getElementById('bucket');
+  bucket.innerHTML = '';
+  for (let i = 0; i < currentTokens; i++) {
+    const div = document.createElement('div');
+    div.className = 'token';
+    if (isEntering && i >= currentTokens - REPLENISH_RATE) {
+      div.classList.add('entering');
+    }
+    bucket.appendChild(div);
+  }
+  document.getElementById('val-tokens').textContent = currentTokens;
+}
+
+function sendRequest() {
+  if (currentTokens > 0) {
+    currentTokens--;
+    renderTokens();
+    addLog('Request Allowed (200 OK) — Tiêu thụ 1 token.', 'success');
+  } else {
+    addLog('🚨 Rate Limited (429 Too Many Requests) — Xô đã hết token!', 'error');
+    
+    // Shake animation for the bucket
+    const b = document.getElementById('bucket');
+    b.style.transform = 'translateX(-10px)';
+    setTimeout(() => b.style.transform = 'translateX(10px)', 50);
+    setTimeout(() => b.style.transform = 'translateX(-10px)', 100);
+    setTimeout(() => b.style.transform = 'translateX(0)', 150);
+  }
+}
+
+function replenish() {
+  if (currentTokens < MAX_CAPACITY) {
+    const added = Math.min(REPLENISH_RATE, MAX_CAPACITY - currentTokens);
+    currentTokens += added;
+    renderTokens(true);
+    addLog(`System: Tự động nạp +${added} tokens vào xô.`, 'success');
+  }
+}
+
+// Start background replenish
+replenishInterval = setInterval(replenish, 1500);
+
+// Initial render
+renderTokens();
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Theme Integration ─────────────────────────────────────
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// â”€â”€ Collapsible Act 1 & 2 â”€â”€
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+      section.classList.add('expanded');
+      label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+</body>
+</html>
+
+
+
+

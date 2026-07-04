@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.5 — Distributed Tracing — traceId propagation | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.5">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-row d-gap-1" style="align-items:stretch;">
+      <div class="d-box d-highlight text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title">Gateway</div>
+        <div class="d-mono" >traceId: abc123</div>
+        <div class="d-mono" >spanId: span-1</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-service text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title">Core Service</div>
+        <div class="d-mono" >traceId: abc123</div>
+        <div class="d-mono" >spanId: span-2</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-event text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title">Kafka Broker</div>
+        <div class="d-mono" >traceId: abc123</div>
+        <div class="d-mono" >spanId: span-3</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-highlight text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title">Judge Service</div>
+        <div class="d-mono" >traceId: abc123</div>
+        <div class="d-mono" >spanId: span-4</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-storage text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title">Database</div>
+        <div class="d-mono" >traceId: abc123</div>
+        <div class="d-mono" >spanId: span-5</div>
+      </div>
+    </div>
+    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
+      <div class="d-sub text-center" style="line-height:1.5;">Cùng <span class="d-mono" style="display:inline;">traceId: abc123</span> xuyên suốt tất cả services → dễ dàng trace toàn bộ request flow.</div>
+    </div>
+  </div>
+</body>
+</html>

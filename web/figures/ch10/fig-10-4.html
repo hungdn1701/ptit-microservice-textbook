@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.4 — Lộ trình tách database — 5 bước | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.4">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row d-mb-3 d-gap-1" style="align-items:stretch;">
+      <div class="d-box d-note text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title"><span class="d-step">1</span> Schema Separation</div>
+        <div class="d-sub d-mt-1">Tách schema logic</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-note text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title"><span class="d-step">2</span> View Abstraction</div>
+        <div class="d-sub d-mt-1">Tạo DB views</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-note text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title"><span class="d-step">3</span> API Endpoint</div>
+        <div class="d-sub d-mt-1">Thay direct query</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-note text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title"><span class="d-step">4</span> Data Duplication</div>
+        <div class="d-sub d-mt-1">CDC/ETL sync</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-note text-center" style="flex:1; padding:14px 8px;">
+        <div class="d-title"><span class="d-step">5</span> Full Split</div>
+        <div class="d-sub d-mt-1">Tách DB riêng</div>
+      </div>
+    </div>
+
+    <!-- Risk bar -->
+    <div class="d-mb-1" style="height:6px; border-radius:3px; background:linear-gradient(90deg, var(--diagram-color-success-border) 0%, var(--diagram-color-warning-border) 50%, var(--diagram-color-danger-border) 100%);"></div>
+    <div class="d-row" style="justify-content:space-between;">
+      <div class="d-sub fw-bold d-text-success">← Rủi ro: Thấp</div>
+      <div class="d-sub fw-bold d-text-danger">Rủi ro: Cao →</div>
+    </div>
+  </div>
+</body>
+</html>

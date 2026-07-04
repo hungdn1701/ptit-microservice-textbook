@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 10.8 — Branch by Abstraction | Ch.10</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-10.8">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-grid-3 d-gap-2" style="align-items:start;">
+      <!-- Step 1 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">1</span> Tạo lớp trừu tượng</div>
+        <div class="d-col d-gap-1" style="align-items:center;">
+          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;">
+            <div class="d-title">Triển khai cũ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">2</span> Triển khai mới</div>
+        <div class="d-col d-gap-1" style="align-items:center;">
+          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
+          <div class="d-row d-gap-1" style="width:100%;">
+            <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+            <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
+          </div>
+          <div class="d-row d-gap-1" style="width:100%;">
+            <div class="d-box d-legacy text-center" style="flex:1; padding:8px;"><div class="d-title" >Cũ</div></div>
+            <div class="d-box d-service text-center" style="flex:1; padding:8px;"><div class="d-title" >Mới</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="d-cluster" style="padding:14px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">3</span> Xóa cũ</div>
+        <div class="d-col d-gap-1" style="align-items:center;">
+          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
+          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-service text-center" style="width:100%; padding:10px;">
+            <div class="d-title">Triển khai mới</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

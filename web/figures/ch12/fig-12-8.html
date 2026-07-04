@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 12.8 — KBM Deployment Architecture — Abstract View | Ch.12</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-12.8">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-row d-gap-2" style="align-items: stretch;">
+      <!-- Khối LMS chính -->
+      <div class="d-col" style="flex: 7;">
+        <div class="d-cluster" style="padding: 16px; height: 100%;">
+          <div class="d-label d-mb-2 d-label-lg text-center" style="position:static;">LMS Chính (Core LMS)</div>
+          
+          <div class="d-col d-gap-2">
+            <!-- Danh tính dùng chung & lớp biên -->
+            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
+              <div class="d-label d-mb-1 text-center" style="position:static;">Danh tính dùng chung &amp; lớp biên</div>
+              <div class="d-row d-center d-gap-1">
+                <div class="d-box d-highlight text-center" style="flex:1; max-width:200px; padding:10px;">
+                  <div class="d-title">API Gateway</div>
+                  <div class="d-sub">JWT, CORS, Routing</div>
+                </div>
+                <div class="d-box d-note text-center" style="flex:1; max-width:200px; padding:10px;">
+                  <div class="d-title">Dịch vụ xác thực</div>
+                  <div class="d-sub">Đăng nhập, RBAC</div>
+                </div>
+                <div class="d-box d-storage text-center" style="flex:1; max-width:200px; padding:10px;">
+                  <div class="d-title">Eureka Registry</div>
+                  <div class="d-sub">khám phá dịch vụ</div>
+                </div>
+              </div>
+            </div>
+
+            <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+            <!-- Dịch vụ nghiệp vụ -->
+            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
+              <div class="d-label d-mb-1 text-center" style="position:static;">Dịch vụ nghiệp vụ (Docker containers)</div>
+              <div class="d-row d-center d-gap-1" style="flex-wrap:wrap;">
+                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
+                  <div class="d-title">Dịch vụ lõi</div>
+                  <div class="d-mono">:8080</div>
+                </div>
+                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
+                  <div class="d-title">Bài tập</div>
+                  <div class="d-mono">:8088</div>
+                </div>
+                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
+                  <div class="d-title">Chấm bài</div>
+                  <div class="d-mono">:8082</div>
+                </div>
+                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
+                  <div class="d-title">Thông báo</div>
+                  <div class="d-mono">:8084</div>
+                </div>
+              </div>
+            </div>
+
+            <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+            <!-- Tầng dữ liệu -->
+            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
+              <div class="d-label d-mb-1 text-center" style="position:static;">Tầng dữ liệu</div>
+              <div class="d-row d-center d-gap-1">
+                <div class="d-box d-storage text-center" style="flex:1; max-width:180px; padding:10px;">
+                  <div class="d-title">PostgreSQL</div>
+                </div>
+                <div class="d-box d-event text-center" style="flex:1; max-width:180px; padding:10px;">
+                  <div class="d-title">Kafka</div>
+                </div>
+                <div class="d-box d-highlight text-center" style="flex:1; max-width:180px; padding:10px;">
+                  <div class="d-title">Redis Cache</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối DevOps Lab -->
+      <div class="d-col" style="flex: 3;">
+        <div class="d-cluster" style="padding: 16px; height: 100%;">
+          <div class="d-label d-mb-2 d-label-lg text-center" style="position:static;">DevOps Lab</div>
+          
+          <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface); height: calc(100% - 40px); display: flex; flex-direction: column;">
+            <div class="d-label d-mb-2 text-center" style="position:static;">K3s / Sysbox</div>
+            
+            <div class="d-col d-gap-1" style="flex: 1; justify-content: center;">
+              <div class="d-box d-service text-center" style="padding:12px;">
+                <div class="d-title">Tenant Cluster 1</div>
+                <div class="d-sub">Container-in-Container</div>
+              </div>
+              <div class="d-box d-service text-center" style="padding:12px;">
+                <div class="d-title">Tenant Cluster 2</div>
+                <div class="d-sub">Container-in-Container</div>
+              </div>
+              <div class="d-box d-service text-center" style="padding:12px; border-style: dashed; background: transparent;">
+                <div class="d-title">...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

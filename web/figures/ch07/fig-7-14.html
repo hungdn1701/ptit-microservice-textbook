@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.14 — KBM — Kiến trúc dữ liệu hiện tại (vấn đề)
+    =========================================================
+    Tier 1 HTML migration từ fig-7-14.svg
+    Layout: 4 services on top → data layer below, Core+Assignment sharing app_db (danger)
+    Capture: gen-diagrams.ps1 → fig-7-14.png → Typst image()
+  -->
+  <title>Fig 7.14 — KBM — Kiến trúc dữ liệu hiện tại (vấn đề) | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.14" data-ref="CH07-SEC">
+
+    <div style="position: relative; width: 780px; height: 380px; margin: 0 auto;">
+      <!-- SVG Layer -->
+      <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0; overflow: visible;">
+        <defs>
+          <marker id="arr-danger" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)"/></marker>
+          <marker id="arr-success" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
+        </defs>
+
+        <!-- Core and Assignment sharing Shared DB -->
+        <!-- Core is at X=150. Assignment is at X=330. Shared DB is at X=240 -->
+        <path d="M 150 140 L 150 180 L 240 180 L 240 230" fill="none" stroke="var(--diagram-color-danger-border)" stroke-width="3" marker-end="url(#arr-danger)"/>
+        <path d="M 330 140 L 330 180 L 240 180 L 240 230" fill="none" stroke="var(--diagram-color-danger-border)" stroke-width="3" marker-end="url(#arr-danger)"/>
+
+        <!-- Auth to Auth DB -->
+        <!-- Auth is at X=510 -->
+        <line x1="510" y1="140" x2="510" y2="230" stroke="var(--diagram-color-success-border)" stroke-width="3" marker-end="url(#arr-success)"/>
+
+        <!-- Judge to Sandbox DB -->
+        <!-- Judge is at X=690 -->
+        <line x1="690" y1="140" x2="690" y2="230" stroke="var(--diagram-color-success-border)" stroke-width="3" marker-end="url(#arr-success)"/>
+      </svg>
+
+      <!-- HTML Elements Layer -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+        
+        <!-- Application Layer Label -->
+        <div class="d-cluster" style="position: absolute; top: 0; left: 40px; width: 740px; height: 160px; pointer-events: none;">
+          <span class="d-label">Application Layer</span>
+        </div>
+
+        <!-- 4 Services -->
+        <div class="d-box d-service text-center" style="position: absolute; top: 60px; left: 70px; width: 160px;">
+          <div class="d-title">Core Service</div>
+          <div class="d-sub">questions, submissions, contests</div>
+        </div>
+        
+        <div class="d-box d-domain text-center" style="position: absolute; top: 60px; left: 250px; width: 160px;">
+          <div class="d-title">Assignment Svc</div>
+          <div class="d-sub">courses, assignments, grades</div>
+        </div>
+
+        <div class="d-box d-note text-center" style="position: absolute; top: 60px; left: 430px; width: 160px;">
+          <div class="d-title">Auth Service</div>
+          <div class="d-sub">users, roles, tokens</div>
+        </div>
+
+        <div class="d-box d-event text-center" style="position: absolute; top: 60px; left: 610px; width: 160px;">
+          <div class="d-title">Judge Service</div>
+          <div class="d-sub">execution, grading</div>
+        </div>
+
+        <!-- Data Layer Label -->
+        <div class="d-cluster" style="position: absolute; top: 200px; left: 40px; width: 740px; height: 170px; pointer-events: none;">
+          <span class="d-label">Data Layer</span>
+        </div>
+
+        <!-- Shared DB (Width 340, Center = 240, Left = 240 - 170 = 70) -->
+        <div class="d-box d-danger text-center" style="position: absolute; top: 240px; left: 70px; width: 340px;">
+          <div class="d-title">[DB] PostgreSQL — app_db</div>
+          <div class="d-sub">(SHARED!) Core + Assignment dùng chung</div>
+          <div class="d-zone d-zone-danger d-mt-1" style="font-size: 11px;">
+            ← VẤN ĐỀ: Rủi ro sập chéo, khóa bảng chồng chéo
+          </div>
+        </div>
+
+        <!-- Auth DB -->
+        <div class="d-box d-storage text-center" style="position: absolute; top: 240px; left: 430px; width: 160px; height: 95px; display: flex; flex-direction: column; justify-content: center;">
+          <div class="d-title">PostgreSQL</div>
+          <div class="d-sub">auth_db</div>
+          <div class="d-mt-1 fw-bold" style="font-size: 11px;">(Độc lập)</div>
+        </div>
+
+        <!-- Sandbox DB -->
+        <div class="d-box d-storage text-center" style="position: absolute; top: 240px; left: 610px; width: 160px; height: 95px; display: flex; flex-direction: column; justify-content: center;">
+          <div class="d-title">Sandbox DBs</div>
+          <div class="d-sub">MySQL, PG…</div>
+          <div class="d-mt-1 fw-bold" style="font-size: 11px;">(Độc lập)</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Problem summary -->
+    <div class="d-box d-danger d-mt-1 text-center">
+      <div class="d-title">Vấn đề: Core và Assignment dùng chung "app_db"</div>
+      <div class="d-sub">
+        Đặc trưng của kiến trúc Monolithic. Không thể scale riêng rẽ, triển khai (deploy) Core có thể vô tình làm chết Assignment. Cần được gỡ rối (Decoupling).
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

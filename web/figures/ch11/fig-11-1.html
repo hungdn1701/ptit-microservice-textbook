@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.1 — LMS Request Flow — Observability context | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.1">
+    <div class="d-pipeline">
+      <div class="d-box d-legacy text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
+        <div class="d-title">Student</div>
+      </div>
+      <div class="d-arrow-svg-wrapper" style="width: 32px;">
+        <svg width="32" height="12"><defs><marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)"/></marker></defs><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+      <div class="d-box d-highlight text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
+        <div class="d-title">API Gateway</div>
+        <div class="d-mono" style="margin-top:4px;">:8080</div>
+      </div>
+      <div class="d-arrow-svg-wrapper" style="width: 32px;">
+        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+      <div class="d-box d-service text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
+        <div class="d-title">Core Service</div>
+        <div class="d-mono" style="margin-top:4px;">:8081</div>
+      </div>
+      <div class="d-arrow-svg-wrapper" style="width: 32px;">
+        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+      <div class="d-box d-highlight text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
+        <div class="d-title">Judge Service</div>
+        <div class="d-mono" style="margin-top:4px;">:8082</div>
+      </div>
+      <div class="d-arrow-svg-wrapper" style="width: 32px;">
+        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+      <div class="d-box d-storage text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
+        <div class="d-title">Database</div>
+      </div>
+    </div>
+    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
+      <div class="d-sub text-center" style="line-height:1.5;">Khi request đi qua nhiều service, cần Observability để trace, debug và monitor toàn bộ flow.</div>
+    </div>
+  </div>
+</body>
+</html>

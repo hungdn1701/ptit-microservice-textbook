@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 1.6 — Con đường từ Monolith đến Microservices
+    =========================================================
+    Tier 1 HTML migration
+  -->
+  <title>Fig 1.6 — The Path from Monolith to Microservices | Ch.1</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-1.6" data-ref="CH01-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-col d-center">
+      <div class="d-row d-center d-gap-3" style="width: 100%;">
+        
+        <div class="d-col d-center" style="flex: 3;">
+          <div class="d-box d-mb-2 text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Tangled Source Code</div>
+            <div class="d-sub">Blurred Business Boundaries</div>
+          </div>
+          <svg width="2" height="24" class="d-mb-2" style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-dasharray="4,4" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-legacy text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Big Ball of Mud</div>
+            <div class="d-sub">Messy Monolithic Architecture</div>
+          </div>
+        </div>
+
+        <div class="d-col d-center" style="flex: 1; margin-top: auto; margin-bottom: 40px;">
+          <!-- Custom stretching arrow -->
+          <div style="width: 100%; position: relative; height: 2px; background: var(--diagram-color-line-muted);">
+            <div style="position: absolute; right: -2px; top: -5px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 8px solid var(--diagram-color-line-muted);"></div>
+            <div class="d-arrow-label" style="top: -12px;">Refactoring</div>
+          </div>
+        </div>
+
+        <div class="d-col d-center" style="flex: 3;">
+          <div class="d-box d-mb-2 text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Clear Modules</div>
+            <div class="d-sub">Communication via Interfaces</div>
+          </div>
+          <svg width="2" height="24" class="d-mb-2" style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-dasharray="4,4" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-domain text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Modular Monolith</div>
+            <div class="d-sub">Clear Domain Boundaries</div>
+          </div>
+        </div>
+
+        <div class="d-col d-center" style="flex: 1; margin-top: auto; margin-bottom: 40px;">
+          <!-- Custom stretching arrow -->
+          <div style="width: 100%; position: relative; height: 2px; background: var(--diagram-color-line-muted);">
+            <div style="position: absolute; right: -2px; top: -5px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 8px solid var(--diagram-color-line-muted);"></div>
+            <div class="d-arrow-label" style="top: -12px;">Decompose</div>
+          </div>
+        </div>
+
+        <div class="d-col d-center" style="flex: 3;">
+          <div class="d-box d-mb-2 text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Independent Deployability</div>
+            <div class="d-sub">Database-per-Service</div>
+          </div>
+          <svg width="2" height="24" class="d-mb-2" style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-dasharray="4,4" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+          <div class="d-box d-service text-center" style="width: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="d-title">Microservices Architecture</div>
+            <div class="d-sub">Distributed Services</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="d-sep" style="width: 100%; margin: 32px 0;"></div>
+
+      <div class="d-box d-warning text-center" style="max-width: 600px;">
+        <div class="d-title d-mb-1">Anti-Pattern: Distributed Monolith</div>
+        <div class="d-sub">Extracting directly from "Big Ball of Mud" to Microservices without a Modular Monolith phase.</div>
+        <div class="d-sub d-mt-1">Carries the flaws of both: Complex like Microservices but tightly coupled like a Monolith.</div>
+      </div>
+
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

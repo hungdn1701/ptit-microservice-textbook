@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 9.8 — Security Flow | Ch.9</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-9.8">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-col">
+      <!-- Internet layer -->
+      <div class="d-cluster" style="padding:14px 18px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;">Internet</div>
+        <div class="d-row d-center d-gap-2">
+          <div class="d-box d-note text-center" style="flex:1; max-width:180px;">
+            <div class="d-title">Student App</div>
+          </div>
+          <div class="d-box d-note text-center" style="flex:1; max-width:180px;">
+            <div class="d-title">Admin CMS</div>
+          </div>
+        </div>
+      </div>
+
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Edge layer -->
+      <div class="d-cluster" style="padding:14px 18px;">
+        <div class="d-label d-mb-1 text-center" style="position:static;">Edge Layer</div>
+        <div class="d-row d-center">
+          <div class="d-box d-gateway text-center" style="padding:12px 20px;">
+            <div class="d-title">Gateway :9001</div>
+            <div class="d-sub">JWT validation · CORS · Rate limiting</div>
+          </div>
+        </div>
+      </div>
+
+      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+
+      <!-- Service layer -->
+      <div class="d-cluster" style="padding:14px 18px;">
+        <div class="d-label d-mb-2 text-center" style="position:static;">Service Layer (Internal Network)</div>
+        <div class="d-grid-4 d-gap-2">
+          <div class="d-box d-note text-center" style="padding:10px 6px;">
+            <div class="d-title" style="font-size:12px;">Auth Service</div>
+            <div class="d-sub">JWT issuer, RBAC</div>
+          </div>
+          <div class="d-box d-service text-center" style="padding:10px 6px;">
+            <div class="d-title" style="font-size:12px;">Core Service</div>
+            <div class="d-sub">@PreAuthorize</div>
+          </div>
+          <div class="d-box d-service text-center" style="padding:10px 6px;">
+            <div class="d-title" style="font-size:12px;">Assignment</div>
+            <div class="d-sub">@PreAuthorize</div>
+          </div>
+          <div class="d-box d-service text-center" style="padding:10px 6px;">
+            <div class="d-title" style="font-size:12px;">Judge Service</div>
+            <div class="d-sub">internal only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

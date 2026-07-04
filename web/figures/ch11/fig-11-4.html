@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 11.4 — Centralized Log Aggregation Pipeline | Ch.11</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-11.4">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+    <div class="d-row d-gap-1" style="align-items:stretch;">
+      <div class="d-col d-gap-1" style="flex:1;">
+        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Gateway</div></div>
+        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Core</div></div>
+        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Judge</div></div>
+        <div class="d-label text-center">Application Services</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-event text-center" style="flex:1; padding:14px; align-self:center;">
+        <div class="d-title">Log Shipper</div>
+        <div class="d-sub">Filebeat / Fluentd</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-highlight text-center" style="flex:1; padding:14px; align-self:center;">
+        <div class="d-title">Log Storage</div>
+        <div class="d-sub">Elasticsearch / Loki</div>
+      </div>
+      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      <div class="d-box d-note text-center" style="flex:1; padding:14px; align-self:center;">
+        <div class="d-title">Dashboard</div>
+        <div class="d-sub">Kibana / Grafana</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

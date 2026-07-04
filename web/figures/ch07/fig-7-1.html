@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.1 — Hệ quả của Shared Database
+    =========================================================
+    Tier 1 HTML migration từ fig-7-1.svg
+    Layout: Central danger container with 3 problem boxes + bottom note
+    Capture: gen-diagrams.ps1 → fig-7-1.png → Typst image()
+  -->
+  <title>Fig 7.1 — Hệ quả của Shared Database | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.1" data-ref="CH07-SEC">
+
+    <!-- Central danger cluster showing the 3 problem types -->
+    <div class="d-cluster d-mb-2" style="border-color:var(--diagram-color-danger-border); background:var(--diagram-color-danger-bg);">
+      <span class="d-label d-text-danger" style="background:var(--diagram-color-danger-bg);">Shared Database — Vấn đề</span>
+
+      <div class="d-stack d-mt-1">
+
+        <div class="d-box d-service">
+          <div class="d-title">Schema coupling</div>
+          <div class="d-sub">Thay đổi bảng X ảnh hưởng Service A, B, C — không thể deploy độc lập</div>
+        </div>
+
+        <div class="d-box d-event">
+          <div class="d-title">Deploy coupling</div>
+          <div class="d-sub">Migrate schema = phải deploy tất cả services cùng lúc — zero-downtime impossible</div>
+        </div>
+
+        <div class="d-box d-note">
+          <div class="d-title">Scale coupling</div>
+          <div class="d-sub">Không thể scale DB cho riêng một service — bottleneck ảnh hưởng toàn hệ thống</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Visual: services pointing to one DB -->
+    <div class="d-col d-center d-mb-2" style="position: relative; width: 600px; margin: 0 auto;">
+      
+      <!-- Services Row -->
+      <div class="d-row d-center" style="gap: 40px; width: 100%; position: relative; z-index: 2;">
+        
+        <!-- Service A -->
+        <div class="d-box d-danger text-center" style="width:140px;">
+          <div class="d-title">Service A</div>
+        </div>
+        
+        <!-- Service B -->
+        <div class="d-box d-danger text-center" style="width:140px;">
+          <div class="d-title">Service B</div>
+        </div>
+        
+        <!-- Service C -->
+        <div class="d-box d-danger text-center" style="width:140px;">
+          <div class="d-title">Service C</div>
+        </div>
+        
+      </div>
+
+      <!-- Fan-in Arrows -->
+      <div style="position:relative; width: 100%; height: 60px; margin-top: -16px; z-index: 1;">
+        <svg width="100%" height="100%" style="display:block; overflow:visible; position:absolute; top:0; left:0;">
+          <defs><marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" /></marker></defs>
+          <!-- Fan-in tree -->
+          <!-- A -> DB (Col 1 center = 20%) -->
+          <path d="M 20% 0 L 20% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+          <!-- B -> DB (Col 2 center = 50%) -->
+          <path d="M 50% 0 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+          <!-- C -> DB (Col 3 center = 80%) -->
+          <path d="M 80% 0 L 80% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+        </svg>
+      </div>
+
+      <!-- Shared DB -->
+      <div class="d-box d-danger text-center" style="width:300px; z-index: 2;">
+        <div class="d-title">Shared Database</div>
+        <div class="d-sub">Tất cả cùng dùng chung — single point of coupling</div>
+      </div>
+
+    </div>
+
+    <!-- Solution note -->
+    <div class="d-box d-note text-center">
+      <div class="d-title">Giải pháp: Database-per-Service (Hình 7.2)</div>
+      <div class="d-sub">Mỗi service own DB riêng. Giao tiếp qua API, không qua DB trực tiếp.</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

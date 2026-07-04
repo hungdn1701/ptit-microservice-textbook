@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.6b — Erl's Service-Oriented Analysis áp dụng vào LMS
+    =========================================================
+    Tier 1 HTML migration từ fig-2-6b.svg
+    Layout: 2-step analysis pipeline + result mapping table
+    Capture: gen-diagrams.ps1 → fig-2-6b.png → Typst image()
+  -->
+  <title>Fig 2.6b — Erl's Service-Oriented Analysis | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.7" data-ref="CH02-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <!-- Steps 1 & 2 side by side -->
+    <div class="d-row d-mb-3 d-gap-2">
+
+      <!-- <span class="d-step">1</span> Automation Candidates -->
+      <div class="d-cluster d-grow">
+        <span class="d-label"><span class="d-step">1</span> Automation Candidates</span>
+        <div class="d-stack d-mt-1">
+          <div class="d-box d-infra"><div class="d-title">User Authentication</div></div>
+          <div class="d-box d-domain"><div class="d-title">SQL Questions Management</div></div>
+          <div class="d-box d-event"><div class="d-title">Automated Judging</div></div>
+          <div class="d-box d-domain"><div class="d-title">Course / Assignment Management</div></div>
+          <div class="d-box d-infra"><div class="d-title">Result Notification</div></div>
+        </div>
+      </div>
+
+      <!-- Arrow between steps -->
+      <div class="d-col d-center">
+        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+      </div>
+
+      <!-- <span class="d-step">2</span> Service Layers -->
+      <div class="d-cluster d-grow">
+        <span class="d-label"><span class="d-step">2</span> Service Layers</span>
+        <div class="d-grid-2 d-mt-1 d-gap-1">
+          <div class="d-box d-event">
+            <div class="d-title">Task: Submission</div>
+            <div class="d-sub">Orchestration</div>
+          </div>
+          <div class="d-box d-note">
+            <div class="d-title">Entity: User</div>
+          </div>
+          <div class="d-box d-service">
+            <div class="d-title">Entity: Question</div>
+          </div>
+          <div class="d-box d-highlight">
+            <div class="d-title">Entity: Course</div>
+          </div>
+          <div class="d-box d-note">
+            <div class="d-title">Utility: Auth</div>
+          </div>
+          <div class="d-box d-warning">
+            <div class="d-title">Utility: Notification</div>
+          </div>
+          <div class="d-box d-event" style="grid-column: span 2;">
+            <div class="d-title">Complicated: Judge</div>
+            <div class="d-sub">Sandbox</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.steps-row -->
+
+    <!-- Result mapping -->
+    <div class="d-cluster">
+      <span class="d-label"><span class="d-step d-step-ghost">R</span> Map to Bounded Contexts</span>
+      <div class="d-stack d-mt-2 d-gap-1">
+
+        <div class="d-row d-gap-1" style="align-items: center;">
+          <div class="d-box d-infra text-center" style="min-width: 160px; flex-shrink: 0;">
+            <div class="d-title">Identity &amp; Access</div>
+          </div>
+          <span class="d-text-muted">=</span>
+          <span class="d-text-base">kbm-auth</span>
+          <span class="d-sub" style="margin-left: 8px;">← Utility Auth</span>
+        </div>
+
+        <div class="d-row d-gap-1" style="align-items: center;">
+          <div class="d-box d-domain text-center" style="min-width: 160px; flex-shrink: 0;">
+            <div class="d-title">SQL Lab</div>
+          </div>
+          <span class="d-text-muted">=</span>
+          <span class="d-text-base">kbm-core + judge</span>
+          <span class="d-sub" style="margin-left: 8px;">← Entity + Task</span>
+        </div>
+
+        <div class="d-row d-gap-1" style="align-items: center;">
+          <div class="d-box d-domain text-center" style="min-width: 160px; flex-shrink: 0;">
+            <div class="d-title">Network Lab</div>
+          </div>
+          <span class="d-text-muted">=</span>
+          <span class="d-text-base">judge-network</span>
+          <span class="d-sub" style="margin-left: 8px;">← Protocol Subsystem</span>
+        </div>
+
+        <div class="d-row d-gap-1" style="align-items: center;">
+          <div class="d-box d-domain text-center" style="min-width: 160px; flex-shrink: 0;">
+            <div class="d-title">Academic Service</div>
+          </div>
+          <span class="d-text-muted">=</span>
+          <span class="d-text-base">kbm-academic</span>
+          <span class="d-sub" style="margin-left: 8px;">← Entity Course</span>
+        </div>
+
+        <div class="d-row d-gap-1" style="align-items: center;">
+          <div class="d-box d-infra text-center" style="min-width: 160px; flex-shrink: 0;">
+            <div class="d-title">DevOps Lab</div>
+          </div>
+          <span class="d-text-muted">=</span>
+          <span class="d-text-base">kbm-devops-api</span>
+          <span class="d-sub" style="margin-left: 8px;">← Task + Infra</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>

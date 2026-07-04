@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.6 — API Composition — N+1 Problem
+    =========================================================
+    Tier 1 HTML migration từ fig-7-6.svg
+    Layout: Sequence diagram 3 actors — Client, Assignment Service, Auth Service
+    Capture: gen-diagrams.ps1 → fig-7-6.png → Typst image()
+  -->
+  <title>Fig 7.6 — API Composition — N+1 Problem | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.6" style="min-height:560px;" data-ref="CH07-SEC">
+
+    <div class="d-seq-container">
+
+      <!-- Participants -->
+      <div class="d-seq-participants">
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-legacy">Client</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-service">Assignment Service</div>
+        </div>
+        <div class="d-seq-actor">
+          <div class="d-seq-actor-box d-domain">Auth Service</div>
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <div class="d-seq-messages">
+
+        <!-- Row 1: Client(0) → Assignment(1) -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">GET /assignments/123</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+        <!-- Row 2: Assignment(1) → Auth(2) -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text">GET /users/456 (lecturer info)</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Row 3: Auth(2) → Assignment(1) dashed -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text">User{name, email}</span>
+          </div>
+          <div style="flex:0.5"></div>
+        </div>
+
+        <!-- Row 4: N+1 problem highlight note at Assignment col -->
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:1"></div>
+          <div class="d-zone d-zone-warning text-center" style="flex:1;">
+            N=10 assignments<br>
+            <span>= 10 calls đến Auth</span>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <!-- Row 5: Assignment(1) → Client(0) dashed (composed response) -->
+        <div class="d-seq-msg">
+          <div style="flex:0.5"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1">
+            <span class="d-seq-msg-text">Assignment + Lecturer info</span>
+          </div>
+          <div style="flex:1.5"></div>
+        </div>
+
+      </div><!-- /messages area -->
+
+    </div><!-- /seq-container -->
+
+    <!-- N+1 explanation note -->
+    <div class="d-box d-note d-mt-2">
+      <div class="d-title">Vấn đề N+1 Queries</div>
+      <div class="d-sub">
+        10 assignments → 10 calls riêng lẻ đến Auth Service. Độ trễ nhân lên tuyến tính.
+        <strong>Giải pháp:</strong> batch API hoặc CQRS với data replication (Hình 7.8).
+      </div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

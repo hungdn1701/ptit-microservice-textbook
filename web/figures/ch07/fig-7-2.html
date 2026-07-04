@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 7.2 — Database-per-Service vs Shared Database
+    =========================================================
+    Tier 1 HTML migration từ fig-7-2.svg
+    Layout: d-grid-2 side-by-side comparison
+    Capture: gen-diagrams.ps1 → fig-7-2.png → Typst image()
+  -->
+  <title>Fig 7.2 — Database-per-Service vs Shared Database | Ch.7</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+</head>
+<body class="diagram-mode">
+
+  <div class="diagram-canvas" data-fig-id="FIG-7.2" data-ref="CH07-SEC">
+    <svg width="0" height="0" style="position:absolute;">
+      <defs>
+        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
+      </defs>
+    </svg>
+
+
+    <div class="d-grid-2 d-gap-2 d-mb-2">
+
+      <!-- LEFT: Database-per-Service (GOOD) -->
+      <div class="d-cluster" style="display: flex; flex-direction: column;">
+        <span class="d-label">Database-per-Service</span>
+
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+          <div class="d-row d-gap-1 d-mb-1" style="justify-content:center; align-items:flex-start;">
+            <!-- Service A -->
+            <div class="d-col d-gap-1" style="align-items:center;">
+              <div class="d-box d-service text-center" style="width:110px;">
+                <div class="d-title">Service A</div>
+              </div>
+              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-storage text-center" style="width:110px;">
+                <div class="d-title">DB A</div>
+              </div>
+            </div>
+    
+            <!-- Service B -->
+            <div class="d-col d-gap-1" style="align-items:center;">
+              <div class="d-box d-service text-center" style="width:110px;">
+                <div class="d-title">Service B</div>
+              </div>
+              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-storage text-center" style="width:110px;">
+                <div class="d-title">DB B</div>
+              </div>
+            </div>
+    
+            <!-- Service C -->
+            <div class="d-col d-gap-1" style="align-items:center;">
+              <div class="d-box d-service text-center" style="width:110px;">
+                <div class="d-title">Service C</div>
+              </div>
+              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
+              <div class="d-box d-storage text-center" style="width:110px;">
+                <div class="d-title">DB C</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="d-mb-1 d-text-muted text-center">
+            Mỗi service own DB riêng<br>Deploy độc lập, scale độc lập
+          </div>
+          <div class="d-box d-success text-center" style="padding:6px 14px;">
+            <div class="d-title">OK BEST PRACTICE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Shared Database (BAD) -->
+      <div class="d-cluster" style="display: flex; flex-direction: column; border-color:var(--diagram-color-danger-border); background:var(--diagram-color-danger-bg);">
+        <span class="d-label d-text-danger" style="background:var(--diagram-color-danger-bg);">Shared Database</span>
+
+        <div class="d-col d-center d-mt-2 d-mb-2" style="position: relative; width: 100%; flex: 1; justify-content: center;">
+          
+          <!-- Services Row -->
+          <div class="d-row d-center" style="gap: 16px; width: 100%; position: relative; z-index: 2;">
+            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
+              <div class="d-title">Service A</div>
+            </div>
+            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
+              <div class="d-title">Service B</div>
+            </div>
+            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
+              <div class="d-title">Service C</div>
+            </div>
+          </div>
+
+          <!-- Fan-in Arrows -->
+          <!-- Total width: 110*3 + 16*2 = 362px -->
+          <div style="position: relative; width: 362px; height: 60px; margin-top: -16px; z-index: 1;">
+            <svg width="100%" height="100%" style="display:block; overflow:visible; position:absolute; top:0; left:0;">
+              <defs><marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" /></marker></defs>
+              <!-- A -> DB (15.2% is center of A) -->
+              <path d="M 15.2% 0 L 15.2% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+              <!-- B -> DB (50% is center of B) -->
+              <path d="M 50% 0 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+              <!-- C -> DB (84.8% is center of C) -->
+              <path d="M 84.8% 0 L 84.8% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
+            </svg>
+          </div>
+
+          <!-- Shared DB -->
+          <div class="d-box d-danger text-center" style="width:200px; z-index: 2;">
+            <div class="d-title">[DB] Shared DB</div>
+            <div class="d-sub">tất cả dùng chung</div>
+          </div>
+
+        </div>
+
+        <div>
+          <div class="d-mb-1 d-text-danger text-center">
+            Schema coupling · Deploy coupling<br>Scale coupling · Performance bottleneck
+          </div>
+          <div class="d-box d-danger text-center" style="padding:6px 14px;">
+            <div class="d-title">[X] ANTI-PATTERN</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LMS note -->
+    <div class="d-box d-note">
+      <div class="d-title">LMS hiện tại: Core và Assignment SHARED DB (app_db) — cần tách</div>
+      <div class="d-sub">Xem lộ trình: Hình 7.5 và Chương 10 (Strangler Fig)</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+
+</body>
+</html>

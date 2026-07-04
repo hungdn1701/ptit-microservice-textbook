@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    Fig 2.8 — 7 Bounded Contexts trong KBM
+    =========================================================
+    Layout: 7 business-context boxes in 4+3 grid + shared kernel note
+    Core BCs: Identity, SQL Practice, Network Practice, Code Practice,
+              Academic Management, Examination & Proctoring, DevOps Practice
+    Capture: gen-diagrams.ps1 → fig-2-8.png → Typst image()
+  -->
+  <title>Fig 2.8 — 7 Bounded Contexts in KBM | Ch.2</title>
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
+
+</head>
+<body class="diagram-mode">
+  <div class="diagram-canvas" data-fig-id="FIG-2.8" data-ref="CH02-SEC">
+
+    <div class="d-cluster d-mb-2">
+      <span class="d-label">Business Contexts (excluding supporting services)</span>
+
+      <!-- Top row: 4 contexts -->
+      <div class="d-row d-gap-1 d-mt-1 d-mb-1">
+
+        <div class="d-box d-infra text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">Identity &amp; Access</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-auth</div>
+          <div class="d-sub" style="opacity: 0.7;">JWT, OAuth2, SSO, roles</div>
+        </div>
+
+        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">SQL Practice</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-core + kbm-judge-sql</div>
+          <div class="d-sub" style="opacity: 0.7;">questions, exams, submissions</div>
+        </div>
+
+        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">Network Practice</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-judge-network</div>
+          <div class="d-sub" style="opacity: 0.7;">TCP, UDP, RMI, SOAP, REST, gRPC</div>
+        </div>
+
+        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">Code Practice</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-judge-code</div>
+          <div class="d-sub" style="opacity: 0.7;">C/C++, Java · DOMjudge</div>
+        </div>
+
+      </div>
+
+      <!-- Bottom row: 3 contexts -->
+      <div class="d-row d-gap-1">
+
+        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">Academic Management</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-academic</div>
+          <div class="d-sub" style="opacity: 0.7;">courses, grades, attendance, thesis</div>
+        </div>
+
+        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">Examination &amp; Proctoring</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-exam-client (+ kbm-core)</div>
+          <div class="d-sub" style="opacity: 0.7;">contest, anti-cheat, lockdown</div>
+        </div>
+
+        <div class="d-box d-infra text-center" style="flex: 1; padding: 14px;">
+          <div class="d-title d-mb-1">DevOps Practice</div>
+          <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-devops-api / -infra / -web</div>
+          <div class="d-sub" style="opacity: 0.7;">Go, k3s, Sysbox, pod lab</div>
+        </div>
+
+      </div>
+
+    </div><!-- /.d-cluster -->
+
+    <!-- Shared Kernel note -->
+    <div class="d-box d-note text-center">
+      <div class="d-sub">Shared Kernel should only hold cross-cutting concerns; business logic must stay in owning contexts.</div>
+    </div>
+
+  </div><!-- /.diagram-canvas -->
+</body>
+</html>
