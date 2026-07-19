@@ -74,9 +74,9 @@
 
           <!-- Box 4 -->
           <div class="d-box d-note text-center" style="height: 90px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="d-title">T4: Notify Student</div>
+            <div class="d-title">T4: Enqueue Notification</div>
             <div class="d-sub d-mt-1">Notification Svc</div>
-            <div class="d-sub fw-semibold">push result</div>
+            <div class="d-sub fw-semibold">ghi lệnh vào outbox</div>
           </div>
 
         </div>
@@ -130,7 +130,7 @@
         <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">1</span> Core gửi <code>SubmissionCreated</code> event lên Kafka</div>
         <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">2</span> Judge lắng nghe, execute SQL, gửi <code>SubmissionJudged</code> event</div>
         <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">3</span> Core lắng nghe <code>SubmissionJudged</code>, update score, gửi <code>ScoreUpdated</code></div>
-        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">4</span> Notification lắng nghe <code>ScoreUpdated</code>, gửi push notification cho student</div>
+        <div style="font-size: 12px; line-height: 1.6;"><span class="d-step">4</span> Notification lắng nghe <code>ScoreUpdated</code>, ghi lệnh vào outbox; worker gửi push cho student ngoài saga</div>
       </div>
       <div class="d-sep"></div>
       <div>
