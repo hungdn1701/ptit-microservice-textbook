@@ -1,6 +1,6 @@
 {
   "name": "ptit-microservice-textbook",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "description": "Companion web for SOA & Microservices Architecture Textbook",
   "scripts": {
