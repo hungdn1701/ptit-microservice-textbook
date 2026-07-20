@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Message Broker (Kafka) — Pattern Story | Ch.5 Async KBM</title>
+  <title>Message Broker — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Message Broker pattern — trung gian truyền thông điệp bất đồng bộ giữa các microservices với Apache Kafka.">
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
   <style>
@@ -248,8 +249,8 @@
 <nav class="act-nav" id="act-nav">
   <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
   <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -257,9 +258,10 @@
   <h1 class="pattern-title">Message Broker (Apache Kafka)</h1>
   <p class="pattern-subtitle">Cơ chế message queue phân tán, phân vùng dữ liệu và đảm bảo xử lý song song tin cậy</p>
   <div class="pattern-meta">
-    <div class="meta-item"><span class="meta-label">implementation</span><span class="meta-value">Apache Kafka Cluster</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 5 — §5.2 & §5.3</span></div>
-    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">kbm-judge-sql Contest Pipeline</span></div>
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Communication Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Enterprise Integration Patterns (EIP)</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2003</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.5 §5.2</span></div>
   </div>
 </header>
 
@@ -269,7 +271,7 @@
     <div class="act-number">1</div>
     <div>
       <div class="act-tag">Act 01</div>
-      <h2 class="act-title">Nghẽn đồng bộ & Mất message khi quá tải</h2>
+      <h2 class="act-title">The Problem</h2>
     </div>
   </div>
 
@@ -298,7 +300,7 @@
     <div class="act-number">2</div>
     <div>
       <div class="act-tag">Act 02</div>
-      <h2 class="act-title">Message Broker phân tán</h2>
+      <h2 class="act-title">The Pattern</h2>
     </div>
   </div>
 
@@ -338,7 +340,7 @@
     <div class="act-number">3</div>
     <div>
       <div class="act-tag">Act 03</div>
-      <h2 class="act-title">Mô phỏng luồng Kafka Pipeline</h2>
+      <h2 class="act-title">How It Works</h2>
     </div>
   </div>
 
@@ -390,8 +392,8 @@
   <div class="act-label">
     <div class="act-number">4</div>
     <div>
-      <div class="act-tag">Act 04</div>
-      <h2 class="act-title">Thiết kế hệ thống chấm bài thi KBM</h2>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
     </div>
   </div>
 

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deployment Strategies — Pattern Story | Ch.12 Operations KBM</title>
+  <title>Deployment Strategies — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Deployment Strategies — so sánh Rolling Update, Blue/Green và Canary cho microservices trên Kubernetes.">
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
   <style>
@@ -164,8 +165,8 @@
 <nav class="act-nav" id="act-nav">
   <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
   <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -173,9 +174,10 @@
   <h1 class="pattern-title">Zero-Downtime Deployment</h1>
   <p class="pattern-subtitle">Blue/Green, Canary, và Rolling Deployment — Đảm bảo tính sẵn sàng cao (High Availability) khi nâng cấp ứng dụng</p>
   <div class="pattern-meta">
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">CI/CD Best Practices</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 12 — §12.3</span></div>
-    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">Deployment Automation</span></div>
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Deployment Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">DevOps / SRE Community</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">~2010s</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.12 §12.5</span></div>
   </div>
 </header>
 
@@ -185,7 +187,7 @@
     <div class="act-number">1</div>
     <div>
       <div class="act-tag">Act 01</div>
-      <h2 class="act-title">Rủi ro của Big Bang Deployment</h2>
+      <h2 class="act-title">The Problem</h2>
     </div>
   </div>
 
@@ -214,7 +216,7 @@
     <div class="act-number">2</div>
     <div>
       <div class="act-tag">Act 02</div>
-      <h2 class="act-title">Zero-Downtime Deployment Strategies</h2>
+      <h2 class="act-title">The Pattern</h2>
     </div>
   </div>
 
@@ -254,7 +256,7 @@
     <div class="act-number">3</div>
     <div>
       <div class="act-tag">Act 03</div>
-      <h2 class="act-title">Interactive Deployment Simulator</h2>
+      <h2 class="act-title">How It Works</h2>
     </div>
   </div>
 
@@ -303,8 +305,8 @@
   <div class="act-label">
     <div class="act-number">4</div>
     <div>
-      <div class="act-tag">Act 04</div>
-      <h2 class="act-title">KBM Infrastructure Implementation</h2>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
     </div>
   </div>
 

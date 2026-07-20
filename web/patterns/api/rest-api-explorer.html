@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REST API Explorer — Thiết kế RESTful API chuẩn hóa | KBM LMS</title>
+  <title>REST API Explorer — Pattern Story | SOA & Microservices</title>
   <meta name="description" content="Mô phỏng tương tác thiết kế REST API chuẩn hóa theo Richardson Maturity Model Level 2, áp dụng cho hệ thống KBM LMS.">
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
@@ -300,10 +300,10 @@
 
   <!-- ── Sticky Act Nav ── -->
   <nav class="act-nav" id="act-nav">
-    <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Vấn đề</span></button>
-    <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Giải pháp</span></button>
-    <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Mô phỏng</span></button>
-    <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">Áp dụng</span></button>
+    <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+    <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+    <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+    <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
   </nav>
 
   <!-- ── Pattern Header ── -->
@@ -311,18 +311,10 @@
     <h1 class="pattern-title">REST API Explorer</h1>
     <p class="pattern-subtitle">Xây dựng Sandbox chạy thử và tự động tài liệu hóa đặc tả API chuẩn OpenAPI</p>
     <div class="pattern-meta">
-      <div class="meta-item">
-        <span class="meta-label">category</span>
-        <span class="meta-value">API & Integration</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">book ref</span>
-        <span class="meta-value">Chương 3 — §3.3</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">context</span>
-        <span class="meta-value">kbm-gateway & kbm-core</span>
-      </div>
+      <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Communication Patterns</span></div>
+      <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Roy Fielding</span></div>
+      <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2000</span></div>
+      <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.4 §4.2</span></div>
     </div>
   </header>
 
@@ -332,7 +324,7 @@
       <div class="act-number">1</div>
       <div>
         <div class="act-tag">Act 01</div>
-        <h2 class="act-title">API Drift & Testing Barriers</h2>
+        <h2 class="act-title">The Problem</h2>
       </div>
     </div>
 
@@ -368,7 +360,7 @@
       <div class="act-number">2</div>
       <div>
         <div class="act-tag">Act 02</div>
-        <h2 class="act-title">OpenAPI Specification & Swagger UI Sandbox</h2>
+        <h2 class="act-title">The Pattern</h2>
       </div>
     </div>
 
@@ -411,7 +403,7 @@
       <div class="act-number">3</div>
       <div>
         <div class="act-tag">Act 03</div>
-        <h2 class="act-title">Swagger UI & REST Client Simulator</h2>
+        <h2 class="act-title">How It Works</h2>
       </div>
     </div>
 
@@ -562,8 +554,8 @@
     <div class="act-label">
       <div class="act-number">4</div>
       <div>
-        <div class="act-tag">Act 04</div>
-        <h2 class="act-title">Richardson Maturity Model & API Standardization</h2>
+        <div class="act-tag">Act 04 — Case Study</div>
+        <h2 class="act-title">KBM: Apply It</h2>
       </div>
     </div>
 

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Config Server — Pattern Story | Ch.8 Edge KBM</title>
+  <title>Config Server — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Config Server pattern — quản lý cấu hình tập trung cho microservices, hỗ trợ hot reload và version control.">
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
   <style>
@@ -160,8 +161,8 @@
 <nav class="act-nav" id="act-nav">
   <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
   <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -169,9 +170,10 @@
   <h1 class="pattern-title">Centralized Configuration</h1>
   <p class="pattern-subtitle">Config Server — Quản lý cấu hình tập trung và tự động nạp nóng (Hot Reload)</p>
   <div class="pattern-meta">
-    <div class="meta-item"><span class="meta-label">implementation</span><span class="meta-value">Spring Cloud Config & Spring Cloud Bus</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 8 — §8.5</span></div>
-    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">Git-Backed Config Service</span></div>
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Infrastructure Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Twelve-Factor App (Heroku)</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2011</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.11 §11.5</span></div>
   </div>
 </header>
 
@@ -181,7 +183,7 @@
     <div class="act-number">1</div>
     <div>
       <div class="act-tag">Act 01</div>
-      <h2 class="act-title">Distributed Configuration & Configuration Drift</h2>
+      <h2 class="act-title">The Problem</h2>
     </div>
   </div>
 
@@ -210,7 +212,7 @@
     <div class="act-number">2</div>
     <div>
       <div class="act-tag">Act 02</div>
-      <h2 class="act-title">Centralized Configuration Management</h2>
+      <h2 class="act-title">The Pattern</h2>
     </div>
   </div>
 
@@ -250,7 +252,7 @@
     <div class="act-number">3</div>
     <div>
       <div class="act-tag">Act 03</div>
-      <h2 class="act-title">Hot Reload Simulation</h2>
+      <h2 class="act-title">How It Works</h2>
     </div>
   </div>
 
@@ -314,8 +316,8 @@
   <div class="act-label">
     <div class="act-number">4</div>
     <div>
-      <div class="act-tag">Act 04</div>
-      <h2 class="act-title">KBM Configuration Strategy</h2>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
     </div>
   </div>
 

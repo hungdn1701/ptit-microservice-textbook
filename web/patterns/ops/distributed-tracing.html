@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Distributed Tracing — Pattern Story | Ch.11 Observability KBM</title>
+  <meta name="description" content="Distributed Tracing pattern — truy vết yêu cầu xuyên suốt các microservices với OpenTelemetry và Zipkin.">
+  <title>Distributed Tracing — Pattern Story | SOA & Microservices</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
   <style>
@@ -154,8 +155,8 @@
 <nav class="act-nav" id="act-nav">
   <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
   <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">Simulation</span></button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM Apply</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
 <!-- ── Pattern Header ── -->
@@ -163,9 +164,10 @@
   <h1 class="pattern-title">Distributed Tracing</h1>
   <p class="pattern-subtitle">Truy vết request xuyên suốt hệ thống Microservices phân tán</p>
   <div class="pattern-meta">
-    <div class="meta-item"><span class="meta-label">implementation</span><span class="meta-value">Micrometer Observation / Spring Cloud Sleuth & Zipkin</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Chương 11 — §11.4</span></div>
-    <div class="meta-item"><span class="meta-label">context</span><span class="meta-value">Core, Kafka, and Judge tracing</span></div>
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Observability Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Google (Dapper paper)</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2010</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.11 §11.3</span></div>
   </div>
 </header>
 
@@ -175,7 +177,7 @@
     <div class="act-number">1</div>
     <div>
       <div class="act-tag">Act 01</div>
-      <h2 class="act-title">Thách thức Debug trong Distributed Systems</h2>
+      <h2 class="act-title">The Problem</h2>
     </div>
   </div>
 
@@ -204,7 +206,7 @@
     <div class="act-number">2</div>
     <div>
       <div class="act-tag">Act 02</div>
-      <h2 class="act-title">Distributed Tracing Architecture</h2>
+      <h2 class="act-title">The Pattern</h2>
     </div>
   </div>
 
@@ -244,7 +246,7 @@
     <div class="act-number">3</div>
     <div>
       <div class="act-tag">Act 03</div>
-      <h2 class="act-title">Zipkin Waterfall Trace Simulation</h2>
+      <h2 class="act-title">How It Works</h2>
     </div>
   </div>
 
@@ -334,8 +336,8 @@
   <div class="act-label">
     <div class="act-number">4</div>
     <div>
-      <div class="act-tag">Act 04</div>
-      <h2 class="act-title">Observability Implementation in KBM</h2>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
     </div>
   </div>
 
