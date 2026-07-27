@@ -20,6 +20,7 @@
       { ch: 4, icon: SVG_ICONS.code, name: 'Circuit Breaker', file: 'patterns/architecture/circuit-breaker.html', cat: 'architecture' },
       { ch: 4, icon: SVG_ICONS.code, name: 'Service Discovery', file: 'patterns/api/service-discovery.html', cat: 'api' },
       { ch: 5, icon: SVG_ICONS.code, name: 'Message Broker (Kafka)', file: 'patterns/data/message-broker.html', cat: 'data' },
+      { ch: 5, icon: SVG_ICONS.code, name: 'Idempotency & Retry', file: 'patterns/data/idempotency-retry.html', cat: 'data' },
       { ch: 6, icon: SVG_ICONS.code, name: 'Saga Orchestration', file: 'patterns/data/saga-orchestration.html', cat: 'data' },
       { ch: 7, icon: SVG_ICONS.code, name: 'CQRS & Event Sourcing', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data' },
       { ch: 8, icon: SVG_ICONS.code, name: 'API Gateway Routing', file: 'patterns/api/api-gateway-routing.html', cat: 'api' },
