@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDC & Outbox (Debezium) — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Change Data Capture & Outbox Pattern — mô phỏng luồng dữ liệu DB → Transaction Log → Kafka với Debezium connector.">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    .pipeline-container {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0;
+      align-items: start;
+      margin: 24px 0;
+    }
+    @media (max-width: 900px) {
+      .pipeline-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .pipe-arrow { transform: rotate(90deg); }
+    }
+
+    .pipe-col {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+    .pipe-col::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .col-db::before { background: #3b82f6; }
+    .col-log::before { background: #a855f7; }
+    .col-kafka::before { background: #22c55e; }
+
+    .col-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+    .col-db .col-title { color: #3b82f6; }
+    .col-log .col-title { color: #a855f7; }
+    .col-kafka .col-title { color: #22c55e; }
+
+    .pipe-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--text-dim);
+      padding: 0 4px;
+      align-self: center;
+    }
+
+    /* DB Table */
+    .mini-table {
+      width: 100%;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      border-collapse: collapse;
+    }
+    .mini-table th {
+      text-align: left;
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+    .mini-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      color: var(--text-secondary);
+    }
+    .mini-table tr.highlight td {
+      animation: rowFlash 0.8s ease;
+    }
+    @keyframes rowFlash {
+      0% { background: rgba(59,130,246,0.25); }
+      100% { background: transparent; }
+    }
+
+    /* Log entries */
+    .wal-entry {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: var(--radius-sm, 4px);
+      background: rgba(168,85,247,0.06);
+      border-left: 2px solid #a855f7;
+      color: var(--text-secondary);
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Kafka events */
+    .kafka-event {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: var(--radius-sm, 4px);
+      background: rgba(34,197,94,0.06);
+      border-left: 2px solid #22c55e;
+      color: var(--text-secondary);
+      animation: slideIn 0.4s ease;
+    }
+
+    /* Controls */
+    .ctrl-bar {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .ctrl-bar .btn {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    /* Mode toggle */
+    .mode-tabs {
+      display: flex;
+      gap: 0;
+      margin: 16px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .mode-tab {
+      flex: 1;
+      padding: 10px 16px;
+      background: var(--bg-surface);
+      border: none;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .mode-tab.active {
+      background: var(--primary);
+      color: #000;
+    }
+    .mode-tab:hover:not(.active) {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .sim-log {
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 100px;
+      overflow-y: auto;
+      margin-top: 16px;
+      box-shadow: var(--terminal-shadow);
+    }
+    .log-line { margin-bottom: 3px; line-height: 1.4; }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-ok { color: var(--success, #22c55e); }
+    .log-err { color: var(--danger, #ef4444); }
+    .log-warn { color: var(--warning, #f59e0b); }
+    .log-info { color: var(--text-secondary); }
+    .log-cdc { color: #a855f7; }
+
+    .warning-box {
+      padding: 14px 16px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius-md);
+      margin: 16px 0;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .warning-box strong { color: var(--danger); }
+
+    .scroll-area {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
+</nav>
+
+<header class="pattern-header">
+  <h1 class="pattern-title">CDC & Outbox Pattern</h1>
+  <p class="pattern-subtitle">Bắt thay đổi từ Transaction Log — không cần sửa code ứng dụng</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Data Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Debezium / Microservices.io</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">~2018</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.5 §5.5, Ch.10 §10.3</span></div>
+  </div>
+</header>
+
+<!-- ACT 1 -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">The Problem</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 20px; line-height: 1.7; color: var(--text-secondary);">
+    Microservices cần vừa <strong>ghi vào database</strong> vừa <strong>gửi event lên Kafka</strong>. Nếu làm 2 thao tác riêng biệt (dual-write), sẽ xảy ra tình huống <strong>không nhất quán</strong>: DB thành công nhưng Kafka thất bại, hoặc ngược lại.
+  </p>
+
+  <div class="warning-box">
+    <strong>⚠️ Dual-Write Problem:</strong> Không thể đảm bảo atomic giữa 2 hệ thống khác nhau (DB + Message Broker) mà không dùng distributed transaction (2PC) — vốn chậm và phức tạp. Outbox Pattern giải quyết bằng cách biến thành <strong>1 write duy nhất vào DB</strong>.
+  </div>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Lost Event</div></div>
+      <h3>Mất sự kiện (Lost Events)</h3>
+      <p>DB ghi thành công, nhưng Kafka publish thất bại. Consumer không nhận được event. Dữ liệu giữa các services bị lệch mà không ai biết.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Ghost Event</div></div>
+      <h3>Sự kiện ma (Ghost Events)</h3>
+      <p>Kafka publish thành công, nhưng DB transaction rollback. Consumer xử lý event cho một thay đổi chưa bao giờ tồn tại trong DB.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 2 -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">The Pattern</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      <strong>Outbox Pattern</strong>: Thay vì publish trực tiếp lên Kafka, ứng dụng ghi event vào bảng <code>outbox</code> trong <strong>cùng 1 DB transaction</strong> với business data. Sau đó, <strong>Debezium (CDC connector)</strong> đọc transaction log của DB và tự động đẩy event lên Kafka.
+    </p>
+    <div class="definition-attribution">— Transactional Outbox + CDC · Chris Richardson / Debezium.io</div>
+  </div>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Outbox Table</h4>
+      <p>Bảng <code>outbox_events</code> cùng DB với business data. Mỗi row = 1 event: <code>{id, aggregate_type, aggregate_id, event_type, payload, created_at}</code>. INSERT cùng transaction.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Debezium CDC Connector</h4>
+      <p>Kafka Connect connector đọc PostgreSQL WAL (Write-Ahead Log). Bắt mọi INSERT vào bảng outbox → chuyển thành Kafka message. Zero-code, không cần sửa ứng dụng.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Outbox Event Router</h4>
+      <p>Debezium SMT (Single Message Transform) route event tới đúng Kafka topic dựa trên <code>aggregate_type</code>. Xóa row khỏi outbox sau khi publish thành công.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 3 -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">How It Works</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 16px; line-height: 1.7; color: var(--text-secondary);">
+    Nhấn các nút bên dưới để mô phỏng thao tác nghiệp vụ. Quan sát dữ liệu chảy qua 3 cột: <strong style="color: #3b82f6;">Database</strong> → <strong style="color: #a855f7;">Transaction Log (WAL)</strong> → <strong style="color: #22c55e;">Kafka Topics</strong>.
+  </p>
+
+  <div class="ctrl-bar">
+    <button class="btn btn-primary" onclick="simAction('enroll')" style="background: #3b82f6; border-color: #3b82f6; color: white;">📝 Đăng ký môn học</button>
+    <button class="btn btn-primary" onclick="simAction('payment')" style="background: #22c55e; border-color: #22c55e; color: white;">💳 Thanh toán</button>
+    <button class="btn btn-primary" onclick="simAction('grade')" style="background: #f59e0b; border-color: #f59e0b; color: white;">📊 Cập nhật điểm</button>
+    <button class="btn" onclick="resetSim()" style="background: transparent; border: 1px solid var(--border); color: var(--text-secondary);">↺ Reset</button>
+  </div>
+
+  <div class="pipeline-container">
+    <!-- Column 1: Database -->
+    <div class="pipe-col col-db">
+      <div class="col-title">🗄️ PostgreSQL</div>
+      <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-mono);">business_data + outbox_events</div>
+      <div class="scroll-area" id="db-area">
+        <table class="mini-table">
+          <thead><tr><th>Table</th><th>Action</th><th>ID</th></tr></thead>
+          <tbody id="db-rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pipe-arrow">→</div>
+
+    <!-- Column 2: WAL / Transaction Log -->
+    <div class="pipe-col col-log">
+      <div class="col-title">📋 WAL (Transaction Log)</div>
+      <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-mono);">Debezium reads via pg_logical</div>
+      <div class="scroll-area" id="wal-area"></div>
+    </div>
+
+    <div class="pipe-arrow">→</div>
+
+    <!-- Column 3: Kafka -->
+    <div class="pipe-col col-kafka">
+      <div class="col-title">📨 Kafka Topics</div>
+      <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-mono);">outbox.event.* routed by SMT</div>
+      <div class="scroll-area" id="kafka-area"></div>
+    </div>
+  </div>
+
+  <div class="sim-log" id="sim-log">
+    <div class="log-line"><span class="log-time">[--:--:--]</span> <span class="log-info">Debezium CDC connector sẵn sàng. Đang lắng nghe WAL changes...</span></div>
+  </div>
+</section>
+
+<!-- ACT 4 -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBM sử dụng Outbox Pattern + Debezium CDC để đảm bảo mọi thay đổi nghiệp vụ đều được publish lên Kafka mà không cần sửa code ứng dụng.
+  </p>
+
+  <h3 class="sub-heading">Outbox Events trong hệ thống KBM</h3>
+  <div class="sub-label">Mỗi aggregate type tương ứng 1 Kafka topic</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Aggregate Type</th>
+          <th>Event Types</th>
+          <th>Kafka Topic</th>
+          <th>Consumers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Enrollment</td>
+          <td><code>ENROLLED</code>, <code>DROPPED</code></td>
+          <td><code>outbox.event.enrollment</code></td>
+          <td>Notification Svc, Analytics Svc</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Payment</td>
+          <td><code>PAID</code>, <code>REFUNDED</code></td>
+          <td><code>outbox.event.payment</code></td>
+          <td>Enrollment Svc (confirm), Email Svc</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Grade</td>
+          <td><code>GRADED</code>, <code>APPEALED</code></td>
+          <td><code>outbox.event.grade</code></td>
+          <td>Transcript Svc, GPA Calculator</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Assignment</td>
+          <td><code>SUBMITTED</code>, <code>JUDGED</code></td>
+          <td><code>outbox.event.assignment</code></td>
+          <td>Grade Svc, Plagiarism Checker</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-heading" style="margin-top: 36px;">Lộ trình triển khai CDC + Outbox</h3>
+  <div class="sub-label">Từ polling đến streaming</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 1</div>
+      <h4>Outbox Table + Polling Publisher</h4>
+      <p>Tạo bảng <code>outbox_events</code>. Dùng scheduled job poll mỗi 500ms để đọc và publish pending events. Đơn giản nhưng có latency.</p>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 2</div>
+      <h4>Debezium CDC Connector</h4>
+      <p>Thay polling bằng Debezium Kafka Connect. Đọc WAL trực tiếp → near real-time. Cấu hình <code>outbox.event.router</code> SMT để route theo aggregate_type.</p>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 3</div>
+      <h4>Idempotent Consumers</h4>
+      <p>Consumer side lưu <code>event_id</code> vào bảng <code>processed_events</code> (UNIQUE constraint). Đảm bảo at-least-once delivery + idempotent processing.</p>
+    </div>
+    <div class="timeline-item" data-delay="750">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 4</div>
+      <h4>Monitoring & Alerting</h4>
+      <p>Dashboard Debezium metrics: replication lag, connector status, WAL disk usage. Alert nếu lag > 5 phút hoặc connector down.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Nên dùng Outbox + CDC khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Cần đảm bảo exactly-once giữa DB write và event publish.</li>
+        <li>Muốn zero-code approach — không cần sửa ứng dụng hiện tại.</li>
+        <li>Data migration: stream changes từ monolith DB sang microservice.</li>
+        <li>Audit trail: mọi thay đổi dữ liệu đều được capture.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Không nên khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống đơn giản — polling publisher đủ tốt (< 100 events/s).</li>
+        <li>DB không hỗ trợ logical replication (một số managed DB).</li>
+        <li>Team chưa quen Kafka Connect — ops complexity cao.</li>
+        <li>Event không cần guaranteed delivery (analytics, logging).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Outbox Pattern, Debezium CDC, và Dual-Write Pitfall trong sách.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-05'}, '*'); return false;">📖 Chương 5 — Messaging →</a>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-10'}, '*'); return false;" style="margin-top: 8px;">📖 Chương 10 — Migration →</a>
+</div>
+
+<script>
+// ── Scroll & Nav ──
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulation ──
+let seqId = 0;
+const ACTIONS = {
+  enroll: { table: 'enrollments', event: 'ENROLLED', topic: 'outbox.event.enrollment', icon: '📝', label: 'Đăng ký Kiến trúc PM' },
+  payment: { table: 'payments', event: 'PAID', topic: 'outbox.event.payment', icon: '💳', label: 'Thanh toán 500.000đ' },
+  grade: { table: 'grades', event: 'GRADED', topic: 'outbox.event.grade', icon: '📊', label: 'Cập nhật điểm A' }
+};
+
+function now() {
+  return new Date().toLocaleTimeString('en-US', { hour12: false });
+}
+
+function log(msg, cls) {
+  const el = document.getElementById('sim-log');
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = `<span class="log-time">[${now()}]</span> <span class="log-${cls}">${msg}</span>`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  while (el.children.length > 40) el.removeChild(el.firstChild);
+}
+
+async function simAction(type) {
+  const act = ACTIONS[type];
+  seqId++;
+  const eventId = 'evt-' + seqId.toString().padStart(3, '0');
+
+  // Step 1: DB write (business data + outbox — same transaction)
+  log(`${act.icon} BEGIN TRANSACTION — ${act.label}`, 'info');
+
+  await sleep(300);
+
+  // Add to DB column
+  const dbRow = document.createElement('tr');
+  dbRow.className = 'highlight';
+  dbRow.innerHTML = `<td>${act.table}</td><td>INSERT</td><td>${eventId}</td>`;
+  document.getElementById('db-rows').appendChild(dbRow);
+
+  const dbRow2 = document.createElement('tr');
+  dbRow2.className = 'highlight';
+  dbRow2.innerHTML = `<td>outbox_events</td><td>INSERT</td><td>${eventId}</td>`;
+  document.getElementById('db-rows').appendChild(dbRow2);
+
+  log(`✓ INSERT INTO ${act.table} + outbox_events — COMMIT`, 'ok');
+  scrollBottom('db-area');
+
+  await sleep(600);
+
+  // Step 2: WAL capture
+  const walDiv = document.createElement('div');
+  walDiv.className = 'wal-entry';
+  walDiv.innerHTML = `<strong>WAL</strong> lsn=0/${seqId} table=outbox_events op=INSERT id=${eventId} type=${act.event}`;
+  document.getElementById('wal-area').appendChild(walDiv);
+  scrollBottom('wal-area');
+
+  log(`📋 Debezium captured WAL change: ${eventId} (${act.event})`, 'cdc');
+
+  await sleep(500);
+
+  // Step 3: Kafka publish
+  const kafkaDiv = document.createElement('div');
+  kafkaDiv.className = 'kafka-event';
+  kafkaDiv.innerHTML = `<strong>${act.topic}</strong><br>key: ${eventId} | type: ${act.event}<br>payload: { "action": "${act.label}" }`;
+  document.getElementById('kafka-area').appendChild(kafkaDiv);
+  scrollBottom('kafka-area');
+
+  log(`📨 Published to ${act.topic} — partition 0, offset ${seqId}`, 'ok');
+}
+
+function scrollBottom(id) {
+  const el = document.getElementById(id);
+  el.scrollTop = el.scrollHeight;
+}
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function resetSim() {
+  seqId = 0;
+  document.getElementById('db-rows').innerHTML = '';
+  document.getElementById('wal-area').innerHTML = '';
+  document.getElementById('kafka-area').innerHTML = '';
+  document.getElementById('sim-log').innerHTML =
+    `<div class="log-line"><span class="log-time">[${now()}]</span> <span class="log-info">Reset. Debezium connector reconnected. Sẵn sàng.</span></div>`;
+}
+
+// ── Timeline ──
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === 3) setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+
+// ── Theme ──
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') document.documentElement.classList.toggle('light', e.data.isLight);
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// ── Collapsible ──
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  section.classList.add('expanded');
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+</body>
+</html>
