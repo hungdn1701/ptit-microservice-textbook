@@ -31,6 +31,7 @@
       { ch: 10, icon: SVG_ICONS.code, name: 'Strangler Fig Migration', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture' },
       { ch: 10, icon: SVG_ICONS.code, name: 'Outbox Pattern', file: 'patterns/data/outbox-pattern.html', cat: 'data' },
       { ch: 10, icon: SVG_ICONS.code, name: 'CDC & Outbox (Debezium)', file: 'patterns/data/cdc-outbox.html', cat: 'data' },
+      { ch: 10, icon: SVG_ICONS.code, name: 'Event-Carried State Transfer', file: 'patterns/data/event-carried-state-transfer.html', cat: 'data' },
       { ch: 11, icon: SVG_ICONS.code, name: 'Distributed Tracing', file: 'patterns/ops/distributed-tracing.html', cat: 'ops' },
       { ch: 12, icon: SVG_ICONS.code, name: 'Deployment Strategies', file: 'patterns/ops/deployment-strategies.html', cat: 'ops' },
     ];
