@@ -18,6 +18,7 @@
       { ch: 3, icon: SVG_ICONS.code, name: 'REST API Explorer', file: 'patterns/api/rest-api-explorer.html', cat: 'api' },
       { ch: 3, icon: SVG_ICONS.code, name: 'GraphQL vs REST', file: 'patterns/api/graphql-vs-rest.html', cat: 'api' },
       { ch: 4, icon: SVG_ICONS.code, name: 'Circuit Breaker', file: 'patterns/architecture/circuit-breaker.html', cat: 'architecture' },
+      { ch: 4, icon: SVG_ICONS.code, name: 'Load Shedding', file: 'patterns/architecture/load-shedding.html', cat: 'architecture' },
       { ch: 4, icon: SVG_ICONS.code, name: 'Service Discovery', file: 'patterns/api/service-discovery.html', cat: 'api' },
       { ch: 5, icon: SVG_ICONS.code, name: 'Message Broker (Kafka)', file: 'patterns/data/message-broker.html', cat: 'data' },
       { ch: 5, icon: SVG_ICONS.code, name: 'Idempotency & Retry', file: 'patterns/data/idempotency-retry.html', cat: 'data' },

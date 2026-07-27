@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load Shedding vs. Cascading Failure — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Load Shedding pattern — so sánh hệ thống có và không có cơ chế tự bảo vệ khi bị quá tải, ngăn cascading failure.">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=48713b8c">
+  <style>
+    .sim-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+    @media (max-width: 900px) {
+      .sim-container { grid-template-columns: 1fr; }
+    }
+
+    .system-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .system-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .panel-noshed::before { background: var(--danger, #ef4444); }
+    .panel-shed::before { background: var(--success, #22c55e); }
+
+    .sys-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 14px;
+      font-family: var(--font-mono);
+    }
+    .panel-noshed .sys-title { color: var(--danger); }
+    .panel-shed .sys-title { color: var(--success); }
+
+    /* Service boxes */
+    .svc-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .svc-box {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      transition: all 0.4s ease;
+    }
+    .svc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .svc-name {
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    .svc-status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .svc-status.healthy { background: rgba(34,197,94,0.15); color: var(--success); }
+    .svc-status.stressed { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .svc-status.overloaded { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .svc-status.dead { background: rgba(239,68,68,0.3); color: var(--danger); }
+    .svc-status.shedding { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+    /* Load bar */
+    .load-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .load-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease, background 0.3s;
+      background: var(--success);
+    }
+    .load-bar-fill.warn { background: var(--warning); }
+    .load-bar-fill.crit { background: var(--danger); }
+
+    /* RPS Control */
+    .rps-control {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin: 20px 0;
+    }
+    .rps-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .rps-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+    }
+    .rps-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--primary-glow, rgba(59,130,246,0.3));
+    }
+    .rps-val {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--primary);
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .stat-mini {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .stat-mini-val {
+      font-size: 16px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+    .stat-mini-lbl {
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+
+    /* Timeline chart */
+    .chart-area {
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin: 16px 0;
+      position: relative;
+      height: 120px;
+    }
+    .chart-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .sim-log {
+      background: var(--bg-terminal, #0a0b0f);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      margin-top: 16px;
+      box-shadow: var(--terminal-shadow);
+    }
+    .log-line { margin-bottom: 3px; line-height: 1.4; }
+    .log-time { color: var(--text-dim); margin-right: 6px; }
+    .log-ok { color: var(--success, #22c55e); }
+    .log-err { color: var(--danger, #ef4444); }
+    .log-warn { color: var(--warning, #f59e0b); }
+    .log-info { color: var(--text-secondary); }
+    .log-shed { color: #a855f7; }
+  </style>
+</head>
+<body>
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Load Shedding vs. Cascading Failure</h1>
+  <p class="pattern-subtitle">Từ chối thông minh để cứu cả hệ thống — hay chết chìm cùng nhau?</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Resilience Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">SRE / Michael Nygard</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2007</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.4 §4.4</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">The Problem</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    Khi lưu lượng tăng đột biến (flash sale, đầu kỳ đăng ký môn học), các dịch vụ hạ nguồn (downstream) bị ngập. Nếu <strong>không có cơ chế tự bảo vệ</strong>, một dịch vụ chậm sẽ kéo theo toàn bộ chuỗi gọi sụp đổ — <strong>Cascading Failure</strong>.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Cascade</div></div>
+      <h3>Sụp đổ dây chuyền (Cascading Failure)</h3>
+      <p>Service A gọi B, B gọi C. Khi C chậm, thread pool của B cạn kiệt vì chờ C. A chờ B → timeout → A cũng sụp. Toàn bộ hệ thống ngừng hoạt động.</p>
+    </div>
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Retry Storm</div></div>
+      <h3>Bão retry (Retry Storm)</h3>
+      <p>Clients timeout → retry liên tục → gấp đôi lưu lượng vào hệ thống đang quá tải → vòng xoáy chết (death spiral). Hệ thống không bao giờ phục hồi nếu traffic không giảm.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">The Pattern</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      <strong>Load Shedding</strong> — chủ động từ chối một phần requests khi tải vượt ngưỡng an toàn, đảm bảo phần còn lại được xử lý thành công. Giống như cầu dao tự ngắt: mất điện một khu vực tốt hơn cháy cả tòa nhà.
+    </p>
+    <div class="definition-attribution">— Load Shedding + Circuit Breaker · Release It! (Nygard, 2007)</div>
+  </div>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h4>Admission Control</h4>
+      <p>Kiểm tra tải hiện tại (CPU, queue depth, active threads) trước khi chấp nhận request. Vượt ngưỡng → reject ngay với <code>503 Service Unavailable</code>.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h4>Priority Queue</h4>
+      <p>Không reject tất cả — phân loại request theo độ ưu tiên. Health checks, admin APIs luôn được xử lý. User requests thấp ưu tiên hơn payment requests.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h4>Backpressure Signal</h4>
+      <p>Trả HTTP header <code>Retry-After</code> để báo client chờ. Ngăn retry storm bằng cách dùng exponential backoff + jitter.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">How It Works</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 16px; line-height: 1.7; color: var(--text-secondary);">
+    Kéo thanh <strong>RPS (Requests Per Second)</strong> để tăng lưu lượng. Quan sát hệ thống <span style="color: var(--danger);">không có Load Shedding</span> sụp đổ dây chuyền, trong khi hệ thống <span style="color: var(--success);">có Load Shedding</span> tự bảo vệ.
+  </p>
+
+  <div class="rps-control">
+    <div class="rps-label">🔧 Traffic RPS</div>
+    <input type="range" class="rps-slider" id="rps-slider" min="10" max="500" value="50" step="10">
+    <div class="rps-val" id="rps-val">50</div>
+  </div>
+
+  <div class="sim-container">
+    <!-- No Load Shedding -->
+    <div class="system-panel panel-noshed">
+      <div class="sys-title">❌ Không có Load Shedding</div>
+      <div class="svc-stack" id="svc-noshed">
+        <div class="svc-box" id="ns-gateway">
+          <div class="svc-header">
+            <span class="svc-name">API Gateway</span>
+            <span class="svc-status healthy" id="ns-gw-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ns-gw-bar" style="width: 20%"></div></div>
+        </div>
+        <div class="svc-box" id="ns-core">
+          <div class="svc-header">
+            <span class="svc-name">Core Service</span>
+            <span class="svc-status healthy" id="ns-core-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ns-core-bar" style="width: 15%"></div></div>
+        </div>
+        <div class="svc-box" id="ns-db">
+          <div class="svc-header">
+            <span class="svc-name">Database</span>
+            <span class="svc-status healthy" id="ns-db-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ns-db-bar" style="width: 10%"></div></div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ns-ok" style="color: var(--success);">0</div>
+          <div class="stat-mini-lbl">Success</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ns-fail" style="color: var(--danger);">0</div>
+          <div class="stat-mini-lbl">Failed</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ns-p99" style="color: var(--warning);">12ms</div>
+          <div class="stat-mini-lbl">P99 Latency</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- With Load Shedding -->
+    <div class="system-panel panel-shed">
+      <div class="sys-title">✓ Có Load Shedding</div>
+      <div class="svc-stack" id="svc-shed">
+        <div class="svc-box" id="ls-gateway">
+          <div class="svc-header">
+            <span class="svc-name">API Gateway</span>
+            <span class="svc-status healthy" id="ls-gw-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ls-gw-bar" style="width: 20%"></div></div>
+        </div>
+        <div class="svc-box" id="ls-core">
+          <div class="svc-header">
+            <span class="svc-name">Core Service</span>
+            <span class="svc-status healthy" id="ls-core-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ls-core-bar" style="width: 15%"></div></div>
+        </div>
+        <div class="svc-box" id="ls-db">
+          <div class="svc-header">
+            <span class="svc-name">Database</span>
+            <span class="svc-status healthy" id="ls-db-status">HEALTHY</span>
+          </div>
+          <div class="load-bar-bg"><div class="load-bar-fill" id="ls-db-bar" style="width: 10%"></div></div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ls-ok" style="color: var(--success);">0</div>
+          <div class="stat-mini-lbl">Success</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ls-shed" style="color: #a855f7;">0</div>
+          <div class="stat-mini-lbl">Shed (503)</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-val" id="ls-p99" style="color: var(--warning);">12ms</div>
+          <div class="stat-mini-lbl">P99 Latency</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-log" id="sim-log">
+    <div class="log-line"><span class="log-time">[--:--:--]</span> <span class="log-info">Sẵn sàng. Kéo thanh RPS để bắt đầu mô phỏng.</span></div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
+    </div>
+  </div>
+
+  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
+    KBM áp dụng Load Shedding tại API Gateway kết hợp Circuit Breaker ở tầng service-to-service để bảo vệ hệ thống trong mùa đăng ký môn học cao điểm.
+  </p>
+
+  <h3 class="sub-heading">Chiến lược bảo vệ theo tầng</h3>
+  <div class="sub-label">Defense in depth — mỗi tầng có cơ chế tự bảo vệ riêng</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Tầng</th>
+          <th>Cơ chế</th>
+          <th>Ngưỡng</th>
+          <th>Hành vi khi quá tải</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">API Gateway</td>
+          <td>Rate Limiting + Load Shedding</td>
+          <td>CPU > 80% hoặc queue > 1000</td>
+          <td>Trả <code>503</code> + <code>Retry-After: 5</code></td>
+        </tr>
+        <tr>
+          <td class="gap-label">Core Service</td>
+          <td>Circuit Breaker (Resilience4j)</td>
+          <td>Error rate > 50% trong 10s</td>
+          <td>Mở mạch → fallback response</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Database</td>
+          <td>Connection Pool + Timeout</td>
+          <td>Max connections = 50, timeout = 3s</td>
+          <td>Reject connection → service trả 503</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Kafka Consumer</td>
+          <td>Backpressure (max.poll.records)</td>
+          <td>max.poll.records = 50</td>
+          <td>Tự động giảm tốc độ consume</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">Nên dùng Load Shedding khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Hệ thống phải xử lý traffic spike (mùa đăng ký, flash sale).</li>
+        <li>Downstream services có capacity giới hạn (DB, external API).</li>
+        <li>Yêu cầu high availability — tốt hơn phục vụ 80% users thành công hơn 100% users thất bại.</li>
+        <li>Kết hợp cùng Circuit Breaker và Rate Limiting.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Không phù hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Tất cả requests đều critical (không thể từ chối bất kỳ request nào).</li>
+        <li>Hệ thống đã auto-scale nhanh (serverless, Kubernetes HPA).</li>
+        <li>Traffic pattern ổn định, không có spike đột biến.</li>
+        <li>Chưa có observability — cần metrics trước khi set ngưỡng.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về Circuit Breaker, Bulkhead, Timeout patterns và chiến lược resilience trong sách.</p>
+  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-04'}, '*'); return false;">📖 Chương 4 — Service Communication →</a>
+</div>
+
+<script>
+// ── Scroll Progress ──
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
+  updateNav();
+}, { passive: true });
+
+const acts = ['act1','act2','act3','act4'];
+function updateNav() {
+  let cur = 'act1';
+  for (const id of acts) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 90) cur = id;
+  }
+  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
+}
+function scrollToAct(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Simulation State ──
+const CAPACITY = { gw: 200, core: 150, db: 100 };
+const SHED_THRESHOLD = 0.75; // 75% → start shedding
+
+let rps = 50;
+let nsStats = { ok: 0, fail: 0, p99: 12 };
+let lsStats = { ok: 0, shed: 0, p99: 12 };
+let simInterval;
+
+function now() {
+  return new Date().toLocaleTimeString('en-US', { hour12: false });
+}
+
+function log(msg, cls) {
+  const el = document.getElementById('sim-log');
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = `<span class="log-time">[${now()}]</span> <span class="log-${cls}">${msg}</span>`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  // Keep log short
+  while (el.children.length > 60) el.removeChild(el.firstChild);
+}
+
+function setStatus(id, status) {
+  const el = document.getElementById(id);
+  el.className = 'svc-status ' + status;
+  el.textContent = status.toUpperCase();
+}
+
+function setBar(id, pct) {
+  const el = document.getElementById(id);
+  el.style.width = Math.min(pct, 100) + '%';
+  el.className = 'load-bar-fill' + (pct > 90 ? ' crit' : pct > 70 ? ' warn' : '');
+}
+
+function simulateTick() {
+  // ─── No Shedding System ───
+  const nsGwLoad = Math.min((rps / CAPACITY.gw) * 100, 100);
+  const nsCoreLoad = Math.min((rps / CAPACITY.core) * 100 * 1.1, 100);
+  const nsDbLoad = Math.min((rps / CAPACITY.db) * 100 * 1.2, 100);
+
+  setBar('ns-gw-bar', nsGwLoad);
+  setBar('ns-core-bar', nsCoreLoad);
+  setBar('ns-db-bar', nsDbLoad);
+
+  // Cascading logic: if DB overloaded → Core backs up → Gateway backs up
+  if (nsDbLoad >= 100) {
+    setStatus('ns-db-status', 'dead');
+    setStatus('ns-core-status', 'overloaded');
+    setStatus('ns-gw-status', 'overloaded');
+    const failed = Math.floor(rps * 0.7);
+    nsStats.fail += failed;
+    nsStats.ok += rps - failed;
+    nsStats.p99 = Math.min(30000, Math.floor(nsStats.p99 * 1.4 + 200));
+  } else if (nsCoreLoad > 90) {
+    setStatus('ns-db-status', 'stressed');
+    setStatus('ns-core-status', 'overloaded');
+    setStatus('ns-gw-status', 'stressed');
+    const failed = Math.floor(rps * 0.3);
+    nsStats.fail += failed;
+    nsStats.ok += rps - failed;
+    nsStats.p99 = Math.min(15000, Math.floor(nsStats.p99 * 1.2 + 50));
+  } else if (nsGwLoad > 70) {
+    setStatus('ns-gw-status', 'stressed');
+    setStatus('ns-core-status', nsGwLoad > 85 ? 'stressed' : 'healthy');
+    setStatus('ns-db-status', 'healthy');
+    nsStats.ok += rps;
+    nsStats.p99 = Math.min(2000, Math.floor(nsStats.p99 * 1.05 + 5));
+  } else {
+    setStatus('ns-gw-status', 'healthy');
+    setStatus('ns-core-status', 'healthy');
+    setStatus('ns-db-status', 'healthy');
+    nsStats.ok += rps;
+    nsStats.p99 = Math.max(12, Math.floor(nsStats.p99 * 0.9));
+  }
+
+  // ─── Load Shedding System ───
+  const shedRatio = rps > CAPACITY.gw * SHED_THRESHOLD
+    ? Math.min((rps - CAPACITY.gw * SHED_THRESHOLD) / (CAPACITY.gw * 0.5), 0.8)
+    : 0;
+  const acceptedRps = Math.floor(rps * (1 - shedRatio));
+  const shedCount = rps - acceptedRps;
+
+  const lsGwLoad = Math.min((acceptedRps / CAPACITY.gw) * 100, 95);
+  const lsCoreLoad = Math.min((acceptedRps / CAPACITY.core) * 100, 95);
+  const lsDbLoad = Math.min((acceptedRps / CAPACITY.db) * 100, 95);
+
+  setBar('ls-gw-bar', lsGwLoad);
+  setBar('ls-core-bar', lsCoreLoad);
+  setBar('ls-db-bar', lsDbLoad);
+
+  if (shedRatio > 0) {
+    setStatus('ls-gw-status', 'shedding');
+  } else {
+    setStatus('ls-gw-status', lsGwLoad > 70 ? 'stressed' : 'healthy');
+  }
+  setStatus('ls-core-status', lsCoreLoad > 80 ? 'stressed' : 'healthy');
+  setStatus('ls-db-status', lsDbLoad > 80 ? 'stressed' : 'healthy');
+
+  lsStats.ok += acceptedRps;
+  lsStats.shed += shedCount;
+  lsStats.p99 = Math.max(12, Math.min(500, Math.floor(12 + lsGwLoad * 2)));
+
+  // Update displays
+  document.getElementById('ns-ok').textContent = nsStats.ok.toLocaleString();
+  document.getElementById('ns-fail').textContent = nsStats.fail.toLocaleString();
+  document.getElementById('ns-p99').textContent = nsStats.p99 > 5000 ? (nsStats.p99/1000).toFixed(1) + 's' : nsStats.p99 + 'ms';
+
+  document.getElementById('ls-ok').textContent = lsStats.ok.toLocaleString();
+  document.getElementById('ls-shed').textContent = lsStats.shed.toLocaleString();
+  document.getElementById('ls-p99').textContent = lsStats.p99 + 'ms';
+
+  // Log notable events
+  if (nsDbLoad >= 100 && Math.random() < 0.3) {
+    log(`❌ [No-Shed] DB connection pool exhausted! Core & Gateway cascading failure.`, 'err');
+  }
+  if (shedRatio > 0.3 && Math.random() < 0.2) {
+    log(`🟣 [Shedding] Gateway shed ${shedCount} req/s (${(shedRatio*100).toFixed(0)}%). Accepted: ${acceptedRps} RPS.`, 'shed');
+  }
+}
+
+// ── Slider ──
+const slider = document.getElementById('rps-slider');
+slider.addEventListener('input', function() {
+  rps = parseInt(this.value);
+  document.getElementById('rps-val').textContent = rps;
+
+  if (rps > 200) {
+    log(`⚠️ Traffic tăng lên ${rps} RPS — vượt capacity hệ thống!`, 'warn');
+  }
+});
+
+// Start simulation
+simInterval = setInterval(simulateTick, 800);
+
+// ── Theme Integration ──
+window.addEventListener('message', (e) => {
+  if (e.data.type === 'SET_THEME') {
+    document.documentElement.classList.toggle('light', e.data.isLight);
+  }
+});
+window.parent.postMessage({ type: 'GET_THEME' }, '*');
+
+// ── Collapsible ──
+document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
+  const label = section.querySelector('.act-label');
+  if (!label || section.querySelector('.act-content')) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'act-content';
+  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
+  section.appendChild(wrapper);
+  section.classList.add('expanded');
+  label.addEventListener('click', () => section.classList.toggle('expanded'));
+});
+</script>
+</body>
+</html>
