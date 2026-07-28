@@ -174,21 +174,6 @@
       margin-top: 2px;
     }
 
-    /* Timeline chart */
-    .chart-area {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin: 16px 0;
-      position: relative;
-      height: 120px;
-    }
-    .chart-canvas {
-      width: 100%;
-      height: 100%;
-    }
-
     .sim-log {
       background: var(--bg-terminal, #0a0b0f);
       border: 1px solid var(--border);
@@ -560,15 +545,15 @@ function setBar(id, pct) {
 function simulateTick() {
   // ─── No Shedding System ───
   const nsGwLoad = Math.min((rps / CAPACITY.gw) * 100, 100);
-  const nsCoreLoad = Math.min((rps / CAPACITY.core) * 100 * 1.1, 100);
-  const nsDbLoad = Math.min((rps / CAPACITY.db) * 100 * 1.2, 100);
+  const nsCoreLoad = Math.min((rps / CAPACITY.core) * 100, 100);
+  const nsDbLoad = Math.min((rps / CAPACITY.db) * 100, 100);
 
   setBar('ns-gw-bar', nsGwLoad);
   setBar('ns-core-bar', nsCoreLoad);
   setBar('ns-db-bar', nsDbLoad);
 
   // Cascading logic: if DB overloaded → Core backs up → Gateway backs up
-  if (nsDbLoad >= 100) {
+  if (nsDbLoad >= 95) {
     setStatus('ns-db-status', 'dead');
     setStatus('ns-core-status', 'overloaded');
     setStatus('ns-gw-status', 'overloaded');
@@ -576,8 +561,8 @@ function simulateTick() {
     nsStats.fail += failed;
     nsStats.ok += rps - failed;
     nsStats.p99 = Math.min(30000, Math.floor(nsStats.p99 * 1.4 + 200));
-  } else if (nsCoreLoad > 90) {
-    setStatus('ns-db-status', 'stressed');
+  } else if (nsCoreLoad > 85) {
+    setStatus('ns-db-status', nsDbLoad > 80 ? 'stressed' : 'healthy');
     setStatus('ns-core-status', 'overloaded');
     setStatus('ns-gw-status', 'stressed');
     const failed = Math.floor(rps * 0.3);
@@ -656,6 +641,15 @@ slider.addEventListener('input', function() {
 
 // Start simulation
 simInterval = setInterval(simulateTick, 800);
+
+// Pause simulation when page is hidden
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(simInterval);
+  } else {
+    simInterval = setInterval(simulateTick, 800);
+  }
+});
 
 // ── Theme Integration ──
 window.addEventListener('message', (e) => {

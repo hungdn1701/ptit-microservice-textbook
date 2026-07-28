@@ -135,34 +135,7 @@
       min-width: 140px;
     }
 
-    /* Mode toggle */
-    .mode-tabs {
-      display: flex;
-      gap: 0;
-      margin: 16px 0;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .mode-tab {
-      flex: 1;
-      padding: 10px 16px;
-      background: var(--bg-surface);
-      border: none;
-      color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .mode-tab.active {
-      background: var(--primary);
-      color: #000;
-    }
-    .mode-tab:hover:not(.active) {
-      background: rgba(255,255,255,0.05);
-    }
+
 
     .sim-log {
       background: var(--bg-terminal, #0a0b0f);
@@ -287,7 +260,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
       <h4>Outbox Event Router</h4>
-      <p>Debezium SMT (Single Message Transform) route event tới đúng Kafka topic dựa trên <code>aggregate_type</code>. Xóa row khỏi outbox sau khi publish thành công.</p>
+      <p>Debezium SMT (Single Message Transform) route event tới đúng Kafka topic dựa trên <code>aggregate_type</code>. Bảng <code>outbox_events</code> được dọn dẹp riêng bằng scheduled job hoặc retention policy.</p>
     </div>
   </div>
 </section>
@@ -457,7 +430,7 @@
         <div class="decision-title">Không nên khi</div>
       </div>
       <ul class="decision-list">
-        <li>Hệ thống đơn giản — polling publisher đủ tốt (< 100 events/s).</li>
+        <li>Hệ thống đơn giản — polling publisher đủ tốt (&lt; 100 events/s).</li>
         <li>DB không hỗ trợ logical replication (một số managed DB).</li>
         <li>Team chưa quen Kafka Connect — ops complexity cao.</li>
         <li>Event không cần guaranteed delivery (analytics, logging).</li>
@@ -495,6 +468,8 @@ function scrollToAct(id) {
 
 // ── Simulation ──
 let seqId = 0;
+let isSimulating = false;
+let simToken = 0;
 const ACTIONS = {
   enroll: { table: 'enrollments', event: 'ENROLLED', topic: 'outbox.event.enrollment', icon: '📝', label: 'Đăng ký Kiến trúc PM' },
   payment: { table: 'payments', event: 'PAID', topic: 'outbox.event.payment', icon: '💳', label: 'Thanh toán 500.000đ' },
@@ -516,6 +491,10 @@ function log(msg, cls) {
 }
 
 async function simAction(type) {
+  if (isSimulating) return;
+  isSimulating = true;
+  const token = ++simToken;
+
   const act = ACTIONS[type];
   seqId++;
   const eventId = 'evt-' + seqId.toString().padStart(3, '0');
@@ -524,6 +503,7 @@ async function simAction(type) {
   log(`${act.icon} BEGIN TRANSACTION — ${act.label}`, 'info');
 
   await sleep(300);
+  if (token !== simToken) { isSimulating = false; return; }
 
   // Add to DB column
   const dbRow = document.createElement('tr');
@@ -536,30 +516,44 @@ async function simAction(type) {
   dbRow2.innerHTML = `<td>outbox_events</td><td>INSERT</td><td>${eventId}</td>`;
   document.getElementById('db-rows').appendChild(dbRow2);
 
+  const dbEl = document.getElementById('db-rows');
+  while (dbEl.children.length > 30) dbEl.removeChild(dbEl.firstChild);
+
   log(`✓ INSERT INTO ${act.table} + outbox_events — COMMIT`, 'ok');
   scrollBottom('db-area');
 
   await sleep(600);
+  if (token !== simToken) { isSimulating = false; return; }
 
   // Step 2: WAL capture
   const walDiv = document.createElement('div');
   walDiv.className = 'wal-entry';
   walDiv.innerHTML = `<strong>WAL</strong> lsn=0/${seqId} table=outbox_events op=INSERT id=${eventId} type=${act.event}`;
   document.getElementById('wal-area').appendChild(walDiv);
+  
+  const walEl = document.getElementById('wal-area');
+  while (walEl.children.length > 25) walEl.removeChild(walEl.firstChild);
+  
   scrollBottom('wal-area');
 
   log(`📋 Debezium captured WAL change: ${eventId} (${act.event})`, 'cdc');
 
   await sleep(500);
+  if (token !== simToken) { isSimulating = false; return; }
 
   // Step 3: Kafka publish
   const kafkaDiv = document.createElement('div');
   kafkaDiv.className = 'kafka-event';
   kafkaDiv.innerHTML = `<strong>${act.topic}</strong><br>key: ${eventId} | type: ${act.event}<br>payload: { "action": "${act.label}" }`;
   document.getElementById('kafka-area').appendChild(kafkaDiv);
+  
+  const kafkaEl = document.getElementById('kafka-area');
+  while (kafkaEl.children.length > 25) kafkaEl.removeChild(kafkaEl.firstChild);
+  
   scrollBottom('kafka-area');
 
   log(`📨 Published to ${act.topic} — partition 0, offset ${seqId}`, 'ok');
+  isSimulating = false;
 }
 
 function scrollBottom(id) {
@@ -572,6 +566,8 @@ function sleep(ms) {
 }
 
 function resetSim() {
+  simToken++;
+  isSimulating = false;
   seqId = 0;
   document.getElementById('db-rows').innerHTML = '';
   document.getElementById('wal-area').innerHTML = '';

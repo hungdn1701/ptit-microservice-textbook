@@ -128,9 +128,9 @@
     }
 
     @keyframes failPulse {
-      0% { transform: scale(1); background: var(--danger); box-shadow: 0 0 10px var(--danger); opacity: 1; }
-      50% { transform: scale(2); background: var(--danger); box-shadow: 0 0 20px var(--danger); opacity: 0; }
-      100% { transform: scale(1); opacity: 0; }
+      0% { left: 20%; top: 50%; transform: scale(1); background: var(--danger); box-shadow: 0 0 10px var(--danger); opacity: 1; }
+      50% { left: 20%; top: 50%; transform: scale(2); background: var(--danger); box-shadow: 0 0 20px var(--danger); opacity: 0; }
+      100% { left: 20%; top: 50%; transform: scale(1); opacity: 0; }
     }
 
     .stat-row {
@@ -261,7 +261,7 @@
           Order Service
           <div class="db-box">Order DB (No Customer Data)</div>
         </div>
-        <div style="color: var(--text-dim); font-size: 24px; position: relative;">
+        <div style="color: var(--text-dim); font-size: 24px;">
           ⇄
           <div class="anim-request" id="anim-sync-req"></div>
         </div>
@@ -475,10 +475,11 @@ function updateStats(sys, isSuccess, lat) {
 }
 
 async function simSync() {
+  const syncBtn = document.querySelector('.panel-sync .btn-action');
+  syncBtn.disabled = true;
+
   log('sync', 'Order Svc: Bắt đầu tạo đơn...', 'info');
   const anim = document.getElementById('anim-sync-req');
-  
-  syncStats.total++; // Pre-increment for failure calculation
   
   if (!customerOnline) {
     // Fail immediately visually
@@ -486,8 +487,8 @@ async function simSync() {
     void anim.offsetWidth; // trigger reflow
     anim.style.animation = 'failPulse 1s forwards';
     log('sync', 'Order Svc: LỖI! Gọi HTTP GET /customers/123 Timeout (Connection Refused).', 'err');
-    syncStats.total--; // adjust back, updateStats handles it
     updateStats('sync', false, 0);
+    syncBtn.disabled = false;
     return;
   }
 
@@ -505,11 +506,14 @@ async function simSync() {
   const latency = 120 + Math.floor(Math.random() * 50); // 120-170ms
   log('sync', `Order Svc: Nhận data thành công. Đã tạo đơn. (Trễ: ${latency}ms)`, 'ok');
   
-  syncStats.total--; // adjust back
   updateStats('sync', true, latency);
+  syncBtn.disabled = false;
 }
 
 async function simEcst() {
+  const ecstBtn = document.querySelector('.panel-ecst .btn-action');
+  ecstBtn.disabled = true;
+
   log('ecst', 'Order Svc: Bắt đầu tạo đơn...', 'info');
   
   // Local read is always fast, regardless of customer svc status
@@ -519,6 +523,7 @@ async function simEcst() {
   
   log('ecst', `Order Svc: Query Local Cache thành công. Đã tạo đơn. (Trễ: ${latency}ms)`, 'ok');
   updateStats('ecst', true, latency);
+  ecstBtn.disabled = false;
 }
 
 // ── Theme ──

@@ -671,6 +671,10 @@ async function sleep(ms) {
 
 async function initiatePayment() {
   if (isProcessing) return;
+  if (balance < AMOUNT) {
+    log('❌ Số dư không đủ để thanh toán!', 'err');
+    return;
+  }
   isProcessing = true;
   const btn = document.getElementById('btn-pay');
   btn.disabled = true;
@@ -700,7 +704,7 @@ async function initiatePayment() {
       log(`⚡ Network Timeout! Response bị mất trên đường về.`, 'err');
 
       // Server DID process it (but client doesn't know)
-      const result = processOnServer(idempKey, attempt === 1);
+      const result = processOnServer(idempKey, attempt === 1, attempt > 1);
       if (result.newCharge) {
         log(`   [Server đã xử lý — nhưng client không biết]`, 'warn');
       }
@@ -710,7 +714,7 @@ async function initiatePayment() {
       await sleep(500);
     } else {
       // Request goes through successfully
-      const result = processOnServer(idempKey, true);
+      const result = processOnServer(idempKey, true, attempt > 1);
       if (result.duplicate) {
         if (idempEnabled) {
           log(`✓ Server: Key đã tồn tại → trả cached response (không trừ tiền lại)`, 'ok');
@@ -740,7 +744,7 @@ async function initiatePayment() {
   isProcessing = false;
 }
 
-function processOnServer(idempKey, isVisible) {
+function processOnServer(idempKey, isVisible, isRetry) {
   // Check idempotency
   if (idempKey && processedKeys.has(idempKey)) {
     const existing = processedKeys.get(idempKey);
@@ -771,10 +775,10 @@ function processOnServer(idempKey, isVisible) {
 
   if (idempKey) {
     processedKeys.set(idempKey, { count: 1, txId: txCounter });
-  } else {
-    // Without idempotency, check if this is a "duplicate" (same amount in quick succession)
-    const recentCharges = dbRows.filter(r => r.status === 'CHARGED').length;
-    if (recentCharges > 1) {
+  } else if (isRetry) {
+    // Without idempotency key, server cannot distinguish retry from new request
+    const recentCharges = dbRows.filter(r => r.status.includes('CHARGED')).length;
+    if (true) {
       // Mark as duplicate charge
       row.status = 'CHARGED ⚠️';
       row.statusCls = 'status-dup';
@@ -798,6 +802,10 @@ function resetSim() {
   renderDB();
   document.getElementById('sim-log').innerHTML =
     `<div class="log-line"><span class="log-time">[${now()}]</span> <span class="log-info">Reset mô phỏng. Số dư: 5.000.000đ. Sẵn sàng.</span></div>`;
+  isProcessing = false;
+  const btn = document.getElementById('btn-pay');
+  btn.disabled = false;
+  btn.textContent = '💳 Thanh toán học phí';
 }
 
 // ── Toggle listener ──
