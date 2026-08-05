@@ -23,7 +23,7 @@
         <div class="d-sub d-mb-3 text-center d-text-muted">1 điểm bảo vệ (Perimeter Security)</div>
 
         <div class="d-cluster d-col d-center d-gap-3" style="width: 100%; border-color: var(--diagram-color-danger-border); background: rgba(239, 68, 68, 0.05); padding: 32px 24px;">
-          <div class="d-label d-text-danger" style="font-size: 13px;">Trusted Internal Network</div>
+          <div class="d-label d-text-danger" style="font-size: 13px;">Implicitly Trusted Internal Network</div>
           
           <div class="d-box d-danger text-center" style="width: 220px; box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
             <div class="d-title">Firewall</div>
@@ -63,7 +63,7 @@
           
           <div class="d-box d-gateway text-center" style="width: 220px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2); position: relative;">
             <div class="d-title">API Gateway</div>
-            <div class="d-sub">Lớp bảo vệ 2 (Authn/Authz)</div>
+            <div class="d-sub">Lớp 2 (Ingress AuthN + traffic policy)</div>
             <!-- Stem down -->
             <div class="d-tree-stem-down" style="--stem-len: 24px;"></div>
           </div>
@@ -78,7 +78,7 @@
               <div class="d-tree-stem-down arrow" style="--stem-len: 24px; top: 0; bottom: auto;"></div>
               <div class="d-box d-service text-center" style="width: 160px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
                 <div class="d-title">Service A</div>
-                <div class="d-sub">Lớp bảo vệ 3 (Tự xác thực)</div>
+                <div class="d-sub">Lớp 3 (Verify proof + Local AuthZ)</div>
               </div>
               <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
               <div class="d-box d-storage text-center" style="width: 160px;">
@@ -91,7 +91,7 @@
               <div class="d-tree-stem-down arrow" style="--stem-len: 24px; top: 0; bottom: auto;"></div>
               <div class="d-box d-service text-center" style="width: 160px; border: 2px solid var(--diagram-color-danger-border); box-shadow: 0 0 0 2px rgba(239,68,68,0.2);">
                 <div class="d-title">Service B</div>
-                <div class="d-sub">Lớp bảo vệ 3 (Tự xác thực)</div>
+                <div class="d-sub">Lớp 3 (Verify proof + Local AuthZ)</div>
               </div>
               <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
               <div class="d-box d-storage text-center" style="width: 160px;">

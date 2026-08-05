@@ -260,13 +260,13 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Sử dụng API Gateway làm single entry point. Thực thi Filter Chain tập trung (CORS, JWT validation, rate limiting) trước khi routing. Gateway giải mã token, chèn user context (User ID, Roles) vào HTTP header, và forward request xuống các downstream service.
+      Sử dụng API Gateway làm single entry point. Thực thi Filter Chain tập trung (CORS, JWT validation, rate limiting) trước khi routing. Gateway sanitize identity header, xác minh external token và chuyển signed proof đúng audience; user context dẫn xuất chỉ hỗ trợ routing, log và rate limiting.
     </p>
     <div class="definition-attribution">— API Gateway Routing · Microservice Patterns (Chris Richardson)</div>
   </div>
 
   <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Pattern này đưa các internal service vào Private Network, đảm bảo stateless và tập trung 100% vào business logic, tách biệt hoàn toàn khỏi security infrastructure.
+    Pattern này đưa internal service ra khỏi Internet và tập trung kiểm soát ingress. Private Network không phải identity proof: resource service vẫn xác minh signed proof theo trust tier và tự thực hiện authorization nghiệp vụ.
   </p>
 
   <div class="pattern-anatomy">
@@ -282,8 +282,8 @@
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Gateway-to-Service Trust</h4>
-      <p>Sau khi JWT validation thành công, Gateway inject các header <code>X-User-Id</code> và <code>X-User-Roles</code>. Các downstream service chỉ đọc các header này và hoàn toàn tin tưởng Gateway (không cần re-validate JWT).</p>
+      <h4>Signed Gateway-to-Service Proof</h4>
+      <p>Sau ingress validation, Gateway giữ signed access token hoặc token exchange sang internal token đúng audience. Downstream xác minh proof và local authorization; <code>X-User-*</code> chỉ là context dẫn xuất, không phải nguồn quyền.</p>
     </div>
   </div>
 </section>
@@ -366,7 +366,7 @@
           <th>API Route Pattern</th>
           <th>Downstream Service</th>
           <th>JWT Validation</th>
-          <th>Header Mutation</th>
+          <th>Downstream Identity</th>
           <th>Strip Prefix</th>
         </tr>
       </thead>
@@ -382,14 +382,14 @@
           <td class="gap-label"><code>/api/core/**</code></td>
           <td><code>kbm-core</code></td>
           <td><span class="b-high">Bắt buộc</span></td>
-          <td>Inject <code>X-User-Id</code></td>
+          <td>Signed proof (<code>aud=kbm-core</code>) + derived context</td>
           <td><code>StripPrefix=2</code> (Bỏ <code>/api/core</code>)</td>
         </tr>
         <tr>
           <td class="gap-label"><code>/api/assignments/**</code></td>
           <td><code>kbm-academic</code></td>
           <td><span class="b-high">Bắt buộc</span></td>
-          <td>Inject <code>X-User-Id</code>, <code>X-User-Roles</code></td>
+          <td>Signed proof (<code>aud=kbm-academic</code>) + derived context</td>
           <td><code>StripPrefix=2</code> (Bỏ <code>/api/assignments</code>)</td>
         </tr>
       </tbody>
@@ -413,9 +413,9 @@
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Viết Custom Global JWT Filter & Header Injection</h4>
-      <p>Implement <code>JwtRequestFilter</code>. Xác thực JWT (RSA public key), trích xuất <code>userId</code>, <code>roles</code>, và inject vào HTTP Header để forward an toàn xuống downstream.</p>
-      <span class="t-badge green">✓ Loại bỏ hoàn toàn JWT logic ở downstream service</span>
+      <h4>Chuẩn hóa JWT Filter & Signed Propagation</h4>
+      <p>Implement <code>JwtRequestFilter</code>: sanitize <code>X-User-*</code>, xác minh RSA token, kiểm tra issuer/audience/freshness và chuyển proof phù hợp tới downstream.</p>
+      <span class="t-badge green">✓ Resource service dùng verifier/JWKS thống nhất</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
@@ -429,7 +429,7 @@
       <div class="timeline-phase">Phase 4 · Tuần 4</div>
       <h4>Đồng bộ bảo mật mạng nội bộ (mTLS / Network Policy)</h4>
       <p>Chỉ cho phép downstream service nhận traffic từ Gateway. Cấu hình Kubernetes NetworkPolicy hoặc Security Group để block mọi direct access từ Internet.</p>
-      <span class="t-badge green">✓ Thiết lập thành công Trusted Private Network</span>
+      <span class="t-badge green">✓ Thu hẹp network path; không suy ra user trust</span>
     </div>
   </div>
 
@@ -545,8 +545,8 @@ async function runPipeline(scenario) {
     document.getElementById('f-jwt').className = 'filter-box active';
     logSys('2. JwtRequestFilter: Token hợp lệ. Giải mã RSA claims...', 'success');
     await sleep(600);
-    pkt.innerHTML = "GET /api/core/questions<br>[Header: X-User-Id=SV001]";
-    logSys('[Action] Gateway biến đổi Header: Gắn X-User-Id = SV001', 'warn');
+    pkt.innerHTML = "GET /api/core/questions<br>[Proof: JWT aud=kbm-core]";
+    logSys('[Action] Gateway giữ/đổi signed proof; X-User-* chỉ là derived context', 'warn');
     await sleep(800);
     document.getElementById('f-jwt').className = 'filter-box';
 
@@ -563,14 +563,14 @@ async function runPipeline(scenario) {
     document.getElementById('f-strip').className = 'filter-box active';
     logSys('4. StripPrefix=2: Bỏ tiền tố /api/core ra khỏi URL.', 'success');
     await sleep(600);
-    pkt.innerHTML = "GET /questions<br>[Header: X-User-Id=SV001]";
+    pkt.innerHTML = "GET /questions<br>[Proof: JWT aud=kbm-core]";
     await sleep(800);
     document.getElementById('f-strip').className = 'filter-box';
 
     // Forward to Core
     pkt.style.left = '480px'; pkt.style.top = '100px';
     document.getElementById('svc-core').className = 'service active';
-    logSys('[Routing] Đang chuyển tiếp gói tin tới lb://core-service/questions...', 'info');
+    logSys('[Routing] Chuyển tới core-service; service xác minh proof và local authorization...', 'info');
     await sleep(1000);
     pkt.style.opacity = 0;
     document.getElementById('svc-core').className = 'service';

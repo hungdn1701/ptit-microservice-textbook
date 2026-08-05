@@ -10,34 +10,34 @@
   <div class="diagram-canvas" data-fig-id="FIG-9.6">
 
     <div class="d-grid-2 d-gap-3" style="align-items:stretch;">
-      <!-- Left: Auth Service (Full validation) -->
+      <!-- Left: Current accepted risk -->
       <div class="d-box d-note" style="padding:16px;">
-        <div class="d-title d-mb-1 text-center">Auth Service — Full Validation</div>
+        <div class="d-title d-mb-1 text-center">CURRENT — Accepted Risk</div>
         <div class="d-stack d-gap-1">
-          <div class="d-sub"><span class="d-step">1</span> Verify JWT signature (secret key)</div>
-          <div class="d-sub"><span class="d-step">2</span> Check expiry (exp claim)</div>
-          <div class="d-sub"><span class="d-step">3</span> Query DB: user exists? active?</div>
+          <div class="d-sub"><span class="d-step">1</span> Gateway verifies shared HS256 token</div>
+          <div class="d-sub"><span class="d-step">2</span> Strip / inject X-User-* context</div>
+          <div class="d-sub"><span class="d-step">3</span> Mixed header trust + bespoke parsing</div>
         </div>
         <div class="d-sep"></div>
-        <div class="d-zone d-zone-warning d-mt-1">Nặng, nhưng chính xác nhất</div>
+        <div class="d-zone d-zone-warning d-mt-1">Network enforcement evidence unresolved</div>
       </div>
 
-      <!-- Right: Core/Judge (Claims-only) -->
+      <!-- Right: Target Tier 1 -->
       <div class="d-box d-service" style="padding:16px;">
-        <div class="d-title d-mb-1 text-center">Core/Judge — Claims-Only</div>
+        <div class="d-title d-mb-1 text-center">TARGET — Tier 1</div>
         <div class="d-stack d-gap-1">
-          <div class="d-sub"><span class="d-step">1</span> Verify JWT signature (secret key)</div>
-          <div class="d-sub"><span class="d-step">2</span> Check expiry (exp claim)</div>
-          <div class="d-sub"><span class="d-step">3</span> Trust claims (userId, roles)</div>
+          <div class="d-sub"><span class="d-step">1</span> Gateway validates external token</div>
+          <div class="d-sub"><span class="d-step">2</span> Signed proof bound to audience</div>
+          <div class="d-sub"><span class="d-step">3</span> Service verifies + authorizes locally</div>
         </div>
         <div class="d-sep"></div>
-        <div class="d-zone d-zone-success d-mt-1">Nhanh, không query DB</div>
+        <div class="d-zone d-zone-success d-mt-1">RS256 / JWKS · no per-hop DB query</div>
       </div>
     </div>
 
     <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
-      <div class="d-title d-mb-1">[Idea] Kết luận</div>
-      <div class="d-sub" style="line-height:1.5;">Gateway thực hiện Full Validation khi login. Các service khác chỉ cần Claims-Only — tin tưởng JWT đã được Gateway kiểm tra.</div>
+      <div class="d-title d-mb-1">[Boundary] Hai loại bằng chứng khác nhau</div>
+      <div class="d-sub" style="line-height:1.5;">NetworkPolicy / mTLS chứng minh path và workload; signed token chứng minh user claims. Tier 2 tách subject khỏi actor/delegation.</div>
     </div>
   </div>
 </body>

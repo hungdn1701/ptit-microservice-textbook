@@ -59,19 +59,23 @@
       <div class="d-center d-mt-1">
         <div class="d-zone d-zone-success" >Verify JWT signature</div>
       </div>
-      <!-- 8. Forward -->
+      <!-- 8. Forward signed proof -->
       <div class="d-seq-msg">
         <div style="flex:1.5;"></div>
-        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Forward + X-User-Id, X-User-Roles</span></div>
+        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Forward signed proof (aud: core)</span></div>
         <div style="flex:0.5;"></div>
       </div>
-      <!-- 9. Response -->
+      <!-- 9. Resource verifies and authorizes -->
+      <div class="d-center d-mt-1">
+        <div class="d-zone d-zone-info">Core verifies proof + local authorization</div>
+      </div>
+      <!-- 10. Response -->
       <div class="d-seq-msg">
         <div style="flex:1.5;"></div>
         <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Response</span></div>
         <div style="flex:0.5;"></div>
       </div>
-      <!-- 10. To user -->
+      <!-- 11. To user -->
       <div class="d-seq-msg">
         <div style="flex:0.5;"></div>
         <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to user</span></div>

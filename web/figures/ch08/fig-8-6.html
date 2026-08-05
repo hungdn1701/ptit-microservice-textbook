@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.6 — Gateway JWT Filter — Request Rejected
+    Fig 8.6 — Gateway Identity Flow
     =========================================================
     Tier 1 HTML migration
     Layout: Sequence diagram
     Capture: gen-diagrams.ps1 -> fig-8-6.png -> Typst image()
   -->
-  <title>Fig 8.6 — Gateway JWT Filter — Request Rejected | Ch.8</title>
+  <title>Fig 8.6 — Gateway Identity Flow | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=7f87c577">
 </head>
@@ -82,7 +82,15 @@
         <!-- Forward -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Forward + X-User-Id, X-User-Roles header</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Forward signed proof + derived context</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
+        <!-- Resource verification and authorization -->
+        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
+          <div style="flex:1.5;"></div>
+          <div style="flex:1; display:flex; justify-content:center;">
+            <div class="d-zone d-zone-info text-center" style="padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Verify proof + local authorization</div>
+          </div>
           <div style="flex:0.5;"></div>
         </div>
         <!-- Response back -->
