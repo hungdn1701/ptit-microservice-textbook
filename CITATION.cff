@@ -14,11 +14,11 @@ authors:
   - family-names: "Đặng"
     given-names: "Ngọc Hùng"
     affiliation: "Posts and Telecommunications Institute of Technology (PTIT)"
-version: "1.1.5"
+version: "1.2.0"
 date-released: "2026-06-23"
 repository-code: "https://github.com/hungdn1701/ptit-microservice-textbook"
 url: "https://hungdn1701.github.io/ptit-microservice-textbook"
-license: "CC-BY-4.0"
+license: "All Rights Reserved"
 keywords:
   - microservices
   - service-oriented-architecture
@@ -36,4 +36,4 @@ preferred-citation:
   publisher: "Posts and Telecommunications Institute of Technology (PTIT)"
   year: 2026
   url: "https://hungdn1701.github.io/ptit-microservice-textbook"
-  version: "1.1.5"
+  version: "1.2.0"
