@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=336a05ce">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=6098526d">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=20276c91">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=4b34f2ff">
   <style>
     /* ── Simulation Layout ── */
     .sim-split {
@@ -21,7 +21,7 @@
       gap: 20px;
       margin: 24px 0;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
       .sim-split { grid-template-columns: 1fr; }
     }
 
@@ -66,7 +66,7 @@
     .toggle-label {
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text-main);
       flex: 1;
     }
     .toggle-desc {
@@ -235,7 +235,7 @@
       gap: 16px;
       margin: 20px 0;
     }
-    @media (max-width: 700px) {
+    @media (max-width: 640px) {
       .scenario-grid { grid-template-columns: 1fr; }
     }
     .scenario-card {
@@ -593,31 +593,21 @@
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
   <p>Đọc chi tiết về Idempotency Key, HTTP Method Safety, và Kafka Consumer Dedup trong sách.</p>
-  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-03'}, '*'); return false;"><div class="badge badge-info">Read</div> Chương 3 — API Design →</a>
-  <a class="chapter-btn" href="#" onclick="window.parent.postMessage({type: 'OPEN_FILE', itemType: 'chapter', id: 'chapter-05'}, '*'); return false;" style="margin-top: 8px;"><div class="badge badge-info">Read</div> Chương 5 — Messaging →</a>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-03')"><div class="badge badge-info">Read</div> Chương 3 — API Design →</a>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-05')" style="margin-top: 8px;"><div class="badge badge-info">Read</div> Chương 5 — Messaging →</a>
 </div>
 
-<script>
-// ── Scroll Progress ──
-window.addEventListener('scroll', () => {
-  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  document.documentElement.style.setProperty('--scroll-progress', Math.min(pct, 100) / 100);
-  updateNav();
-}, { passive: true });
+<!-- ── Book Identity Strip (Phase 6 — F-05) ──
+     Nhận diện sách/tác giả khi trang được mở standalone (ngoài iframe portal). -->
+<div class="book-identity">
+  <img src="../../favicon.png?v=9fd867f7" alt="">
+  <span>Kiến trúc SOA &amp; Microservices — Từ lý thuyết đến thực tiễn</span>
+  <span class="book-identity-sep">·</span>
+  <a href="../../index.html" target="_top">Về trang chủ Companion Web</a>
+</div>
 
-// ── Act Nav ──
-const acts = ['act1','act2','act3','act4'];
-function updateNav() {
-  let cur = 'act1';
-  for (const id of acts) {
-    const el = document.getElementById(id);
-    if (el && el.getBoundingClientRect().top < 90) cur = id;
-  }
-  acts.forEach(id => document.getElementById('nav-' + id).classList.toggle('active', id === cur));
-}
-function scrollToAct(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+<script src="../../js/pattern-story.js?v=8c181359"></script>
+<script>
 
 // ── Simulation State ──
 let balance = 5000000;
@@ -832,26 +822,6 @@ function playTimeline() {
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Theme Integration ──
-window.addEventListener('message', (e) => {
-  if (e.data.type === 'SET_THEME') {
-    document.documentElement.classList.toggle('light', e.data.isLight);
-  }
-});
-window.parent.postMessage({ type: 'GET_THEME' }, '*');
-
-// ── Collapsible Act 1 & 2 ──
-document.querySelectorAll('.act-section[data-collapsible]').forEach(section => {
-  const label = section.querySelector('.act-label');
-  if (!label || section.querySelector('.act-content')) return;
-  const wrapper = document.createElement('div');
-  wrapper.className = 'act-content';
-  while (label.nextSibling) wrapper.appendChild(label.nextSibling);
-  section.appendChild(wrapper);
-  section.classList.add('expanded');
-  label.addEventListener('click', () => section.classList.toggle('expanded'));
-});
 
 // ── Init ──
 updateStats();

@@ -169,7 +169,7 @@ html { scroll-behavior: smooth; }
   }
   .light .act-nav { background: rgba(250, 250, 250, 0.85); }
   .act-nav::before, .act-nav::after { display: none; }
-  .act-btn { flex-direction: column; gap: 0; }
+  .act-btn { flex-direction: column; gap: 0; min-width: 44px; min-height: 44px; justify-content: center; }
   .act-num { width: 28px; height: 28px; font-size: 11px; }
   .act-btn-label { display: none; }
 }
@@ -402,6 +402,12 @@ hr.act-divider {
 
 /* ── Act 4: Gap Table ── */
 .gap-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 12.5px; }
+@media (max-width: 640px) {
+  /* Some cells (code snippets, long labels) don't wrap, which can force the
+     table wider than the viewport and push the whole page into horizontal
+     scroll. Let the table itself scroll instead. */
+  .gap-table { display: block; overflow-x: auto; }
+}
 .gap-table th {
   text-align: left; padding: 9px 14px; font-size: 10.5px;
   font-family: var(--font-mono); color: var(--text-dim);
@@ -449,6 +455,7 @@ hr.act-divider {
   background: var(--primary); border: none; color: #000;
   font-size: 12px; font-weight: 700; cursor: pointer;
   font-family: var(--font-sans); margin-bottom: 20px; transition: all .2s ease;
+  min-height: 44px;
 }
 .play-btn:hover { background: var(--primary-hover); }
 .play-btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -476,8 +483,45 @@ hr.act-divider {
   padding: 10px 26px; border-radius: var(--radius-sm);
   background: var(--primary); color: #000;
   font-size: 13px; font-weight: 700; text-decoration: none; transition: all .2s ease;
+  min-height: 44px;
 }
 .chapter-btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
+/* ── Simulator Control Button (shared — was duplicated inline in circuit-breaker.html;
+     graphql-vs-rest.html and outbox-pattern.html used the .sim-btn class in HTML
+     without ever defining it, rendering as unstyled browser-default buttons) ── */
+.sim-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+.sim-btn:hover:not(:disabled) {
+  border-color: var(--border-hover);
+  background: rgba(255, 255, 255, 0.03);
+}
+.sim-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sim-btn.primary-action {
+  background: var(--primary);
+  color: #000;
+  border: none;
+}
+.sim-btn.primary-action:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
 
 /* ── Shared JS helpers (class-based) ── */
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -723,3 +767,9 @@ hr.act-divider {
 .book-identity a { color: var(--text-secondary); text-decoration: none; }
 .book-identity a:hover { color: var(--primary); text-decoration: underline; }
 .book-identity .book-identity-sep { opacity: .4; }
+@media (max-width: 768px) {
+  /* .book-identity is the last element on the page, and .act-nav becomes a
+     floating fixed pill at bottom:24px (~62px tall) in this same breakpoint —
+     without clearance the pill permanently covers the strip's text/link. */
+  .book-identity { padding-bottom: 100px; }
+}

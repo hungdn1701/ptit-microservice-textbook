@@ -4,7 +4,8 @@
   "private": true,
   "description": "Companion web for SOA & Microservices Architecture Textbook",
   "scripts": {
-    "check:metadata": "node scripts/check-public-metadata.js"
+    "check:metadata": "node scripts/check-public-metadata.js",
+    "test:patterns": "node scripts/test-pattern-pages.js"
   },
   "dependencies": {
     "playwright": "^1.60.0"
