@@ -1,0 +1,135 @@
+<!-- ============================================================
+   PATTERN PAGE TEMPLATE v2 — Chuẩn mực cho tất cả web/patterns/*.html
+   Xem docs/PATTERN-PAGES-STANDARDIZATION.md để biết đầy đủ audit + rationale.
+
+   QUY TẮC:
+   1. Metadata PHẢI có 4 trường: category, coined by, year, book ref
+   2. book ref format: Ch.N §N.M (không khoảng trắng sau §, không dùng "Chương";
+      có thể liệt kê nhiều ref cách nhau bởi dấu phẩy nếu pattern xuất hiện ở
+      nhiều chương, ví dụ "Ch.5 §5.5, Ch.10 §10.3")
+   3. <title> format: [Pattern Name] — Pattern Story | SOA & Microservices
+   4. PHẢI có <meta name="description">, favicon, author, og:* (F-05)
+   5. Act Titles bằng tiếng Anh: The Problem → The Pattern → How It Works → KBM: Apply It (F-08)
+   6. Act Nav labels: Problem, Pattern, How It Works, KBM
+   7. Chapter-bar CTA dùng Badge style (D-02): <div class="badge badge-info">Read</div>
+   8. book-identity strip (Phase 6) đặt sau .chapter-bar, trước </body>
+   ============================================================ -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Title format chuẩn (F-04: em dash — không phải hyphen -) -->
+  <title>[Pattern Name] — Pattern Story | SOA & Microservices</title>
+  <!-- Meta description BẮT BUỘC -->
+  <meta name="description" content="[Pattern Name] — [mô tả ngắn gọn bằng tiếng Việt]. Case study KBM LMS.">
+  <meta name="author" content="Đặng Ngọc Hùng">
+  <!-- Book branding (F-05): nhận diện sách/tác giả khi mở trang đơn lẻ -->
+  <meta property="og:title" content="[Pattern Name] — Pattern Story">
+  <meta property="og:description" content="[Pattern Name] — [mô tả ngắn gọn bằng tiếng Việt]. Case study KBM LMS.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SOA & Microservices Textbook">
+  <link rel="icon" type="image/png" href="../../favicon.png">
+  <link rel="stylesheet" href="../../styles/base-style.css">
+  <link rel="stylesheet" href="../../styles/pattern-story.css">
+  <style>
+    /* Custom styling cho pattern cụ thể */
+  </style>
+</head>
+<body>
+
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<!-- Nav labels chuẩn: Problem, Pattern, How It Works, KBM -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" onclick="scrollToAct('act1')" id="nav-act1">
+    <span class="act-num">1</span><span class="act-btn-label">Problem</span>
+  </button>
+  <button class="act-btn" onclick="scrollToAct('act2')" id="nav-act2">
+    <span class="act-num">2</span><span class="act-btn-label">Pattern</span>
+  </button>
+  <button class="act-btn" onclick="scrollToAct('act3')" id="nav-act3">
+    <span class="act-num">3</span><span class="act-btn-label">How It Works</span>
+  </button>
+  <button class="act-btn" onclick="scrollToAct('act4')" id="nav-act4">
+    <span class="act-num">4</span><span class="act-btn-label">KBM</span>
+  </button>
+</nav>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="pattern-header">
+  <h1 class="pattern-title">[Pattern Name]</h1>
+  <p class="pattern-subtitle">[Mô tả ngắn gọn bằng tiếng Việt]</p>
+  <!-- Metadata schema chuẩn: category / coined by / year / book ref -->
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">[Category từ Phụ lục C]</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">[Tác giả / Nguồn gốc]</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">[Năm]</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.N §N.M</span></div>
+  </div>
+</header>
+
+<!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
+<!-- Act Titles bằng tiếng Anh: The Problem / The Pattern / How It Works / KBM: Apply It -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
+  </div>
+  <p class="section-intro">[Mô tả vấn đề]</p>
+  <!-- Nội dung Act 1 -->
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
+  </div>
+  <!-- Nội dung Act 2 -->
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 3 — HOW IT WORKS ═══════════════════════════════ -->
+<section class="act-section" id="act3" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
+  </div>
+  <!-- Nội dung Act 3: Interactive simulation / step-by-step -->
+</section>
+
+<hr class="act-divider">
+
+<!-- ══ ACT 4 — KBM: APPLY IT ══════════════════════════════ -->
+<section class="act-section" id="act4" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBM: Apply It</h2></div>
+  </div>
+  <!-- Nội dung Act 4 -->
+</section>
+
+<!-- ── Chapter Link Bar (D-02: Badge style) ── -->
+<div class="chapter-bar">
+  <p>[Mô tả ngắn: đọc chi tiết về (các) chủ đề liên quan trong sách]</p>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-XX')"><div class="badge badge-info">Read</div> Chương X — [Tên chương chuẩn] →</a>
+</div>
+
+<!-- ── Book Identity Strip (Phase 6 — F-05) ──
+     Nhận diện sách/tác giả khi trang được mở standalone (ngoài iframe portal). -->
+<div class="book-identity">
+  <img src="../../favicon.png" alt="">
+  <span>Kiến trúc SOA &amp; Microservices — Từ lý thuyết đến thực tiễn</span>
+  <span class="book-identity-sep">·</span>
+  <a href="../../index.html" target="_top">Về trang chủ Companion Web</a>
+</div>
+
+<!-- ── Shared JS ── -->
+<script src="../../js/pattern-story.js"></script>
+</body>
+</html>
