@@ -1150,3 +1150,14 @@ tbody tr:hover { background: rgba(255,255,255,0.018); }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Phát biểu bản quyền dùng chung cho các trang web đơn lẻ.
+   Một câu duy nhất, giống nguyên văn ở PDF, LICENSE và CITATION.cff. */
+.site-legal {
+  padding: 16px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+}
+.site-legal a { color: var(--text-secondary); }

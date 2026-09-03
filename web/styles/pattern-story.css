@@ -767,6 +767,8 @@ hr.act-divider {
 .book-identity a { color: var(--text-secondary); text-decoration: none; }
 .book-identity a:hover { color: var(--primary); text-decoration: underline; }
 .book-identity .book-identity-sep { opacity: .4; }
+/* Phát biểu bản quyền — phải đọc được, nhưng không tranh chỗ với tên sách. */
+.book-identity .book-identity-legal { opacity: .75; white-space: nowrap; }
 @media (max-width: 768px) {
   /* .book-identity is the last element on the page, and .act-nav becomes a
      floating fixed pill at bottom:24px (~62px tall) in this same breakpoint —
