@@ -1,19 +1,31 @@
 Kiến trúc SOA & Microservices — Từ lý thuyết đến thực tiễn
+Đặng Ngọc Hùng · Học viện Công nghệ Bưu chính Viễn thông (PTIT)
+
+
+────────────────────────────────────────────────────────────────────────
+PHÁT BIỂU BẢN QUYỀN
+────────────────────────────────────────────────────────────────────────
 
 Copyright © 2026 Đặng Ngọc Hùng. All rights reserved.
-Học viện Công nghệ Bưu chính Viễn thông (PTIT).
+
+Bản điện tử được phát hành công khai để đọc và phục vụ học tập, đồng thời
+dùng làm giáo trình nội bộ tại Học viện Công nghệ Bưu chính Viễn thông.
+Không sao chép, phân phối lại, dịch hoặc dùng cho mục đích thương mại khi
+chưa có sự đồng ý bằng văn bản của tác giả. Trích dẫn ngắn có ghi nguồn
+được cho phép theo thông lệ học thuật.
+
+Đoạn trên là phát biểu chuẩn, xuất hiện nguyên văn ở: trang bản quyền của
+bản PDF, file này, và (dạng rút gọn một dòng) ở chân mọi trang Companion
+Web. Trường `license` trong CITATION.cff ghi "All Rights Reserved" tương ứng.
 
 
-PHẠM VI SỬ DỤNG
+────────────────────────────────────────────────────────────────────────
+DIỄN GIẢI CHI TIẾT
+────────────────────────────────────────────────────────────────────────
 
-Bản điện tử của tài liệu này được phát hành công khai để đọc và phục vụ học tập,
-đồng thời được dùng làm giáo trình nội bộ tại Học viện Công nghệ Bưu chính
-Viễn thông.
-
-Việc phát hành công khai KHÔNG đồng nghĩa với việc cấp phép tái sử dụng. Mọi
-quyền đối với nội dung, hình minh họa, mã nguồn ví dụ và bản trình bày đều được
-bảo lưu.
-
+Việc phát hành công khai KHÔNG đồng nghĩa với việc cấp phép tái sử dụng.
+Mọi quyền đối với nội dung, hình minh họa, mã nguồn ví dụ và bản trình bày
+đều được bảo lưu.
 
 ĐƯỢC PHÉP
 
@@ -22,29 +34,29 @@ bảo lưu.
     Thông tin trích dẫn: xem CITATION.cff.
   - Liên kết (link) tới bản trực tuyến.
 
-
 KHÔNG ĐƯỢC PHÉP khi chưa có sự đồng ý bằng văn bản của tác giả
 
   - Sao chép hoặc phân phối lại toàn bộ hay một phần đáng kể tài liệu.
   - Dịch, chuyển thể, tạo tác phẩm phái sinh.
-  - Sử dụng cho bất kỳ mục đích thương mại nào, bao gồm bán lại, đưa vào khóa
-    học thu phí, hoặc dùng làm tài liệu đào tạo nội bộ của tổ chức khác.
+  - Sử dụng cho bất kỳ mục đích thương mại nào, bao gồm bán lại, đưa vào
+    khóa học thu phí, hoặc dùng làm tài liệu đào tạo nội bộ của tổ chức khác.
   - Đăng lại toàn văn trên nền tảng khác, kể cả khi có ghi nguồn.
 
 
 MÃ NGUỒN VÍ DỤ
 
-Các đoạn mã trong sách là ví dụ minh họa cho mục đích giáo dục. Người đọc được
-phép sử dụng lại các đoạn mã này trong bài tập, đồ án và dự án cá nhân. Chúng
-được cung cấp nguyên trạng, không kèm bảo đảm dưới bất kỳ hình thức nào; tác giả
-không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc sử dụng chúng.
+Các đoạn mã trong sách là ví dụ minh họa cho mục đích giáo dục. Người đọc
+được phép sử dụng lại các đoạn mã này trong bài tập, đồ án và dự án cá nhân.
+Chúng được cung cấp nguyên trạng, không kèm bảo đảm dưới bất kỳ hình thức
+nào; tác giả không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ
+việc sử dụng chúng.
 
 
 TÀI LIỆU THAM KHẢO CỦA BÊN THỨ BA
 
-Các đoạn trích dẫn từ những tác phẩm được liệt kê trong phần Tài liệu tham khảo
-thuộc bản quyền của tác giả và nhà xuất bản tương ứng, được sử dụng trong phạm vi
-trích dẫn học thuật có ghi nguồn.
+Các đoạn trích dẫn từ những tác phẩm được liệt kê trong phần Tài liệu tham
+khảo thuộc bản quyền của tác giả và nhà xuất bản tương ứng, được sử dụng
+trong phạm vi trích dẫn học thuật có ghi nguồn.
 
 
 LIÊN HỆ
