@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* ── Simulation Layout ── */
     .sim-split {
@@ -367,17 +367,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Idempotency Key</h4>
+      <h3>Idempotency Key</h3>
       <p>UUID do client sinh ra, gắn trong HTTP header <code>Idempotency-Key</code>. Mỗi thao tác nghiệp vụ (thanh toán, đăng ký) có 1 key riêng. Client giữ nguyên key khi retry.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Processed Request Store</h4>
+      <h3>Processed Request Store</h3>
       <p>Bảng <code>processed_requests</code> trong DB (hoặc Redis) lưu <code>{key, response, status, created_at}</code>. Dùng UNIQUE constraint trên key để ngăn race condition.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Dedup Filter</h4>
+      <h3>Dedup Filter</h3>
       <p>Middleware kiểm tra key trước khi xử lý: nếu key tồn tại → trả cached response (HTTP 200 + body cũ). Nếu chưa → xử lý bình thường và lưu kết quả.</p>
     </div>
   </div>
@@ -434,7 +434,7 @@
       <div class="panel-title">📱 Client — Mobile App</div>
       <div class="pay-amount"><span>VNĐ</span> 500,000</div>
       <p style="font-size: 12px; color: var(--text-dim); text-align: center; margin: 8px 0;">Thanh toán Học phí Kỳ 2 — Môn Kiến trúc Phần mềm</p>
-      <button class="btn btn-primary" id="btn-pay" onclick="initiatePayment()" style="width: 100%; margin-top: 12px; background: var(--primary); border-color: var(--primary); color: #000; font-weight: 700;">
+      <button class="btn btn-primary" id="btn-pay" onclick="initiatePayment()" style="width: 100%; margin-top: 12px; background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 700;">
         💳 Thanh toán học phí
       </button>
       <button class="btn" onclick="resetSim()" style="width: 100%; margin-top: 8px; font-size: 12px; background: transparent; border: 1px solid var(--border); color: var(--text-secondary);">

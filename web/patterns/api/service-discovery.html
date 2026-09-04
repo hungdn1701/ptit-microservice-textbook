@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Service Discovery Simulator */
     .simulator-container {
@@ -283,17 +283,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Service Registry (Server)</h4>
+      <h3>Service Registry (Server)</h3>
       <p>Central database lưu trữ network states. Eureka Server chạy độc lập, hỗ trợ peer-to-peer replication đảm bảo High Availability (HA).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Service Provider (Client)</h4>
+      <h3>Service Provider (Client)</h3>
       <p>Microservice cung cấp API. Lúc startup, Provider đăng ký network info. Định kỳ gửi Heartbeat duy trì liveness state.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Service Consumer (Client)</h4>
+      <h3>Service Consumer (Client)</h3>
       <p>Consumer tải và cache cục bộ registry catalog. Khi thực thi request (VD: OpenFeign), tích hợp Load Balancer tự động chia tải qua danh sách IPs.</p>
     </div>
   </div>
@@ -351,7 +351,7 @@
       </div>
 
       <div class="sim-controls-btn" style="margin-bottom:16px;">
-        <button class="btn btn-primary" onclick="registerService()" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">[Add] Đăng ký Service</button>
+        <button class="btn btn-primary" onclick="registerService()" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">[Add] Đăng ký Service</button>
         <button class="btn" onclick="killRandom()" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">[Crash] Random</button>
         <button class="btn" onclick="sendHeartbeats()" style="font-size:12px;">[Pulse] Heartbeat All</button>
         <button class="btn btn-ghost" onclick="resetAll()" style="font-size:12px;">Reset</button>

@@ -245,6 +245,9 @@ html, body {
   padding: 4px 8px; background: transparent; border: 1px solid var(--ide-border);
   color: var(--ide-dim); font-size: 10px; cursor: pointer; border-radius: 2px;
   font-family: var(--font-code);
+  /* WCAG 2.2 AA 2.5.8 — vùng bấm tối thiểu 24x24 CSS px. Đo ở 375px trước khi
+     thêm dòng này: 23px, thiếu đúng 1px. */
+  min-height: 24px;
 }
 .filter-btn:hover { background: rgba(255,255,255,0.05); color: var(--ide-text); }
 .filter-btn.active { background: var(--ide-active); border-color: var(--ide-active-border); color: var(--ide-highlight); }
@@ -282,7 +285,12 @@ html, body {
   transition: background 0.2s ease, color 0.2s ease;
 }
 .editor-tab.active { background: var(--ide-bg); color: var(--ide-highlight); border-top-color: var(--ide-active-border); }
-.tab-close { font-size: 14px; margin-left: 4px; opacity: 0; transition: 0.2s; }
+.tab-close {
+  font-size: 14px; margin-left: 4px; opacity: 0; transition: 0.2s;
+  /* Đo được 8x22px — hụt cả hai chiều. */
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; min-height: 24px;
+}
 .editor-tab:hover .tab-close { opacity: 1; }
 
 .editor-content {
@@ -413,6 +421,7 @@ iframe#viewer-secondary { width: 100%; height: 100%; border: none; background: t
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
+  min-height: 24px;   /* 2.5.8 — đo được 23px */
   border-radius: 4px;
   transition: background 0.2s, color 0.2s;
   -webkit-user-select: none; user-select: none;

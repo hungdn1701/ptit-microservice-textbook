@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Outbox simulation area */
     .simulator-container {
@@ -271,17 +271,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Outbox Table</h4>
+      <h3>Outbox Table</h3>
       <p>Bảng lưu trữ Event nằm trong cùng Database nghiệp vụ. Schema thường gồm: <code>id</code>, <code>aggregate_type</code>, <code>aggregate_id</code>, <code>payload</code> (JSON), và <code>status</code> (PENDING, SENT).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Local ACID Transaction</h4>
+      <h3>Local ACID Transaction</h3>
       <p>Service xử lý logic: lưu Entity và insert Event vào bảng Outbox trong cùng một transaction. Với Spring Boot, thao tác này được bọc bởi <code>@Transactional</code>.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Message Relay</h4>
+      <h3>Message Relay</h3>
       <p>Process chạy ngầm publish Event lên Broker. Hai mô hình phổ biến: <strong>Transaction Log Tailing</strong> (dùng CDC như Debezium đọc binlog/WAL) hoặc <strong>Polling Publisher</strong> (truy vấn SQL định kỳ). Relay đảm bảo cơ chế At-Least-Once delivery.</p>
     </div>
   </div>

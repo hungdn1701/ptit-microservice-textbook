@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Rate Limiting Token Bucket Simulation */
     .simulator-container {
@@ -216,17 +216,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Key Resolver</h4>
+      <h3>Key Resolver</h3>
       <p>Định danh Client để áp dụng rate limit. Thường resolve qua: Địa chỉ IP (public route), User ID (từ JWT), hoặc Client/App ID (B2B API).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Distributed State với Redis</h4>
+      <h3>Distributed State với Redis</h3>
       <p>Lưu trữ state của token bucket. Sử dụng Redis (thông qua atomic Lua script) đảm bảo giới hạn chính xác khi scale Gateway ra nhiều instances (Distributed Rate Limiting).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>HTTP 429 Handler</h4>
+      <h3>HTTP 429 Handler</h3>
       <p>Trả về mã 429 và inject headers <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code> để chỉ dẫn Client thực hiện backoff.</p>
     </div>
   </div>
@@ -254,7 +254,7 @@
       </div>
       
       <div style="margin-top:20px; width:100%;">
-        <button class="btn btn-primary" onclick="sendRequest()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000;">Gửi Request (-1 Token)</button>
+        <button class="btn btn-primary" onclick="sendRequest()" style="width:100%; background:var(--primary); border-color:var(--primary); color:var(--on-primary);">Gửi Request (-1 Token)</button>
       </div>
     </div>
 

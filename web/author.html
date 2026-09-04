@@ -2,7 +2,11 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="styles/base-style.css?v=cec58d45">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tác giả — Kiến trúc SOA &amp; Microservices</title>
+  <meta name="description" content="Thông tin tác giả cuốn Kiến trúc SOA &amp; Microservices — Đặng Ngọc Hùng, Học viện Công nghệ Bưu chính Viễn thông.">
+  <link rel="icon" href="favicon.png?v=9fd867f7">
+  <link rel="stylesheet" href="styles/base-style.css?v=9aa28647">
   <style>
     body {
       background: transparent;
@@ -10,6 +14,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      /* Dải bản quyền là con của flex container này. Không cho xuống dòng thì
+         nó bị ép thành một cột hẹp bên cạnh thẻ tác giả. */
+      flex-wrap: wrap;
       padding: 40px;
       font-family: var(--font-mono);
     }
@@ -284,7 +291,8 @@
 </head>
 <body>
   
-  <div class="author-card">
+  <h1 class="sr-only">Tác giả: Đặng Ngọc Hùng</h1>
+<div class="author-card">
     
     <div class="card-body">
       <div class="photo-col">
@@ -511,6 +519,6 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
       terminalOutput.innerHTML += output;
     }
   </script>
-<div class="site-legal">© 2026 Đặng Ngọc Hùng. All rights reserved. <a href="index.html">Companion Web</a></div>
+<div class="site-legal" style="flex: 0 0 100%;">© 2026 Đặng Ngọc Hùng. All rights reserved. <a href="index.html">Companion Web</a></div>
 </body>
 </html>

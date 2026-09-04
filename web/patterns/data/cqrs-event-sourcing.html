@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom styles for CQRS & Event Sourcing Simulator */
     .simulator-container {
@@ -292,17 +292,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Command Side (Write)</h4>
+      <h3>Command Side (Write)</h3>
       <p>Nhận Command từ client, validate nghiệp vụ và append events vào <strong>Event Store</strong>. Đây là Source of Truth duy nhất của hệ thống.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Event Projector</h4>
+      <h3>Event Projector</h3>
       <p>Worker chạy ngầm lắng nghe Event Store (qua Kafka). Khi có event mới, Projector biến đổi và cập nhật data vào <strong>Read Database</strong> (Redis/Elasticsearch).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Query Side (Read)</h4>
+      <h3>Query Side (Read)</h3>
       <p>Xử lý Query từ client. Đọc trực tiếp từ <strong>Read Database</strong> (dữ liệu đã denormalize, không JOIN, low latency).</p>
     </div>
   </div>
@@ -359,8 +359,8 @@
       </div>
 
       <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="sendCommand('u1', 10)" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:11.5px;">Nộp bài User_01 (+10)</button>
-        <button class="btn btn-primary" onclick="sendCommand('u2', 20)" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:11.5px;">Nộp bài User_02 (+20)</button>
+        <button class="btn btn-primary" onclick="sendCommand('u1', 10)" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:11.5px;">Nộp bài User_01 (+10)</button>
+        <button class="btn btn-primary" onclick="sendCommand('u2', 20)" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:11.5px;">Nộp bài User_02 (+20)</button>
         <button class="btn" onclick="sendQuery()" style="border-color:var(--info); color:var(--info); font-size:11.5px;">Lấy Bảng Xếp Hạng (Query)</button>
         <button class="btn btn-ghost" onclick="resetSim()" style="font-size:11.5px;">Reset</button>
       </div>

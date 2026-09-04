@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Deployment Strategies Simulator */
     .simulator-box {
@@ -53,7 +53,7 @@
     }
     .strategy-tab.active {
       background: var(--primary);
-      color: #000;
+      color: var(--on-primary);
     }
 
     .instance-display-box {
@@ -119,7 +119,7 @@
     }
     .traffic-v1 {
       background: var(--primary);
-      color: #000;
+      color: var(--on-primary);
       transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
@@ -129,7 +129,7 @@
     }
     .traffic-v2 {
       background: var(--success);
-      color: #000;
+      color: var(--on-primary);
       transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
@@ -240,17 +240,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 01</div>
-      <h4>Blue/Green Deployment</h4>
+      <h3>Blue/Green Deployment</h3>
       <p>Duy trì 2 môi trường identical (Blue: v1, Green: v2). Khi Green pass quality gates, Load Balancer switch 100% traffic từ Blue sang Green tức thì.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 02</div>
-      <h4>Canary Deployment</h4>
+      <h3>Canary Deployment</h3>
       <p>Deploy v2 trên một subset nhỏ (Canary nodes). Route 5-10% real traffic sang Canary để monitor telemetry. Mở rộng rollout nếu các chỉ số ổn định.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 03</div>
-      <h4>Rolling Update</h4>
+      <h3>Rolling Update</h3>
       <p>Upgrade tuần tự các nodes trong cluster. Shutdown v1 node, startup v2 node và verify qua health check trước khi tiếp tục với node tiếp theo.</p>
     </div>
   </div>
@@ -299,7 +299,7 @@
       <div class="phase-info-box" id="phase-info"></div>
 
       <div class="sim-controls-btn">
-        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()" style="background:var(--primary); border-color:var(--primary); color:#000;">Deploy v2</button>
+        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary);">Deploy v2</button>
         <button class="btn" onclick="resetStrategy()">Reset</button>
       </div>
     </div>

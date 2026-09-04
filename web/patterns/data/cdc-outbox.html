@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     .pipeline-container {
       display: grid;
@@ -255,17 +255,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Outbox Table</h4>
+      <h3>Outbox Table</h3>
       <p>Bảng <code>outbox_events</code> cùng DB với business data. Mỗi row = 1 event: <code>{id, aggregate_type, aggregate_id, event_type, payload, created_at}</code>. INSERT cùng transaction.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Debezium CDC Connector</h4>
+      <h3>Debezium CDC Connector</h3>
       <p>Kafka Connect connector đọc PostgreSQL WAL (Write-Ahead Log). Bắt mọi INSERT vào bảng outbox → chuyển thành Kafka message. Zero-code, không cần sửa ứng dụng.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Outbox Event Router</h4>
+      <h3>Outbox Event Router</h3>
       <p>Debezium SMT (Single Message Transform) route event tới đúng Kafka topic dựa trên <code>aggregate_type</code>. Bảng <code>outbox_events</code> được dọn dẹp riêng bằng scheduled job hoặc retention policy.</p>
     </div>
   </div>

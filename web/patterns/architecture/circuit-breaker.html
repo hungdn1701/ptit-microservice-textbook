@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom styling for Circuit Breaker simulation */
     .simulator-container {
@@ -282,17 +282,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Circuit Breaker Proxy</h4>
+      <h3>Circuit Breaker Proxy</h3>
       <p>Proxy đứng giữa Caller và Callee để điều hướng cuộc gọi. Trong Spring Boot, thường được triển khai qua annotation <code>@CircuitBreaker</code> của Resilience4j.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>State Machine</h4>
+      <h3>State Machine</h3>
       <p>Quản lý trạng thái Circuit Breaker: <code>CLOSED</code> (hoạt động bình thường), <code>OPEN</code> (chặn hoàn toàn, Fail Fast), và <code>HALF-OPEN</code> (cho phép lượng nhỏ request để thăm dò sự phục hồi).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Fallback Handler</h4>
+      <h3>Fallback Handler</h3>
       <p>Logic thay thế khi Circuit Breaker OPEN hoặc có lỗi. Trả về cached data, đẩy message vào Message Queue, hoặc fallback response mặc định.</p>
     </div>
   </div>

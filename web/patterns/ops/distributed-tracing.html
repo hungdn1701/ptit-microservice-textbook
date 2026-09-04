@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Distributed Tracing Waterfall */
     .trace-container {
@@ -240,17 +240,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Khái niệm 01</div>
-      <h4>Trace ID & Span ID</h4>
+      <h3>Trace ID & Span ID</h3>
       <p><strong>Trace ID</strong> là định danh duy nhất cho toàn bộ request flow. <strong>Span ID</strong> định danh cho từng service hop. Parent Span ID giúp xây dựng hierarchical tree.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Khái niệm 02</div>
-      <h4>Context Propagation</h4>
+      <h3>Context Propagation</h3>
       <p>Cơ chế truyền Trace ID qua network boundaries. Sử dụng W3C Trace Context (<code>traceparent</code> header) hoặc B3 propagation, tự động inject bởi HTTP/Kafka clients.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Khái niệm 03</div>
-      <h4>Trace Collector (Zipkin / Jaeger)</h4>
+      <h3>Trace Collector (Zipkin / Jaeger)</h3>
       <p>Thu thập Trace Spans bất đồng bộ từ các microservices. Cung cấp UI trực quan (Waterfall chart) để phân tích lỗi và latency của từng hop.</p>
     </div>
   </div>
@@ -271,7 +271,7 @@
   </p>
 
   <div class="controls" style="margin-bottom:20px;">
-    <button class="btn btn-primary" onclick="traceRequest('success')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12.5px;">Trace: Nộp bài chấm (Success)</button>
+    <button class="btn btn-primary" onclick="traceRequest('success')" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12.5px;">Trace: Nộp bài chấm (Success)</button>
     <button class="btn" onclick="traceRequest('error')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12.5px;">Trace: Nộp bài chấm (Error)</button>
     <button class="btn btn-ghost" onclick="resetTrace()" style="font-size:12.5px;">Reset</button>
   </div>

@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for GraphQL vs REST Simulator */
     .simulator-container {
@@ -273,17 +273,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Single Endpoint</h4>
+      <h3>Single Endpoint</h3>
       <p>Client gọi POST <code>/graphql</code> với Query JSON định nghĩa chính xác data schema.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Field Resolvers</h4>
+      <h3>Field Resolvers</h3>
       <p>Hàm xử lý fetch dữ liệu cho từng field trong Schema, cho phép tổng hợp data từ nhiều nguồn (DB, Cache, REST APIs).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>DataLoader Batching</h4>
+      <h3>DataLoader Batching</h3>
       <p>Hoãn thực thi các câu SQL đơn lẻ, gom nhóm IDs từ các Parent Resolvers để chạy 1 batch query, loại bỏ N+1 Database problem.</p>
     </div>
   </div>

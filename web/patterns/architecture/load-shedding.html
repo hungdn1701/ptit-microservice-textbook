@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     .sim-container {
       display: grid;
@@ -274,17 +274,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Admission Control</h4>
+      <h3>Admission Control</h3>
       <p>Kiểm tra tải hiện tại (CPU, queue depth, active threads) trước khi chấp nhận request. Vượt ngưỡng → reject ngay với <code>503 Service Unavailable</code>.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Priority Queue</h4>
+      <h3>Priority Queue</h3>
       <p>Không reject tất cả — phân loại request theo độ ưu tiên. Health checks, admin APIs luôn được xử lý. User requests thấp ưu tiên hơn payment requests.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Backpressure Signal</h4>
+      <h3>Backpressure Signal</h3>
       <p>Trả HTTP header <code>Retry-After</code> để báo client chờ. Ngăn retry storm bằng cách dùng exponential backoff + jitter.</p>
     </div>
   </div>

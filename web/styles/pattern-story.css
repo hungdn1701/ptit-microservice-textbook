@@ -452,7 +452,7 @@ hr.act-divider {
 /* Play button */
 .play-btn {
   padding: 8px 20px; border-radius: var(--radius-sm);
-  background: var(--primary); border: none; color: #000;
+  background: var(--primary); border: none; color: var(--on-primary);
   font-size: 12px; font-weight: 700; cursor: pointer;
   font-family: var(--font-sans); margin-bottom: 20px; transition: all .2s ease;
   min-height: 44px;
@@ -481,7 +481,7 @@ hr.act-divider {
 .chapter-btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 26px; border-radius: var(--radius-sm);
-  background: var(--primary); color: #000;
+  background: var(--primary); color: var(--on-primary);
   font-size: 13px; font-weight: 700; text-decoration: none; transition: all .2s ease;
   min-height: 44px;
 }
@@ -516,7 +516,7 @@ hr.act-divider {
 }
 .sim-btn.primary-action {
   background: var(--primary);
-  color: #000;
+  color: var(--on-primary);
   border: none;
 }
 .sim-btn.primary-action:hover:not(:disabled) {
@@ -764,7 +764,11 @@ hr.act-divider {
   text-align: center;
 }
 .book-identity img { height: 16px; width: 16px; border-radius: 3px; opacity: .85; }
-.book-identity a { color: var(--text-secondary); text-decoration: none; }
+.book-identity a {
+  color: var(--text-secondary); text-decoration: none;
+  /* 2.5.8: vùng bấm tối thiểu 24px. Đo được 175x18px trước khi thêm. */
+  display: inline-flex; align-items: center; min-height: 24px;
+}
 .book-identity a:hover { color: var(--primary); text-decoration: underline; }
 .book-identity .book-identity-sep { opacity: .4; }
 /* Phát biểu bản quyền — phải đọc được, nhưng không tranh chỗ với tên sách. */

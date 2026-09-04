@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Config Server Simulator */
     .simulator-container {
@@ -90,7 +90,7 @@
     }
     .env-btn.active {
       background: var(--primary);
-      color: #000;
+      color: var(--on-primary);
     }
 
     .config-list-box {
@@ -236,17 +236,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Git Config Repo</h4>
+      <h3>Git Config Repo</h3>
       <p>Centralized repository chứa các file YAML (VD: <code>application-prod.yml</code>). Được quản lý bằng Git version control, dễ dàng audit và rollback cấu hình.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Config Server</h4>
+      <h3>Config Server</h3>
       <p>Middle service đọc cấu hình từ Git và expose qua REST API (định dạng JSON). Hỗ trợ mã hóa (encryption) cho các thông tin nhạy cảm (credentials, tokens).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Spring Cloud Bus (Reload)</h4>
+      <h3>Spring Cloud Bus (Reload)</h3>
       <p>Message bus đồng bộ cấu hình. Khi gọi API <code>/actuator/busrefresh</code>, một event được đẩy lên Kafka, yêu cầu toàn bộ client hot-reload cấu hình.</p>
     </div>
   </div>
@@ -307,7 +307,7 @@
 
       <div style="border-top:1px solid var(--border); padding-top:14px;">
         <div class="dashboard-title" style="margin-bottom:8px;">Spring Cloud Bus Refresh Console</div>
-        <button class="btn btn-primary" onclick="hotReload()" style="width:100%; background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">Push Config Change (Nạp nóng)</button>
+        <button class="btn btn-primary" onclick="hotReload()" style="width:100%; background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">Push Config Change (Nạp nóng)</button>
         <div class="sim-log" id="reload-log">
           <div><span class="log-time">[14:20:52]</span> <span class="log-info">Config server initialized. Reading git backend...</span></div>
         </div>

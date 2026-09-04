@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* ── ACT 3: Stepper ── */
     .stepper { display: flex; gap: 0; margin: 28px 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-surface); }
@@ -35,8 +35,8 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 800; flex-shrink: 0; transition: all .2s ease;
     }
-    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: #000; }
-    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: #000; }
+    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: var(--on-primary); }
     .step-label { font-size: 11.5px; font-weight: 600; line-height: 1.35; }
     .step-sub { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
     .step-content-area { flex: 1; padding: 28px 28px; }
@@ -78,7 +78,7 @@
       color: var(--text-secondary); font-family: var(--font-sans); transition: all .18s ease;
     }
     .snb:hover { border-color: var(--border-hover); color: var(--text-main); }
-    .snb.primary { background: var(--primary); border-color: var(--primary); color: #000; font-weight: 700; }
+    .snb.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 700; }
     .snb.primary:hover { background: var(--primary-hover); }
   </style>
 </head>
@@ -167,17 +167,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>API Gateway (The Seam)</h4>
+      <h3>API Gateway (The Seam)</h3>
       <p>Entry point duy nhất điều hướng traffic. Transparent với client về việc backend là monolith hay microservice.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>New Service</h4>
+      <h3>New Service</h3>
       <p>Phát triển song song, deploy độc lập, database riêng biệt. Tiếp nhận traffic sau khi verify qua Canary hoặc Parallel Run.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Monolith (Legacy)</h4>
+      <h3>Monolith (Legacy)</h3>
       <p>Tiếp tục xử lý traffic cho các module chưa tách. Kích thước giảm dần, tiến tới retire hoàn toàn hoặc làm fallback.</p>
     </div>
   </div>

@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom styles for REST API Explorer */
     .rest-simulator {
@@ -386,17 +386,17 @@
     <div class="pattern-anatomy">
       <div class="anatomy-card">
         <div class="anatomy-num">Thành phần 01</div>
-        <h4>Backend Annotations</h4>
+        <h3>Backend Annotations</h3>
         <p>Sử dụng annotations (<code>@Operation</code>, <code>@Schema</code>) trực tiếp trên Controller/DTO để nhúng metadata, đảm bảo spec và code luôn đồng bộ.</p>
       </div>
       <div class="anatomy-card">
         <div class="anatomy-num">Thành phần 02</div>
-        <h4>OpenAPI Spec Generator</h4>
+        <h3>OpenAPI Spec Generator</h3>
         <p>Công cụ (VD: Springdoc) quét mã nguồn (runtime/build-time) để sinh file OAS JSON/YAML.</p>
       </div>
       <div class="anatomy-card">
         <div class="anatomy-num">Thành phần 03</div>
-        <h4>Interactive Sandbox</h4>
+        <h3>Interactive Sandbox</h3>
         <p>Swagger UI hiển thị endpoints, request/response schema, và tích hợp REST Client để execute request.</p>
       </div>
     </div>
@@ -509,19 +509,19 @@
               <div class="flow-dot" id="flow-dot"></div>
               <div class="flow-nodes">
                 <div class="flow-node active" id="node-client">
-                  <h5>Client</h5>
+                  <h3>Client</h3>
                   <span>Portal App</span>
                 </div>
                 <div class="flow-node" id="node-gateway">
-                  <h5>Gateway</h5>
+                  <h3>Gateway</h3>
                   <span>kbm-gateway</span>
                 </div>
                 <div class="flow-node" id="node-app">
-                  <h5>Service</h5>
+                  <h3>Service</h3>
                   <span>kbm-core</span>
                 </div>
                 <div class="flow-node" id="node-db">
-                  <h5>Database</h5>
+                  <h3>Database</h3>
                   <span>MySQL DB</span>
                 </div>
               </div>

@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for Apache Kafka Simulator */
     .simulator-container {
@@ -324,17 +324,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Topic & Partitioning</h4>
+      <h3>Topic & Partitioning</h3>
       <p>Message được lưu trong <strong>Topic</strong>. Để scale-out, Topic được chia thành nhiều <strong>Partitions</strong> phân tán trên các Broker, giúp tăng throughput đồng thời.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Consumer Group</h4>
+      <h3>Consumer Group</h3>
       <p>Nhóm các consumer instances cùng consume một Topic. Mỗi Partition chỉ assign cho tối đa 1 Consumer trong group, đảm bảo message ordering trong phạm vi partition.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Offset Commitment</h4>
+      <h3>Offset Commitment</h3>
       <p>Chỉ số vị trí message trong partition. Sau khi xử lý, consumer <strong>Commit Offset</strong> về Kafka, xác nhận đã hoàn thành xử lý, giúp an toàn phục hồi khi có sự cố.</p>
     </div>
   </div>
@@ -377,7 +377,7 @@
       </div>
 
       <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="produceMsg()" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12.5px;">Gửi Bài (Produce)</button>
+        <button class="btn btn-primary" onclick="produceMsg()" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12.5px;">Gửi Bài (Produce)</button>
         <button class="btn" onclick="consumeMsg()" style="border-color:var(--info); color:var(--info); font-size:12.5px;">Chấm Bài (Consume)</button>
         <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12.5px;">Reset</button>
       </div>

@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     .sim-container {
       display: grid;
@@ -222,17 +222,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>State-Carrying Events</h4>
+      <h3>State-Carrying Events</h3>
       <p>Sự kiện không chỉ thông báo "có thay đổi", mà mang theo payload chứa trạng thái mới (ví dụ: <code>{"id":"C1", "name":"Alice", "address":"..."}</code>).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Local Cache / Replica</h4>
+      <h3>Local Cache / Replica</h3>
       <p>Consumer lưu trữ dữ liệu cần thiết vào database cục bộ của mình. Khi cần truy vấn, nó đọc trực tiếp từ database này mà không cần gọi qua mạng.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Event Broker (Kafka)</h4>
+      <h3>Event Broker (Kafka)</h3>
       <p>Làm trung gian truyền tải sự kiện, đảm bảo Consumer có thể nhận được dữ liệu ngay cả khi nó bị gián đoạn tạm thời, giúp decouple hoàn toàn 2 service.</p>
     </div>
   </div>

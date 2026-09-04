@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom styles for API Gateway Routing Simulator */
     .simulator-container {
@@ -166,7 +166,7 @@
       font-family: var(--font-mono);
       font-size: 9.5px;
       background: var(--primary);
-      color: #000;
+      color: var(--on-primary);
       font-weight: 700;
       box-shadow: var(--shadow-glow);
       z-index: 10;
@@ -287,17 +287,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Routing Predicates</h4>
+      <h3>Routing Predicates</h3>
       <p>Điều kiện match URL pattern (VD: <code>/api/v1/courses/**</code>) để xác định downstream service thông qua Service Discovery.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Pre/Post Filter Chain</h4>
+      <h3>Pre/Post Filter Chain</h3>
       <p>Filter thực thi trước (Pre) và sau (Post) quá trình routing. Pre-filter xử lý JWT validation, logging, rate limiting. Post-filter bổ sung response header, tracking latency, hoặc data compression.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Signed Gateway-to-Service Proof</h4>
+      <h3>Signed Gateway-to-Service Proof</h3>
       <p>Sau ingress validation, Gateway giữ signed access token hoặc token exchange sang internal token đúng audience. Downstream xác minh proof và local authorization; <code>X-User-*</code> chỉ là context dẫn xuất, không phải nguồn quyền.</p>
     </div>
   </div>
@@ -340,7 +340,7 @@
       </div>
 
       <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="runPipeline('happy')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">Core API (Happy Path)</button>
+        <button class="btn btn-primary" onclick="runPipeline('happy')" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">Core API (Happy Path)</button>
         <button class="btn" onclick="runPipeline('no-token')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">Core API (No Token)</button>
         <button class="btn btn-ghost" onclick="runPipeline('public')" style="font-size:12px;">Auth API (Public Route)</button>
         <button class="btn" onclick="resetSim()" style="font-size:12px;">Reset</button>

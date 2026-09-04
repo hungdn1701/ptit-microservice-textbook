@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     body { font-family: var(--font-sans); background: var(--bg); color: var(--text-main); }
 
@@ -137,17 +137,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Upstream (U)</div>
-      <h4>Provider</h4>
+      <h3>Provider</h3>
       <p>Cung cấp API/model. Thay đổi ở Upstream trực tiếp ảnh hưởng đến Downstream. VD: Auth Service là Upstream của Core.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Downstream (D)</div>
-      <h4>Consumer</h4>
+      <h3>Consumer</h3>
       <p>Phụ thuộc vào Upstream. Downstream phải adapt theo thay đổi từ Upstream hoặc dùng ACL để bảo vệ domain model.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">ACL</div>
-      <h4>Anti-Corruption Layer</h4>
+      <h3>Anti-Corruption Layer</h3>
       <p>Lớp chuyển đổi tại Downstream. Convert model của Upstream sang domain model nội bộ, ngăn sự "ô nhiễm" logic.</p>
     </div>
   </div>
@@ -171,23 +171,23 @@
       <div class="ctx-canvas" id="ctx-canvas">
         <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" id="ctx-svg"></svg>
         <div class="bc-node bc-identity" onclick="showInfo('identity')">
-          <h4>Identity &amp; Auth</h4>
+          <h3>Identity &amp; Auth</h3>
           <div class="bc-sub">kbm-auth</div>
         </div>
         <div class="bc-node bc-core" onclick="showInfo('core')">
-          <h4>Core LMS</h4>
+          <h3>Core LMS</h3>
           <div class="bc-sub">kbm-core</div>
         </div>
         <div class="bc-node bc-assignment" onclick="showInfo('assignment')">
-          <h4>Assignment</h4>
+          <h3>Assignment</h3>
           <div class="bc-sub">kbm-academic</div>
         </div>
         <div class="bc-node bc-judge" onclick="showInfo('judge')">
-          <h4>Judge</h4>
+          <h3>Judge</h3>
           <div class="bc-sub">kbm-judge-sql</div>
         </div>
         <div class="bc-node bc-notif" onclick="showInfo('notif')">
-          <h4>Notification</h4>
+          <h3>Notification</h3>
           <div class="bc-sub">kbm-notification</div>
         </div>
       </div>

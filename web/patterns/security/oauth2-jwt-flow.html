@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     /* Custom CSS for JWT & OAuth2 Simulator */
     .simulator-container {
@@ -62,7 +62,7 @@
     }
     .algo-btn.active {
       background: var(--primary);
-      color: #000;
+      color: var(--on-primary);
     }
 
     .flow-canvas {
@@ -254,17 +254,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Authorization Server</h4>
+      <h3>Authorization Server</h3>
       <p>Xác thực credentials và phát hành Access/Refresh Token bằng Private Key. Hỗ trợ Key Rotation định kỳ để đảm bảo an ninh.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Resource Server</h4>
+      <h3>Resource Server</h3>
       <p>API Gateway và microservices. Chúng fetch Public Key từ Auth và tự verify JWT chữ ký mà không cần network call (Zero-network Validation).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Refresh Token Flow</h4>
+      <h3>Refresh Token Flow</h3>
       <p>Khi Access Token hết hạn (Expired), Client gửi Refresh Token cho Auth Service. Auth Service validate Refresh Token trong DB và issue Access Token mới (Automatic refresh).</p>
     </div>
   </div>
@@ -310,8 +310,8 @@
       </div>
 
       <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="runFlow('login')" style="background:var(--success); border-color:var(--success); color:#000; font-size:12px;">1. Đăng nhập (Login)</button>
-        <button class="btn btn-primary" onclick="runFlow('api-ok')" style="background:var(--primary); border-color:var(--primary); color:#000; font-size:12px;">2. Gọi API (Hợp lệ)</button>
+        <button class="btn btn-primary" onclick="runFlow('login')" style="background:var(--success); border-color:var(--success); color:var(--on-primary); font-size:12px;">1. Đăng nhập (Login)</button>
+        <button class="btn btn-primary" onclick="runFlow('api-ok')" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">2. Gọi API (Hợp lệ)</button>
         <button class="btn" onclick="runFlow('api-exp')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">3. Gọi API (Hết hạn)</button>
         <button class="btn" onclick="runFlow('refresh')" style="border-color:var(--warning); color:var(--warning); font-size:12px;">4. Đổi Token mới</button>
         <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12px;">Reset</button>

@@ -11,8 +11,8 @@
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
-  <link rel="stylesheet" href="../../styles/base-style.css?v=cec58d45">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=033962ff">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
   <style>
     body {
       background-image: radial-gradient(var(--grid-color, rgba(255,255,255,.03)) 1px, transparent 0);
@@ -48,8 +48,8 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 800; flex-shrink: 0; transition: all .2s ease;
     }
-    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: #000; }
-    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: #000; }
+    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: var(--on-primary); }
     .step-label { font-size: 11.5px; font-weight: 600; line-height: 1.35; }
     .step-sub { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
     .step-content-area { flex: 1; padding: 28px; }
@@ -95,7 +95,7 @@
       color: var(--text-secondary); font-family: var(--font-sans); transition: all .18s ease;
     }
     .snb:hover { border-color: var(--border-hover); color: var(--text-main); }
-    .snb.primary { background: var(--primary); border-color: var(--primary); color: #000; font-weight: 700; }
+    .snb.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 700; }
     .snb.primary:hover { opacity: .88; }
 
     /* ── Comparison callout (Act 2) ── */
@@ -223,7 +223,7 @@
   <div class="compare-grid">
     <div class="compare-card highlight">
       <div class="compare-tag" style="color:var(--primary)">✦ Orchestration (pattern này)</div>
-      <h4>Central Coordinator</h4>
+      <h3>Central Coordinator</h3>
       <ul>
         <li>Orchestrator điều phối toàn bộ luồng xử lý.</li>
         <li>Gọi từng service theo sequence định sẵn.</li>
@@ -234,7 +234,7 @@
     </div>
     <div class="compare-card">
       <div class="compare-tag" style="color:var(--text-dim)">Choreography (alternative)</div>
-      <h4>Event-Driven, No Coordinator</h4>
+      <h3>Event-Driven, No Coordinator</h3>
       <ul>
         <li>Các service tự react dựa trên events.</li>
         <li>Decoupled: services không biết sự tồn tại của nhau.</li>
@@ -248,17 +248,17 @@
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h4>Saga Orchestrator</h4>
+      <h3>Saga Orchestrator</h3>
       <p>Controller trung tâm điều phối flow. Gọi các service, catch lỗi và trigger compensation. State được persist vào DB để phục hồi khi restart.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h4>Local Transactions</h4>
+      <h3>Local Transactions</h3>
       <p>Mỗi service commit trên local DB. Không dùng distributed lock. Bắt buộc có Idempotency key để handle retry an toàn.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h4>Compensating Transactions</h4>
+      <h3>Compensating Transactions</h3>
       <p>Mỗi forward action T(i) cần một compensating action C(i). Đây là semantic undo (business logic), không phải DB rollback (VD: chuyển status thành FAILED).</p>
     </div>
   </div>
