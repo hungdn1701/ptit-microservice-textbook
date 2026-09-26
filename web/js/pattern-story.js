@@ -117,5 +117,8 @@
   initScrollProgress();
   initCollapsible();
   initThemeSync();
+  // Dòng thời gian Act 4 hiện sẵn. Trước 2026-09-26 nó ẩn (opacity 0) tới khi bấm "Play Timeline"
+  // → khoảng trống ~500px giữa trang, và bản in/ảnh chụp không có nội dung. Nút Play vẫn phát lại hiệu ứng.
+  document.querySelectorAll('.timeline-item').forEach(el => el.classList.add('visible'));
   updateNav();
 })();

@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom styles for API Gateway Routing Simulator */
     .simulator-container {
@@ -250,12 +250,12 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">[Config]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Boilerplate</div></div>
       <h3>Trùng lặp logic & Khó bảo trì (Boilerplate code)</h3>
       <p>Nhiều service phải cài đặt thư viện và viết filter giải mã JWT tương tự nhau. Khi cập nhật thuật toán mã hóa (VD: HS256 sang RS256) hoặc đổi Secret Key, cần cập nhật cấu hình và redeploy toàn bộ service.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">[Unlocked]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Security</div></div>
       <h3>Rủi ro bảo mật & Inconsistent CORS</h3>
       <p>Các microservice tự quản lý CORS dễ dẫn đến sai lệch cấu hình. Một cấu hình <code>Allow-Origin: *</code> nhầm lẫn có thể mở ra lỗ hổng. Ngoài ra, cấu hình CORS không đồng nhất gây lỗi preflight request trên trình duyệt.</p>
     </div>
@@ -495,7 +495,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Simulator Logic ──────────────────────────────────────

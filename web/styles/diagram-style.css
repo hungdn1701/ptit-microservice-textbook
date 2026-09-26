@@ -43,16 +43,16 @@
   min-height: 540px;
   padding: 40px;
   margin: 0 auto;
-  background: #ffffff;
+  background: var(--diagram-color-surface);
   background-image: none;
   box-sizing: border-box;
-  font-family: var(--font-body);
+  font-family: var(--diagram-font-mono);
   font-size: 13px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--diagram-color-text);
   position: relative;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--diagram-color-cluster-border);
 }
 
 /* Export mode keeps transparent background for PNG generation */
@@ -258,11 +258,11 @@
 
 /* Legacy — Industrial Gray */
 .d-legacy {
-  background: #f8fafc;
-  border: 1.5px solid #94a3b8;
-  color: #334155;
+  background: var(--diagram-color-gateway-bg);
+  border: 1.5px solid var(--diagram-color-line-muted);
+  color: var(--diagram-color-label-text);
 }
-.d-legacy .d-title { color: #475569; }
+.d-legacy .d-title { color: var(--diagram-color-label-text); }
 
 /* Cluster — dashed bounding zone */
 .d-cluster {
@@ -491,10 +491,10 @@
   top: 50%;
   transform: translate(-50%, -50%);
   font-size: 10px;
-  color: #475569;
+  color: var(--diagram-color-label-text);
   background: var(--diagram-color-surface, #ffffff);
   padding: 1px 5px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--diagram-color-cluster-border);
   border-radius: 4px;
   white-space: nowrap;
   z-index: 2;
@@ -654,7 +654,7 @@
 .d-seq-participants {
   display: flex;
   gap: 0;
-  border-bottom: 1.5px solid #cbd5e1;
+  border-bottom: 1.5px solid var(--diagram-color-cluster-border);
   padding-bottom: 14px;
   margin-bottom: 0;
   position: relative;
@@ -677,8 +677,8 @@
   width: 1.5px;
   background: repeating-linear-gradient(
     180deg,
-    #94a3b8 0,
-    #94a3b8 4px,
+    var(--diagram-color-line-muted) 0,
+    var(--diagram-color-line-muted) 4px,
     transparent 4px,
     transparent 8px
   );
@@ -718,7 +718,7 @@
 .d-seq-msg-line {
   flex: 1;
   height: 1.5px;
-  background: #64748b;
+  background: var(--diagram-color-line);
   position: relative;
   min-width: 0;
 }
@@ -729,7 +729,7 @@
   right: -4px;
   top: -7px;
   font-size: 10px;
-  color: #64748b;
+  color: var(--diagram-color-line);
 }
 
 .d-seq-msg-line.reverse::after {
@@ -740,20 +740,20 @@
 
 .d-seq-msg-line.dashed {
   background: repeating-linear-gradient(
-    to right, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+    to right, var(--diagram-color-line-muted) 0, var(--diagram-color-line-muted) 4px, transparent 4px, transparent 8px
   );
 }
 
 .d-seq-msg-line.dashed.reverse {
   background: repeating-linear-gradient(
-    to left, #94a3b8 0, #94a3b8 4px, transparent 4px, transparent 8px
+    to left, var(--diagram-color-line-muted) 0, var(--diagram-color-line-muted) 4px, transparent 4px, transparent 8px
   );
 }
 
 .d-seq-msg-text {
   font-size: 11px;
-  color: #334155;
-  background: #ffffff;
+  color: var(--diagram-color-label-text);
+  background: var(--diagram-color-surface);
   padding: 1px 6px;
   white-space: nowrap;
   position: absolute;
@@ -775,7 +775,7 @@
   position: relative;
   margin: 16px 0;
   height: 3px;
-  background: #e2e8f0;
+  background: var(--diagram-color-cluster-border);
   border-radius: 2px;
 }
 
@@ -789,9 +789,9 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #0f766e;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 2px #0f766e;
+  background: var(--diagram-color-line);
+  border: 2px solid var(--diagram-color-surface);
+  box-shadow: 0 0 0 2px var(--diagram-color-line);
 }
 
 /* ── Highlighted Zone (activation, blocking) ── */
@@ -803,32 +803,35 @@
   text-align: center;
 }
 
-.d-zone-danger  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
-.d-zone-warning { background: #fff7ed; color: #ea580c; border: 1px solid #fdba74; }
-.d-zone-info    { background: #eff6ff; color: #3b82f6; border: 1px solid #93c5fd; }
-.d-zone-success { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+/* Chỉ dùng token sách (navy academic). Trước 2026-09-26 bốn dòng này dùng
+   Tailwind red-600/orange-600/blue-500/green-600 — ngoài bảng màu của sách,
+   nên mọi hình có .d-zone-* trông "lạc style" dù HTML của hình đã sạch hex. */
+.d-zone-danger  { background: var(--diagram-color-danger-bg);  color: var(--diagram-color-danger-text);  border: 1px solid var(--diagram-color-danger-border); }
+.d-zone-warning { background: var(--diagram-color-warning-bg); color: var(--diagram-color-warning-text); border: 1px solid var(--diagram-color-warning-border); }
+.d-zone-info    { background: var(--diagram-color-info-bg);    color: var(--diagram-color-info-text);    border: 1px solid var(--diagram-color-info-border); }
+.d-zone-success { background: var(--diagram-color-success-bg); color: var(--diagram-color-success-text); border: 1px solid var(--diagram-color-success-border); }
 
 /* ── Code Snippet (inline trong diagram) ── */
 .d-code {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--diagram-color-note-bg);
+  border: 1px solid var(--diagram-color-cluster-border);
   border-radius: 8px;
   padding: 10px 14px;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: var(--diagram-font-mono);
   font-size: 11.5px;
   line-height: 1.7;
-  color: #334155;
+  color: var(--diagram-color-label-text);
 }
 
-.d-code .kw  { color: #0284c7; font-weight: 600; }
-.d-code .str { color: #16a34a; }
-.d-code .cmt { color: #64748b; font-style: italic; }
-.d-code .ann { color: #d946ef; font-weight: 600; }
+.d-code .kw  { color: var(--diagram-color-line); font-weight: 600; }
+.d-code .str { color: var(--diagram-color-success-text); }
+.d-code .cmt { color: var(--diagram-color-muted); font-style: italic; }
+.d-code .ann { color: var(--diagram-color-warning-text); font-weight: 600; }
 
 /* ── Separator ── */
 .d-sep {
   height: 1px;
-  background: #e2e8f0;
+  background: var(--diagram-color-cluster-border);
   margin: 10px 0;
 }
 
@@ -844,7 +847,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #e2e8f0;
+  background: var(--diagram-color-cluster-border);
 }
 
 /* ── Metrics / Stats ── */
@@ -863,7 +866,7 @@
 
 .d-metric-label {
   font-size: 10px;
-  color: #64748b;
+  color: var(--diagram-color-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;
@@ -872,11 +875,11 @@
 /* ── Figure Caption (below diagram) ── */
 .d-caption {
   font-size: 11px;
-  color: #64748b;
+  color: var(--diagram-color-muted);
   text-align: center;
   margin-top: 12px;
   font-style: italic;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--diagram-color-cluster-border);
   padding-top: 8px;
 }
 
@@ -885,7 +888,7 @@
 /* ── Watermark / Debug aid (stripped at print) ── */
 @media screen {
   .diagram-canvas {
-    outline: 1px dashed #e2e8f0; /* thấy boundary khi xem trong browser */
+    outline: 1px dashed var(--diagram-color-cluster-border); /* thấy boundary khi xem trong browser */
   }
 
   .diagram-mode.png-export .diagram-canvas {
@@ -977,3 +980,50 @@
 .cmp-table tbody tr:last-child td {
   border-bottom: none;
 }
+
+/* ── Anchored links (web/js/diagram-links.js) — thay cho <line x1=…> toạ độ cứng ──
+   Xem design/DIAGRAM_DESIGN.md §6. Đường nằm trên nền cluster, dưới nhãn. */
+.diagram-canvas > svg.d-links,
+.diagram-canvas svg.d-links {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+.d-link {
+  fill: none;
+  stroke: var(--diagram-color-line);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.d-link.is-dashed  { stroke: var(--diagram-color-line-muted); stroke-dasharray: 6 4; }
+.d-link.is-muted   { stroke: var(--diagram-color-line-muted); }
+.d-link.is-danger  { stroke: var(--diagram-color-danger-border); }
+.d-link.is-success { stroke: var(--diagram-color-success-border); }
+.d-link.is-warning { stroke: var(--diagram-color-warning-border); }
+.d-link.is-info    { stroke: var(--diagram-color-info-border); }
+.d-link-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.d-link-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: var(--diagram-size-meta);
+  line-height: 1.3;
+  padding: 1px 6px;
+  color: var(--diagram-color-label-text);
+  background: var(--diagram-color-surface);
+  border-radius: 4px;
+}
+.d-link-label.is-danger  { color: var(--diagram-color-danger-text); }
+.d-link-label.is-success { color: var(--diagram-color-success-text); }
+.d-link-label.is-warning { color: var(--diagram-color-warning-text); }
+.d-link-label.is-info    { color: var(--diagram-color-info-text); }
+.d-link-label.is-above { transform: translate(-50%, calc(-100% - 5px)); }

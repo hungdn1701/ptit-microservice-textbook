@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom CSS for Config Server Simulator */
     .simulator-container {
@@ -199,12 +199,12 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">[Down Trend]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Drift</div></div>
       <h3>Configuration Drift</h3>
       <p>Các môi trường (Dev, Staging, Prod) yêu cầu tham số khác nhau. Lưu cấu hình cục bộ dễ dẫn đến sai sót khi deploy (VD: quên đổi tham số trên Staging, vô tình kết nối nhầm DB Production).</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">[Error]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Restart</div></div>
       <h3>Rebuild & Restart Overhead</h3>
       <p>Điều chỉnh một tham số nhỏ (VD: tăng Connection Pool size, giảm Timeout) đòi hỏi sửa file, build lại JAR và restart toàn bộ container, gây downtime không đáng có.</p>
     </div>
@@ -456,7 +456,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Simulator Logic ──────────────────────────────────────

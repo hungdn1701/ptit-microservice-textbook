@@ -12,33 +12,8 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
-    body { font-family: var(--font-sans); background: var(--bg); color: var(--text-main); }
-
-    /* Context Map specific */
-    .ctx-canvas {
-      background: rgba(0,0,0,.3); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 32px; position: relative;
-      min-height: 360px; overflow: hidden;
-    }
-    .bc-node {
-      position: absolute; border-radius: var(--radius-md); padding: 16px 14px;
-      border: 2px solid; text-align: center; cursor: pointer; transition: all .25s ease;
-      min-width: 130px;
-    }
-    .bc-node:hover { transform: scale(1.04); z-index: 10; }
-    .bc-node h4 { font-size: 12px; font-weight: 700; margin-bottom: 4px; font-family: var(--font-sans); }
-    .bc-node .bc-sub { font-size: 9.5px; font-family: var(--font-mono); opacity: .7; }
-
-    .bc-identity  { border-color: var(--info);    background: rgba(96,165,250,.08);  color: var(--info);    top: 24px;  left: 50%; transform: translateX(-50%); }
-    .bc-core      { border-color: var(--primary);  background: var(--primary-dim);   color: var(--primary); top: 130px; left: 24px; }
-    .bc-assignment{ border-color: var(--warning);  background: rgba(245,158,11,.08); color: var(--warning); top: 130px; right: 24px; }
-    .bc-judge     { border-color: var(--success);  background: var(--success-dim);   color: var(--success); bottom: 24px; left: 80px; }
-    .bc-notif     { border-color: var(--text-dim); background: rgba(255,255,255,.03); color: var(--text-secondary); bottom: 24px; right: 80px; }
-
-    .ctx-line { position: absolute; pointer-events: none; }
-
     .rel-badge {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 4px 12px; border-radius: 999px;
@@ -50,14 +25,6 @@
     .rel-shared     { border-color: rgba(244,63,94,.3);  background: rgba(244,63,94,.08); color: var(--danger); }
     .rel-conformist { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.08); color: var(--warning); }
 
-    .info-panel {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-md); padding: 16px 20px; margin-top: 16px;
-      min-height: 80px; transition: all .3s ease;
-    }
-    .info-panel h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-    .info-panel p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
-    .info-panel .rel-type { font-size: 10.5px; font-family: var(--font-mono); color: var(--primary); margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -93,17 +60,17 @@
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Context</div></div>
       <h3>Ambiguous Ubiquitous Language</h3>
-      <p>"User" ở Auth là account đăng nhập. "User" ở Core là learner. Cùng khái niệm, khác model gây ra silent bugs khi tích hợp.</p>
+      <p>"User" ở Identity &amp; Access là tài khoản đăng nhập; "User" ở SQL Practice là người làm bài. Cùng một từ, hai model — tích hợp mà không nói rõ sẽ sinh lỗi ngầm.</p>
     </div>
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Dependency</div></div>
       <h3>Implicit Integration</h3>
-      <p>Assignment gọi Core API nhưng thiếu document. Core refactor field <code>userId</code> → <code>learnerId</code> làm Assignment crash trên production.</p>
+      <p><code>kbm-core</code> đổi field <code>studentId</code> → <code>userId</code> mà không báo trước; <code>kbm-academic</code> vẫn đọc <code>studentId</code>, nhận <code>null</code> → NullPointerException trên production (Ch.3).</p>
     </div>
     <div class="problem-card warn">
       <div class="problem-icon"><div class="badge badge-warning">Database</div></div>
       <h3>Shared Database Anti-pattern</h3>
-      <p>Core và Assignment dùng chung DB schema. Schema thay đổi gây break queries liên team, dẫn đến cản trở refactor.</p>
+      <p>SQL Practice (<code>kbm-core</code>) và Academic Management (<code>kbm-academic</code>) dùng chung <code>app_db</code>. Đổi schema phía này làm hỏng truy vấn phía kia, cản trở refactor.</p>
     </div>
     <div class="problem-card">
       <div class="problem-icon"><div class="badge badge-info">Document</div></div>
@@ -161,40 +128,37 @@
     <div class="act-number">3</div>
     <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
   </div>
-  <p class="section-intro">Click vào các Bounded Context để xem chi tiết các mối quan hệ tích hợp trong KBM.</p>
-  <div class="visualization-wrapper">
-    <div class="vis-header">
-      <span class="vis-title">KBM — Context Map Interactive</span>
-      <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">Click để xem relationships</span>
+  <p class="section-intro">Chọn một bounded context để xem nó là upstream hay downstream của ai, và quan hệ đó thuộc kiểu nào. Có thể lọc theo kiểu quan hệ. Dữ liệu theo Chương 2 (§2.3, §2.4).</p>
+
+  <div class="sim-chips" id="ctx-chips" role="group" aria-label="Lọc theo kiểu quan hệ"></div>
+
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title">Context Map — KBM <span class="sim-hint">9 bounded context · 2 hệ thống ngoài · bấm vào một context</span></div>
+    <div class="sim-canvas d-links-root" id="ctx-canvas">
+      <div class="sim-nodes" id="ctx-nodes"></div>
+      <svg class="d-links" id="ctx-links"></svg>
     </div>
-    <div class="vis-body">
-      <div class="ctx-canvas" id="ctx-canvas">
-        <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" id="ctx-svg"></svg>
-        <div class="bc-node bc-identity" onclick="showInfo('identity')">
-          <h3>Identity &amp; Auth</h3>
-          <div class="bc-sub">kbm-auth</div>
-        </div>
-        <div class="bc-node bc-core" onclick="showInfo('core')">
-          <h3>Core LMS</h3>
-          <div class="bc-sub">kbm-core</div>
-        </div>
-        <div class="bc-node bc-assignment" onclick="showInfo('assignment')">
-          <h3>Assignment</h3>
-          <div class="bc-sub">kbm-academic</div>
-        </div>
-        <div class="bc-node bc-judge" onclick="showInfo('judge')">
-          <h3>Judge</h3>
-          <div class="bc-sub">kbm-judge-sql</div>
-        </div>
-        <div class="bc-node bc-notif" onclick="showInfo('notif')">
-          <h3>Notification</h3>
-          <div class="bc-sub">kbm-notification</div>
-        </div>
+  </div>
+
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title"><span id="ctx-title">Quan hệ</span> <span class="sim-hint" id="ctx-service"></span></div>
+      <div class="rel-list sim-scroll" id="ctx-rel-list"></div>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Tổng quan <span class="sim-hint">rủi ro = Shared Database, chung codebase</span></div>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-val" id="st-up">0</div><div class="sim-stat-lbl">Upstream của</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="st-down">0</div><div class="sim-stat-lbl">Downstream của</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="st-risk" style="color: var(--danger);">0</div><div class="sim-stat-lbl">Điểm rủi ro</div></div>
       </div>
-      <div class="info-panel" id="info-panel">
-        <div class="rel-type">← Click vào Bounded Context để xem chi tiết</div>
-        <p>Mỗi Bounded Context đại diện cho một ranh giới ngôn ngữ và model độc lập trong KBM LMS.</p>
+      <div class="sim-legend">
+        <span><i class="lg lg-solid"></i>quan hệ tích hợp</span>
+        <span><i class="lg lg-dashed"></i>Published Language / Shared Library</span>
+        <span><i class="lg lg-danger"></i>Shared Database</span>
+        <span><i class="lg lg-warning"></i>chung codebase</span>
       </div>
+      <div class="sim-log" id="ctx-log" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -207,89 +171,89 @@
     <div class="act-number">4</div>
     <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBM: Apply It</h2></div>
   </div>
-  <p class="section-intro">KBM gồm 5 Bounded Contexts chính. Context Map rõ ràng giúp giảm rủi ro tích hợp và hỗ trợ quy hoạch API changes hiệu quả.</p>
+  <p class="section-intro">KBM gồm 9 bounded context (7 core + 2 supporting). Một Context Map tường minh cho biết thay đổi ở đâu sẽ ảnh hưởng tới ai trước khi sửa API.</p>
 
-  <h3 class="sub-heading">Context Relationship Map</h3>
-  <p class="sub-label">Phân tích Integration Pattern cho các components</p>
+  <h3 class="sub-heading">Bảng quan hệ giữa các context</h3>
+  <p class="sub-label">Các quan hệ rủi ro nhất trong KBM (Chương 2)</p>
   <table class="gap-table">
-    <tr><th>Upstream (U)</th><th>Downstream (D)</th><th>Pattern</th><th>Risk nếu thiếu</th></tr>
+    <tr><th>Upstream (U)</th><th>Downstream (D)</th><th>Kiểu quan hệ</th><th>Rủi ro nếu không quản lý</th></tr>
     <tr>
-      <td class="gap-label">Identity/Auth</td>
-      <td>Core, Assignment, Judge, Notif</td>
-      <td><span class="b-high">OHS + Published Language</span></td>
-      <td>Thay đổi token format làm crash toàn bộ hệ thống</td>
+      <td class="gap-label">Identity &amp; Access</td>
+      <td>Tất cả context còn lại</td>
+      <td><span class="b-high">OHS + Published Language (JWT)</span></td>
+      <td>Đổi định dạng token làm hỏng mọi downstream cùng lúc</td>
     </tr>
     <tr>
-      <td class="gap-label">Core LMS</td>
-      <td>Assignment</td>
-      <td><span style="color:var(--info);font-family:var(--font-mono);font-size:11px;font-weight:700;">Customer/Supplier</span></td>
-      <td>Core schema thay đổi gây silent bug trên Assignment</td>
+      <td class="gap-label">SQL Practice</td>
+      <td>Code Practice, Network Practice, Academic Management</td>
+      <td><span class="b-med">Open Host Service</span></td>
+      <td>API câu hỏi thay đổi gây lỗi ngầm ở ba context</td>
     </tr>
     <tr>
-      <td class="gap-label">Assignment</td>
-      <td>Judge</td>
-      <td><span class="b-med">Conformist + Event</span></td>
-      <td>Judge thay đổi API buộc Assignment phải update</td>
+      <td class="gap-label">GitHub Classroom</td>
+      <td>Academic Management</td>
+      <td><span class="b-med">Conformist</span></td>
+      <td>Không thương lượng được contract — phải chạy theo mọi thay đổi</td>
     </tr>
     <tr>
-      <td class="gap-label">Core / Assignment</td>
-      <td>Notification</td>
-      <td><span class="b-low">Published Language (Events)</span></td>
-      <td>Loose coupling; Notification lắng nghe domain events</td>
+      <td class="gap-label">SQL Practice ↔ Academic Management</td>
+      <td>—</td>
+      <td><span class="b-high">Shared Database (app_db)</span></td>
+      <td>Đổi schema làm hỏng truy vấn chéo; chặn việc tách dữ liệu (Chương 7)</td>
     </tr>
   </table>
 
-  <h3 class="sub-heading">Migration Timeline</h3>
-  <p class="sub-label">Chuyển từ implicit coupling sang explicit Context Map</p>
-  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Animate Timeline</button>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <p class="sub-label">Từ phụ thuộc ngầm sang Context Map tường minh</p>
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tuần 1 · Phase 0</div>
+      <div class="timeline-phase">Tuần 1 · Giai đoạn 0</div>
       <h4>Event Storming</h4>
-      <p>Tổ chức cross-team workshop. Xác định Bounded Contexts, aggregates, và domain events. Output: Draft Context Map.</p>
-      <span class="t-badge orange">Effort: Toàn team</span>
+      <p>Workshop liên team: xác định bounded context, aggregate và domain event. Kết quả: bản nháp Context Map.</p>
+      <span class="t-badge orange">Công sức: toàn team</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tuần 2 · Phase 1</div>
-      <h4>Document as-is architecture</h4>
-      <p>Xây dựng Context Map chính thức. Xác định upstream/downstream, shared kernel, và implicit dependencies. Thiết lập architecture baseline.</p>
-      <span class="t-badge orange">Output: context-map.md trong repo</span>
+      <div class="timeline-phase">Tuần 2 · Giai đoạn 1</div>
+      <h4>Ghi lại kiến trúc hiện trạng</h4>
+      <p>Chốt Context Map chính thức: upstream/downstream, phần dùng chung, các phụ thuộc ngầm. Đây là mốc so sánh cho mọi thay đổi sau.</p>
+      <span class="t-badge orange">Kết quả: context-map.md trong repo</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tháng 1 · Phase 2</div>
-      <h4>Triển khai Contract Tests cho critical integration points</h4>
-      <p>Tích hợp Pact consumer-driven contract tests (Auth → Core, Assignment). CI tự động verify backward compatibility khi thay đổi API.</p>
-      <span class="t-badge green">✓ Safe API evolution</span>
+      <div class="timeline-phase">Tháng 1 · Giai đoạn 2</div>
+      <h4>Contract test cho các điểm tích hợp quan trọng</h4>
+      <p>Consumer-driven contract test bằng Pact cho Identity &amp; Access → SQL Practice và SQL Practice → Academic Management. CI tự kiểm tra tương thích ngược mỗi lần đổi API.</p>
+      <span class="t-badge green">✓ Đổi API an toàn</span>
     </div>
     <div class="timeline-item" data-delay="750">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tháng 2+ · Phase 3</div>
-      <h4>Triển khai ACL cho Core → Assignment</h4>
-      <p>Assignment xây dựng ACL để translate Core objects sang internal domain model. Core có thể refactor an toàn không gây break Assignment.</p>
-      <span class="t-badge green">✓ Team autonomy achieved</span>
+      <div class="timeline-phase">Tháng 2+ · Giai đoạn 3</div>
+      <h4>Tách app_db giữa SQL Practice và Academic Management</h4>
+      <p>Theo lộ trình Chương 7: tách schema, thay truy vấn chéo bằng API, rồi nhân bản dữ liệu qua sự kiện. SQL Practice refactor được mà không làm hỏng Academic Management.</p>
+      <span class="t-badge green">✓ Hai team tự chủ</span>
     </div>
   </div>
 
   <h3 class="sub-heading">Khi nào dùng — Khi nào không</h3>
   <div class="decision-grid">
     <div class="decision-card yes">
-      <div class="decision-header"><div class="decision-icon"><div class="badge badge-success">Yes</div></div><div class="decision-title">Phù hợp khi</div></div>
+      <div class="decision-header"><div class="decision-icon"><div class="badge badge-success">✓</div></div><div class="decision-title">Phù hợp khi</div></div>
       <ul class="decision-list">
         <li>Hệ thống có nhiều team cùng tham gia phát triển</li>
         <li>Domain model phức tạp, độ chồng chéo khái niệm cao</li>
-        <li>Chuẩn bị migrate monolith sang microservices</li>
-        <li>Phân tích integration risk trước khi refactor</li>
+        <li>Chuẩn bị chuyển đổi monolith sang microservices</li>
+        <li>Cần đánh giá rủi ro tích hợp trước khi refactor</li>
       </ul>
     </div>
     <div class="decision-card no">
-      <div class="decision-header"><div class="decision-icon"><div class="badge badge-danger">No</div></div><div class="decision-title">Không cần thiết khi</div></div>
+      <div class="decision-header"><div class="decision-icon"><div class="badge badge-danger">✗</div></div><div class="decision-title">Không cần thiết khi</div></div>
       <ul class="decision-list">
         <li>Hệ thống quy mô nhỏ, 1 team, 1 domain</li>
         <li>Domain model đơn giản, rõ ràng</li>
-        <li>Giai đoạn Prototype/MVP với requirement thay đổi nhanh</li>
+        <li>Giai đoạn prototype/MVP, yêu cầu còn thay đổi nhanh</li>
       </ul>
     </div>
   </div>
@@ -311,49 +275,148 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=8998bdd1"></script>
 <script>
 
-// Context info
-const ctxInfo = {
-  identity: {
-    title: 'Identity & Auth — System Upstream',
-    rel: 'Pattern: Open Host Service + Published Language',
-    desc: 'Định nghĩa JWT token format và UserClaims schema. Là upstream của toàn bộ hệ thống. Mọi thay đổi phải đảm bảo backward compatibility. Khuyến nghị: Sử dụng Keycloak/OIDC để giảm vendor lock-in.'
-  },
-  core: {
-    title: 'Core LMS — Business Logic Hub',
-    rel: 'Pattern: Customer/Supplier với Assignment · Published Language với Notification',
-    desc: 'Downstream của Auth, upstream của Assignment và Notification. Cung cấp domain models: Enrollment, Course, LearnerProfile. Assignment cần implement ACL để tránh leakage từ Core model.'
-  },
-  assignment: {
-    title: 'Assignment — Submission Flow Orchestrator',
-    rel: 'Pattern: Conformist với Judge (sau khi tách) · Customer/Supplier với Core',
-    desc: 'Tiếp nhận submission, forward payload sang Judge, và update score về Core. Tight coupling với Core DB gây high risk. Yêu cầu tách service, database độc lập, và giao tiếp qua domain events.'
-  },
-  judge: {
-    title: 'Judge — CPU-intensive Execution',
-    rel: 'Pattern: Event-based (nhận từ Assignment qua Kafka)',
-    desc: 'Downstream của Assignment. Nhận payload, execute trong sandbox, và trả kết quả. Cần scale độc lập cho CPU spikes. Chỉ phụ thuộc vào SubmissionEvent, loose coupling với Core và User model.'
-  },
-  notif: {
-    title: 'Notification — Pure Event Subscriber',
-    rel: 'Pattern: Published Language (subscribe domain events)',
-    desc: 'Đóng vai trò pure subscriber, lắng nghe domain events (SubmissionGraded, CourseEnrolled). Hoàn toàn độc lập, hỗ trợ deploy và restart không gây gián đoạn main flow.'
-  }
+// ── Act 3: Context Map KBM ─────────────────────────────────────────────
+// Dữ liệu lấy từ Chương 2: Bảng "Các kiểu quan hệ giữa bounded contexts" (§2.3),
+// "Bảy bounded contexts core" + "Ánh xạ bounded context → service" (§2.4), Phụ lục E
+// (2 supporting BC). Không thêm quan hệ nào sách không nêu.
+// Vị trí trên lưới 3 cột × 4 hàng được chọn để mọi đường nối đi theo khe, không xuyên qua hộp khác.
+const CTX = [
+  { id: 'qldt',     name: 'Cổng Quản lý Đào tạo', sub: 'hệ thống ngoài',                 ext: true, at: [1, 1] },
+  { id: 'auth',     name: 'Identity & Access',     sub: 'kbm-auth',                                  at: [1, 2] },
+  { id: 'comm',     name: 'Communication',         sub: 'supporting · kbm-notification',            at: [1, 3] },
+  { id: 'net',      name: 'Network Practice',      sub: 'kbm-judge-network',                         at: [2, 1] },
+  { id: 'sql',      name: 'SQL Practice',          sub: 'Core Domain · kbm-core',       core: true, at: [2, 2] },
+  { id: 'code',     name: 'Code Practice',         sub: 'kbm-judge-code',                            at: [2, 3] },
+  { id: 'acad',     name: 'Academic Management',   sub: 'kbm-academic',                              at: [3, 1] },
+  { id: 'exam',     name: 'Examination & Proctoring', sub: 'logic trong kbm-core',                   at: [3, 2] },
+  { id: 'devops',   name: 'DevOps Practice',       sub: 'kbm-devops-*',                              at: [3, 3] },
+  { id: 'gh',       name: 'GitHub Classroom',      sub: 'hệ thống ngoài',                 ext: true, at: [4, 1] },
+  { id: 'platform', name: 'Platform / Infrastructure', sub: 'supporting · kbm-shared',              at: [4, 2] },
+];
+// kind → nhãn + kiểu nét; risk = điểm rủi ro kiến trúc cần xử lý
+const KIND = {
+  cs:   { label: 'Customer-Supplier',    cls: 'is-primary' },
+  ohs:  { label: 'Open Host Service',    cls: 'is-primary' },
+  pl:   { label: 'Published Language',   cls: 'is-primary is-dashed' },
+  acl:  { label: 'Anti-Corruption Layer', cls: 'is-primary' },
+  cf:   { label: 'Conformist',           cls: 'is-primary' },
+  lib:  { label: 'Shared Library',       cls: 'is-muted is-dashed' },
+  sdb:  { label: 'Shared Database',      cls: 'is-danger', risk: true },
+  code: { label: 'Chung codebase',       cls: 'is-warning', risk: true },
 };
+const REL = [ // u = upstream, d = downstream
+  { u: 'auth', d: 'sql',  k: 'cs',  t: 'SQL Practice cần thông tin người dùng và vai trò; Identity & Access ưu tiên phát triển theo yêu cầu đó.', ref: '§2.3' },
+  { u: 'auth', d: 'net',  k: 'pl',  t: 'Mọi context dựa vào kết quả xác thực; định dạng JWT/claims là ngôn ngữ trao đổi chung — đổi format là vỡ mọi downstream.', ref: '§2.4' },
+  { u: 'auth', d: 'code', k: 'pl',  t: 'Dùng chung danh tính và JWT với phần còn lại của hệ thống.', ref: '§2.4' },
+  { u: 'auth', d: 'acad', k: 'pl', ch: 'left',  t: 'Dùng chung danh tính và JWT với phần còn lại của hệ thống.', ref: '§2.4' },
+  { u: 'auth', d: 'devops', k: 'pl', ch: 'left', t: 'Stack Go/k3s khác hẳn, nhưng vẫn chia sẻ danh tính (JWT) với KBM.', ref: '§2.4' },
+  { u: 'auth', d: 'exam', k: 'pl', ch: 'left',  t: 'kbm-exam-client dùng cùng JWT của kbm-auth.', ref: '§2.4' },
+  { u: 'qldt', d: 'auth', k: 'acl', t: 'kbm-auth dựng lớp dịch khi tích hợp Cổng Quản lý Đào tạo — model bên ngoài không xâm nhập domain KBM.', ref: '§2.3, Ch.10' },
+  { u: 'sql',  d: 'code', k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Code Practice.', ref: '§2.3' },
+  { u: 'sql',  d: 'net',  k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Network Practice.', ref: '§2.3' },
+  { u: 'sql',  d: 'acad', k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Academic Management.', ref: '§2.3' },
+  { u: 'gh',   d: 'acad', k: 'cf',  t: 'Academic Management dùng nguyên mô hình lớp/bài tập của GitHub Classroom — không thể yêu cầu bên ngoài đổi contract.', ref: '§2.3' },
+  { u: 'sql',  d: 'acad', k: 'sdb', t: 'Academic Management đã tách service khỏi Core nhưng vẫn dùng chung cơ sở dữ liệu app_db — trade-off phân tích ở §2.4, lộ trình tách ở Chương 7.', ref: '§2.4, Ch.7' },
+  { u: 'sql',  d: 'exam', k: 'code', t: 'Logic Contest/Anti-cheat hiện nằm trong kbm-core; mục tiêu tách thành kbm-exam.', ref: '§2.4' },
+  { u: 'sql',  d: 'comm', k: 'pl', fa: 0.8,  t: 'Kafka message với schema chuẩn; Communication tiêu thụ event để đẩy thông báo qua WebSocket.', ref: '§2.3, Ch.5' },
+  { u: 'platform', d: 'sql',  k: 'lib', ch: 'right', t: 'kbm-shared chỉ nên giữ mã hạ tầng dùng chung (JWT, CORS, base response) — là Shared Library, không phải Shared Kernel.', ref: '§2.5' },
+  { u: 'platform', d: 'acad', k: 'lib', t: 'Cùng thư viện kbm-shared; domain logic phải nằm ở context sở hữu nó.', ref: '§2.5' },
+];
+const byId = Object.fromEntries(CTX.map(c => [c.id, c]));
+const nodesEl = document.getElementById('ctx-nodes');
+const linksEl = document.getElementById('ctx-links');
+const canvasEl = document.getElementById('ctx-canvas');
 
-function showInfo(key) {
-  const info = ctxInfo[key];
-  const panel = document.getElementById('info-panel');
-  panel.innerHTML = `
-    <div class="rel-type">${info.rel}</div>
-    <h4>${info.title}</h4>
-    <p>${info.desc}</p>
-  `;
-  document.querySelectorAll('.bc-node').forEach(n => n.style.boxShadow = '');
-  event.currentTarget.style.boxShadow = '0 0 20px rgba(255,122,0,.3)';
+CTX.forEach(c => {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = 'sim-node' + (c.core ? ' is-core' : '') + (c.ext ? ' is-external' : '');
+  el.id = 'ctx-' + c.id;
+  el.style.gridRow = c.at[0]; el.style.gridColumn = c.at[1];
+  el.innerHTML = `<div class="sim-node-name">${c.name}</div><div class="sim-node-sub">${c.sub}</div>`;
+  el.addEventListener('click', () => select(c.id));
+  nodesEl.appendChild(el);
+});
+REL.forEach((r, i) => {
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.dataset.from = 'ctx-' + r.u; p.dataset.to = 'ctx-' + r.d; p.dataset.i = i;
+  if (r.k === 'sdb') p.dataset.arrow = 'both';
+  if (r.ch) { p.dataset.route = 'channel'; p.dataset.channel = r.ch; }
+  if (r.fa) p.dataset.fromAt = r.fa;
+  linksEl.appendChild(p);
+});
+
+const chipsEl = document.getElementById('ctx-chips');
+Object.entries(KIND).forEach(([k, v]) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'sim-chip'; b.dataset.kind = k; b.textContent = v.label;
+  b.addEventListener('click', () => filterKind(k));
+  chipsEl.appendChild(b);
+});
+
+function show(rels, focusId) {
+  const on = new Set(rels.map(r => REL.indexOf(r)));
+  linksEl.querySelectorAll('path').forEach(p => {
+    const r = REL[+p.dataset.i];
+    p.setAttribute('class', on.has(+p.dataset.i) ? KIND[r.k].cls : '');
+    p.style.display = on.has(+p.dataset.i) ? '' : 'none';
+  });
+  const related = new Set(rels.flatMap(r => [r.u, r.d]));
+  document.querySelectorAll('#ctx-nodes .sim-node').forEach(n => {
+    const id = n.id.slice(4);
+    n.classList.toggle('is-selected', id === focusId);
+    n.classList.toggle('is-related', id !== focusId && related.has(id));
+  });
+  canvasEl.classList.toggle('has-selection', true);
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+
+  const list = document.getElementById('ctx-rel-list');
+  list.innerHTML = rels.map(r => {
+    const other = focusId ? (r.u === focusId ? byId[r.d] : byId[r.u]) : null;
+    const role = focusId ? (r.u === focusId ? '<span class="badge badge-warning">U → ' + other.name + '</span>'
+                                            : '<span class="badge badge-info">D ← ' + other.name + '</span>')
+                         : '<span class="rel-target">' + byId[r.u].name + ' → ' + byId[r.d].name + '</span>';
+    const kb = KIND[r.k].risk ? 'badge-danger' : 'badge-success';
+    return `<div class="rel-item"><div class="rel-item-head">${role}<span class="badge ${kb}">${KIND[r.k].label}</span></div><p>${r.t} <span style="color:var(--text-dim)">(${r.ref})</span></p></div>`;
+  }).join('') || '<div class="rel-item"><p>Không có quan hệ nào trong sách cho lựa chọn này.</p></div>';
+  document.getElementById('st-up').textContent = focusId ? rels.filter(r => r.u === focusId).length : '—';
+  document.getElementById('st-down').textContent = focusId ? rels.filter(r => r.d === focusId).length : '—';
+  document.getElementById('st-risk').textContent = rels.filter(r => KIND[r.k].risk).length;
 }
+
+function log(msg, cls) {
+  const box = document.getElementById('ctx-log');
+  const t = new Date().toTimeString().slice(0, 8);
+  box.insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  box.scrollTop = box.scrollHeight;
+}
+
+function select(id) {
+  const c = byId[id];
+  const rels = REL.filter(r => r.u === id || r.d === id);
+  chipsEl.querySelectorAll('.sim-chip').forEach(b => b.classList.remove('is-active'));
+  document.getElementById('ctx-title').textContent = c.name;
+  document.getElementById('ctx-service').textContent = c.sub;
+  show(rels, id);
+  const up = rels.filter(r => r.u === id).length, down = rels.filter(r => r.d === id).length;
+  const risk = rels.filter(r => KIND[r.k].risk).length;
+  log(`${c.name}: upstream của ${up}, downstream của ${down}` + (risk ? ` · ${risk} điểm rủi ro` : ''), risk ? 'log-warn' : 'log-ok');
+}
+
+function filterKind(k) {
+  const rels = REL.filter(r => r.k === k);
+  chipsEl.querySelectorAll('.sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.kind === k));
+  document.getElementById('ctx-title').textContent = KIND[k].label;
+  document.getElementById('ctx-service').textContent = rels.length + ' quan hệ';
+  show(rels, null);
+  log(`Lọc: ${KIND[k].label} — ${rels.length} quan hệ`, KIND[k].risk ? 'log-warn' : 'log-info');
+}
+
+select('sql');
 
 function playTimeline() {
   const btn = document.getElementById('play-btn');

@@ -779,3 +779,151 @@ hr.act-divider {
      without clearance the pill permanently covers the strip's text/link. */
   .book-identity { padding-bottom: 100px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SIMULATION KIT v2 (2026-09-26) — thành phần Act 3 DÙNG CHUNG.
+   Chuẩn hoá theo thế hệ "dashboard" của circuit-breaker / load-shedding:
+   panel có vạch màu trên đầu, tiêu đề mono in hoa, ô số liệu, log terminal,
+   hàng nút điều khiển. Trang mới/viết lại dùng các class này thay cho <style>
+   riêng — lý do ba thế hệ giao diện tồn tại song song là mỗi trang tự viết CSS.
+   Xem design/PATTERN-DESIGN.md §5.
+   ══════════════════════════════════════════════════════════════════════════ */
+.sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+.sim-grid--wide { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); }
+.sim-grid > * { min-width: 0; }
+@media (max-width: 768px) { .sim-grid, .sim-grid--wide { grid-template-columns: 1fr; } }
+
+.sim-panel {
+  position: relative; overflow: hidden;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+}
+.sim-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border-hover); }
+.sim-panel.is-primary::before { background: var(--primary); }
+.sim-panel.is-success::before { background: var(--success); }
+.sim-panel.is-danger::before  { background: var(--danger); }
+.sim-panel.is-warning::before { background: var(--warning); }
+.sim-panel.is-info::before    { background: var(--info); }
+.sim-panel-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary);
+  margin-bottom: 14px; white-space: nowrap;
+}
+.sim-panel-title .sim-hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+
+.sim-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0 0; }
+.sim-stat { text-align: center; padding: 8px 6px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.sim-stat-val { font-family: var(--font-mono); font-size: 16px; font-weight: 800; color: var(--text-main); }
+.sim-stat-lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+.sim-log {
+  background: var(--bg-terminal, var(--bg-surface)); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 10px 12px; margin-top: 16px;
+  font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;
+  min-height: 64px; max-height: 140px; overflow-y: auto;
+}
+.sim-log .log-time { color: var(--text-dim); margin-right: 8px; }
+.sim-log .log-ok { color: var(--success); } .sim-log .log-err { color: var(--danger); }
+.sim-log .log-warn { color: var(--warning); } .sim-log .log-info { color: var(--text-secondary); }
+
+.sim-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+.sim-chip {
+  font-family: var(--font-mono); font-size: 11px; padding: 5px 10px; min-height: 30px;
+  border-radius: 999px; border: 1px solid var(--border-hover); background: transparent;
+  color: var(--text-secondary); cursor: pointer;
+}
+.sim-chip:hover { color: var(--text-main); border-color: var(--text-dim); }
+.sim-chip.is-active { color: var(--on-primary, #000); background: var(--primary); border-color: var(--primary); }
+
+/* Sơ đồ nút trong Act 3: vị trí bằng lưới, đường nối bằng js/diagram-links.js (.d-links-root) */
+.sim-canvas { position: relative; padding: 8px 4px; }
+.sim-nodes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 22px; }
+.sim-node {
+  position: relative; z-index: 1; text-align: center; cursor: pointer;
+  padding: 10px 8px; border-radius: var(--radius-md);
+  background: var(--bg-surface); border: 1px solid var(--border-hover);
+  transition: border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+.sim-node:hover { border-color: var(--text-dim); }
+.sim-node-name { font-size: 12.5px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sim-node-sub  { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sim-node.is-core     { border-color: var(--primary); }
+.sim-node.is-external { border-style: dashed; }
+.sim-node.is-selected { border-color: var(--primary); background: var(--primary-dim); }
+.sim-node.is-related  { border-color: var(--text-secondary); }
+.sim-canvas.has-selection .sim-node:not(.is-selected):not(.is-related) { opacity: .35; }
+
+.d-links-root svg.d-links { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 0; }
+.d-links-root .d-link { fill: none; stroke: var(--text-dim); stroke-width: 1.5; }
+.d-links-root .d-link.is-dashed { stroke-dasharray: 5 4; }
+.d-links-root .d-link.is-primary { stroke: var(--primary); stroke-width: 2; }
+.d-links-root .d-link.is-danger  { stroke: var(--danger); stroke-width: 2; }
+.d-links-root .d-link.is-warning { stroke: var(--warning); stroke-width: 2; }
+.d-links-root .d-link-labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.d-links-root .d-link-label {
+  position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+  font-family: var(--font-mono); font-size: 10.5px; padding: 1px 6px; border-radius: 4px;
+  background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border);
+}
+.d-links-root .d-link-label.is-primary { color: var(--primary); }
+.d-links-root .d-link-label.is-danger  { color: var(--danger); }
+.d-links-root .d-link-label.is-warning { color: var(--warning); }
+
+.rel-list { display: flex; flex-direction: column; gap: 8px; }
+.rel-item { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface); }
+.rel-item-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.rel-item-head .rel-target { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
+.rel-item p { font-size: 12px; line-height: 1.55; color: var(--text-secondary); margin: 0; }
+.sim-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.sim-grid > .sim-panel { display: flex; flex-direction: column; }
+.sim-grid > .sim-panel .sim-log { flex: 1; }
+.sim-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 11px; color: var(--text-dim); }
+.sim-legend .lg { display: inline-block; width: 22px; height: 0; vertical-align: middle; margin-right: 6px; border-top: 2px solid var(--primary); }
+.sim-legend .lg-dashed  { border-top: 2px dashed var(--primary); }
+.sim-legend .lg-danger  { border-top-color: var(--danger); }
+.sim-legend .lg-warning { border-top-color: var(--warning); }
+.d-links-root .d-link.is-muted { stroke: var(--text-secondary); stroke-width: 1.5; }
+@media (max-width: 640px) {
+  .sim-nodes { gap: 34px 10px; }
+  .sim-node { padding: 8px 4px; min-height: 52px; display: flex; flex-direction: column; justify-content: center; }
+  .sim-node-name { white-space: normal; font-size: 11px; line-height: 1.25; overflow: visible; }
+  .sim-node-sub { display: none; }
+  .sim-panel-title { white-space: normal; flex-wrap: wrap; }
+}
+
+/* Bảng so sánh gọn trong panel Act 3 (graphql-vs-rest, …) */
+.sim-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sim-table th { text-align: left; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-dim); padding: 6px 8px; border-bottom: 1px solid var(--border-hover); }
+.sim-table td { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.sim-table td.num { font-family: var(--font-mono); font-weight: 700; color: var(--text-main); text-align: right; }
+.sim-table th.num { text-align: right; }
+.sim-table tr.is-current td { background: var(--primary-dim); }
+.sim-table td.bad { color: var(--danger); } .sim-table td.good { color: var(--success); }
+.sim-nodes--row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 72px; }
+.sim-node.is-active { border-color: var(--primary); background: var(--primary-dim); }
+.sim-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 4px 0 14px; }
+.sim-controls .sim-chips { margin: 0; }
+.sim-controls-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+.sim-note { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 12px 0 0; }
+
+.d-links-root .d-link-label.is-above, .d-link-label.is-above { transform: translate(-50%, calc(-100% - 6px)); }
+.sim-table th { white-space: nowrap; }
+.sim-nodes--row { gap: 0 96px; }
+@media (max-width: 640px) { .sim-nodes--row { gap: 0 40px; } }
+@media (max-width: 640px) {
+  /* Hàng node ngang không đủ chỗ ở mobile → xếp dọc; nhãn "is-above" ra bên phải đường dọc. */
+  .sim-nodes--row { grid-template-columns: minmax(0, 1fr); gap: 44px 0; padding: 0 22%; }
+  .d-links-root .d-link-label.is-above { transform: translate(10px, -50%); }
+}
+
+/* Kit v2 — bổ sung 2026-09-26 (outbox-pattern; dùng lại cho message-broker, saga…) */
+.sim-control { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* Lưới node 3 cột có đường nối NGANG giữa các cột → khe cột đủ rộng cho mũi tên (≥ 32px). */
+.sim-nodes--flow { gap: 48px 56px; }
+@media (max-width: 640px) { .sim-nodes--flow { gap: 44px 26px; } }
+.sim-node.is-danger { border-color: var(--danger); background: var(--danger-dim, transparent); }
+.sim-node.is-danger .sim-node-sub { color: var(--danger); }
+.sim-node.is-off { opacity: .35; border-style: dashed; }
+/* .act-section p (0,1,1) thắng .sim-note → ghi rõ ngữ cảnh để ghi chú trong panel giữ cỡ chữ của kit. */
+.act-section .sim-note { font-size: 12.5px; line-height: 1.6; }

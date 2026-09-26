@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom styles for REST API Explorer */
     .rest-simulator {
@@ -341,17 +341,17 @@
 
     <div class="problem-grid">
       <div class="problem-card danger">
-        <div class="problem-icon">[Documentation]</div>
+        <div class="problem-icon"><div class="badge badge-danger">Docs</div></div>
         <h3>Outdated Static Documentation</h3>
         <p>Tài liệu API tĩnh trên Wiki/Word nhanh chóng lỗi thời khi backend thay đổi fields hoặc URL paths. Developers mất thời gian trao đổi để đối chiếu payload thực tế.</p>
       </div>
       <div class="problem-card danger">
-        <div class="problem-icon">[Warning]</div>
+        <div class="problem-icon"><div class="badge badge-danger">API Drift</div></div>
         <h3>API Drift</h3>
         <p>Sai lệch giữa spec và code gây lỗi Runtime khi Frontend tích hợp. Thường chỉ phát hiện ở Staging/UAT, gây trễ release.</p>
       </div>
       <div class="problem-card danger">
-        <div class="problem-icon">[Connection]</div>
+        <div class="problem-icon"><div class="badge badge-danger">Testing</div></div>
         <h3>Testing Barriers</h3>
         <p>Test API yêu cầu cài đặt Postman, xin quyền, setup token phức tạp. Thiếu môi trường Sandbox tích hợp để thử nghiệm nhanh.</p>
       </div>
@@ -715,7 +715,7 @@
     <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
   </div>
 
-  <script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+  <script src="../../js/pattern-story.js?v=33320506"></script>
   <script>
     // ── Timeline Visibility Observer ─────────────────────────
     const observer = new IntersectionObserver((entries) => {

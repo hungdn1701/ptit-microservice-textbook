@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom CSS for Apache Kafka Simulator */
     .simulator-container {
@@ -287,12 +287,12 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">[Waiting]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Blocking</div></div>
       <h3>Thread Blocking ở caller</h3>
       <p>Khi gọi REST đồng bộ từ <code>kbm-core</code> sang <code>kbm-judge-sql</code>, do biên dịch tốn 2-5s, thread của caller bị block. Dưới tải cao, thread pool cạn kiệt, gây treo hệ thống.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">[Error]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Message Loss</div></div>
       <h3>Mất message (Message Loss)</h3>
       <p>Nếu <code>kbm-judge-sql</code> gặp sự cố crash do quá tải CPU, mọi request đến lúc đó sẽ failed (lỗi 500). Dữ liệu nộp bài bị mất vĩnh viễn, không thể khôi phục.</p>
     </div>
@@ -485,7 +485,7 @@
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
-        <div class="decision-icon">[OK]</div>
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
         <div class="decision-title">Nên dùng Apache Kafka khi</div>
       </div>
       <ul class="decision-list">
@@ -497,7 +497,7 @@
     </div>
     <div class="decision-card no">
       <div class="decision-header">
-        <div class="decision-icon">[Error]</div>
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
         <div class="decision-title">Không nên dùng khi</div>
       </div>
       <ul class="decision-list">
@@ -527,7 +527,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Simulator Logic ──────────────────────────────────────

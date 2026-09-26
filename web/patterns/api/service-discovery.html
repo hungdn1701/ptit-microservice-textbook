@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom CSS for Service Discovery Simulator */
     .simulator-container {
@@ -246,12 +246,12 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">[Network]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Hardcoded IP</div></div>
       <h3>Hardcoded IP Configurations</h3>
       <p>Nếu Service A hardcode IP của Service B (VD: trong <code>application.properties</code>), hệ thống sẽ lỗi khi B đổi IP hoặc di chuyển. Bảo trì đòi hỏi sửa config và redeploy toàn bộ.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">[Error]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Scale-out</div></div>
       <h3>No Automated Scale-Out</h3>
       <p>Khi Service B scale-out thêm instances để gánh tải, Service A không nhận biết được các IPs mới. Client-side Load Balancing bị vô hiệu hóa.</p>
     </div>
@@ -505,7 +505,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Simulator Logic ──────────────────────────────────────

@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     /* Custom styles for CQRS & Event Sourcing Simulator */
     .simulator-container {
@@ -254,12 +254,12 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">[Low]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Lock</div></div>
       <h3>Table Lock & Tăng Latency Write</h3>
       <p>Khi thực thi query phức tạp, database áp dụng shared lock trên các row. Điều này block <code>INSERT</code> hoặc <code>UPDATE</code>, làm tăng latency của write API.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">[Error]</div>
+      <div class="problem-icon"><div class="badge badge-danger">Audit</div></div>
       <h3>Mất audit trail</h3>
       <p>Hệ thống CRUD chỉ lưu current state. Khi update, trạng thái cũ bị overwrite. Việc truy vết lịch sử nghiệp vụ (audit trail) rất phức tạp và thiếu tin cậy.</p>
     </div>
@@ -474,7 +474,7 @@
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
-        <div class="decision-icon">[OK]</div>
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
         <div class="decision-title">Nên dùng CQRS & Event Sourcing khi</div>
       </div>
       <ul class="decision-list">
@@ -486,7 +486,7 @@
     </div>
     <div class="decision-card no">
       <div class="decision-header">
-        <div class="decision-icon">[Error]</div>
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
         <div class="decision-title">Không nên dùng khi</div>
       </div>
       <ul class="decision-list">
@@ -516,7 +516,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Simulator Logic ──────────────────────────────────────

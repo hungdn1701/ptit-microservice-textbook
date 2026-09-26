@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=1084efb2">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
   <style>
     body {
       background-image: radial-gradient(var(--grid-color, rgba(255,255,255,.03)) 1px, transparent 0);
@@ -152,7 +152,7 @@
 
 <!-- ══ HEADER ══════════════════════════════════════════════ -->
 <header class="pattern-header">
-  <h1 class="pattern-title">Saga<br>Orchestration</h1>
+  <h1 class="pattern-title">Saga Orchestration</h1>
   <p class="pattern-subtitle">
     Quản lý distributed transaction không cần 2PC bằng chuỗi local transactions, compensating actions, và một Orchestrator trung tâm.
   </p>
@@ -177,22 +177,22 @@
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon">💾</div>
+      <div class="problem-icon"><div class="badge badge-danger">ACID</div></div>
       <h3>Không có Cross-service ACID</h3>
       <p>Assignment DB, Judge DB, Core DB tách biệt hoàn toàn. Không có coordinator dùng chung. Các lệnh <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">INSERT</code> được commit ngay ở local DB, không thể rollback chéo.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon">🚫</div>
+      <div class="problem-icon"><div class="badge badge-danger">2PC</div></div>
       <h3>2PC không phù hợp với Microservices</h3>
       <p>Two-Phase Commit (2PC) lock tất cả participants. Gây ra SPOF tại coordinator, giảm throughput nghiêm trọng và không chịu được network partition.</p>
     </div>
     <div class="problem-card warn">
-      <div class="problem-icon">🌐</div>
+      <div class="problem-icon"><div class="badge badge-warning">Partial Failure</div></div>
       <h3>Partial Failure</h3>
       <p>Trong hệ thống phân tán, partial failure (timeout, pod crash) là tất yếu. Thiếu cơ chế handle partial failure sẽ dẫn đến data inconsistency.</p>
     </div>
     <div class="problem-card">
-      <div class="problem-icon">🔄</div>
+      <div class="problem-icon"><div class="badge badge-info">Rollback</div></div>
       <h3>Không thể rollback Remote DB</h3>
       <p>Nếu Assignment DB đã commit nhưng Judge Service crash, bạn không thể <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">ROLLBACK</code> Assignment DB. Cần một cơ chế undo ở tầng Application.</p>
     </div>
@@ -569,7 +569,7 @@
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
-        <div class="decision-icon">[OK]</div>
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
         <div class="decision-title">Dùng Saga Orchestration khi</div>
       </div>
       <ul class="decision-list">
@@ -582,7 +582,7 @@
     </div>
     <div class="decision-card no">
       <div class="decision-header">
-        <div class="decision-icon">[Error]</div>
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
         <div class="decision-title">Không dùng khi</div>
       </div>
       <ul class="decision-list">
@@ -613,7 +613,7 @@
   <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
 </div>
 
-<script src="../../js/pattern-story.js?v=0bdfa48c"></script>
+<script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 
 // ── Stepper ───────────────────────────────────────────────

@@ -111,6 +111,16 @@
   font-size: var(--diagram-size-meta) !important;
 }
 
+/* DIAGRAM_DESIGN.md §2.1: MỌI chữ trong hình là Geist Mono.
+   Trước 2026-09-26 luật này chỉ liệt kê class (.d-title, .d-sub, .d-label...), nên
+   mọi phần tử ngoài danh sách (li, span, nhãn sequence, .d-zone, ô bảng...) rơi về
+   font sans của body -> 55/102 hình lẫn hai font. Một luật bao trùm thay cho danh
+   sách trắng: thêm class mới không bao giờ lọt lưới nữa. */
+.diagram-mode .diagram-canvas,
+.diagram-mode .diagram-canvas *:not(svg):not(svg *) {
+  font-family: var(--diagram-font-mono) !important;
+}
+
 .diagram-mode .d-mono,
 .diagram-mode .svg-mono,
 .diagram-mode .d-code,
