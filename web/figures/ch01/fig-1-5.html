@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <!--
     Fig 1.5 — Fast Flow Success Triangle
-    =========================================================
-    Tier 1 HTML migration
+    2026-09-28 (WP-B Ch.01): bỏ tam giác SVG viewBox co giãn (cạnh không chạm góc hộp) + nền #fff cứng;
+    ba đỉnh và tâm là hộp trong lưới, cạnh tam giác và đường về tâm là d-links (route "direct" = đường chéo).
+    Chữ theo DIAGRAM_DESIGN.md §17 và đoạn văn quanh hình (DevOps = quy trình, Team Topologies = tổ chức).
   -->
   <title>Fig 1.5 — Fast Flow Success Triangle | Ch.1</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -14,56 +15,42 @@
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-1.5" data-ref="CH01-SEC">
 
-    <div style="position: relative; max-width: 800px; margin: 40px auto; padding: 20px;">
-      
-      <!-- Background Triangle -->
-      <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none;" viewBox="0 0 800 400" preserveAspectRatio="none">
-        <polygon points="400,60 150,340 650,340" fill="var(--diagram-color-surface)" stroke="var(--diagram-color-line-muted)" stroke-width="3" stroke-dasharray="8 8" />
-        <!-- Arrows pointing to center -->
-        <line x1="400" y1="60" x2="400" y2="180" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
-        <line x1="150" y1="340" x2="300" y2="240" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
-        <line x1="650" y1="340" x2="500" y2="240" stroke="var(--diagram-color-line-muted)" stroke-width="2" />
-      </svg>
+    <div style="display: grid; grid-template-columns: 270px 280px 270px; grid-template-rows: auto auto auto; gap: 48px 40px; align-items: center; justify-items: center; margin: 0 auto; width: fit-content;">
 
-      <!-- Content Grid -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 100px auto; gap: 20px; position: relative; z-index: 1; align-items: center; justify-items: center;">
-        
-        <!-- Top -->
-        <div style="grid-column: 1 / 3;">
-          <div class="d-box d-service d-col text-center" style="width: 240px; background: #fff;">
-            <div class="d-title">Team Organization</div>
-            <div class="d-sub d-mb-0">Stream-Aligned Teams<br>Minimal Cognitive Load</div>
-          </div>
-        </div>
+      <div class="d-box d-service d-col text-center" id="ff-team" style="grid-column: 2; grid-row: 1; width: 270px;">
+        <div class="d-title">Team Topologies</div>
+        <div class="d-sub d-mb-0">tổ chức: stream-aligned team,<br>giảm cognitive load</div>
+      </div>
 
-        <!-- Center: Fast Flow -->
-        <div style="grid-column: 1 / 3; grid-row: 2;">
-          <div class="d-box d-domain d-col d-center text-center" style="width: 200px; height: 80px; border-radius: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-width: 2px;">
-            <div class="d-title">Fast Flow</div>
-            <div class="d-sub d-mb-0">Sustainable Delivery</div>
-          </div>
-        </div>
+      <div class="d-box d-domain d-col d-center text-center" id="ff-core" style="grid-column: 2; grid-row: 2; width: 270px; border-width: 2px;">
+        <div class="d-title">Fast Flow</div>
+        <div class="d-sub d-mb-0">giao phần mềm nhanh, bền vững</div>
+      </div>
 
-        <!-- Bottom Left -->
-        <div style="grid-column: 1; justify-self: center; margin-right: 40px;">
-          <div class="d-box d-service d-col text-center" style="width: 240px; background: #fff;">
-            <div class="d-title">Software Architecture</div>
-            <div class="d-sub d-mb-0">Loose Coupling<br>Independent Deployability</div>
-          </div>
-        </div>
+      <div class="d-box d-service d-col text-center" id="ff-arch" style="grid-column: 1; grid-row: 3; width: 270px;">
+        <div class="d-title">Architecture</div>
+        <div class="d-sub d-mb-0">kiến trúc: deployability,<br>testability, maintainability</div>
+      </div>
 
-        <!-- Bottom Right -->
-        <div style="grid-column: 2; justify-self: center; margin-left: 40px;">
-          <div class="d-box d-service d-col text-center" style="width: 240px; background: #fff;">
-            <div class="d-title">DevOps &amp; Engineering</div>
-            <div class="d-sub d-mb-0">Continuous Delivery (CD)<br>Small Batch Sizes</div>
-          </div>
-        </div>
-
+      <div class="d-box d-service d-col text-center" id="ff-devops" style="grid-column: 3; grid-row: 3; width: 270px;">
+        <div class="d-title">DevOps</div>
+        <div class="d-sub d-mb-0">quy trình: batch nhỏ,<br>ít bàn giao giữa các team</div>
       </div>
 
     </div>
 
+    <svg class="d-links">
+      <!-- ba cạnh tam giác: các yếu tố phụ thuộc lẫn nhau -->
+      <path data-from="ff-team" data-to="ff-arch" data-from-side="left" data-to-side="top" data-route="direct" data-arrow="none" class="is-dashed"></path>
+      <path data-from="ff-team" data-to="ff-devops" data-from-side="right" data-to-side="top" data-route="direct" data-arrow="none" class="is-dashed"></path>
+      <path data-from="ff-arch" data-to="ff-devops" data-arrow="none" class="is-dashed"></path>
+      <!-- cả ba cùng dẫn tới fast flow -->
+      <path data-from="ff-team" data-to="ff-core"></path>
+      <path data-from="ff-arch" data-to="ff-core" data-from-side="top" data-from-at="0.8" data-to-side="left" data-route="direct"></path>
+      <path data-from="ff-devops" data-to="ff-core" data-from-side="top" data-from-at="0.2" data-to-side="right" data-route="direct"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

@@ -3,121 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 7.9 — CQRS Architecture
-    =========================================================
-    Tier 1 HTML migration từ fig-7-9.svg
-    Layout: Write side (left) ↔ Kafka (center) ↔ Read side (right) with Client on top
-    Capture: gen-diagrams.ps1 → fig-7-9.png → Typst image()
+    Fig 7.9 — CQRS pattern: tách command model (write) và query model (read)
+    2026-09-28 (WP-B Ch.07): khối position:absolute + <text> đặt tay (nhãn "Command" bị đường kẻ gạch ngang — roadmap)
+    → d-links. Khối "LMS ứng dụng CQRS" cũ cho Leaderboard đọc read model đồng bộ qua Kafka, trong khi §7.5 kết luận nhánh
+    CQRS bất đồng bộ qua Kafka không hợp live leaderboard (replication lag) → thay bằng được–mất và trỏ tới lựa chọn của
+    KBM. Công nghệ read side theo văn bản (Elasticsearch, Redis, materialized view). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 7.9 — CQRS Architecture | Ch.7</title>
+  <title>Fig 7.9 — CQRS pattern | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-7.9" data-ref="CH07-SEC">
+    <div class="d-col" style="align-items: center; gap: 64px;">
+      <div class="d-box d-legacy text-center" id="cq-client" style="width: 280px;">
+        <div class="d-title">Client</div>
+      </div>
 
-    <div style="position: relative; width: 760px; height: 380px; margin: 0 auto;">
-      <!-- SVG Layer -->
-      <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 0; overflow: visible;">
-        <defs>
-          <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-          <marker id="arr-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-info-border)"/></marker>
-          <marker id="arr-success" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
-        </defs>
-
-        <!-- Client to Write Side (Command) -->
-        <path d="M 380 70 L 380 90 L 160 90 L 160 130" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
-        <text x="260" y="85" font-size="12" fill="var(--diagram-color-muted)" font-weight="600" text-anchor="middle" background="white">Command</text>
-
-        <!-- Client to Read Side (Query) -->
-        <path d="M 380 70 L 380 90 L 600 90 L 600 130" fill="none" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
-        <text x="500" y="85" font-size="12" fill="var(--diagram-color-muted)" font-weight="600" text-anchor="middle" background="white">Query</text>
-
-        <!-- Internal Write Side Arrow -->
-        <line x1="160" y1="200" x2="160" y2="230" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
-
-        <!-- Write DB to Kafka -->
-        <line x1="280" y1="265" x2="310" y2="265" stroke="var(--diagram-color-warning-border)" stroke-width="2" marker-end="url(#arr-gray)"/>
-        <text x="295" y="255" font-size="11" fill="var(--diagram-color-muted)" text-anchor="middle">events</text>
-
-        <!-- Internal Read Side Arrow -->
-        <line x1="600" y1="200" x2="600" y2="230" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/>
-
-        <!-- Kafka to Read Side -->
-        <line x1="450" y1="265" x2="480" y2="265" stroke="var(--diagram-color-warning-border)" stroke-width="2" marker-end="url(#arr-gray)"/>
-        <text x="465" y="255" font-size="11" fill="var(--diagram-color-muted)" text-anchor="middle">events</text>
-      </svg>
-
-      <!-- HTML Elements Layer -->
-      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-        
-        <!-- Client -->
-        <div class="d-box d-legacy text-center" style="position: absolute; top: 0px; left: 270px; width: 220px;">
-          <div class="d-title">Client</div>
-          <div class="d-sub">Command (write) hoặc Query (read)</div>
-        </div>
-
-        <!-- Write Side -->
-        <!-- Center X = 160. Width 240. Left = 160 - 120 = 40. Top = 130. Height = 180. -->
-        <div class="d-cluster" style="position: absolute; top: 110px; left: 40px; width: 240px; height: 210px; padding-top: 10px;">
-          <span class="d-label">Write Side</span>
-          <div class="d-box d-service text-center" style="margin: 20px auto 0; width: 200px;">
+      <div style="display: grid; grid-template-columns: 280px 170px 280px; gap: 72px; align-items: end;">
+        <div class="d-cluster d-col" id="cq-write" style="padding: 20px 20px 16px; gap: 56px;">
+          <span class="d-label">Write side</span>
+          <div class="d-box d-service text-center" id="cq-cmd" style="height: 64px; margin-top: -40px;">
             <div class="d-title">Command Model</div>
-            <div class="d-sub">write-optimized</div>
+            <div class="d-sub">validation, business rules</div>
           </div>
-          <!-- Arrow is drawn via SVG -->
-          <div class="d-box d-storage text-center" style="margin: 50px auto 0; width: 200px;">
+          <div class="d-box d-storage text-center" id="cq-wdb" style="height: 64px;">
             <div class="d-title">Write DB</div>
-            <div class="d-sub">PostgreSQL — normalized</div>
+            <div class="d-sub">PostgreSQL — chuẩn hoá, ACID</div>
           </div>
         </div>
-
-        <!-- Kafka -->
-        <!-- Center X = 380. Top = 240. Width = 140. Left = 380 - 70 = 310. -->
-        <div class="d-box d-event text-center" style="position: absolute; top: 235px; left: 310px; width: 140px;">
+        <div class="d-box d-event text-center" id="cq-kafka" style="height: 64px; margin-bottom: 16px;">
           <div class="d-title">Kafka</div>
-          <div class="d-sub">Event Pipeline</div>
+          <div class="d-sub">event pipeline</div>
         </div>
-
-        <!-- Read Side -->
-        <!-- Center X = 600. Width 240. Left = 600 - 120 = 480. Top = 130. Height = 180. -->
-        <div class="d-cluster" style="position: absolute; top: 110px; left: 480px; width: 240px; height: 210px; padding-top: 10px;">
-          <span class="d-label">Read Side</span>
-          <div class="d-box d-note text-center" style="margin: 20px auto 0; width: 200px;">
+        <div class="d-cluster d-col" id="cq-read" style="padding: 20px 20px 16px; gap: 56px;">
+          <span class="d-label">Read side</span>
+          <div class="d-box d-note text-center" id="cq-qry" style="height: 64px; margin-top: -40px;">
             <div class="d-title">Query Model</div>
-            <div class="d-sub">read-optimized</div>
+            <div class="d-sub">phi chuẩn hoá, join sẵn</div>
           </div>
-          <!-- Arrow is drawn via SVG -->
-          <div class="d-box d-storage text-center" style="margin: 50px auto 0; width: 200px;">
+          <div class="d-box d-storage text-center" id="cq-rdb" style="height: 64px;">
             <div class="d-title">Read DB</div>
-            <div class="d-sub">có thể khác tech (Redis, ES…)</div>
+            <div class="d-sub">Redis, Elasticsearch…</div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- LMS Application note -->
-    <div class="d-box d-note d-mt-1">
-      <div class="d-title d-mb-1">LMS ứng dụng CQRS</div>
-      <div class="d-stack d-gap-1">
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Write:</span>
-          Core Service ghi submissions vào PostgreSQL (normalized write model)
-        </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Read:</span>
-          Leaderboard Aggregator đọc từ materialized view (pre-computed ranking)
-        </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Event:</span>
-          Kafka đồng bộ write → read. Eventual consistency (vài giây delay).
-        </div>
-      </div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Được</strong>: mỗi phía tối ưu riêng; read side scale độc lập và giữ sẵn dữ liệu đã join từ nhiều service.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: thêm hạ tầng và luồng đồng bộ; read side trễ sau write side (replication lag).</div>
+      <div class="d-sub"><strong>KBM</strong>: live leaderboard không chịu được độ trễ đó nên không đi nhánh Kafka này — xem Hình 7.10 và phương án Redis đồng bộ trong văn bản.</div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="cq-client" data-to="cq-cmd" data-from-side="bottom" data-from-at="0.2" data-to-side="top" data-label="command"></path>
+      <path data-from="cq-client" data-to="cq-qry" data-from-side="bottom" data-from-at="0.8" data-to-side="top" data-label="query"></path>
+      <path data-from="cq-cmd" data-to="cq-wdb" data-label="ghi"></path>
+      <path data-from="cq-rdb" data-to="cq-qry" data-label="đọc"></path>
+      <path data-from="cq-wdb" data-to="cq-kafka" class="is-warning" data-label="event" data-label-side="above"></path>
+      <path data-from="cq-kafka" data-to="cq-rdb" class="is-warning" data-label="cập nhật" data-label-side="above"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

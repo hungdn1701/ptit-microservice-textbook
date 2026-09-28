@@ -2,44 +2,55 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <!--
+    Fig 12.4 — Quá trình diễn ra Rolling Update
+    2026-09-28 (WP-B Ch.12): nhãn "(ready)/(updating)" → tiếng Việt (§17); nối ba trạng thái bằng d-links; ghi chú một chiều
+    "Zero-downtime" → thêm cái giá theo đoạn so sánh bốn chiến lược (rollback chậm) và điều kiện ngầm: v1 và v2 cùng chạy nên
+    API/schema phải tương thích ngược.
+  -->
   <title>Fig 12.4 — Rolling Update | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.4">
-    <div class="d-grid-3 d-gap-2" style="align-items:start;">
-      <!-- State 1 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Trạng thái ban đầu</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v1.0</div></div>
-          <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0</div></div>
-          <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+  <div class="diagram-canvas" data-fig-id="FIG-12.4" data-ref="CH12-SEC">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 72px; align-items: stretch;">
+      <div class="d-cluster" id="r4-1">
+        <span class="d-label">Ban đầu</span>
+        <div class="d-stack d-gap-1 d-mt-1">
+          <div class="d-box d-service text-center"><div class="d-title">Instance 1</div><div class="d-sub d-mono">v1.0</div></div>
+          <div class="d-box d-service text-center"><div class="d-title">Instance 2</div><div class="d-sub d-mono">v1.0</div></div>
+          <div class="d-box d-service text-center"><div class="d-title">Instance 3</div><div class="d-sub d-mono">v1.0</div></div>
         </div>
       </div>
-      <!-- State 2 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Đang cập nhật</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box d-success text-center" style="padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 (ready)</div></div>
-          <div class="d-box d-warning text-center" style="padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v1.0 → v2.0 (updating)</div></div>
-          <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v1.0</div></div>
+      <div class="d-cluster" id="r4-2">
+        <span class="d-label">Đang cập nhật</span>
+        <div class="d-stack d-gap-1 d-mt-1">
+          <div class="d-box d-success text-center"><div class="d-title">Instance 1</div><div class="d-sub d-mono">v2.0 · sẵn sàng</div></div>
+          <div class="d-box d-warning text-center"><div class="d-title">Instance 2</div><div class="d-sub d-mono">v1.0 → v2.0 · đang thay</div></div>
+          <div class="d-box d-service text-center"><div class="d-title">Instance 3</div><div class="d-sub d-mono">v1.0</div></div>
         </div>
       </div>
-      <!-- State 3 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Hoàn thành</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box d-success text-center" style="padding:10px;"><div class="d-title">Instance 1</div><div class="d-mono">v2.0 (ready)</div></div>
-          <div class="d-box d-success text-center" style="padding:10px;"><div class="d-title">Instance 2</div><div class="d-mono">v2.0 (ready)</div></div>
-          <div class="d-box d-success text-center" style="padding:10px;"><div class="d-title">Instance 3</div><div class="d-mono">v2.0 (ready)</div></div>
+      <div class="d-cluster" id="r4-3">
+        <span class="d-label">Hoàn tất</span>
+        <div class="d-stack d-gap-1 d-mt-1">
+          <div class="d-box d-success text-center"><div class="d-title">Instance 1</div><div class="d-sub d-mono">v2.0</div></div>
+          <div class="d-box d-success text-center"><div class="d-title">Instance 2</div><div class="d-sub d-mono">v2.0</div></div>
+          <div class="d-box d-success text-center"><div class="d-title">Instance 3</div><div class="d-sub d-mono">v2.0</div></div>
         </div>
       </div>
     </div>
-    <div class="d-box d-note d-mt-2" style="padding:10px 18px;">
-      <div class="d-sub text-center">Zero-downtime: luôn có instance sẵn sàng phục vụ traffic trong quá trình update.</div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Được</strong>: luôn còn instance phục vụ, chỉ cần dư khoảng một instance, không nhân đôi hạ tầng.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: v1 và v2 cùng chạy một lúc nên API và schema phải tương thích ngược; rollback chậm vì phải cuốn ngược từng instance.</div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="r4-1" data-to="r4-2"></path>
+      <path data-from="r4-2" data-to="r4-3"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

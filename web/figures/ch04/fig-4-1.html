@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
+    2026-09-28 (WP-B Ch.04): nhãn mũi tên theo DIAGRAM_DESIGN.md §17 (tiếng Việt; tên API/code giữ nguyên).
     Fig 4.1 — Giao tiếp đồng bộ — blocking
     =========================================================
     Tier 1 HTML migration từ fig-4-1.svg
@@ -52,7 +53,7 @@
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
           <div class="d-seq-msg-line" style="flex:1;">
-            <span class="d-seq-msg-text">Forward request</span>
+            <span class="d-seq-msg-text">chuyển tiếp request</span>
           </div>
           <div style="flex:1.5;"></div>
         </div>
@@ -61,7 +62,7 @@
         <div class="d-seq-msg">
           <div style="flex:2.5;"></div>
           <div class="d-seq-msg-line" style="flex:1;">
-            <span class="d-seq-msg-text">POST /judge/execute [sync call]</span>
+            <span class="d-seq-msg-text">POST /judge/execute (gọi đồng bộ)</span>
           </div>
           <div style="flex:0.5;"></div>
         </div>
@@ -69,7 +70,7 @@
         <!-- BLOCKED zone — Core Service column (index 2, center at 5/8) -->
         <div class="d-seq-msg" style="min-height: 64px;">
           <div style="flex:2.5"></div>
-          <div class="d-zone d-zone-danger" style="width: 72px; padding: 6px 4px; flex-shrink: 0; align-self:center;">BLOCKED<br><span class="fw-normal">(chờ Judge)</span></div>
+          <div class="d-zone d-zone-danger" style="width: 72px; padding: 6px 4px; flex-shrink: 0; align-self:center;">ĐANG CHỜ<br><span class="fw-normal">(luồng bị giữ)</span></div>
           <div style="flex:1.5"></div>
         </div>
 
@@ -77,7 +78,7 @@
         <div class="d-seq-msg">
           <div style="flex:2.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;">
-            <span class="d-seq-msg-text">Result: score=85</span>
+            <span class="d-seq-msg-text">kết quả: score=85</span>
           </div>
           <div style="flex:0.5;"></div>
         </div>
@@ -95,7 +96,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;">
-            <span class="d-seq-msg-text">Response to client</span>
+            <span class="d-seq-msg-text">trả response cho client</span>
           </div>
           <div style="flex:2.5;"></div>
         </div>
@@ -107,7 +108,7 @@
     <!-- Warning note -->
     <div class="d-box d-warning d-mt-2">
       <span class="d-title">Vấn đề: </span>
-      <span class="d-sub">Core bị block toàn bộ thời gian Judge xử lý (có thể vài giây). Thread bị giữ, không phục vụ request khác.</span>
+      <span class="d-sub">Core bị chặn suốt thời gian Judge xử lý (có thể vài giây): luồng bị giữ, không phục vụ được request khác.</span>
     </div>
 
   </div><!-- /.diagram-canvas -->

@@ -1,102 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 5.5 — Kafka Topic: Partitions and Consumer Group
-    =========================================================
-    Tier 1 HTML migration from fig-5-5.svg (LEGACY — no gen script)
-    Layout: Producer → Kafka Cluster (Topic + 3 Partitions) → Consumer Group
-    Capture: gen-diagrams.ps1 → fig-5-5.png → Typst image()
+    Fig 5.5 — Kiến trúc Kafka: topic, partition và consumer group
+    2026-09-28 (WP-B Ch.05): 3 <line> theo % bắt đầu từ khoảng trống phía trên (y1 = -22) → d-links từng partition tới
+    consumer của nó. Nội dung partition sửa cho khớp key = userId (lst:kafka_submit_producer): mọi bài của cùng một
+    sinh viên vào cùng partition — bản cũ ghi "msg1, msg4, msg7…" kiểu round-robin, mâu thuẫn với key. Chữ theo §17.
   -->
-  <title>Fig 5.5 — Kafka Topic: Partitions and Consumer Group | Ch.5</title>
+  <title>Fig 5.5 — Kafka: topic, partition và consumer group | Ch.5</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-5.5" data-ref="CH05-SEC">
-
-    <div class="d-row d-gap-2 d-mb-2" style="align-items: flex-start;">
-
-      <!-- Producer box -->
-      <div style="align-self: center;">
-        <div class="d-box d-storage text-center" style="width:120px;">
+    <div class="d-col" style="gap: 56px;">
+      <div class="d-row" style="align-items: center; gap: 110px;">
+        <div class="d-box d-storage text-center" id="kf-p" style="width: 150px; flex-shrink: 0;">
           <div class="d-title">Producer</div>
           <div class="d-sub">Core Service</div>
         </div>
-        <div class="d-mt-1 d-text-muted text-center">key: userId</div>
-      </div>
-
-      <div class="d-arrow-h" style="align-self: center;"></div>
-
-      <!-- Kafka Cluster -->
-      <div class="d-cluster d-mb-2" style="flex:1; position:relative;">
-        <div class="d-label">Kafka Cluster</div>
-
-        <!-- Topic -->
-        <div class="d-box d-warning d-mt-1">
-          <div class="d-title d-mb-1 text-center">Topic: "submissions"</div>
-          <!-- Partitions -->
-          <div class="d-row" style="align-items: stretch; width: 600px; margin: 0 auto; gap: 24px;">
-            <div class="d-box text-center" style="flex: 1; position: relative; z-index: 2;">
+        <div class="d-cluster" id="kf-topic" style="flex: 1 1 0; min-width: 0;">
+          <span class="d-label">Kafka — topic "submissions"</span>
+          <div class="d-row d-mt-1" style="gap: 24px;">
+            <div class="d-box d-warning text-center" id="kf-p0" style="flex: 1 1 0; min-width: 0;">
               <div class="d-title d-mb-1">Partition 0</div>
-              <div class="d-sub d-mb-1">msg1, msg4, msg7…</div>
-              <div class="d-label">offset →</div>
+              <div class="d-sub">bài của sv-01, sv-04 …</div>
+              <div class="d-sub d-text-muted">offset →</div>
             </div>
-            <div class="d-box text-center" style="flex: 1; position: relative; z-index: 2;">
+            <div class="d-box d-warning text-center" id="kf-p1" style="flex: 1 1 0; min-width: 0;">
               <div class="d-title d-mb-1">Partition 1</div>
-              <div class="d-sub d-mb-1">msg2, msg5, msg8…</div>
-              <div class="d-label">offset →</div>
+              <div class="d-sub">bài của sv-02, sv-05 …</div>
+              <div class="d-sub d-text-muted">offset →</div>
             </div>
-            <div class="d-box text-center" style="flex: 1; position: relative; z-index: 2;">
+            <div class="d-box d-warning text-center" id="kf-p2" style="flex: 1 1 0; min-width: 0;">
               <div class="d-title d-mb-1">Partition 2</div>
-              <div class="d-sub d-mb-1">msg3, msg6, msg9…</div>
-              <div class="d-label">offset →</div>
+              <div class="d-sub">bài của sv-03, sv-06 …</div>
+              <div class="d-sub d-text-muted">offset →</div>
             </div>
           </div>
         </div>
-
       </div>
 
-    </div><!-- /.d-row top -->
-
-    <!-- Spacer with SVG arrows -->
-    <div style="height: 40px; position: relative; width: 600px; margin: 0 auto;">
-      <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0; overflow: visible; z-index: 10;">
-        <defs>
-          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
-            <polygon points="0,0 8,0 4,8" fill="var(--diagram-color-muted)" />
-          </marker>
-        </defs>
-        <!-- Lines from bottom of partitions (-22px) to top of consumer boxes (40px + 44px) -->
-        <line x1="16.66%" y1="-22" x2="16.66%" y2="82" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrowhead)" />
-        <line x1="50%" y1="-22" x2="50%" y2="82" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrowhead)" />
-        <line x1="83.33%" y1="-22" x2="83.33%" y2="82" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrowhead)" />
-      </svg>
+        <div class="d-cluster" style="margin-left: 260px; border-color: var(--diagram-color-success-border); background: var(--diagram-color-success-bg);">
+          <div class="d-row" style="gap: 24px;">
+            <div class="d-box d-success text-center" id="kf-c0" style="flex: 1 1 0; min-width: 0;"><div class="d-title">Judge #1</div><div class="d-sub">đọc partition 0</div></div>
+            <div class="d-box d-success text-center" id="kf-c1" style="flex: 1 1 0; min-width: 0;"><div class="d-title">Judge #2</div><div class="d-sub">đọc partition 1</div></div>
+            <div class="d-box d-success text-center" id="kf-c2" style="flex: 1 1 0; min-width: 0;"><div class="d-title">Judge #3</div><div class="d-sub">đọc partition 2</div></div>
+          </div>
+          <span class="d-label d-text-success" style="display: block; margin-top: 12px;">Consumer group của Judge</span>
+        </div>
     </div>
 
-    <!-- Consumer Group -->
-    <div class="d-cluster" style="width: 600px; margin: 0 auto; position:relative; border-color:var(--diagram-color-success-border); background:var(--diagram-color-success-bg);">
-      <div class="d-label d-text-success">Consumer Group: "judge-group"</div>
-      <div class="d-row d-mt-1" style="gap: 24px;">
-        <div class="d-box d-success text-center" style="flex:1; z-index: 2;">
-          <div class="d-title">Consumer 1</div>
-          <div class="d-sub">Judge Instance 1</div>
-        </div>
-        <div class="d-box d-success text-center" style="flex:1; z-index: 2;">
-          <div class="d-title">Consumer 2</div>
-          <div class="d-sub">Judge Instance 2</div>
-        </div>
-        <div class="d-box d-success text-center" style="flex:1; z-index: 2;">
-          <div class="d-title">Consumer 3</div>
-          <div class="d-sub">Judge Instance 3</div>
-        </div>
-      </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub">key = <code>userId</code>: bài của cùng một sinh viên luôn vào cùng partition nên giữ đúng thứ tự; trong một group, mỗi partition chỉ một consumer đọc — thêm consumer quá số partition thì consumer thừa ngồi không.</div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="kf-p" data-to="kf-topic" data-from-side="right" data-to-side="left" data-to-align data-label="key = userId" data-label-side="above"></path>
+      <path data-from="kf-p0" data-to="kf-c0"></path>
+      <path data-from="kf-p1" data-to="kf-c1"></path>
+      <path data-from="kf-p2" data-to="kf-c2"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

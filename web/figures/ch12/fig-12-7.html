@@ -2,79 +2,54 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.7 — Service Mesh — Sidecar Proxy | Ch.12</title>
+  <!--
+    Fig 12.7 — Sidecar Pattern: proxy xử lý các mối quan tâm hạ tầng (mTLS, tracing)
+    2026-09-28 (WP-B Ch.12): hai <line> chéo tạo hình "mái nhà" (roadmap), nền hex #ffffff (Rule 16), mũi tên mTLS lơ lửng
+    giữa hai cụm → d-links. Cặp Core → Judge cũ không có lời gọi đồng bộ trong KBM (Judge nhận job qua Kafka) → Assignment
+    gọi Core (Feign, Ch.07/Ch.10). Thêm hai ý của văn bản: app vẫn phải chuyển tiếp trace context; mesh là over-engineering
+    với KBM hiện tại. Chữ theo DIAGRAM_DESIGN.md §17.
+  -->
+  <title>Fig 12.7 — Sidecar Pattern | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.7">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-    <div class="d-col" style="align-items:center; width: 620px; margin: 0 auto;">
-      <!-- DATA PLANE -->
-      <div class="d-row d-gap-2" style="align-items:stretch; width:100%; z-index:2;">
-        <!-- Service A -->
-        <div class="d-cluster d-col" style="flex:1; padding:16px; background:#ffffff;">
-          <div class="d-label d-mb-2 text-center" style="position:static;">Service Instance A</div>
-          <div class="d-row d-gap-1 d-grow" style="align-items:stretch;">
-            <div class="d-box d-service d-col d-center text-center" style="flex:1; padding:12px;">
-              <div class="d-title">Core</div>
-              <div class="d-sub d-mt-1">Business logic</div>
-            </div>
-            <div class="d-box d-gateway d-col d-center text-center" style="flex:1; padding:12px; border: 2px solid var(--diagram-color-gateway-border);">
-              <div class="d-title" style="color: var(--diagram-color-gateway-border);">Envoy</div>
-              <div class="d-sub d-mt-1">Sidecar</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- mTLS Connection -->
-        <div class="d-col d-center" style="width:80px;">
-          <div class="d-arrow-label d-mb-1 fw-semibold" style="color:var(--diagram-color-success-border);">mTLS</div>
-          <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        </div>
-
-        <!-- Service B -->
-        <div class="d-cluster d-col" style="flex:1; padding:16px; background:#ffffff;">
-          <div class="d-label d-mb-2 text-center" style="position:static;">Service Instance B</div>
-          <div class="d-row d-gap-1 d-grow" style="align-items:stretch;">
-            <div class="d-box d-gateway d-col d-center text-center" style="flex:1; padding:12px; border: 2px solid var(--diagram-color-gateway-border);">
-              <div class="d-title" style="color: var(--diagram-color-gateway-border);">Envoy</div>
-              <div class="d-sub d-mt-1">Sidecar</div>
-            </div>
-            <div class="d-box d-service d-col d-center text-center" style="flex:1; padding:12px;">
-              <div class="d-title">Judge</div>
-              <div class="d-sub d-mt-1">Business logic</div>
-            </div>
-          </div>
+  <div class="diagram-canvas" data-fig-id="FIG-12.7" data-ref="CH12-SEC">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px 110px; align-items: stretch;">
+      <div class="d-cluster">
+        <span class="d-label">Pod / instance A</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 96px; margin-top: 12px;">
+          <div class="d-box d-service text-center" id="s7-app-a"><div class="d-title">Assignment</div><div class="d-sub">business logic</div></div>
+          <div class="d-box d-gateway text-center" id="s7-px-a" style="border-width: 2px;"><div class="d-title">Envoy</div><div class="d-sub">sidecar</div></div>
         </div>
       </div>
-
-      <!-- Control Plane Connection (SVG) -->
-      <div style="position: relative; width: 100%; height: 60px; margin-top:-2px;">
-        <svg width="100%" height="100%" style="display:block; overflow:visible;">
-          <defs>
-            <marker id="arrow-up" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-              <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-gateway-border)" />
-            </marker>
-          </defs>
-          <line x1="310" y1="60" x2="190" y2="0" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-up)" />
-          <line x1="310" y1="60" x2="430" y2="0" stroke="var(--diagram-color-gateway-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-up)" />
-        </svg>
-        <div class="d-arrow-label" style="top: 30px; left: 250px; color:var(--diagram-color-gateway-border);">xDS API</div>
-        <div class="d-arrow-label" style="top: 30px; left: 370px; color:var(--diagram-color-gateway-border);">certs</div>
+      <div class="d-cluster">
+        <span class="d-label">Pod / instance B</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 96px; margin-top: 12px;">
+          <div class="d-box d-gateway text-center" id="s7-px-b" style="border-width: 2px;"><div class="d-title">Envoy</div><div class="d-sub">sidecar</div></div>
+          <div class="d-box d-service text-center" id="s7-app-b"><div class="d-title">Core</div><div class="d-sub">business logic</div></div>
+        </div>
       </div>
-
-      <!-- Control Plane -->
-      <div class="d-box text-center" style="width:360px; padding:16px; background: var(--diagram-color-surface); border: 2px dashed var(--diagram-color-gateway-border); z-index:2;">
-        <div class="d-title d-title-lg">Control Plane (Istio / Linkerd)</div>
-        <div class="d-sub d-mt-1">Config, telemetry, certificates</div>
+      <div class="d-box text-center" id="s7-cp" style="grid-column: 1 / 3; width: 420px; justify-self: center; border: 2px dashed var(--diagram-color-gateway-border);">
+        <div class="d-title">Control plane (Istio / Linkerd)</div>
+        <div class="d-sub">cấu hình, chứng chỉ, thu telemetry</div>
       </div>
     </div>
-  </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Được</strong>: mTLS, span cho từng hop, circuit breaker, canary routing — gần như không đổi code. Ứng dụng vẫn phải chuyển tiếp trace context (<code>traceparent</code>) từ request vào sang request ra.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: thêm độ trễ mỗi cặp proxy, control plane phải vận hành, lỗi mạng khó gỡ hơn. Với KBM hiện tại là quá mức cần thiết — đáng cân nhắc khi số service lớn hơn nhiều hoặc bắt buộc mTLS giữa mọi service.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="s7-app-a" data-to="s7-px-a" data-label="localhost" data-label-side="above"></path>
+      <path data-from="s7-px-a" data-to="s7-px-b" class="is-success" data-label="mTLS" data-label-side="above"></path>
+      <path data-from="s7-px-b" data-to="s7-app-b" data-label="localhost" data-label-side="above"></path>
+      <path data-from="s7-cp" data-to="s7-px-a" data-from-side="top" data-from-at="0.2" data-to-side="bottom" class="is-dashed" data-label="xDS, chứng chỉ"></path>
+      <path data-from="s7-cp" data-to="s7-px-b" data-from-side="top" data-from-at="0.8" data-to-side="bottom" class="is-dashed" data-label="xDS, chứng chỉ"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

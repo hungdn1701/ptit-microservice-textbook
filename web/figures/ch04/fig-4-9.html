@@ -3,95 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 4.9 — Migration Path: Ownership → Resilience → Standardize → Async
-    =========================================================
+    Fig 4.9 — Lộ trình chuyển đổi cho SQL Judge: từ resilience đến bất đồng bộ
+    2026-09-28 (WP-B Ch.04): 3 <line> → d-links. Nội dung sửa theo "Đề xuất migration" §4.5: Giai đoạn 1 ưu tiên cao,
+    chi phí thấp (bản cũ ghi "trung bình"); Giai đoạn 3 là chuẩn hóa worker contract (bản cũ ghi log/trace/monitoring —
+    không có trong sách); Giai đoạn 4 mở rộng mô hình Kafka đang dùng cho nộp bài thi. "Phase" → "Giai đoạn" (dạng đã
+    nghỉ hưu). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 4.9 — Migration Path: 4 Phases | Ch.4</title>
+  <title>Fig 4.9 — Lộ trình chuyển đổi cho SQL Judge | Ch.4</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-4.9" data-ref="CH04-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-row d-mb-2 d-gap-1" style="align-items: stretch;">
-
-      <!-- Phase 1: Ownership -->
-      <div class="d-box d-warning d-col text-center" style="flex: 1 1 0%;">
+    <div class="d-row" style="align-items: stretch; gap: 40px;">
+      <div class="d-box d-warning d-col text-center" id="mp-1" style="flex: 1 1 0; min-width: 0;">
         <div class="d-title"><span class="d-step">1</span> Ownership</div>
-        <div class="d-sub">(effort trung bình)</div>
+        <div class="d-sub">ưu tiên cao · chi phí thấp</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Hợp nhất SQL executor về Judge Service</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Single ownership</div>
+          <div class="d-sub" style="padding: 3px 0;">+ Core chỉ gọi <code>judge</code></div>
+          <div class="d-sub" style="padding: 3px 0;">+ routing DBMS nằm ở coordinator</div>
         </div>
       </div>
-
-      <!-- Arrow 1→2 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Phase 2: Resilience -->
-      <div class="d-box d-success d-col text-center" style="flex: 1 1 0%;">
+      <div class="d-box d-success d-col text-center" id="mp-2" style="flex: 1 1 0; min-width: 0;">
         <div class="d-title"><span class="d-step">2</span> Resilience</div>
-        <div class="d-sub">(effort thấp)</div>
+        <div class="d-sub">ưu tiên cao</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Circuit Breaker</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Retry + Timeout</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Fallback message</div>
+          <div class="d-sub" style="padding: 3px 0;">+ CB, Retry, TimeLimiter riêng cho từng <code>judge-*</code></div>
+          <div class="d-sub" style="padding: 3px 0;">+ fallback "sẽ chấm khi sẵn sàng"</div>
         </div>
       </div>
-
-      <!-- Arrow 2→3 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Phase 3: Standardize -->
-      <div class="d-box d-service d-col text-center" style="flex: 1 1 0%;">
-        <div class="d-title"><span class="d-step">3</span> Standardize</div>
-        <div class="d-sub">(effort trung bình)</div>
+      <div class="d-box d-service d-col text-center" id="mp-3" style="flex: 1 1 0; min-width: 0;">
+        <div class="d-title"><span class="d-step">3</span> Contract</div>
+        <div class="d-sub">chi phí trung bình</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Chuẩn hóa API</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Log/Trace ID</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Monitoring</div>
+          <div class="d-sub" style="padding: 3px 0;">+ cùng <code>JudgeRequest</code> / <code>JudgeResult</code></div>
+          <div class="d-sub" style="padding: 3px 0;">+ định tuyến theo cấu hình, bỏ ID gán cứng</div>
         </div>
       </div>
-
-      <!-- Arrow 3→4 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Phase 4: Async -->
-      <div class="d-box d-note d-col text-center" style="flex: 1 1 0%;">
-        <div class="d-title"><span class="d-step">4</span> Async</div>
-        <div class="d-sub">(effort cao)</div>
+      <div class="d-box d-note d-col text-center" id="mp-4" style="flex: 1 1 0; min-width: 0;">
+        <div class="d-title"><span class="d-step">4</span> Bất đồng bộ</div>
+        <div class="d-sub">chi phí cao · giá trị lớn</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> Submit → Kafka</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> → Judge → Result event</div>
-          <div class="d-sub" style="padding: 3px 0;"><strong>+</strong> (non-blocking)</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Bottom note -->
-    <div class="d-box d-note">
-      <div class="d-row d-gap-2" style="flex-wrap:wrap;">
-        <div>
-          <span class="d-title">Khuyến nghị: </span>
-          <span class="d-sub">Bắt đầu từ Giai đoạn 1 — ROI cao nhất, không cần thay đổi kiến trúc.</span>
-        </div>
-        <div>
-          <span class="d-title">Phase 4: </span>
-          <span class="d-sub">Chỉ thực hiện khi submission volume tăng và blocking trở thành bottleneck thực sự.</span>
+          <div class="d-sub" style="padding: 3px 0;">+ submit → queue → coordinator → worker</div>
+          <div class="d-sub" style="padding: 3px 0;">+ result event, Core không phải chờ</div>
         </div>
       </div>
     </div>
 
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Bắt đầu từ Giai đoạn 1</strong>: chi phí thấp, không đổi kiến trúc — chỉ gom trách nhiệm về đúng chỗ.</div>
+      <div class="d-sub d-mt-1"><strong>Giai đoạn 4</strong>: nộp bài SQL Contest đã chạy trên Kafka theo đúng mô hình này; đây là mở rộng cho các luồng chấm còn đồng bộ.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="mp-1" data-to="mp-2"></path>
+      <path data-from="mp-2" data-to="mp-3"></path>
+      <path data-from="mp-3" data-to="mp-4"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

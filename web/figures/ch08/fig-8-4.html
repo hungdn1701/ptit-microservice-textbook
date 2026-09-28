@@ -1,94 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.4 — Spring Cloud Gateway — Request Pipeline
-    =========================================================
-    Tier 1 HTML migration
-    Layout: Horizontal pipeline
-    Capture: gen-diagrams.ps1 -> fig-8-4.png -> Typst image()
+    Fig 8.4 — Kiến trúc Spring Cloud Gateway: Predicates, Filters, Routes
+    2026-09-28 (WP-B Ch.08): 6 hộp một hàng + 5 <svg><line> → vòng request/response hai hàng bằng d-links (post-filter
+    chạy trên đường về). Khối cấu hình cũ ghi lb://auth-service, lb://judge-service, /api/judge/** — trái cấu hình
+    lst:lms_gateway_route_config (kbm-auth; không có route cho Judge) → chép đúng 4 route. Filter xác thực theo tên trong
+    văn bản (JwtRequestFilter). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 8.4 — Spring Cloud Gateway — Request Pipeline | Ch.8</title>
+  <title>Fig 8.4 — Kiến trúc Spring Cloud Gateway | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.4">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
+  <div class="diagram-canvas" data-fig-id="FIG-8.4" data-ref="CH08-SEC">
+    <div style="display: grid; grid-template-columns: 170px 200px 200px 190px; grid-template-rows: 84px 84px; gap: 48px 64px; margin: 0 auto; width: fit-content;">
+      <div class="d-box d-legacy text-center" id="sc-cl" style="grid-column: 1; grid-row: 1 / 3; display: flex; flex-direction: column; justify-content: center;">
+        <div class="d-title">Client</div>
+      </div>
+      <div class="d-box d-gateway text-center" id="sc-pred" style="grid-column: 2; grid-row: 1;">
+        <div class="d-title">Route Predicates</div>
+        <div class="d-sub">Path, Method, Host — chọn route</div>
+      </div>
+      <div class="d-box d-gateway text-center" id="sc-pre" style="grid-column: 3; grid-row: 1;">
+        <div class="d-title">Pre-filters</div>
+        <div class="d-sub">JwtRequestFilter, CORS, log</div>
+      </div>
+      <div class="d-box d-gateway text-center" id="sc-post" style="grid-column: 3; grid-row: 2;">
+        <div class="d-title">Post-filters</div>
+        <div class="d-sub">thêm/sửa response header</div>
+      </div>
+      <div class="d-box d-service text-center" id="sc-svc" style="grid-column: 4; grid-row: 1 / 3; border-width: 2px; display: flex; flex-direction: column; justify-content: center;">
+        <div class="d-title">Target service</div>
+        <div class="d-sub d-mono">lb://kbm-core</div>
+      </div>
+    </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-title d-mb-1">Route của LMS Gateway (cấu hình đầy đủ ở mục "Cấu hình route với Eureka")</div>
+      <div class="d-code" style="line-height: 1.6;">
+        <span class="str">Path=/api/core/**</span>       → <span class="kw">lb://kbm-core</span><br>
+        <span class="str">Path=/api/assignment/**</span> → <span class="kw">lb://kbm-academic</span><br>
+        <span class="str">Path=/api/auth/**</span>       → <span class="kw">lb://kbm-auth</span><br>
+        <span class="str">Path=/ws/**</span>             → <span class="kw">lb://kbm-notification</span><br>
+        <span class="cmt">// lb:// = hỏi Eureka danh sách instance, LoadBalancer chọn một</span>
+      </div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="sc-cl" data-to="sc-pred" data-from-side="right" data-from-at="0.2" data-to-side="left" data-to-align data-label="request" data-label-side="above"></path>
+      <path data-from="sc-pred" data-to="sc-pre"></path>
+      <path data-from="sc-pre" data-to="sc-svc" data-from-side="right" data-to-side="left" data-to-align></path>
+      <path data-from="sc-svc" data-to="sc-post" data-from-side="left" data-from-at="0.8" data-to-side="right" data-to-align class="is-dashed"></path>
+      <path data-from="sc-post" data-to="sc-cl" data-from-side="left" data-to-side="right" data-to-align class="is-dashed" data-label="response" data-label-side="above"></path>
     </svg>
+  </div><!-- /.diagram-canvas -->
 
-
-    <!-- Pipeline: 6 steps horizontal -->
-    <div class="d-row d-center d-gap-2 d-mb-3">
-      
-      <!-- Box 1 -->
-      <div class="d-box d-legacy d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
-        <div class="d-title text-center">HTTP Request</div>
-        <div class="d-sub text-center" style="margin-top: 4px;">từ Client</div>
-      </div>
-
-      <!-- Arrow 1 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Box 2 -->
-      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
-        <div class="d-title text-center">Route Predicates</div>
-        <div class="d-sub text-center" style="margin-top: 4px;">Path, Host, Header</div>
-      </div>
-
-      <!-- Arrow 2 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Box 3 -->
-      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
-        <div class="d-title text-center">Pre-Filters</div>
-        <div class="d-sub text-center" style="margin-top: 4px;">JWT, CORS, Log</div>
-      </div>
-
-      <!-- Arrow 3 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Box 4 -->
-      <div class="d-box d-service d-col d-center" style="height: 90px; padding: 4px; border-width: 2px; flex: 1;">
-        <div class="d-title text-center">Target Service</div>
-        <div class="d-mono text-center" style="margin-top: 6px;">lb://service-name</div>
-      </div>
-
-      <!-- Arrow 4 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Box 5 -->
-      <div class="d-box d-gateway d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
-        <div class="d-title text-center">Post-Filters</div>
-        <div class="d-sub text-center" style="margin-top: 4px;">Response Headers</div>
-      </div>
-
-      <!-- Arrow 5 -->
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Box 6 -->
-      <div class="d-box d-legacy d-col d-center" style="height: 90px; padding: 4px; flex: 1;">
-        <div class="d-title text-center">HTTP Response</div>
-        <div class="d-sub text-center" style="margin-top: 4px;">về Client</div>
-      </div>
-
-    </div>
-
-    <!-- Config note -->
-    <div class="d-box d-note" style="padding:14px 18px;">
-      <div class="d-title d-mb-1">LMS Gateway config:</div>
-      <div class="d-code" style="font-size:12px; line-height:1.6;">
-        <span class="str">Path=/api/auth/**</span>  → <span class="kw">lb://auth-service</span><br>
-        <span class="str">Path=/api/core/**</span>  → <span class="kw">lb://kbm-core</span> <span class="cmt">// JWT filter first</span><br>
-        <span class="str">Path=/api/judge/**</span> → <span class="kw">lb://judge-service</span><br>
-        <span class="cmt">// lb:// = load-balanced via Eureka (client-side discovery)</span>
-      </div>
-    </div>
-
-  </div>
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

@@ -8,10 +8,10 @@
     "test:patterns": "node scripts/test-pattern-pages.js",
     "audit:patterns": "node scripts/audit-pattern-pages.js --verbose",
     "audit:diagrams": "node scripts/audit-diagram-geometry.js",
-    "audit:terms": "python3 scripts/check-retired-forms.py",
-    "audit:regressions": "python3 scripts/audit-regressions.py --range origin/master..HEAD",
-    "gates": "node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && python3 scripts/check-retired-forms.py && python3 scripts/sync-agent-config.py --check",
-    "audit:agents": "python3 scripts/sync-agent-config.py --check",
+    "audit:terms": "node scripts/py.js scripts/check-retired-forms.py",
+    "audit:regressions": "node scripts/py.js scripts/audit-regressions.py --range origin/master..HEAD",
+    "gates": "node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && node scripts/py.js scripts/check-retired-forms.py && node scripts/py.js scripts/sync-agent-config.py --check",
+    "audit:agents": "node scripts/py.js scripts/sync-agent-config.py --check",
     "shots": "node scripts/review-shots.js"
   },
   "dependencies": {

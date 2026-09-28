@@ -2,68 +2,50 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.3 — CI/CD Pipeline | Ch.12</title>
+  <!--
+    Fig 12.3 — CI/CD Pipeline chuẩn cho Microservices
+    2026-09-28 (WP-B Ch.12): 8 mũi tên <svg><line> rời (gate dangling) → d-links, đường chữ U nối CI sang CD. Bổ sung hai bước
+    mà mục "Tối ưu hoá Pipeline" và các ràng buộc ngay trước hình yêu cầu: contract test gate và database migration chạy
+    riêng, trước khi deploy; ghi "build once, deploy everywhere" (cùng một image qua mọi môi trường). Chữ theo §17.
+  -->
+  <title>Fig 12.3 — CI/CD Pipeline cho Microservices | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.3">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
+  <div class="diagram-canvas" data-fig-id="FIG-12.3" data-ref="CH12-SEC">
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: auto auto auto auto; gap: 0 44px;">
+      <div class="d-label" style="grid-column: 1 / 6; margin-bottom: 10px;">Continuous Integration — mỗi service một pipeline riêng</div>
+      <div class="d-box d-service text-center" id="p3-push"><div class="d-title">git push</div></div>
+      <div class="d-box d-note text-center" id="p3-build"><div class="d-title">Build</div><div class="d-sub d-mono">mvn package</div></div>
+      <div class="d-box d-event text-center" id="p3-unit"><div class="d-title">Unit test</div></div>
+      <div class="d-box d-highlight text-center" id="p3-img"><div class="d-title">Docker build</div><div class="d-sub">tag bất biến</div></div>
+      <div class="d-box d-note text-center" id="p3-reg"><div class="d-title">Registry</div></div>
+
+      <div class="d-label" style="grid-column: 1 / 6; margin: 56px 0 10px;">Continuous Delivery / Deployment</div>
+      <div class="d-box d-note text-center" style="grid-column: 1; align-self: center;"><div class="d-sub">cùng một image đi qua mọi môi trường — cấu hình truyền từ ngoài vào</div></div>
+      <div class="d-box d-success text-center" id="p3-prod" style="grid-column: 2;"><div class="d-title">Production</div></div>
+      <div class="d-box d-warning text-center" id="p3-stg" style="grid-column: 3;"><div class="d-title">Staging</div><div class="d-sub">integration test</div></div>
+      <div class="d-box d-storage text-center" id="p3-mig" style="grid-column: 4;"><div class="d-title">DB migration</div><div class="d-sub">Flyway, bước riêng</div></div>
+      <div class="d-box d-event text-center" id="p3-ct" style="grid-column: 5;"><div class="d-title">Contract test</div><div class="d-sub">cổng chặn deploy</div></div>
+    </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Migration theo kiểu expand → deploy → contract để bản code cũ vẫn chạy trên schema mới; rollback service không kéo theo rollback migration.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="p3-push" data-to="p3-build"></path>
+      <path data-from="p3-build" data-to="p3-unit"></path>
+      <path data-from="p3-unit" data-to="p3-img"></path>
+      <path data-from="p3-img" data-to="p3-reg"></path>
+      <path data-from="p3-reg" data-to="p3-ct" data-from-side="bottom" data-to-side="top"></path>
+      <path data-from="p3-ct" data-to="p3-mig"></path>
+      <path data-from="p3-mig" data-to="p3-stg"></path>
+      <path data-from="p3-stg" data-to="p3-prod"></path>
     </svg>
+  </div><!-- /.diagram-canvas -->
 
-
-    <div class="d-col d-gap-3">
-      <!-- CI section -->
-      <div class="d-cluster" style="padding:14px;">
-      <div class="d-label d-mb-1 text-center" style="position:static;">Continuous Integration (CI)</div>
-      <div class="d-row d-gap-1" style="align-items:stretch;">
-        <div class="d-box d-service text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Git Push</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-note text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Build</div>
-          <div class="d-mono" >mvn package</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-event text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Unit Test</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-highlight text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Docker Build</div>
-          <div class="d-mono" >docker build</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-note text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Push Registry</div>
-        </div>
-      </div>
-    </div>
-
-      <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- CD section -->
-      <div class="d-cluster" style="padding:14px;">
-      <div class="d-label d-mb-1 text-center" style="position:static;">Continuous Delivery/Deployment (CD)</div>
-      <div class="d-row d-gap-1" style="align-items:stretch;">
-        <div class="d-box d-event text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Integration Test</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-warning text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Staging Deploy</div>
-        </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-success text-center" style="flex:1; padding:12px 6px;">
-          <div class="d-title">Production Deploy</div>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

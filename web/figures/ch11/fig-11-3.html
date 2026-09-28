@@ -2,49 +2,47 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.3 — Centralized vs Distributed Logging | Ch.11</title>
+  <!--
+    Fig 11.3 — Logs phân tán (gỡ lỗi thủ công) và logs tập trung (tìm kiếm tại một nơi)
+    2026-09-28 (WP-B Ch.11): 3 mũi tên <svg><line> rời → d-links; "SSH vào từng server" → từng container và lệch giờ (clock
+    skew) theo §11 "Vấn đề: logs phân tán"; nhãn "Centralized", "Search, filter, correlate" → tiếng Việt (§17). Thêm cái giá
+    của gom log tập trung (thêm một stack phải vận hành).
+  -->
+  <title>Fig 11.3 — Logs phân tán và logs tập trung | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.3">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-    <div class="d-grid-2 d-gap-3" style="align-items:start;">
-      <!-- Distributed -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Logs phân tán — Debug thủ công</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box d-legacy text-center" style="padding:10px;"><div class="d-title">Gateway log</div><div class="d-mono" >stdout → local file</div></div>
-          <div class="d-box d-legacy text-center" style="padding:10px;"><div class="d-title">Core log</div><div class="d-mono" >stdout → local file</div></div>
-          <div class="d-box d-legacy text-center" style="padding:10px;"><div class="d-title">Judge log</div><div class="d-mono" >stdout → local file</div></div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.3" data-ref="CH11-SEC">
+    <div class="d-grid-2 d-gap-3" style="align-items: stretch;">
+      <div class="d-cluster d-col">
+        <span class="d-label">Logs phân tán</span>
+        <div class="d-stack d-gap-1 d-mt-1">
+          <div class="d-box d-legacy text-center"><div class="d-title">Gateway</div><div class="d-sub d-mono">log trong container riêng</div></div>
+          <div class="d-box d-legacy text-center"><div class="d-title">Core</div><div class="d-sub d-mono">log trong container riêng</div></div>
+          <div class="d-box d-legacy text-center"><div class="d-title">Judge</div><div class="d-sub d-mono">log trong container riêng</div></div>
         </div>
-        <div class="d-zone d-zone-danger d-mt-1" >SSH vào từng server để đọc log</div>
+        <div class="d-zone d-zone-danger d-mt-2 text-center" style="margin-top: auto;">vào từng container đọc log, tự ghép theo giờ — lệch giờ giữa container dễ ghép sai</div>
       </div>
-      <!-- Centralized -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Centralized — Một nơi tìm kiếm</div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div class="d-box d-service text-center" style="flex:1; padding:8px;"><div class="d-title" >Gateway</div></div>
-          <div class="d-box d-service text-center" style="flex:1; padding:8px;"><div class="d-title" >Core</div></div>
-          <div class="d-box d-service text-center" style="flex:1; padding:8px;"><div class="d-title" >Judge</div></div>
+      <div class="d-cluster d-col">
+        <span class="d-label">Logs tập trung</span>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px 12px; margin-top: 12px;">
+          <div class="d-box d-service text-center" id="l3-gw"><div class="d-title">Gateway</div></div>
+          <div class="d-box d-service text-center" id="l3-core"><div class="d-title">Core</div></div>
+          <div class="d-box d-service text-center" id="l3-judge"><div class="d-title">Judge</div></div>
+          <div class="d-box d-note text-center" id="l3-store" style="grid-column: 1 / 4;"><div class="d-title">ELK / Loki</div><div class="d-sub">tìm, lọc, ghép theo correlation ID</div></div>
         </div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div style="flex:1;" class="d-center"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          <div style="flex:1;" class="d-center"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          <div style="flex:1;" class="d-center"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-        </div>
-        <div class="d-box d-note text-center" style="padding:10px;">
-          <div class="d-title">ELK / Loki</div>
-          <div class="d-sub">Search, filter, correlate</div>
-        </div>
-        <div class="d-zone d-zone-success d-mt-1" >Tìm kiếm trên 1 dashboard</div>
+        <div class="d-zone d-zone-success d-mt-2 text-center" style="margin-top: auto;">một chỗ tìm kiếm — đổi lại phải vận hành thêm một stack lưu log</div>
       </div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="l3-gw" data-to="l3-store" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="l3-core" data-to="l3-store" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="l3-judge" data-to="l3-store" data-from-side="bottom" data-to-side="top" data-to-align></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

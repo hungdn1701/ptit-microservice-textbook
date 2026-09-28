@@ -29,6 +29,7 @@
  *   data-label                 nhãn đặt giữa đường (nền trắng), data-label-at 0..1,
  *                              data-label-side="above" đặt nhãn phía trên đường (đường ngắn, không che nét)
  *   class                      is-dashed · is-muted · is-danger · is-success · is-warning · is-info
+ *   data-to-align              có mặt → nếu điểm xuất phát nằm trong bề rộng cạnh đích thì cập bến thẳng hàng (đích là khung rộng)
  *   data-hidden                có mặt → không vẽ (mô phỏng bật/tắt một đường theo chế độ; không tính vào fan-out)
  *
  * Nhiều mũi tên cùng rời MỘT cạnh của một hộp (fan-out) hoặc cùng tới một cạnh (fan-in) dùng chung
@@ -151,9 +152,15 @@
         var s = autoSides(a, b);
         var fs = p.dataset.fromSide && p.dataset.fromSide !== 'auto' ? p.dataset.fromSide : s[0];
         var ts = p.dataset.toSide && p.dataset.toSide !== 'auto' ? p.dataset.toSide : s[1];
-        links.push({ p: p, defs: defs, b: b,
-          s: anchor(a, fs, parseFloat(p.dataset.fromAt || '0.5')),
-          e: anchor(b, ts, parseFloat(p.dataset.toAt || '0.5')), fs: fs, ts: ts });
+        var st = anchor(a, fs, parseFloat(p.dataset.fromAt || '0.5'));
+        var en = anchor(b, ts, parseFloat(p.dataset.toAt || '0.5'));
+        // data-to-align: đích là khung rộng (cụm, panel) → cập bến ngay dưới/đối diện điểm xuất phát nếu nằm trong
+        // bề rộng của cạnh đích, để mũi tên đi thẳng thay vì gấp khúc về giữa cạnh.
+        if (p.dataset.toAlign !== undefined) {
+          if ((ts === 'top' || ts === 'bottom') && st.x > b.l + 8 && st.x < b.r - 8) en = { x: st.x, y: en.y };
+          if ((ts === 'left' || ts === 'right') && st.y > b.t + 8 && st.y < b.b - 8) en = { x: en.x, y: st.y };
+        }
+        links.push({ p: p, defs: defs, b: b, s: st, e: en, fs: fs, ts: ts });
       });
     });
 

@@ -3,84 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 4.6 — Circuit Breaker State Machine
-    =========================================================
-    Tier 1 HTML migration từ fig-4-6.svg
-    Layout: 3 state boxes (CLOSED→OPEN→HALF-OPEN) with labeled transition arrows
-    Capture: gen-diagrams.ps1 → fig-4-6.png → Typst image()
+    Fig 4.6 — Circuit Breaker state machine: Closed, Open, Half-Open
+    2026-09-28 (WP-B Ch.04): bỏ khung position:absolute toạ độ cứng (nhãn "failures ≥ threshold" đè hộp OPEN, đường cong
+    SVG tay) → ba trạng thái trong lưới tam giác, bốn chuyển trạng thái là d-links có nhãn. Nội dung khớp §4.4 và
+    lst:4_3: HALF-OPEN cho 3 request thử (không phải 1), chờ 30 s; ví dụ KBM là JudgeCallService (lst:4_2).
+    Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 4.6 — Circuit Breaker State Machine | Ch.4</title>
+  <title>Fig 4.6 — Circuit Breaker state machine | Ch.4</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-4.6" data-ref="CH04-SEC">
-
-    <div style="position: relative; width: 680px; height: 200px; margin: 20px auto 20px;">
-      
-      <!-- ALL ARROWS (Z-Index 1) -->
-      <svg width="100%" height="100%" style="position: absolute; top:0; left:0; z-index: 1; overflow: visible;">
-        <defs>
-          <marker id="arr-fwd" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)"/></marker>
-          <marker id="arr-succ" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-success-border)"/></marker>
-          <marker id="arr-fail" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)"/></marker>
-        </defs>
-
-        <!-- CLOSED -> OPEN -->
-        <line x1="160" y1="50" x2="252" y2="50" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-fwd)"/>
-        
-        <!-- OPEN -> HALF-OPEN -->
-        <line x1="420" y1="50" x2="512" y2="50" stroke="var(--diagram-color-muted)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-fwd)"/>
-
-        <!-- HALF-OPEN -> CLOSED (Success) -->
-        <path d="M 600 90 Q 340 190 80 98" stroke="var(--diagram-color-success-border)" stroke-width="2" fill="none" marker-end="url(#arr-succ)"/>
-
-        <!-- HALF-OPEN -> OPEN (Fail) -->
-        <path d="M 600 10 Q 470 -60 348 10" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-fail)"/>
-      </svg>
-
-      <!-- BOXES (Z-Index 2) -->
-      <div class="d-box d-success text-center" style="position: absolute; left: 0; top: 10px; width: 160px; height: 80px; z-index: 2; display: flex; flex-direction: column; justify-content: center; border-width: 2px;">
-        <div class="d-title" style="letter-spacing: 0.05em;">CLOSED</div>
-        <div class="d-sub d-mt-1">Bình thường<br>Cho request qua</div>
+    <div style="display: grid; grid-template-columns: 200px 200px 200px; gap: 64px 60px; align-items: center; margin: 0 auto; width: fit-content;">
+      <div class="d-box d-success text-center" id="sm-closed" style="grid-column: 1; grid-row: 1; border-width: 2px;">
+        <div class="d-title">CLOSED</div>
+        <div class="d-sub d-mt-1">bình thường,<br>cho request đi qua</div>
       </div>
-
-      <div class="d-box d-danger text-center" style="position: absolute; left: 260px; top: 10px; width: 160px; height: 80px; z-index: 2; display: flex; flex-direction: column; justify-content: center; border-width: 2px;">
-        <div class="d-title" style="letter-spacing: 0.05em;">OPEN</div>
-        <div class="d-sub d-mt-1">Block mọi request<br>Fail fast</div>
+      <div class="d-box d-danger text-center" id="sm-open" style="grid-column: 3; grid-row: 1; border-width: 2px;">
+        <div class="d-title">OPEN</div>
+        <div class="d-sub d-mt-1">từ chối ngay,<br>fail fast</div>
       </div>
-
-      <div class="d-box d-warning text-center" style="position: absolute; left: 520px; top: 10px; width: 160px; height: 80px; z-index: 2; display: flex; flex-direction: column; justify-content: center; border-width: 2px;">
-        <div class="d-title" style="letter-spacing: 0.05em;">HALF-OPEN</div>
-        <div class="d-sub d-mt-1">Thử 1 request<br>để test</div>
+      <div class="d-box d-warning text-center" id="sm-half" style="grid-column: 2; grid-row: 2; border-width: 2px;">
+        <div class="d-title">HALF-OPEN</div>
+        <div class="d-sub d-mt-1">cho vài request<br>đi thử (ví dụ 3)</div>
       </div>
-
-      <!-- LABELS (Z-Index 3) -->
-      <div class="d-arrow-label" style="position: absolute; left: 210px; top: 32px; transform: translateX(-50%); z-index: 3;">failures ≥ threshold</div>
-      <div class="d-arrow-label" style="position: absolute; left: 470px; top: 32px; transform: translateX(-50%); z-index: 3;">timeout hết</div>
-      
-      <div class="d-arrow-label" style="position: absolute; left: 340px; top: 140px; transform: translateX(-50%); z-index: 3;">Test thành công</div>
-
-      <div class="d-arrow-label" style="position: absolute; left: 474px; top: -20px; transform: translateX(-50%); z-index: 3;">Test thất bại</div>
-
     </div>
 
-    <!-- Configuration note -->
-    <div class="d-box d-note">
-      <div class="d-title d-mb-1">Cấu hình Circuit Breaker (Resilience4j)</div>
-      <div class="d-code" style=" padding:8px 12px;">
-        <span class="kw">failureRateThreshold</span> = <span class="str">50%</span> &nbsp;|&nbsp;
+    <div class="d-box d-note d-mt-3">
+      <div class="d-title d-mb-1">Cấu hình Resilience4j (lst:4_3)</div>
+      <div class="d-code" style="padding: 8px 12px;">
         <span class="kw">slidingWindowSize</span> = <span class="str">10</span> &nbsp;|&nbsp;
-        <span class="kw">waitDurationInOpenState</span> = <span class="str">30s</span>
+        <span class="kw">failureRateThreshold</span> = <span class="str">50%</span> &nbsp;|&nbsp;
+        <span class="kw">waitDurationInOpenState</span> = <span class="str">30s</span> &nbsp;|&nbsp;
+        <span class="kw">permittedNumberOfCallsInHalfOpenState</span> = <span class="str">3</span>
       </div>
-      <div class="d-sub d-mt-1">
-        LMS: <code>@CircuitBreaker</code> annotation trên <code>JudgeClient.execute()</code>
-      </div>
+      <div class="d-sub d-mt-1">KBM: <code>@CircuitBreaker</code> trên <code>JudgeCallService</code> khi Core gọi Judge (lst:4_2)</div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="sm-closed" data-to="sm-open" data-label="lỗi ≥ ngưỡng" data-label-side="above"></path>
+      <path data-from="sm-open" data-to="sm-half" data-from-side="bottom" data-to-side="right" data-label="hết 30 s chờ" data-label-at="0.3"></path>
+      <path data-from="sm-half" data-to="sm-closed" data-from-side="left" data-to-side="bottom" class="is-success" data-label="thử thành công"></path>
+      <path data-from="sm-half" data-to="sm-open" data-from-side="top" data-from-at="0.8" data-to-side="left" data-to-at="0.8" class="is-danger" data-label="thử thất bại" data-label-at="0.3"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

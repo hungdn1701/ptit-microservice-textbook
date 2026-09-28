@@ -2,28 +2,40 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.8 — User Activity Tracking — Async via Kafka | Ch.11</title>
+  <!--
+    Fig 11.8 — User Activity Tracking pipeline qua Kafka
+    2026-09-28 (WP-B Ch.11): nhãn tiếng Anh → tiếng Việt (§17); tên topic "user.activity.submit" không có trong văn bản →
+    mô tả loại sự kiện theo §11 (xem câu hỏi, nộp bài, tham gia kỳ thi). Thêm bước consumer ghi dữ liệu và câu hỏi phân tích
+    lấy từ bảng tbl:user_tracking_applications; ghi rõ response không chờ consumer (non-blocking).
+  -->
+  <title>Fig 11.8 — User Activity Tracking qua Kafka | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-  
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.8">
+  <div class="diagram-canvas" data-fig-id="FIG-11.8" data-ref="CH11-SEC">
     <div class="d-seq-container">
-    <div class="d-seq-participants">
-      <div class="d-seq-actor"><div class="d-seq-actor-box d-legacy">Student</div></div>
-      <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Core Service</div></div>
-      <div class="d-seq-actor"><div class="d-seq-actor-box d-event">Kafka</div></div>
-      <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Analytics</div></div>
-    </div>
-    <div class="d-seq-messages">
-      <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Submit assignment</span></div><div style="flex:2.5;"></div></div>
-      <div class="d-seq-msg"><div style="flex:1.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Publish: user.activity.submit</span></div><div style="flex:1.5;"></div></div>
-      <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">200 OK (async)</span></div><div style="flex:2.5;"></div></div>
-      <div class="d-mt-1 d-mb-1" style="border-top:1px dashed var(--diagram-color-line-muted);"></div>
-      <div class="d-seq-msg"><div style="flex:2.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Consume event</span></div><div style="flex:0.5;"></div></div>
+      <div class="d-seq-participants">
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-legacy">Sinh viên</div></div>
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Core Service</div></div>
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-event">Kafka</div></div>
+        <div class="d-seq-actor"><div class="d-seq-actor-box d-service">Consumer phân tích</div></div>
+      </div>
+      <div class="d-seq-messages">
+        <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">xem câu hỏi / nộp bài / vào kỳ thi</span></div><div style="flex:2.5;"></div></div>
+        <div class="d-seq-msg"><div style="flex:1.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">publish sự kiện hoạt động</span></div><div style="flex:1.5;"></div></div>
+        <div class="d-seq-msg"><div style="flex:0.5;"></div><div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">response — không chờ consumer</span></div><div style="flex:2.5;"></div></div>
+        <div class="d-seq-msg d-mt-2"><div style="flex:2.5;"></div><div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">consume</span></div><div style="flex:0.5;"></div></div>
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:3.1;"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:0.86;">ghi dữ liệu hoạt động<br><span>cho phân tích học tập</span></div>
+          <div style="flex:0.04;"></div>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub">Trả lời được: câu hỏi nào được xem nhiều nhất · sinh viên nào nộp nhiều lần (cần hỗ trợ) · giờ cao điểm · bao nhiêu % hoàn thành kỳ thi. Consumer chậm hay ngừng cũng không làm chậm thao tác của sinh viên.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

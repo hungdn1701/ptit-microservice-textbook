@@ -3,564 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saga Orchestration — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Saga Orchestration Pattern — quản lý giao dịch phân tán trong microservices với Orchestrator, compensating transactions và state machine. KBM LMS case study.">
+  <title>Saga Pattern — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Saga — chuỗi local transaction và compensation thay cho giao dịch phân tán; compensatable, pivot, retriable; choreography hay orchestration; KBM Submit Saga.">
   <meta name="author" content="Đặng Ngọc Hùng">
-  <meta property="og:title" content="Saga Orchestration — Pattern Story">
-  <meta property="og:description" content="Saga Orchestration Pattern — quản lý giao dịch phân tán trong microservices với Orchestrator, compensating transactions và state machine. KBM LMS case study.">
+  <meta property="og:title" content="Saga Pattern — Pattern Story">
+  <meta property="og:description" content="Saga — chuỗi local transaction và compensation thay cho giao dịch phân tán; compensatable, pivot, retriable; choreography hay orchestration; KBM Submit Saga.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    body {
-      background-image: radial-gradient(var(--grid-color, rgba(255,255,255,.03)) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-
-    /* ── Stepper Layout (Act 3) ── */
-    .stepper {
-      display: flex; gap: 0; margin: 28px 0;
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-      overflow: hidden; background: var(--bg-surface);
-    }
-    .step-controls {
-      display: flex; flex-direction: column; width: 220px;
-      flex-shrink: 0; border-right: 1px solid var(--border);
-    }
-    @media (max-width: 768px) {
-      .stepper { flex-direction: column; }
-      .step-controls { width: 100%; border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; overflow-x: auto; }
-    }
-    .step-btn {
-      display: flex; align-items: center; gap: 10px; padding: 15px 16px;
-      cursor: pointer; border: none; background: transparent;
-      color: var(--text-secondary); text-align: left; font-family: var(--font-sans);
-      border-left: 2px solid transparent; transition: all .2s ease;
-    }
-    .step-btn:hover { background: var(--primary-dim); color: var(--text-main); }
-    .step-btn.active { background: var(--primary-dim); color: var(--primary); border-left-color: var(--primary); }
-    .step-btn.done { color: var(--success); }
-    .step-dot {
-      width: 26px; height: 26px; border-radius: 50%;
-      border: 1.5px solid currentColor;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 800; flex-shrink: 0; transition: all .2s ease;
-    }
-    .step-btn.active .step-dot { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-    .step-btn.done .step-dot { background: var(--success); border-color: var(--success); color: var(--on-primary); }
-    .step-label { font-size: 11.5px; font-weight: 600; line-height: 1.35; }
-    .step-sub { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
-    .step-content-area { flex: 1; padding: 28px; }
-    @media (max-width: 768px) { .step-content-area { padding: 20px 16px; } }
-    .step-panel { display: none; animation: fadeInUp .28s ease; }
-    .step-panel.active { display: block; }
-
-    .step-headline { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
-    .step-body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 18px; max-width: 520px; }
-
-    /* ── Flow Diagram Nodes ── */
-    .flow-diagram {
-      background: rgba(0,0,0,.28); border: 1px solid var(--border);
-      border-radius: var(--radius-md); padding: 20px; margin: 8px 0 16px;
-    }
-    .flow-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
-    .flow-arrow { color: var(--text-dim); font-size: 14px; transition: color .4s; flex-shrink: 0; }
-    .flow-arrow.ok { color: var(--success); }
-    .flow-arrow.err { color: var(--danger); }
-    .flow-arrow.comp { color: var(--warning); }
-    .flow-node {
-      padding: 9px 14px; border-radius: var(--radius-sm);
-      font-size: 11px; font-weight: 700; font-family: var(--font-mono);
-      border: 1px solid; text-align: center; white-space: nowrap; transition: all .35s ease;
-    }
-    .n-orch   { border-color: var(--primary);  color: var(--primary);  background: var(--primary-dim); }
-    .n-assign { border-color: var(--info);     color: var(--info);     background: rgba(96,165,250,.07); }
-    .n-judge  { border-color: var(--warning);  color: var(--warning);  background: rgba(245,158,11,.07); }
-    .n-core   { border-color: var(--success);  color: var(--success);  background: var(--success-dim); }
-    .n-client { border-color: var(--text-dim); color: var(--text-secondary); background: rgba(255,255,255,.02); }
-    .n-db     { border-color: var(--text-dim); color: var(--text-dim); background: rgba(0,0,0,.3); }
-    .n-fail   { border-color: var(--danger);   color: var(--danger);   background: rgba(244,63,94,.1); box-shadow: 0 0 16px rgba(244,63,94,.2); }
-    .n-comp   { border-color: var(--warning);  color: var(--warning);  background: rgba(245,158,11,.1); border-style: dashed; }
-    .n-idmp   { border-color: var(--info);     color: var(--info);     background: rgba(96,165,250,.1); border-style: dashed; }
-    .n-state  { border-color: var(--primary);  color: var(--primary);  background: var(--primary-dim); font-size: 10px; padding: 7px 11px; }
-
-    /* Step nav buttons */
-    .step-nav-btns { display: flex; gap: 8px; margin-top: 20px; }
-    .snb {
-      padding: 7px 18px; border-radius: var(--radius-sm);
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      border: 1px solid var(--border); background: var(--bg-card);
-      color: var(--text-secondary); font-family: var(--font-sans); transition: all .18s ease;
-    }
-    .snb:hover { border-color: var(--border-hover); color: var(--text-main); }
-    .snb.primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 700; }
-    .snb.primary:hover { opacity: .88; }
-
-    /* ── Comparison callout (Act 2) ── */
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
-    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
-    .compare-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: var(--radius-md); padding: 18px 16px;
-    }
-    .compare-card.highlight { border-color: rgba(255,122,0,.25); background: var(--primary-dim); }
-    .compare-tag { font-size: 9.5px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin-bottom: 8px; }
-    .compare-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 7px; }
-    .compare-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 5px; }
-    .compare-card ul li { font-size: 12px; color: var(--text-secondary); line-height: 1.5; padding-left: 14px; position: relative; }
-    .compare-card ul li::before { content: '›'; position: absolute; left: 0; color: var(--text-dim); }
-    .compare-card.highlight ul li { color: var(--text-main); }
-
-    /* State flow (Step 4) */
-    .state-flow { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
-    .state-badge {
-      padding: 5px 12px; border-radius: 999px; font-size: 10px; font-family: var(--font-mono); font-weight: 700;
-      border: 1px solid; white-space: nowrap;
-    }
-    .s-pending { color: var(--text-dim); border-color: var(--border); background: var(--bg-card); }
-    .s-mid { color: var(--info); border-color: rgba(96,165,250,.3); background: rgba(96,165,250,.08); }
-    .s-done { color: var(--success); border-color: rgba(34,211,160,.3); background: var(--success-dim); }
-    .s-comp { color: var(--warning); border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.08); }
-    .s-fail { color: var(--danger); border-color: rgba(244,63,94,.3); background: rgba(244,63,94,.08); }
-    .state-arrow { color: var(--text-dim); font-size: 12px; }
-    .state-or { font-size: 9.5px; color: var(--text-dim); font-family: var(--font-mono); padding: 0 4px; }
-
-
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
+<!-- ── Scroll Progress Bar ── -->
 <div id="progress-bar" class="progress-bar-top"></div>
 
 <!-- ── Sticky Act Nav ── -->
 <nav class="act-nav" id="act-nav">
-  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')">
-    <span class="act-num">1</span><span class="act-btn-label">Problem</span>
-  </button>
-  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')">
-    <span class="act-num">2</span><span class="act-btn-label">Pattern</span>
-  </button>
-  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')">
-    <span class="act-num">3</span><span class="act-btn-label">How It Works</span>
-  </button>
-  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')">
-    <span class="act-num">4</span><span class="act-btn-label">KBM</span>
-  </button>
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
-<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<!-- ── Pattern Header ── -->
 <header class="pattern-header">
-  <h1 class="pattern-title">Saga Orchestration</h1>
-  <p class="pattern-subtitle">
-    Quản lý distributed transaction không cần 2PC bằng chuỗi local transactions, compensating actions, và một Orchestrator trung tâm.
-  </p>
+  <h1 class="pattern-title">Saga Pattern</h1>
+  <p class="pattern-subtitle">Chuỗi local transaction + compensation — choreography hay orchestration</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Data Patterns</span></div>
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Hector Garcia-Molina</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Hector Garcia-Molina &amp; Kenneth Salem</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">1987</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.6 §6.2</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.6 §6.1–6.5</span></div>
   </div>
 </header>
 
-<!-- ══ ACT 1 — THE PROBLEM ════════════════════════════════ -->
+<!-- ── ACT 1: The Problem ── -->
 <section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
-    <div><div class="act-tag">Act 01</div><h2 class="act-title">The Problem</h2></div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">The Problem</h2>
+    </div>
   </div>
 
   <p class="section-intro">
-    Mỗi microservice quản lý database riêng. Khi một flow nghiệp vụ đi qua nhiều services, làm sao đảm bảo tính nguyên tử? Nếu một bước fail, dữ liệu sẽ rơi vào trạng thái inconsistent.
+    Trong monolith ban đầu của KBM, nộp bài là một transaction: ghi bài nộp, xếp vào hàng chấm, cập nhật thống kê — cùng thành công hoặc cùng rollback. Khi dữ liệu tách ra nhiều service, không còn transaction chung nào bao được cả chuỗi (§6.1).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">ACID</div></div>
-      <h3>Không có Cross-service ACID</h3>
-      <p>Assignment DB, Judge DB, Core DB tách biệt hoàn toàn. Không có coordinator dùng chung. Các lệnh <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">INSERT</code> được commit ngay ở local DB, không thể rollback chéo.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Không còn ACID</div></div>
+      <h3>Database A không biết database B</h3>
+      <p>Core Service ghi bài nộp vào database của mình; Judge Service chấm và ghi vào database khác. Nếu Judge lỗi sau khi Core đã commit, không có rollback nào xuyên qua hai database.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">2PC</div></div>
-      <h3>2PC không phù hợp với Microservices</h3>
-      <p>Two-Phase Commit (2PC) lock tất cả participants. Gây ra SPOF tại coordinator, giảm throughput nghiêm trọng và không chịu được network partition.</p>
-    </div>
-    <div class="problem-card warn">
-      <div class="problem-icon"><div class="badge badge-warning">Partial Failure</div></div>
-      <h3>Partial Failure</h3>
-      <p>Trong hệ thống phân tán, partial failure (timeout, pod crash) là tất yếu. Thiếu cơ chế handle partial failure sẽ dẫn đến data inconsistency.</p>
-    </div>
-    <div class="problem-card">
-      <div class="problem-icon"><div class="badge badge-info">Rollback</div></div>
-      <h3>Không thể rollback Remote DB</h3>
-      <p>Nếu Assignment DB đã commit nhưng Judge Service crash, bạn không thể <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">ROLLBACK</code> Assignment DB. Cần một cơ chế undo ở tầng Application.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">2PC</div></div>
+      <h3>Two-Phase Commit không hợp</h3>
+      <p>2PC khóa tài nguyên suốt thời gian chấm (5–30 giây một bài), coordinator sập là mọi bên chờ vô hạn, mọi service phải cùng online, và Kafka không hỗ trợ XA. Mâu thuẫn với mục tiêu deploy độc lập và sẵn sàng cao.</p>
     </div>
   </div>
 
 </section>
 
-<hr class="act-divider">
-
-<!-- ══ ACT 2 — THE PATTERN ════════════════════════════════ -->
+<!-- ── ACT 2: The Pattern ── -->
 <section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
-    <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">The Pattern</h2>
+    </div>
   </div>
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Saga là chuỗi các <em>local transactions</em>, mỗi bước update local DB và publish event/message để trigger bước kế tiếp. Nếu một bước fail, hệ thống gọi <em>compensating transactions</em> để undo các thay đổi trước đó.
+      Saga là chuỗi local transaction; mỗi transaction cập nhật database của một service rồi phát sự kiện hay thông điệp để kích hoạt bước kế tiếp. Nếu một bước thất bại, saga chạy compensating transaction để hoàn tác các bước đã làm.
     </p>
-    <div class="definition-attribution">— Garcia-Molina & Salem (1987) · "Sagas" · ACM SIGMOD · Ch.6 §6.3</div>
+    <div class="definition-attribution">— Chris Richardson · Microservices Patterns, Ch.4</div>
   </div>
 
-  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.65;max-width:620px;">
-    Với <strong>Saga Orchestration</strong>, một Orchestrator điều phối toàn bộ luồng. Nó nắm rõ sequence, compensating action và quản lý state machine của saga.
+  <p class="section-intro">
+    Đánh đổi: bỏ khóa của 2PC, đổi lại mất chữ "I" trong ACID — kết quả trung gian của saga này có thể bị saga khác nhìn thấy, nên phải có countermeasure như semantic lock. Compensation không phải "undo" cơ sở dữ liệu mà là một hành động nghiệp vụ ngược, và phải idempotent (§6.2, §6.4).
   </p>
-
-  <div class="compare-grid">
-    <div class="compare-card highlight">
-      <div class="compare-tag" style="color:var(--primary)">✦ Orchestration (pattern này)</div>
-      <h3>Central Coordinator</h3>
-      <ul>
-        <li>Orchestrator điều phối toàn bộ luồng xử lý.</li>
-        <li>Gọi từng service theo sequence định sẵn.</li>
-        <li>Centralized logic: dễ debug và trace.</li>
-        <li>Dễ dàng thay đổi hoặc thêm step mới.</li>
-        <li>Tối ưu cho complex flow (nhiều bước).</li>
-      </ul>
-    </div>
-    <div class="compare-card">
-      <div class="compare-tag" style="color:var(--text-dim)">Choreography (alternative)</div>
-      <h3>Event-Driven, No Coordinator</h3>
-      <ul>
-        <li>Các service tự react dựa trên events.</li>
-        <li>Decoupled: services không biết sự tồn tại của nhau.</li>
-        <li>Khó debug: logic phân tán rải rác.</li>
-        <li>Khó đổi sequence vì phải update nhiều services.</li>
-        <li>Chỉ hợp cho simple flow (ít bước).</li>
-      </ul>
-    </div>
-  </div>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Saga Orchestrator</h3>
-      <p>Controller trung tâm điều phối flow. Gọi các service, catch lỗi và trigger compensation. State được persist vào DB để phục hồi khi restart.</p>
+      <h3>Compensatable → Pivot → Retriable</h3>
+      <p>Bước đầu hoàn tác được bằng compensation; pivot là điểm không quay đầu; sau pivot chỉ còn các bước bắt buộc thành công, lỗi thì thử lại. Thứ tự này là bắt buộc khi thiết kế saga.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Local Transactions</h3>
-      <p>Mỗi service commit trên local DB. Không dùng distributed lock. Bắt buộc có Idempotency key để handle retry an toàn.</p>
+      <h3>Choreography</h3>
+      <p>Không có coordinator: mỗi service tự phản ứng theo sự kiện. Đơn giản, lỏng lẻo lúc đầu; luồng khó theo dõi và dễ phụ thuộc vòng khi lớn dần. Hợp với saga 2–3 bước.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Compensating Transactions</h3>
-      <p>Mỗi forward action T(i) cần một compensating action C(i). Đây là semantic undo (business logic), không phải DB rollback (VD: chuyển status thành FAILED).</p>
+      <h3>Orchestration</h3>
+      <p>Một orchestrator gửi lệnh và chờ phản hồi. Luồng rõ, dễ test; đổi lại orchestrator là điểm lỗi duy nhất và dễ thành "smart orchestrator" ôm hết nghiệp vụ. Hợp khi từ 4 bước trở lên hoặc có phân nhánh.</p>
     </div>
   </div>
 </section>
 
-<hr class="act-divider">
-
-<!-- ══ ACT 3 — HOW IT WORKS ══════════════════════════════ -->
+<!-- ── ACT 3: How It Works ── -->
 <section class="act-section" id="act3">
   <div class="act-label">
     <div class="act-number">3</div>
-    <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
-  </div>
-
-  <p class="section-intro">
-    Luồng hoạt động của Saga Orchestration từ happy path đến edge cases.
-  </p>
-
-  <div class="stepper">
-    <!-- Step controls -->
-    <div class="step-controls">
-      <button class="step-btn active" onclick="goToStep(0)" id="sb0">
-        <div class="step-dot">1</div>
-        <div><div class="step-label">Happy Path</div><div class="step-sub">Submit flow</div></div>
-      </button>
-      <button class="step-btn" onclick="goToStep(1)" id="sb1">
-        <div class="step-dot">2</div>
-        <div><div class="step-label">Judge Fails</div><div class="step-sub">Compensate</div></div>
-      </button>
-      <button class="step-btn" onclick="goToStep(2)" id="sb2">
-        <div class="step-dot">3</div>
-        <div><div class="step-label">Idempotency</div><div class="step-sub">Safe retry</div></div>
-      </button>
-      <button class="step-btn" onclick="goToStep(3)" id="sb3">
-        <div class="step-dot">4</div>
-        <div><div class="step-label">State Machine</div><div class="step-sub">Track saga state</div></div>
-      </button>
-    </div>
-
-    <!-- Step panels -->
-    <div class="step-content-area">
-
-      <!-- Step 0: Happy Path -->
-      <div class="step-panel active" id="p0">
-        <div class="step-tag tag-after">Happy Path</div>
-        <h3 class="step-headline">Submit Flow — Orchestrator điều phối từng bước thành công</h3>
-        <p class="step-body">Orchestrator nhận request, tuần tự gọi Assignment Service, Judge Service và Core Service. Sau mỗi step thành công, Orchestrator cập nhật state và đi tiếp.</p>
-        <div class="flow-diagram">
-          <div class="flow-row">
-            <div class="flow-node n-client">Client Browser</div>
-            <span class="flow-arrow ok">→</span>
-            <div class="flow-node n-orch">Saga Orchestrator</div>
-          </div>
-          <div class="flow-row" style="margin-top:8px;">
-            <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">Orchestrator calls →</span>
-          </div>
-          <div class="flow-row" style="margin-top:6px;gap:10px;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-assign">Assignment Service<br><span style="font-size:9px;font-weight:400;color:var(--text-dim)">kbm-academic</span></div>
-              <span class="flow-arrow ok" style="font-size:11px;">↓ T1 ✓</span>
-              <div class="flow-node n-db" style="font-size:9.5px;">Assignment DB</div>
-            </div>
-            <span class="flow-arrow ok" style="margin-top:0;">→</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-judge">Judge Service<br><span style="font-size:9px;font-weight:400;color:var(--text-dim)">kbm-judge-sql</span></div>
-              <span class="flow-arrow ok" style="font-size:11px;">↓ T2 ✓</span>
-              <div class="flow-node n-db" style="font-size:9.5px;">Judge DB</div>
-            </div>
-            <span class="flow-arrow ok" style="margin-top:0;">→</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-core">Core Service<br><span style="font-size:9px;font-weight:400;color:var(--text-dim)">kbm-core</span></div>
-              <span class="flow-arrow ok" style="font-size:11px;">↓ T3 ✓</span>
-              <div class="flow-node n-db" style="font-size:9.5px;">Core DB</div>
-            </div>
-          </div>
-          <div class="flow-row" style="margin-top:10px;">
-            <span style="font-size:10.5px;color:var(--success);font-family:var(--font-mono);">✓ SAGA COMPLETED — Leaderboard updated</span>
-          </div>
-        </div>
-        <div class="step-nav-btns">
-          <button class="snb primary" onclick="goToStep(1)">Bước tiếp → Judge Fails</button>
-        </div>
-      </div>
-
-      <!-- Step 1: Judge Fails -->
-      <div class="step-panel" id="p1">
-        <div class="step-tag tag-before">Failure &amp; Compensation</div>
-        <h3 class="step-headline">Judge Service fail — Orchestrator trigger compensating transactions</h3>
-        <p class="step-body">Judge Service crash (timeout/OOM) sau khi T1 hoàn tất. Orchestrator catch lỗi, chuyển state sang COMPENSATING và gọi C1 (đánh dấu FAILED) để undo T1. T3 bị skip nên Leaderboard không bị ảnh hưởng.</p>
-        <div class="flow-diagram">
-          <div class="flow-row">
-            <div class="flow-node n-client">Client Browser</div>
-            <span class="flow-arrow ok">→</span>
-            <div class="flow-node n-orch">Saga Orchestrator</div>
-          </div>
-          <div class="flow-row" style="margin-top:8px;gap:10px;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-assign">Assignment Service</div>
-              <span class="flow-arrow ok" style="font-size:11px;">↓ T1 ✓</span>
-              <div class="flow-node n-db" style="font-size:9.5px;">Assignment DB</div>
-            </div>
-            <span class="flow-arrow err">→</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-fail">Judge Service<br><span style="font-size:9px;font-weight:400;">[Crashed] CRASHED</span></div>
-              <span style="font-size:10px;color:var(--danger);">T2 FAILED</span>
-            </div>
-            <span style="font-size:11px;color:var(--text-dim);align-self:center;">&nbsp;✗&nbsp;</span>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-              <div class="flow-node n-core" style="opacity:.3;border-style:dashed;">Core Service</div>
-              <span style="font-size:10px;color:var(--text-dim);">T3 skipped</span>
-            </div>
-          </div>
-          <div class="flow-row" style="margin-top:10px;">
-            <span class="flow-arrow comp" style="font-size:18px;">↺</span>
-            <span style="font-size:11px;color:var(--warning);font-family:var(--font-mono);margin-left:6px;">Orchestrator: COMPENSATING...</span>
-          </div>
-          <div class="flow-row" style="margin-top:6px;">
-            <div class="flow-node n-comp">C1: Assignment compensate<br><span style="font-size:9px;font-weight:400;">mark submission → FAILED</span></div>
-          </div>
-          <div class="flow-row" style="margin-top:8px;">
-            <span style="font-size:10.5px;color:var(--warning);font-family:var(--font-mono);">[Warning] SAGA COMPENSATED — No zombie records</span>
-          </div>
-        </div>
-        <div class="step-nav-btns">
-          <button class="snb" onclick="goToStep(0)">← Trước</button>
-          <button class="snb primary" onclick="goToStep(2)">Bước tiếp → Idempotency</button>
-        </div>
-      </div>
-
-      <!-- Step 2: Idempotency -->
-      <div class="step-panel" id="p2">
-        <div class="step-tag tag-info">Idempotency</div>
-        <h3 class="step-headline">Safe Retry — Mỗi step có idempotency key</h3>
-        <p class="step-body">Kafka đảm bảo At-Least-Once delivery, có thể gây duplicate message. Consumer dùng Idempotency key (sagaId + stepId) để detect và chặn duplicate, trả về kết quả cached.</p>
-        <div class="flow-diagram">
-          <div class="flow-row">
-            <div class="flow-node n-orch">Orchestrator</div>
-            <span class="flow-arrow ok">→</span>
-            <div class="flow-node n-idmp">Message + idempotencyKey<br><span style="font-size:9px;font-weight:400;font-family:var(--font-mono);">saga-{id}-step-judge</span></div>
-          </div>
-          <div class="flow-row" style="margin-top:8px;gap:20px;">
-            <div style="text-align:center;">
-              <div class="flow-node n-judge" style="margin-bottom:5px;">Judge Service</div>
-              <div style="font-size:9.5px;color:var(--text-dim);font-family:var(--font-mono);">check idempotency store</div>
-            </div>
-          </div>
-          <div class="flow-row" style="margin-top:8px;gap:24px;">
-            <div style="text-align:center;">
-              <span style="font-size:11px;font-family:var(--font-mono);color:var(--success);">First delivery</span>
-              <div class="flow-node n-core" style="margin-top:5px;font-size:10px;">Process &amp; store key<br>→ execute SQL</div>
-            </div>
-            <div style="text-align:center;">
-              <span style="font-size:11px;font-family:var(--font-mono);color:var(--warning);">Retry (duplicate)</span>
-              <div class="flow-node n-comp" style="margin-top:5px;font-size:10px;">Key found → skip<br>→ return cached result</div>
-            </div>
-          </div>
-        </div>
-        <div class="code-block" style="margin: 10px 0;">
-<pre><span class="comment">// Judge Service — idempotency check</span>
-<span class="keyword">if</span> (idempotencyStore.<span class="func">exists</span>(<span class="string">"saga-"</span> + sagaId + <span class="string">"-step-judge"</span>)) {
-  <span class="keyword">return</span> idempotencyStore.<span class="func">get</span>(...); <span class="comment">// cached result</span>
-}
-<span class="comment">// else: process &amp; store key atomically</span></pre>
-        </div>
-        <div class="step-nav-btns">
-          <button class="snb" onclick="goToStep(1)">← Trước</button>
-          <button class="snb primary" onclick="goToStep(3)">Bước tiếp → State Machine</button>
-        </div>
-      </div>
-
-      <!-- Step 3: State Machine -->
-      <div class="step-panel" id="p3">
-        <div class="step-tag tag-process">State Machine</div>
-        <h3 class="step-headline">Orchestrator track state — persist để survive restart</h3>
-        <p class="step-body">Orchestrator duy trì State Machine. State transition được persist vào DB trước khi dispatch command. Nếu Orchestrator crash, quá trình recovery sẽ đọc lại state và resume chính xác vị trí bị gián đoạn.</p>
-        <div class="flow-diagram">
-          <div style="text-align:center;margin-bottom:12px;">
-            <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">HAPPY PATH STATES</span>
-          </div>
-          <div class="state-flow">
-            <div class="state-badge s-pending">PENDING</div>
-            <span class="state-arrow">→</span>
-            <div class="state-badge s-mid">ASSIGNMENT_CREATED</div>
-            <span class="state-arrow">→</span>
-            <div class="state-badge s-mid">JUDGE_PROCESSING</div>
-            <span class="state-arrow">→</span>
-            <div class="state-badge s-done">COMPLETED</div>
-          </div>
-          <div style="text-align:center;margin:14px 0 8px;">
-            <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">FAILURE PATH STATES</span>
-          </div>
-          <div class="state-flow">
-            <div class="state-badge s-mid">JUDGE_PROCESSING</div>
-            <span class="state-arrow">→</span>
-            <div class="state-badge s-comp">COMPENSATING</div>
-            <span class="state-arrow">→</span>
-            <div class="state-badge s-fail">COMPENSATED</div>
-          </div>
-          <div style="margin-top:14px;padding:12px;background:rgba(255,122,0,.04);border:1px solid rgba(255,122,0,.12);border-radius:var(--radius-sm);">
-            <div style="font-size:10px;font-family:var(--font-mono);color:var(--primary);margin-bottom:6px;">KEY RULE</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Lưu state <strong>TRƯỚC KHI</strong> gọi service. Nếu crash sau khi lưu state → retry an toàn nhờ Idempotency. Nếu crash trước khi lưu → chưa có side effect → an toàn để start lại.</div>
-          </div>
-        </div>
-        <div class="step-nav-btns">
-          <button class="snb" onclick="goToStep(2)">← Trước</button>
-          <button class="snb primary" onclick="scrollToAct('act4')">Xem KBM Apply It →</button>
-        </div>
-      </div>
-
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">How It Works</h2>
     </div>
   </div>
+
+  <p class="section-intro">KBM Submit Saga (§6.2): T1 tạo bài nộp, T2 chạy SQL trong sandbox, T3 cập nhật điểm, T4 ghi lệnh thông báo vào outbox. So sánh luồng hiện tại — choreography ngầm định qua Kafka — với saga tường minh có state machine, timeout và semantic lock (§6.5).</p>
+
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Saga</span><div class="sim-chips" id="sg-modes"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Kịch bản</span><div class="sim-chips" id="sg-scens"></div></div>
+    <button class="sim-btn primary-action" id="sg-run" type="button">▶ Nộp bài</button>
+  </div>
+
+  <div class="sim-grid sim-grid--wide">
+    <div class="sim-panel is-primary">
+      <div class="sim-panel-title"><span id="sg-title"></span> <span class="sim-hint" id="sg-hint"></span></div>
+      <ol class="sim-steps" id="sg-steps"></ol>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-val" id="sg-status">—</div><div class="sim-stat-lbl">Trạng thái bài nộp</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="sg-student">—</div><div class="sim-stat-lbl">Sinh viên thấy</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="sg-comp">0</div><div class="sim-stat-lbl">Compensation chạy</div></div>
+      </div>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">State machine <span class="sim-hint">submission.status</span></div>
+      <div class="sim-chips" id="sg-states"></div>
+      <div class="sim-log" id="sg-log" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="sim-note" id="sg-note"></p>
 </section>
 
-<hr class="act-divider">
-
-<!-- ══ ACT 4 — KBM: APPLY IT ═══════════════════════════ -->
+<!-- ── ACT 4: KBM Apply It ── -->
 <section class="act-section" id="act4">
   <div class="act-label">
     <div class="act-number">4</div>
-    <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBM: Apply It</h2></div>
+    <div>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
+    </div>
   </div>
 
   <p class="section-intro">
-    Không phải mọi tính năng đều cần Saga. Dưới đây là rủi ro và Saga strategy của từng flow.
+    KBM đang có một implicit saga: choreography qua Kafka nhưng không được định nghĩa như saga — thiếu state, timeout và compensation tường minh, và đã từng gây lỗi trên production. Với luồng nộp bài 2–3 bước, choreography vẫn đủ; orchestrator là quyết định để mở, xem lại khi luồng thêm bước (§6.3, §6.5).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Gap Analysis — KBM Flows</h3>
-  <div class="sub-label">Đánh giá rủi ro và chiến lược áp dụng</div>
+  <h3 class="sub-heading">Gap Analysis — Submit Saga</h3>
+  <div class="sub-label">Bốn lỗ hổng trong §6.5</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Flow</th>
-          <th>Problem</th>
-          <th>Risk</th>
-          <th>Saga Strategy</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Submit Assignment</td>
-          <td>Judge fail nhưng Assignment đã lưu.</td>
+          <td class="gap-label">Timeout, compensation</td>
+          <td>Judge treo hay Kafka mất kết nối → bài nằm PENDING vô thời hạn, sinh viên thấy "đang chấm" mãi.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Saga Orchestration: <code>Assignment → Judge → Core</code> (Có compensate).</td>
+          <td>Quét bài quá hạn → CANCELLING → lệnh hủy/probe tới Judge → nhận ACK mới đổi TIMEOUT và bù trừ; hard timeout là lưới cuối.</td>
         </tr>
         <tr>
-          <td class="gap-label">Contest Mode</td>
-          <td>Spike traffic dẫn đến queue backlog.</td>
+          <td class="gap-label">Semantic lock</td>
+          <td>Sinh viên có thể nộp bài mới khi bài cũ còn đang xử lý.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Async Saga + Timeout handling + DLQ cho failed sagas.</td>
+          <td><code>status = JUDGING</code> làm khóa nghiệp vụ; mọi ghi trạng thái là transition có điều kiện (<code>UPDATE … WHERE status = …</code>).</td>
         </tr>
         <tr>
-          <td class="gap-label">Grade Override</td>
-          <td>Thao tác manual cross-service gây lệch data.</td>
+          <td class="gap-label">Implicit saga</td>
+          <td>Luồng rải rác trong mã nguồn, không có state machine tập trung.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Saga đơn giản: <code>Assignment update → Leaderboard sync</code>.</td>
+          <td><code>SubmitSaga</code> với PENDING → JUDGING → JUDGED / ERROR / TIMEOUT, mỗi transition kèm compensation.</td>
         </tr>
         <tr>
-          <td class="gap-label">Notification</td>
-          <td>Gửi email thông báo, mất không ảnh hưởng logic.</td>
-          <td><span class="b-low">LOW</span></td>
-          <td>Choreography (Publish-Subscribe cơ bản).</td>
+          <td class="gap-label">Theo dõi saga</td>
+          <td>Không thấy chuỗi đang ở bước nào.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Ghi log mọi thay đổi trạng thái saga cho kiểm toán và debug.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Implementation Roadmap</h3>
-  <div class="sub-label">Roadmap triển khai</div>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo đề xuất ở §6.5 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tuần 1–2 · Phase 1</div>
-      <h4>Xây dựng SagaOrchestrator & State Machine</h4>
-      <p>Tạo <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">SagaOrchestrator</code>, persist state xuống DB. Triển khai <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">submitAssignmentSaga()</code>. Cấu hình Unit Test với Mocked endpoints.</p>
-      <span class="t-badge orange">Effort: 1 dev × 2 tuần</span>
+      <div class="timeline-phase">Giai đoạn 1 · cấp bách nhất</div>
+      <h4>Semantic lock + timeout có probe</h4>
+      <p>Khóa nghiệp vụ JUDGING; quét bài quá hạn, gửi lệnh hủy tới Judge và chỉ đổi TIMEOUT khi có xác nhận — tránh split-brain khi Judge trả kết quả muộn. Mỗi lần chấm mang <code>judgeRunId</code> để bỏ kết quả "mồ côi".</p>
+      <span class="t-badge orange">Ưu tiên cao</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tuần 3–4 · Phase 2</div>
-      <h4>Triển khai Compensating Transactions</h4>
-      <p>Cài đặt <code style="font-family:var(--font-mono);font-size:11px;color:var(--primary)">compensate()</code> logic cho các service. Áp dụng Idempotency Key check. Integration test mô phỏng network failure.</p>
-      <span class="t-badge green">✓ Resilient flow</span>
+      <div class="timeline-phase">Giai đoạn 2</div>
+      <h4>Saga tường minh</h4>
+      <p><code>SubmitSaga</code> với state machine, compensation cho từng transition, log thay đổi trạng thái.</p>
+      <span class="t-badge orange">Nỗ lực trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tháng 2 · Phase 3</div>
-      <h4>Tích hợp Saga với Kafka (Contest Mode)</h4>
-      <p>Áp dụng Async Saga qua Message Broker. Thêm logic Timeout (ví dụ: Judge không ACK trong 30s → trigger Compensation). Route failed sagas sang Dead Letter Queue (DLQ).</p>
-      <span class="t-badge orange">Effort: 2 devs × 3 tuần</span>
-    </div>
-    <div class="timeline-item" data-delay="750">
-      <div class="timeline-dot"></div>
-      <div class="timeline-phase">Tháng 3 · Phase 4</div>
-      <h4>Saga Monitoring Dashboard</h4>
-      <p>Setup Grafana/Prometheus tracking metrics: active sagas, failed sagas, compensation rate. Cấu hình Alerting khi Saga bị treo quá thời gian cho phép.</p>
-      <span class="t-badge green">✓ Full observability</span>
+      <div class="timeline-phase">Giai đoạn 3 · khi cần</div>
+      <h4>Saga orchestrator</h4>
+      <p>Chỉ khi luồng nộp bài vượt 4 bước hoặc có phân nhánh (kiểm tra đạo văn, chấm theo rubric). Hiện tại choreography vẫn đủ.</p>
+      <span class="t-badge orange">Quyết định để mở</span>
     </div>
   </div>
 
@@ -570,27 +237,25 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Dùng Saga Orchestration khi</div>
+        <div class="decision-title">Chọn cách điều phối</div>
       </div>
       <ul class="decision-list">
-        <li>Cross-service data consistency với luồng nhiều bước.</li>
-        <li>Cần theo dõi toàn bộ state của Saga.</li>
-        <li>Flow phức tạp (≥ 3 services) có nhiều failure paths.</li>
-        <li>Yêu cầu cơ chế Semantic Rollback rõ ràng.</li>
-        <li>Centralized logic để dễ debug và trace lỗi.</li>
+        <li>Saga 2–3 bước, giữa các bounded context → choreography.</li>
+        <li>Saga từ 4 bước, có phân nhánh → orchestration.</li>
+        <li>Đội chưa quen event-driven → orchestration dễ nắm và debug hơn.</li>
+        <li>Workflow học vụ (duyệt bài tập, đồ án, công bố điểm) → bắt đầu bằng state machine tường minh.</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Không dùng khi</div>
+        <div class="decision-title">Sai lầm thường gặp</div>
       </div>
       <ul class="decision-list">
-        <li>Flow đơn giản (1-2 services) → Choreography hoặc RPC đủ dùng.</li>
-        <li>Dịch vụ chung một DB → Local Transaction là đủ.</li>
-        <li>Không cần rollback (At-least-once delivery là đủ).</li>
-        <li>Đội ngũ thiếu kinh nghiệm quản lý hệ thống Async/Message Broker.</li>
-        <li>Thiếu Observability/Monitoring → Saga bị kẹt sẽ khó phát hiện.</li>
+        <li>Cố giữ nhất quán mạnh xuyên service bằng 2PC.</li>
+        <li>Chỉ thiết kế happy path, thiếu compensation cho bước hoàn tác được.</li>
+        <li>Không có timeout — saga treo vĩnh viễn khi một bên im lặng.</li>
+        <li>Compensation không idempotent — bù trừ hai lần làm sai dữ liệu.</li>
       </ul>
     </div>
   </div>
@@ -598,7 +263,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về Saga Pattern, Choreography vs Orchestration, Compensating Transactions, và Saga State Machine trong sách.</p>
+  <p>Đọc chi tiết về vì sao 2PC không hợp (§6.1), KBM Submit Saga và ba loại transaction (§6.2), choreography vs orchestration (§6.3), compensation và isolation (§6.4), case study KBM (§6.5).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-06')"><div class="badge badge-info">Read</div> Chương 6 — Giao dịch Phân tán →</a>
 </div>
 
@@ -615,35 +280,161 @@
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
+// ── Act 3: KBM Submit Saga (Chương 6 §6.2, §6.4–6.5) ─────────────────────────────────────────
+// T1 Create Submission (compensatable, C1 = Mark ERROR), T2 Execute SQL (pivot), T3 Update Score,
+// T4 Enqueue notification vào outbox (retriable). Hiện trạng: implicit choreography — thiếu timeout,
+// compensation, semantic lock (§6.5). Saga tường minh: CANCELLING → lệnh hủy/probe → ACK → TIMEOUT,
+// bù trừ C1, retry có giới hạn (lst:timeout_compensation). Thời gian "5 phút" theo ví dụ của sách.
+const MODES = {
+  implicit: { label: 'Choreography ngầm (hiện trạng)', hint: 'Kafka events, không state machine, không timeout' },
+  explicit: { label: 'Saga tường minh', hint: 'state machine + timeout có probe + semantic lock (Giai đoạn 1–2)' },
+};
+const SCENS = { ok: 'Happy path', fail: 'Sandbox lỗi (T2)', silent: 'Judge không phản hồi', retry: 'T3 lỗi mạng', dup: 'Nộp lại khi đang chấm' };
+const STEPS = [
+  ['T1', 'Create Submission', 'Core Service ghi bài nộp, status PENDING', 'compensatable'],
+  ['T2', 'Execute SQL', 'Judge chạy SQL trong sandbox — điểm không quay đầu', 'pivot'],
+  ['T3', 'Update Score', 'Core ghi điểm vào database', 'retriable'],
+  ['T4', 'Enqueue notification', 'ghi lệnh thông báo vào outbox; gửi thật chạy ngoài saga', 'retriable'],
+  ['C1', 'Mark ERROR', 'bù trừ cho T1: đổi trạng thái, không xóa bản ghi', 'compensation'],
+];
+const STATES = ['PENDING', 'JUDGING', 'JUDGED', 'ERROR', 'CANCELLING', 'TIMEOUT'];
+const NOTES = {
+  'implicit.ok':     'Khi mọi thứ trơn tru, choreography ngầm chạy đúng — lỗ hổng chỉ lộ ra ở nhánh lỗi.',
+  'implicit.fail':   'Không có compensation tường minh: bước T1 đã làm vẫn nằm lại, bài kẹt ở trạng thái trung gian (sai lầm "chỉ thiết kế happy path", §6.5).',
+  'implicit.silent': 'Đúng sự cố từng xảy ra: Kafka mất kết nối hoặc Judge sập → không ai cập nhật trạng thái → sinh viên thấy "đang chấm" vô thời hạn (§6.5).',
+  'implicit.retry':  'Sách không mô tả hiện trạng xử lý lỗi T3 ra sao; điều chắc chắn là không có state machine tập trung nên không theo dõi được saga đang dở ở bước nào (§6.5). Về nguyên tắc, sau pivot T3 phải được thử lại tới khi thành công.',
+  'implicit.dup':    'Không có semantic lock: bài thứ hai được nhận khi bài thứ nhất còn đang chấm — hai saga chạy song song trên cùng dữ liệu (§6.4).',
+  'explicit.ok':     'T1 → T2 (pivot) → T3 → T4. Sau pivot, saga cam kết đi tới đích.',
+  'explicit.fail':   'Pivot thất bại không phải "bù trừ pivot": nó kích hoạt compensation của bước đứng trước — C1 đánh dấu ERROR, sinh viên được báo thử lại. Judge tự dọn sandbox.',
+  'explicit.silent': 'Quá hạn → CANCELLING → gửi lệnh hủy/probe → chỉ khi Judge xác nhận mới đổi TIMEOUT và bù trừ, tránh split-brain khi kết quả đến muộn. Kết quả của lần chạy cũ bị bỏ nhờ judgeRunId.',
+  'explicit.retry':  'T3 là retriable: lỗi mạng thì thử lại với backoff tới khi thành công; không bao giờ bù trừ để hủy kết quả T2.',
+  'explicit.dup':    'Semantic lock: status JUDGING chặn bài mới cho tới khi bài cũ có kết quả; mọi ghi trạng thái là transition có điều kiện.',
+};
+const state = { mode: 'implicit', scen: 'ok', running: false, st: {}, status: null, seen: '—', comp: 0, trail: [] };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 520;
 
-// ── Stepper ───────────────────────────────────────────────
-function goToStep(n) {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('sb'+i).classList.remove('active','done');
-    document.getElementById('p'+i).classList.remove('active');
-    if (i < n) document.getElementById('sb'+i).classList.add('done');
-  }
-  document.getElementById('sb'+n).classList.add('active');
-  document.getElementById('p'+n).classList.add('active');
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, m]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = typeof m === 'string' ? m : m.label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; clear(); render(); } });
+    el.appendChild(b);
+  });
 }
+chips($('sg-modes'), MODES, 'mode');
+chips($('sg-scens'), SCENS, 'scen');
+STATES.forEach(s => { const b = document.createElement('span'); b.className = 'sim-chip'; b.textContent = s; b.dataset.v = s; $('sg-states').appendChild(b); });
+
+function log(msg, cls) {
+  $('sg-log').insertAdjacentHTML('beforeend', `<div><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('sg-log').scrollTop = $('sg-log').scrollHeight;
+}
+function setStep(id, s) { state.st[id] = s; render(); }
+function setStatus(s) { state.status = s; state.trail.push(s); render(); }
+async function step(id, s, msg, cls) { setStep(id, s); if (msg) log(msg, cls); await sleep(STEP); }
+
+async function run() {
+  if (state.running) return;
+  state.running = true; $('sg-run').disabled = true;
+  clear(); $('sg-log').textContent = '';
+  const ex = state.mode === 'explicit', sc = state.scen;
+  log(`— ${SCENS[sc]} · ${MODES[state.mode].label} —`, 'log-warn');
+  if (sc === 'dup') {
+    await step('T1', 'done', 'Bài #1: T1 ghi submission, PENDING', 'log-ok'); setStatus('PENDING');
+    await step('T2', 'active', 'Bài #1: Judge đang chạy SQL…', 'log-info'); setStatus('JUDGING');
+    state.seen = 'đang chấm';
+    if (ex) { log('Bài #2 → Core: UPDATE … WHERE status NOT IN (JUDGING) → 0 dòng → từ chối "bài trước đang chấm"', 'log-ok'); state.seen = 'bị chặn'; }
+    else { log('Bài #2 → Core nhận luôn: saga thứ hai chạy song song trên cùng dữ liệu', 'log-err'); state.seen = '2 bài song song'; }
+    await sleep(STEP); await step('T2', 'done', 'Bài #1: chấm xong', 'log-ok');
+    await step('T3', 'done', 'Bài #1: ghi điểm', 'log-ok'); setStatus('JUDGED');
+    await step('T4', 'done', 'Bài #1: ghi lệnh thông báo vào outbox', 'log-ok');
+    if (!ex) state.seen = '2 bài song song';
+    return finish();
+  }
+  await step('T1', 'done', 'T1 · Core ghi submission, status PENDING, publish submit.created', 'log-ok'); setStatus('PENDING');
+  state.seen = 'đang chấm';
+  await step('T2', 'active', ex ? 'T2 · Core gửi lệnh chấm, status JUDGING (semantic lock)' : 'T2 · Judge consume submit.created, bắt đầu chấm', 'log-info');
+  if (ex) setStatus('JUDGING');
+  if (sc === 'fail') {
+    await step('T2', 'fail', 'T2 · Judge không khởi tạo được sandbox → thất bại', 'log-err');
+    if (ex) {
+      await step('C1', 'active', 'C1 · kích hoạt compensation cho T1', 'log-warn');
+      await step('C1', 'done', 'C1 · UPDATE submissions SET status = ERROR WHERE status = JUDGING (idempotent)', 'log-ok');
+      state.comp++; setStatus('ERROR'); state.seen = 'báo lỗi, thử lại';
+    } else {
+      log('Không có compensation tường minh → bài giữ nguyên trạng thái PENDING', 'log-err'); state.seen = 'chấm mãi';
+    }
+    return finish();
+  }
+  if (sc === 'silent') {
+    await step('T2', 'warn', 'T2 · Judge sập / Kafka mất kết nối — không phản hồi', 'log-err');
+    if (!ex) { log('… 5 phút, 10 phút: không service nào cập nhật trạng thái', 'log-err'); state.seen = 'chấm mãi'; return finish(); }
+    log('… quá 5 phút: job quét bài quá hạn', 'log-warn');
+    setStatus('CANCELLING'); log('markAsCancelling → gửi lệnh hủy/probe tới Judge (không gửi lặp ở chu kỳ sau)', 'log-info'); await sleep(STEP);
+    log('Judge phục hồi, xác nhận hủy lần chạy judgeRunId=r1 → judge.cancel.ack', 'log-ok'); await sleep(STEP);
+    setStatus('TIMEOUT'); await step('C1', 'done', 'C1 · TIMEOUT + bù trừ: hoàn lượt nộp, gửi lại bản clone (retryCount < MAX)', 'log-ok');
+    state.comp++; log('Kết quả muộn của r1 đến sau → judgeRunId không còn hiệu lực → bỏ qua, ghi log', 'log-warn');
+    state.seen = 'hết giờ, thử lại';
+    return finish();
+  }
+  await step('T2', 'done', 'T2 · chấm xong — vượt pivot, saga phải đi tới đích', 'log-ok');
+  if (sc === 'retry') {
+    await step('T3', 'warn', 'T3 · ghi điểm lỗi mạng', 'log-err');
+    if (ex) {
+      log('Retriable: thử lại sau 1 s… 2 s… (backoff) — không bù trừ T2', 'log-warn'); await sleep(STEP);
+      await step('T3', 'done', 'T3 · ghi điểm thành công', 'log-ok');
+    } else {
+      log('Không có state machine tập trung: không theo dõi được saga đang dở ở T3', 'log-warn');
+      state.seen = 'không rõ'; return finish();
+    }
+  } else await step('T3', 'done', 'T3 · Core ghi điểm', 'log-ok');
+  setStatus('JUDGED');
+  await step('T4', 'done', 'T4 · ghi lệnh thông báo vào outbox; worker gửi WebSocket/email ngoài saga', 'log-ok');
+  state.seen = 'có kết quả';
+  finish();
+}
+function finish() { state.running = false; $('sg-run').disabled = false; render(); }
+function clear() { state.st = {}; state.status = null; state.seen = '—'; state.comp = 0; state.trail = []; }
+function render() {
+  const m = MODES[state.mode];
+  [['sg-modes', 'mode'], ['sg-scens', 'scen']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('sg-title').textContent = m.label; $('sg-hint').textContent = m.hint;
+  const ex = state.mode === 'explicit';
+  $('sg-steps').innerHTML = STEPS.map(([id, t, sub, tag], k) => {
+    const s = state.st[id] || (id === 'C1' && !ex ? 'off' : '');
+    return `<li class="sim-step ${s ? 'is-' + s : ''}"><span class="sim-step-dot">${id}</span><div><div class="sim-step-title">${t}</div><div class="sim-step-sub">${sub}</div></div><span class="sim-step-tag">${tag}</span></li>`;
+  }).join('');
+  document.querySelectorAll('#sg-states .sim-chip').forEach(b => {
+    b.classList.toggle('is-active', b.dataset.v === state.status);
+    b.style.opacity = !ex && (b.dataset.v === 'CANCELLING' || b.dataset.v === 'TIMEOUT' || b.dataset.v === 'ERROR') ? '.35' : '';
+  });
+  $('sg-status').textContent = state.status || '—';
+  $('sg-student').textContent = state.seen;
+  $('sg-comp').textContent = state.comp;
+  $('sg-note').textContent = NOTES[state.mode + '.' + state.scen];
+}
+$('sg-run').addEventListener('click', run);
+log('Chọn kiểu saga và kịch bản, rồi bấm Nộp bài. Thử từng kịch bản ở cả hai kiểu.', 'log-info');
+render();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      if (i === items.length - 1) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
 </script>
 </body>
 </html>
-
-
-
-

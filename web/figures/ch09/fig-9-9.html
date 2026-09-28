@@ -2,60 +2,61 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.9 — Security Flow | Ch.9</title>
+  <!--
+    Fig 9.9 — Vault Dynamic Secrets: thông tin xác thực tạm thời, tự động xoay vòng
+    2026-09-28 (WP-B Ch.09): bản cũ thiếu bước Vault tạo user tạm trong database (credential "động" nghĩa là vậy) và bước thu
+    hồi khi hết TTL; vùng ghi chú căn giữa → dưới đúng actor. Việt hoá nhãn theo §17. Ghi rõ đây là Cấp 3 (khi production
+    hoàn chỉnh) — hiện trạng theo bảng tbl:kbm_security_analysis; thêm cái giá của Vault.
+  -->
+  <title>Fig 9.9 — Vault Dynamic Secrets | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-  
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-9.9">
-
-    <div class="d-seq-container d-mb-2">
+  <div class="diagram-canvas" data-fig-id="FIG-9.9" data-ref="CH09-SEC">
+    <div class="d-seq-container">
       <div class="d-seq-participants">
         <div class="d-seq-actor"><div class="d-seq-actor-box d-domain">Auth Service</div></div>
         <div class="d-seq-actor"><div class="d-seq-actor-box d-infra">Vault</div></div>
         <div class="d-seq-actor"><div class="d-seq-actor-box d-storage">Database</div></div>
       </div>
-
-    <div class="d-seq-messages">
-      <!-- 1. Request credentials -->
-      <div class="d-seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Request DB credentials</span></div>
-        <div style="flex:1.5;"></div>
-      </div>
-      <!-- 2. Generate -->
-      <div class="d-center" style="margin:4px 0;">
-        <div class="d-zone d-zone-info" >Generate short-lived credentials</div>
-      </div>
-      <!-- 3. Return -->
-      <div class="d-seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">temp_user / temp_pass (TTL: 30min)</span></div>
-        <div style="flex:1.5;"></div>
-      </div>
-      <!-- 4. Connect to DB -->
-      <div class="d-seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Connect with temp credentials</span></div>
-        <div style="flex:0.5;"></div>
-      </div>
-      <!-- 5. Access granted -->
-      <div class="d-seq-msg">
-        <div style="flex:0.5;"></div>
-        <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Access granted</span></div>
-        <div style="flex:0.5;"></div>
+      <div class="d-seq-messages">
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">xin credential cho DB</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">tạo user tạm, hết hạn sau TTL</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">temp_user / temp_pass (TTL 30 phút)</span></div>
+          <div style="flex:1.5;"></div>
+        </div>
+        <div class="d-seq-msg">
+          <div style="flex:0.5;"></div>
+          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">kết nối bằng credential tạm</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
+        <div class="d-seq-msg" style="min-height: 32px;">
+          <div style="flex:1.1;"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:0.8;">hết TTL: thu hồi user tạm</div>
+          <div style="flex:1.1;"></div>
+        </div>
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">xoá user</span></div>
+          <div style="flex:0.5;"></div>
+        </div>
       </div>
     </div>
-
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub"><strong>Được</strong>: không ai biết mật khẩu database thật; credential tự hết hạn và xoay vòng; mọi lần cấp đều có audit.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: thêm một hệ thống phải vận hành và giữ sẵn sàng. Đây là Cấp 3, khi production hoàn chỉnh — hiện KBM để secret một phần hardcoded, một phần qua biến môi trường.</div>
     </div>
-
-    <!-- Benefits -->
-    <div class="d-box d-success d-mt-3" style="padding:12px 18px; position:relative; z-index:2;">
-      <div class="d-title d-mb-1">Lợi ích</div>
-      <div class="d-sub" style="line-height:1.5;">Credentials tự hết hạn. Không hardcode password. Vault tự rotate. Audit trail cho mọi access.</div>
-    </div>
-
-  </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

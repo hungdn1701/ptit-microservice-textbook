@@ -2,56 +2,59 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.7 — Security Flow | Ch.9</title>
+  <!--
+    Fig 9.7 — Phân cấp vai trò: ADMIN kế thừa LECTURER, LECTURER kế thừa STUDENT
+    2026-09-28 (WP-B Ch.09): bản cũ là ba cột ngang, không có quan hệ kế thừa mà chú thích nói tới, và ghi LECTURER "Từ chối"
+    những quyền vốn không kế thừa — vẽ lại thành chuỗi kế thừa bằng d-links, mỗi tầng chỉ ghi quyền thêm vào, ví dụ lấy từ
+    listing @PreAuthorize (isAuthenticated / hasAnyRole('LECTURER','ADMIN') / hasRole('ADMIN')) và RoleHierarchy ngay sau
+    hình. Claim cũ "role": "STUDENT" → hiện trạng pipe-delimited "ADMIN|LECTURER|STUDENT" theo văn bản; thêm ownership check.
+  -->
+  <title>Fig 9.7 — Phân cấp vai trò | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-9.7">
-
-    <!-- Roles row -->
-    <div class="d-row d-gap-2 d-mb-3" style="align-items:stretch;">
-      <div class="d-box d-danger text-center" style="flex:1; padding:16px 12px;">
-        <div class="d-title d-title-lg d-mb-1">ADMIN</div>
-        <div class="d-sub">Mọi quyền</div>
-        <div class="d-sep"></div>
-        <div class="d-stack text-left" style="gap:3px;">
-          <div class="d-sub">Cho phép: Quản lý users</div>
-          <div class="d-sub">Cho phép: CRUD content</div>
-          <div class="d-sub">Cho phép: Xem reports</div>
-          <div class="d-sub">Cho phép: System config</div>
+  <div class="diagram-canvas" data-fig-id="FIG-9.7" data-ref="CH09-SEC">
+    <div style="display: grid; grid-template-columns: 420px 1fr; gap: 56px; align-items: center;">
+      <div class="d-col" style="gap: 56px;">
+        <div class="d-box d-danger" id="rh-admin">
+          <div class="d-title">ADMIN</div>
+          <div class="d-sub">+ xoá câu hỏi — <code>hasRole('ADMIN')</code></div>
+          <div class="d-sub">+ quản lý người dùng, cấu hình hệ thống</div>
+        </div>
+        <div class="d-box d-event" id="rh-lect">
+          <div class="d-title">LECTURER</div>
+          <div class="d-sub">+ tạo câu hỏi — <code>hasAnyRole('LECTURER','ADMIN')</code></div>
+          <div class="d-sub">+ xem bài nộp của lớp mình phụ trách</div>
+        </div>
+        <div class="d-box d-service" id="rh-stu">
+          <div class="d-title">STUDENT</div>
+          <div class="d-sub">xem câu hỏi — <code>isAuthenticated()</code></div>
+          <div class="d-sub">nộp bài ở lớp mình ghi danh</div>
         </div>
       </div>
 
-      <div class="d-box d-event text-center" style="flex:1; padding:16px 12px;">
-        <div class="d-title d-title-lg d-mb-1">LECTURER</div>
-        <div class="d-sub">Tạo/sửa content</div>
-        <div class="d-sep"></div>
-        <div class="d-stack text-left" style="gap:3px;">
-          <div class="d-sub">Cho phép: CRUD assignments</div>
-          <div class="d-sub">Cho phép: Xem submissions</div>
-          <div class="d-sub">Từ chối: Quản lý users</div>
-          <div class="d-sub">Từ chối: System config</div>
+      <div class="d-stack d-gap-2">
+        <div class="d-box d-note">
+          <div class="d-title d-mb-1">Khai báo một lần</div>
+          <div class="d-code">ROLE_ADMIN &gt; ROLE_LECTURER<br>ROLE_LECTURER &gt; ROLE_STUDENT</div>
+          <div class="d-sub d-mt-1">khỏi liệt kê cứng nhiều vai trò ở mỗi endpoint</div>
         </div>
-      </div>
-
-      <div class="d-box d-service text-center" style="flex:1; padding:16px 12px;">
-        <div class="d-title d-title-lg d-mb-1">STUDENT</div>
-        <div class="d-sub">Xem/submit</div>
-        <div class="d-sep"></div>
-        <div class="d-stack text-left" style="gap:3px;">
-          <div class="d-sub">Cho phép: Xem assignments</div>
-          <div class="d-sub">Cho phép: Submit solutions</div>
-          <div class="d-sub">Từ chối: CRUD content</div>
-          <div class="d-sub">Từ chối: Quản lý users</div>
+        <div class="d-box d-warning">
+          <div class="d-sub"><strong>Role chỉ là lớp đầu.</strong> Tài nguyên có quan hệ sở hữu (đề thuộc lớp nào, giảng viên có phụ trách lớp đó không, sinh viên có ghi danh không) service phải tự kiểm tra sau khi xác minh token.</div>
+        </div>
+        <div class="d-box d-note">
+          <div class="d-sub"><strong>Hiện trạng KBM</strong>: roles lưu trong JWT dạng chuỗi <code>"ADMIN|LECTURER|STUDENT"</code>, phải tự tách; mục tiêu là mảng JSON.</div>
         </div>
       </div>
     </div>
 
-    <!-- Note -->
-    <div class="d-box d-note" style="padding:12px 18px;">
-      <div class="d-sub text-center" style="line-height:1.5;">Quyền được encode trong JWT claim <span class="d-mono" style="display:inline;">"role": "STUDENT"</span> → Service kiểm tra khi xử lý request</div>
-    </div>
-  </div>
+    <svg class="d-links">
+      <path data-from="rh-admin" data-to="rh-lect" data-label="kế thừa"></path>
+      <path data-from="rh-lect" data-to="rh-stu" data-label="kế thừa"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

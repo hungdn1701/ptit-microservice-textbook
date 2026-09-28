@@ -4,214 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CQRS & Event Sourcing — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="CQRS & Event Sourcing pattern — tách biệt mô hình đọc/ghi và lưu trữ chuỗi sự kiện thay vì trạng thái hiện tại.">
+  <meta name="description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ leaderboard contest của KBM.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="CQRS & Event Sourcing — Pattern Story">
-  <meta property="og:description" content="CQRS & Event Sourcing pattern — tách biệt mô hình đọc/ghi và lưu trữ chuỗi sự kiện thay vì trạng thái hiện tại.">
+  <meta property="og:description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ leaderboard contest của KBM.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom styles for CQRS & Event Sourcing Simulator */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .canvas-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-    }
-
-    .cqrs-canvas {
-      min-height: 380px;
-      border: 1px dashed var(--border);
-      background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-md);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .node {
-      position: absolute;
-      background: var(--bg-surface);
-      border: 2px solid var(--border);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      color: var(--text-main);
-      text-align: center;
-      box-shadow: var(--shadow-medium);
-      z-index: 2;
-      font-size: 11px;
-    }
-    
-    .node-command { top: 20px; left: 20px; border-color: var(--warning); color: var(--warning); }
-    .node-query { top: 20px; right: 20px; border-color: var(--info); color: var(--info); }
-    
-    .db {
-      position: absolute;
-      border: 2px solid;
-      border-radius: var(--radius-md);
-      padding: 10px;
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      z-index: 2;
-      background: var(--bg-card);
-      width: 150px;
-    }
-    .db-write { top: 90px; left: 20px; border-color: var(--warning); color: var(--warning); }
-    .db-read { top: 90px; right: 20px; border-color: var(--info); color: var(--info); }
-
-    .event-bus {
-      position: absolute;
-      top: 180px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80%;
-      height: 40px;
-      border: 2px dashed var(--success);
-      border-radius: 99px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--success);
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      font-weight: 700;
-      background: rgba(34, 211, 160, 0.05);
-      z-index: 1;
-    }
-
-    /* Event Particles */
-    .event-dot {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success-glow);
-      z-index: 3;
-      opacity: 0;
-    }
-
-    @keyframes writeToBus {
-      0% { top: 140px; left: 80px; opacity: 1; }
-      100% { top: 190px; left: calc(50% - 6px); opacity: 1; }
-    }
-    @keyframes busToRead {
-      0% { top: 190px; left: calc(50% - 6px); opacity: 1; }
-      100% { top: 140px; left: calc(100% - 95px); opacity: 1; }
-    }
-
-    /* Leaderboard Projection */
-    .projection-table {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 200px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-secondary);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-medium);
-    }
-    .projection-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .projection-table th {
-      border-bottom: 1px solid var(--border);
-      padding: 4px;
-      text-align: left;
-      color: var(--info);
-      font-size: 9.5px;
-      text-transform: uppercase;
-    }
-    .projection-table td {
-      padding: 4px 0;
-      border-bottom: 1px dotted rgba(255,255,255,0.05);
-    }
-    .row-update {
-      animation: flashRow 0.8s ease-out;
-    }
-    @keyframes flashRow {
-      0% { background: rgba(96, 165, 250, 0.25); }
-      100% { background: transparent; }
-    }
-
-    /* Event Store Log */
-    .event-store {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      width: 180px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--warning);
-      background: var(--bg);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 8px;
-      height: 120px;
-      overflow-y: auto;
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-medium);
-    }
-    .es-entry {
-      padding: 3px 0;
-      border-bottom: 1px solid rgba(245,158,11,0.1);
-      margin-bottom: 3px;
-      line-height: 1.3;
-    }
-
-    .dashboard-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .sim-log {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 200px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    .log-line {
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    .log-cmd { color: var(--warning); }
-    .log-evt { color: var(--success); }
-    .log-qry { color: var(--info); }
-    .log-sys { color: var(--text-main); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -229,12 +30,12 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">CQRS & Event Sourcing</h1>
-  <p class="pattern-subtitle">Tách biệt mô hình Read/Write và lưu trữ trạng thái bằng chuỗi sự kiện</p>
+  <p class="pattern-subtitle">Tách mô hình đọc và ghi; lưu chuỗi sự kiện thay vì chỉ lưu trạng thái</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Data Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Greg Young (CQRS), Martin Fowler (ES)</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2010 / 2005</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.7 §7.4</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.7 §7.4–7.6</span></div>
   </div>
 </header>
 
@@ -248,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trong hệ thống CRUD truyền thống, Read và Write dùng chung database schema. Khi lưu lượng đọc tăng vọt, các truy vấn phức tạp (nhiều JOIN) sẽ lock table, gây nghẽn luồng ghi.
+  <p class="section-intro">
+    Trong monolith, cùng một entity <code>Submission</code> phục vụ cả ghi (nộp bài, cập nhật kết quả) lẫn đọc (lịch sử, lọc, phân trang). Khi hệ thống lớn dần và dữ liệu tách theo service, một mô hình chung không còn đáp ứng được cả hai (§7.4, §7.5).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Lock</div></div>
-      <h3>Table Lock & Tăng Latency Write</h3>
-      <p>Khi thực thi query phức tạp, database áp dụng shared lock trên các row. Điều này block <code>INSERT</code> hoặc <code>UPDATE</code>, làm tăng latency của write API.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Một model</div></div>
+      <h3>Đọc và ghi cần hai thứ khác nhau</h3>
+      <p>Ghi cần nhất quán, validation, quy tắc nghiệp vụ — dữ liệu chuẩn hóa. Đọc cần nhanh — dữ liệu phi chuẩn hóa, gộp sẵn. Nghiêm trọng nhất là truy vấn xuyên service: bảng xếp hạng contest cần dữ liệu của Core, Judge và Auth, nhưng không thể JOIN khi chúng nằm ở ba database.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Audit</div></div>
-      <h3>Mất audit trail</h3>
-      <p>Hệ thống CRUD chỉ lưu current state. Khi update, trạng thái cũ bị overwrite. Việc truy vết lịch sử nghiệp vụ (audit trail) rất phức tạp và thiếu tin cậy.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">Mất lịch sử</div></div>
+      <h3>Chỉ lưu trạng thái hiện tại</h3>
+      <p>Database truyền thống lưu <code>status = JUDGED, score = 85</code> và ghi đè mọi giá trị trước đó. "Sinh viên nộp 3 lần: sai, đúng một phần, đúng hoàn toàn" — thông tin có giá trị cho phân tích học tập — bị mất.</p>
     </div>
   </div>
 
@@ -279,31 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      <strong>CQRS:</strong> Tách hệ thống thành hai luồng độc lập: Command side (chỉ write, dùng DB tối ưu ghi) và Query side (chỉ read, dùng DB tối ưu đọc như Materialized View).<br>
-      <strong>Event Sourcing:</strong> Trạng thái thực thể là một chuỗi immutable events trong Event Store. Current state được tái tạo bằng cách replay các events này.
+      CQRS tách model thành phía ghi (command) và phía đọc (query), mỗi phía có cấu trúc — thậm chí database — riêng. Event Sourcing lưu chuỗi sự kiện đã xảy ra thay vì trạng thái; trạng thái hiện tại là dữ liệu dẫn xuất, dựng lại được bằng cách phát lại sự kiện.
     </p>
-    <div class="definition-attribution">— Greg Young & Martin Fowler · Enterprise Integration Patterns</div>
+    <div class="definition-attribution">— Chris Richardson · Microservices Patterns, Ch.6–7</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Kiến trúc này cho phép scale độc lập luồng read và write, đồng thời cung cấp audit trail tin cậy tuyệt đối.
+  <p class="section-intro">
+    CQRS và Event Sourcing là hai pattern độc lập: dùng được CQRS mà không cần Event Sourcing và ngược lại. Kết hợp cả hai rất mạnh nhưng cũng rất phức tạp — Richardson khuyên bắt đầu với CQRS đơn giản, chỉ thêm Event Sourcing khi có nhu cầu cụ thể như audit trail hay truy vấn theo thời điểm (§7.4).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Command Side (Write)</h3>
-      <p>Nhận Command từ client, validate nghiệp vụ và append events vào <strong>Event Store</strong>. Đây là Source of Truth duy nhất của hệ thống.</p>
+      <h3>Command side</h3>
+      <p>Mô hình chuẩn hóa, validation chặt, quy tắc nghiệp vụ; database có giao dịch ACID (PostgreSQL). Đây là nơi ghi — và nếu dùng Event Sourcing, nơi nối thêm sự kiện.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Event Projector</h3>
-      <p>Worker chạy ngầm lắng nghe Event Store (qua Kafka). Khi có event mới, Projector biến đổi và cập nhật data vào <strong>Read Database</strong> (Redis/Elasticsearch).</p>
+      <h3>Query side (read model)</h3>
+      <p>View phi chuẩn hóa, gộp sẵn cho từng kiểu truy vấn; có thể dùng công nghệ khác — Redis cho leaderboard, Elasticsearch cho tìm kiếm, materialized view cho báo cáo. Cập nhật đồng bộ hay bất đồng bộ là một quyết định, không mặc định.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Query Side (Read)</h3>
-      <p>Xử lý Query từ client. Đọc trực tiếp từ <strong>Read Database</strong> (dữ liệu đã denormalize, không JOIN, low latency).</p>
+      <h3>Event store + projection</h3>
+      <p>Chuỗi sự kiện append-only là nguồn sự thật; projection là dữ liệu dẫn xuất, dựng lại bất kỳ lúc nào bằng replay. Cập nhật projection phải idempotent vì broker chỉ bảo đảm at-least-once (§7.5).</p>
     </div>
   </div>
 </section>
@@ -318,60 +118,81 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Thử nghiệm Command API để append event và quan sát Kafka đồng bộ bất đồng bộ sang Read Model phục vụ Query API.
-  </p>
+  <p class="section-intro">Ví dụ bảng xếp hạng contest của KBM (§7.4). Cả hai chế độ dưới đây đều là CQRS — phía đọc là một read model riêng; khác nhau ở cách read model được cập nhật, và mỗi cách là một đánh đổi. Sau vài lượt nộp, dựng thêm một view mới từ chuỗi sự kiện để thấy Event Sourcing (§7.5).</p>
 
-  <div class="simulator-container">
-    <!-- Left panel: visual canvas -->
-    <div class="canvas-card">
-      <div class="cqrs-canvas">
-        <!-- Nodes -->
-        <div class="node node-command">Command API (Write)</div>
-        <div class="node node-query">Query API (Read)</div>
-        
-        <!-- Databases -->
-        <div class="db db-write">Event Store (DB Ghi)</div>
-        <div class="db db-read">Leaderboard DB (Redis)</div>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Read model</span><div class="sim-chips" id="cq-modes"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Sự cố</span><div class="sim-chips" id="cq-faults"></div></div>
+    <button class="sim-btn primary-action" id="cq-run" type="button">▶ Nộp bài</button>
+    <button class="sim-btn" id="cq-reset" type="button">Làm lại</button>
+  </div>
 
-        <!-- Bus -->
-        <div class="event-bus">Kafka Event Bus</div>
-
-        <!-- Particles -->
-        <div class="event-dot" id="dot1"></div>
-        <div class="event-dot" id="dot2"></div>
-
-        <!-- Event Store Log -->
-        <div class="event-store" id="es-log">
-          <div style="color:var(--text-dim); font-style:italic">Event Store trống...</div>
-        </div>
-
-        <!-- Projection Table -->
-        <div class="projection-table">
-          <table>
-            <thead><tr><th>Sinh viên</th><th>Điểm số</th></tr></thead>
-            <tbody id="leaderboard">
-              <tr id="row-u1"><td>user_01</td><td>0</td></tr>
-              <tr id="row-u2"><td>user_02</td><td>0</td></tr>
-            </tbody>
-          </table>
-        </div>
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="cq-title"></span> <span class="sim-hint" id="cq-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="cq-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="cq-client"><div class="sim-node-name">Sinh viên</div><div class="sim-node-sub">nộp bài · xem hạng</div></div>
+        <div class="sim-node is-core" id="cq-core"><div class="sim-node-name">Core Service</div><div class="sim-node-sub">command side</div></div>
+        <div class="sim-node" id="cq-pg"><div class="sim-node-name">PostgreSQL</div><div class="sim-node-sub" id="cq-pg-sub"></div></div>
+        <div class="sim-node" id="cq-lb"><div class="sim-node-name">Leaderboard</div><div class="sim-node-sub">query side · Redis ZSET</div></div>
+        <div class="sim-node" id="cq-kafka"><div class="sim-node-name">Kafka</div><div class="sim-node-sub" id="cq-kafka-sub"></div></div>
+        <div class="sim-node" id="cq-relay"><div class="sim-node-name">Message Relay</div><div class="sim-node-sub">đọc outbox</div></div>
       </div>
+      <svg class="d-links">
+        <path id="cq-l-cc" data-from="cq-client" data-to="cq-core"></path>
+        <path id="cq-l-cp" data-from="cq-core" data-to="cq-pg"></path>
+        <path id="cq-l-sync" data-from="cq-core" data-to="cq-lb" data-from-side="bottom" data-from-at="0.15" data-to-side="top" data-to-at="0.8"></path>
+        <path id="cq-l-ck" data-from="cq-core" data-to="cq-kafka" data-from-side="bottom" data-from-at="0.6" data-to-side="top" data-to-at="0.6" class="is-dashed"></path>
+        <path id="cq-l-pr" data-from="cq-pg" data-to="cq-relay" class="is-dashed"></path>
+        <path id="cq-l-rk" data-from="cq-relay" data-to="cq-kafka" class="is-dashed"></path>
+        <path id="cq-l-kl" data-from="cq-kafka" data-to="cq-lb" class="is-dashed"></path>
+        <path id="cq-l-read" data-from="cq-client" data-to="cq-lb" data-to-at="0.35"></path>
+      </svg>
+    </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="cq-n">0</div><div class="sim-stat-lbl">Lượt nộp</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="cq-stale">0</div><div class="sim-stat-lbl">Xem ngay thấy hạng cũ</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="cq-dedup">0</div><div class="sim-stat-lbl">Bản relay bị bỏ qua</div></div>
+    </div>
+  </div>
 
-      <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="sendCommand('u1', 10)" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:11.5px;">Nộp bài User_01 (+10)</button>
-        <button class="btn btn-primary" onclick="sendCommand('u2', 20)" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:11.5px;">Nộp bài User_02 (+20)</button>
-        <button class="btn" onclick="sendQuery()" style="border-color:var(--info); color:var(--info); font-size:11.5px;">Lấy Bảng Xếp Hạng (Query)</button>
-        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:11.5px;">Reset</button>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Bảng xếp hạng <span class="sim-hint">read model của Leaderboard</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="cq-board">
+          <thead><tr><th class="num">Hạng</th><th>Sinh viên</th><th class="num">Điểm</th><th>Ghi chú</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sim-note" id="cq-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">Core · Leaderboard · Kafka</span></div>
+      <div class="sim-log" id="cq-log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="sim-grid">
+    <div class="sim-panel is-success">
+      <div class="sim-panel-title">Chuỗi sự kiện <span class="sim-hint">append-only, mới nhất ở trên</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="cq-events">
+          <thead><tr><th>Event</th><th>Sinh viên</th><th class="num">Điểm</th><th class="num">Version</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-
-    <!-- Right panel: live logs -->
-    <div class="dashboard-panel">
-      <div class="dashboard-title">System Execution Logs</div>
-      <div class="sim-log" id="sys-log">
-        <div class="log-sys">Hệ thống sẵn sàng...</div>
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">View mới: learning_progress <span class="sim-hint">dựng bằng replay</span></div>
+      <div class="sim-controls"><button class="sim-btn" id="cq-replay" type="button">↻ Dựng view từ events</button></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="cq-progress">
+          <thead><tr><th>Sinh viên</th><th class="num">Số lần nộp</th><th>Điểm các lần</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
+      <p class="sim-note">Minh họa §7.5: KBM hiện chỉ lưu trạng thái hiện tại (CRUD). Nếu giữ chuỗi sự kiện, một view mới như thế này dựng được kèm toàn bộ lịch sử — không cần migration hay suy diễn lại từ trạng thái cuối.</p>
     </div>
   </div>
 </section>
@@ -386,86 +207,93 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    KBM áp dụng CQRS cho module thi trực tuyến nhằm giảm tải cho master database.
+  <p class="section-intro">
+    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Assignment chung <code>app_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Phân tích chênh lệch và Quyết định kỹ thuật</h3>
-  <div class="sub-label">Bảng so sánh mô hình CRUD truyền thống và mô hình CQRS/ES</div>
+  <h3 class="sub-heading">Gap Analysis — dữ liệu đọc và lịch sử</h3>
+  <div class="sub-label">Trích bảng tổng hợp vấn đề dữ liệu KBM (§7.6)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Tiêu chí</th>
-          <th>Monolith CRUD ban đầu</th>
-          <th>Kiến trúc CQRS + ES đề xuất</th>
-          <th>Lý do kỹ thuật (Trade-off)</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Độ trễ truy vấn (Read Latency)</td>
-          <td><span class="b-high">Cao (1-3s)</span> do SQL JOIN phức tạp.</td>
-          <td><span class="b-low">Thấp (&lt; 10ms)</span> nhờ đọc trực tiếp từ Redis.</td>
-          <td>Read model được denormalize sẵn, tối ưu hóa cho tốc độ đọc.</td>
+          <td class="gap-label">Leaderboard</td>
+          <td>SQL JOIN trực tiếp; sẽ không còn khả thi khi database tách theo service.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Read model riêng. Sách chọn Redis Sorted Set cập nhật đồng bộ (Composite Score) + outbox, <code>eventId</code>, <code>scoreVersion</code>, đẩy thay đổi qua WebSocket/SSE — ưu tiên trải nghiệm tức thời của contest.</td>
         </tr>
         <tr>
-          <td class="gap-label">Khả năng ghi (Write Throughput)</td>
-          <td>Bị block chéo do lock table từ luồng read.</td>
-          <td>Độc lập, append event trực tiếp vào log.</td>
-          <td>Không bị ảnh hưởng bởi tải đọc của client.</td>
+          <td class="gap-label">Shared database</td>
+          <td>Core và Assignment cùng <code>app_db</code>.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Schema riêng có database role chặn cross-schema → truy cập qua API → full split khi cần scale độc lập.</td>
         </tr>
         <tr>
-          <td class="gap-label">Tính nhất quán (Consistency)</td>
-          <td>Strong Consistency.</td>
-          <td>Eventual Consistency qua Kafka.</td>
-          <td>Bảng xếp hạng chấp nhận trễ 1-2 giây để đổi lấy khả năng chịu tải.</td>
+          <td class="gap-label">Read model học vụ</td>
+          <td>Grade Scheme, Attendance, MCQ Daily, CLO cần tổng hợp dữ liệu khóa học, lớp, bài làm.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Xác định owner rõ ràng; bản sao read-only qua events hoặc materialized views, không thành nguồn sự thật thứ hai.</td>
         </tr>
         <tr>
-          <td class="gap-label">Độ phức tạp (Complexity)</td>
-          <td><span class="b-low">Thấp</span>, chỉ là CRUD cơ bản.</td>
-          <td><span class="b-high">Cao</span>, cần xử lý async, duplicate event.</td>
-          <td>Đội ngũ vận hành cần có kinh nghiệm về Kafka và Redis.</td>
+          <td class="gap-label">Submission history</td>
+          <td>CRUD — chỉ lưu trạng thái hiện tại.</td>
+          <td><span class="b-low">LOW</span></td>
+          <td>Event Sourcing cho phân tích học tập khi nhu cầu đủ lớn để bù chi phí phức tạp; trước mắt chưa ưu tiên với nhóm nhỏ.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Lộ trình triển khai CQRS & Event Sourcing</h3>
-  <div class="sub-label">Các bước thực thi triển khai nâng cấp hạ tầng dữ liệu</div>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo đề xuất migration ở §7.6 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1 · Tuần 1</div>
-      <h4>Tách Command/Query tại tầng Application</h4>
-      <p>Dùng Mediator pattern (Spring Event). Tách service thành <code>CreateSubmissionCommandHandler</code> và <code>GetLeaderboardQueryHandler</code>.</p>
-      <span class="t-badge orange">Dự kiến: 2 devs × 4 ngày</span>
+      <div class="timeline-phase">Giai đoạn 1</div>
+      <h4>Tách schema</h4>
+      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>assignment_schema</code>; database role riêng, <code>REVOKE</code> để chặn cross-schema JOIN.</p>
+      <span class="t-badge orange">Chi phí thấp</span>
     </div>
-    <div class="timeline-item" data-delay="250">
+    <div class="timeline-item" data-delay="200">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Setup Event Store</h4>
-      <p>Cấu hình bảng <code>event_store</code> trên PostgreSQL. Chuyển đổi dữ liệu nộp bài thành chuỗi event: <code>SubmissionCreated</code>, <code>TestCasesExecuted</code>, <code>ScoreCalculated</code>.</p>
-      <span class="t-badge green">✓ Lưu lịch sử bằng append-only log</span>
+      <div class="timeline-phase">Giai đoạn 2</div>
+      <h4>Truy cập dữ liệu qua API</h4>
+      <p>Assignment gọi Core <code>GET /api/questions/batch</code> thay vì query thẳng <code>core_schema.questions</code>.</p>
+      <span class="t-badge orange">Chi phí trung bình</span>
     </div>
-    <div class="timeline-item" data-delay="500">
+    <div class="timeline-item" data-delay="400">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3 · Tuần 3</div>
-      <h4>Build Projector cập nhật Redis Read Model</h4>
-      <p>Triển khai worker consume Kafka. Xử lý event và cập nhật trực tiếp vào Redis Sorted Set (ZSET) để query bảng xếp hạng real-time.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 1 tuần</span>
+      <div class="timeline-phase">Giai đoạn 3</div>
+      <h4>Nhân bản dữ liệu qua sự kiện</h4>
+      <p>Core publish <code>QuestionUpdated</code>; Assignment giữ bản sao reference data. Cần cơ chế bulk sync/đối soát để khởi tạo, và outbox để publish nguyên tử.</p>
+      <span class="t-badge orange">Chi phí trung bình</span>
     </div>
-    <div class="timeline-item" data-delay="750">
+    <div class="timeline-item" data-delay="600">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4 · Tuần 4</div>
-      <h4>Cài đặt Snapshotting tối ưu performance</h4>
-      <p>Khi số event của Aggregate vượt 10,000, quá trình replay sẽ chậm. Áp dụng snapshotting định kỳ mỗi 1,000 events để giảm thời gian load.</p>
-      <span class="t-badge green">✓ Tối ưu thời gian load Aggregate</span>
+      <div class="timeline-phase">Giai đoạn 4</div>
+      <h4>Leaderboard thời gian thực với Redis</h4>
+      <p>Leaderboard Service giữ Redis Sorted Set; Core gọi đồng bộ (fast path) và ghi outbox trong cùng transaction (đường bền vững). <code>ZREVRANK</code> O(log N) in-memory.</p>
+      <span class="t-badge orange">Chi phí cao · giá trị lớn cho contest</span>
+    </div>
+    <div class="timeline-item" data-delay="800">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Giai đoạn 5</div>
+      <h4>Read model cho phân tích học tập</h4>
+      <p>Grade Scheme, Attendance, MCQ Daily, CLO là read model học vụ; owner dữ liệu gốc vẫn ở bounded context tương ứng.</p>
+      <span class="t-badge orange">Khi mở rộng học vụ</span>
     </div>
   </div>
 
@@ -475,13 +303,13 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Nên dùng CQRS & Event Sourcing khi</div>
+        <div class="decision-title">Nên dùng khi</div>
       </div>
       <ul class="decision-list">
-        <li>Read throughput lớn hơn write gấp nhiều lần (Leaderboard, News feed).</li>
-        <li>Yêu cầu audit trail nghiêm ngặt, bất biến (Wallet, Banking).</li>
-        <li>Cần tổng hợp data từ nhiều nguồn cho các read model khác nhau.</li>
-        <li>Cần khả năng rollback aggregate state về thời điểm bất kỳ (Time travel).</li>
+        <li>CQRS: truy vấn phức tạp xuyên service, không JOIN được khi database đã tách.</li>
+        <li>CQRS: lượng đọc lớn hơn nhiều lượng ghi — cần scale phía đọc độc lập.</li>
+        <li>Event Sourcing: yêu cầu audit trail, không được xóa lịch sử.</li>
+        <li>Event Sourcing: phân tích theo thời gian — "trạng thái tại thời điểm X".</li>
       </ul>
     </div>
     <div class="decision-card no">
@@ -490,10 +318,10 @@
         <div class="decision-title">Không nên dùng khi</div>
       </div>
       <ul class="decision-list">
-        <li>CRUD đơn giản, throughput thấp (Over-engineering).</li>
-        <li>Yêu cầu strong consistency ngay sau khi write.</li>
-        <li>Thiếu kinh nghiệm vận hành Message Broker và Eventual Consistency.</li>
-        <li>Xây dựng MVP, cần time-to-market nhanh.</li>
+        <li>CRUD đơn giản, đọc/ghi cân bằng trên cùng model (quản lý người dùng, cấu hình).</li>
+        <li>Nhóm nhỏ, dự án ở giai đoạn MVP — chi phí phức tạp lớn hơn lợi ích.</li>
+        <li>Cần thấy ngay kết quả vừa ghi mà chỉ có read model bất đồng bộ — cân nhắc cập nhật đồng bộ cho riêng luồng đó.</li>
+        <li>Chưa xác định service nào sở hữu dữ liệu — bản sao không có nguồn sự thật dễ xung đột.</li>
       </ul>
     </div>
   </div>
@@ -501,7 +329,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về CQRS, Event Sourcing, Event Store, Projection, Snapshotting và thiết kế database trong sách.</p>
+  <p>Đọc chi tiết về CQRS và ví dụ leaderboard (§7.4), Event Sourcing, snapshot, projection rebuild (§7.5) và lộ trình dữ liệu của KBM (§7.6).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-07')"><div class="badge badge-info">Read</div> Chương 7 — Quản lý Dữ liệu →</a>
 </div>
 
@@ -517,107 +345,211 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: read model cho leaderboard (Chương 7 §7.4) + projection rebuild (§7.5) ─────────────
+// Theo sách: CQRS bất đồng bộ qua Kafka sinh replication lag → người vừa nộp thấy hạng cũ; không dùng
+// cho live leaderboard. Đề xuất: Core ghi điểm + outbox (eventId, scoreVersion) trong cùng transaction,
+// gọi đồng bộ Leaderboard (fast path) → ZADD Composite Score; relay từ outbox tới sau được bỏ qua nhờ
+// eventId (idempotent) và scoreVersion (không ghi đè điểm mới). Fast path lỗi → relay vẫn cập nhật.
+const MODES = {
+  kafka: { label: 'Cập nhật bất đồng bộ', hint: 'Core publish qua Kafka, Leaderboard consume sau — tách rời, có độ trễ' },
+  redis: { label: 'Cập nhật đồng bộ + outbox', hint: 'fast path đồng bộ tới Leaderboard, outbox là đường bền vững (§7.4)' },
+};
+const FAULTS = { none: 'Không', fast: 'Fast path lỗi' };
+const NOTES = {
+  'kafka.none':  'Được: Core không phụ thuộc Leaderboard lúc chạy, phía đọc scale độc lập. Mất: người vừa nộp đọc trước khi event được consume nên thấy hạng cũ — ổn cho báo cáo hay phân tích, nhưng với live leaderboard thì trải nghiệm kém, và optimistic UI không cứu được vì hạng phụ thuộc điểm người khác (§7.4).',
+  'kafka.fast':  'Chế độ bất đồng bộ không có fast path — chọn "Cập nhật đồng bộ + outbox" để xem sự cố này.',
+  'redis.none':  'Được: người nộp đọc lại thấy ngay điểm của mình (read-after-write). Mất: Core gọi đồng bộ sang Leaderboard, thêm outbox, eventId, scoreVersion — phức tạp hơn. Bản relay đến sau mang cùng eventId nên bị bỏ qua.',
+  'redis.fast':  'Lời gọi đồng bộ lỗi: người nộp tạm thấy hạng cũ, nhưng không mất cập nhật — outbox đã ghi trong cùng transaction và relay áp dụng sau (§7.4).',
+};
+// Chuỗi lượt nộp cố định để thứ hạng thay đổi rõ (điểm thang 0–100 theo invariant của Composite Score).
+const SUBMITS = [['sv-02', 70], ['sv-01', 85], ['sv-03', 85], ['sv-02', 90], ['sv-04', 60], ['sv-01', 95], ['sv-04', 88], ['sv-03', 92]];
+const state = { mode: 'kafka', fault: 'none', running: false, i: 0, t: 0, eid: 0,
+                truth: {}, redis: {}, versions: {}, applied: new Set(), events: [], progress: null, n: 0, stale: 0, dedup: 0 };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 380;
 
-// ── Simulator Logic ──────────────────────────────────────
-let scores = { 'u1': 0, 'u2': 0 };
-let seq = 1;
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function logSys(msg, cls) {
-  const log = document.getElementById('sys-log');
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  log.innerHTML += `<div class="${cls}"><span style="color:var(--text-dim)">[${time}]</span> ${msg}</div>`;
-  log.scrollTop = log.scrollHeight;
-}
-
-function logEs(msg) {
-  const es = document.getElementById('es-log');
-  if(seq === 1) es.innerHTML = ''; // Clear placeholder
-  es.innerHTML = `<div class="es-entry">${seq}. ${msg}</div>` + es.innerHTML;
-  seq++;
-}
-
-function anim(elId, animName, dur) {
-  return new Promise(r => {
-    const el = document.getElementById(elId);
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.style.animation = `${animName} ${dur}s forwards`;
-    setTimeout(r, dur * 1000);
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; render(); } });
+    el.appendChild(b);
   });
 }
+chips($('cq-modes'), Object.fromEntries(Object.entries(MODES).map(([k, m]) => [k, m.label])), 'mode');
+chips($('cq-faults'), FAULTS, 'fault');
 
-async function sendCommand(user, points) {
-  logSys(`Command: Gửi bài thi (${user})`, 'log-cmd');
-  
-  // 1. Write to Event Store
-  logSys(`Event Store: Append sự kiện ScoreUpdatedEvent(+${points})`, 'log-evt');
-  logEs(`ScoreUpdated(user=${user}, pts=${points})`);
-  
-  // 2. Publish to Bus
-  await anim('dot1', 'writeToBus', 0.5);
-  logSys(`Kafka: Đăng sự kiện lên topic contest-scores`, 'log-evt');
-  document.getElementById('dot1').style.opacity = 0;
+function log(msg, cls) {
+  const t = new Date().toTimeString().slice(0, 8);
+  $('cq-log').insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('cq-log').scrollTop = $('cq-log').scrollHeight;
+}
+const DASHED = ['cq-l-ck', 'cq-l-pr', 'cq-l-rk', 'cq-l-kl'];
+function link(id, cls) {
+  $(id).setAttribute('class', [DASHED.includes(id) ? 'is-dashed' : '', cls ? 'is-' + cls : ''].join(' ').trim());
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
+async function hop(id, text, cls, linkCls) { link(id, linkCls || 'primary'); if (text) log(text, cls); await sleep(STEP); link(id, ''); }
 
-  // 3. Projector reads from bus
-  await sleep(150);
-  await anim('dot2', 'busToRead', 0.5);
-  document.getElementById('dot2').style.opacity = 0;
-
-  // 4. Update Read Model
-  scores[user] += points;
-  logSys(`Projector: Cập nhật Read DB Redis (${user} = ${scores[user]} điểm)`, 'log-sys');
-  
-  const row = document.getElementById(`row-${user}`);
-  row.innerHTML = `<td>user_0${user.replace('u','')}</td><td style="color:var(--info); font-weight:bold">${scores[user]}</td>`;
-  row.classList.remove('row-update');
-  void row.offsetWidth;
-  row.classList.add('row-update');
+// ── Xếp hạng: điểm cao trước, bằng điểm thì ai đạt sớm hơn đứng trước (Composite Score §7.4) ──
+function ranking(board) {
+  return Object.entries(board).sort((a, b) => b[1].score - a[1].score || a[1].t - b[1].t).map(([sv, v], k) => ({ sv, ...v, rank: k + 1 }));
+}
+const rankOf = (board, sv) => { const r = ranking(board).find(x => x.sv === sv); return r ? r.rank : null; };
+// Leaderboard áp dụng event: bỏ qua nếu eventId đã xử lý (idempotent) hoặc version cũ hơn (Lua so sánh).
+function applyToRedis(ev) {
+  if (state.applied.has(ev.id)) return 'dup';
+  state.applied.add(ev.id);
+  const cur = state.redis[ev.sv];
+  if (cur && cur.v >= ev.v) return 'old';
+  if (!cur || ev.best > cur.score || ev.v > cur.v) state.redis[ev.sv] = { score: ev.best, t: ev.bestT, v: ev.v };
+  return 'ok';
 }
 
-async function sendQuery() {
-  logSys(`Query: GET /api/leaderboard`, 'log-qry');
-  await sleep(300);
-  logSys(`Read DB: SELECT * FROM leaderboard_view (Redis Cache - NO JOINS!)`, 'log-qry');
-  await sleep(300);
-  logSys(`Response: [user_02: ${scores['u2']} điểm, user_01: ${scores['u1']} điểm] (Tốc độ phản hồi cực nhanh)`, 'log-qry');
+async function run() {
+  if (state.running) return;
+  state.running = true; ['cq-run', 'cq-replay', 'cq-reset'].forEach(id => $(id).disabled = true);
+  const [sv, score] = SUBMITS[state.i % SUBMITS.length]; state.i++; state.n++; state.t++;
+  const prev = state.truth[sv];
+  const best = prev && prev.score >= score ? prev : { score, t: state.t };
+  state.truth[sv] = best;
+  const v = (state.versions[sv] || 0) + 1; state.versions[sv] = v;
+  const ev = { id: 'e' + (++state.eid), sv, score, best: best.score, bestT: best.t, v };
+  state.events.unshift(ev);
+  const mode = state.mode, fault = mode === 'redis' ? state.fault : 'none';
+  log(`— ${sv} nộp bài: ${score} điểm · ${MODES[mode].label}${fault === 'fast' ? ' · fast path lỗi' : ''} —`, 'log-warn');
+  node('cq-client', 'is-active', true);
+  await hop('cq-l-cc', `POST /submissions (${sv}, ${score} điểm)`);
+  node('cq-core', 'is-active', true);
+
+  if (mode === 'kafka') {
+    await hop('cq-l-cp', `UPDATE submissions SET score = ${score} (${sv}); COMMIT`, 'log-ok');
+    await hop('cq-l-ck', `publish ScoreUpdated {${ev.id}, ${sv}, v${v}} → topic scores`);
+    node('cq-core', 'is-active', false);
+    await readBack(sv, 'trước khi Leaderboard consume');
+    log('… replication lag', 'log-warn'); await sleep(STEP);
+    await hop('cq-l-kl', `Leaderboard consume ${ev.id}`);
+    applyToRedis(ev); await lb(`ZADD leaderboard ${compositeText(ev)} ${sv}`);
+  } else {
+    await hop('cq-l-cp', `BEGIN; UPDATE submissions (${sv}, ${score}); INSERT outbox (${ev.id}, ${sv}, scoreVersion ${v}); COMMIT`, 'log-ok');
+    if (fault === 'fast') {
+      await hop('cq-l-sync', `gRPC UpdateScore(${ev.id}) → timeout`, 'log-err', 'danger');
+      node('cq-core', 'is-active', false);
+      await readBack(sv, 'fast path lỗi');
+      await relay(ev);
+    } else {
+      await hop('cq-l-sync', `gRPC UpdateScore(${ev.id}, ${sv}, v${v})`);
+      applyToRedis(ev);
+      await lb(`Lua: v${v} mới hơn → ZADD leaderboard ${compositeText(ev)} ${sv}`);
+      node('cq-core', 'is-active', false);
+      log('Leaderboard đẩy thay đổi hạng tới client khác qua WebSocket/SSE', 'log-info');
+      await readBack(sv, 'sau fast path');
+      await relay(ev);
+    }
+  }
+  node('cq-client', 'is-active', false);
+  state.running = false; ['cq-run', 'cq-replay', 'cq-reset'].forEach(id => $(id).disabled = false);
+  render();
+}
+async function lb(text) { node('cq-lb', 'is-active', true); log(text, 'log-ok'); await sleep(STEP); node('cq-lb', 'is-active', false); }
+function compositeText(ev) { return `${ev.best}·10¹³ − t${ev.bestT}`; }
+async function readBack(sv, when) {
+  const seen = rankOf(state.redis, sv), real = rankOf(state.truth, sv);
+  await hop('cq-l-read', `${sv} GET hạng (${when}) → ZREVRANK = ${seen ? '#' + seen : 'chưa có'}`, seen === real ? 'log-ok' : 'log-err', seen === real ? 'primary' : 'danger');
+  if (seen !== real) { state.stale++; log(`Thực tế ${sv} đang hạng #${real} — thấy hạng cũ`, 'log-err'); }
+  else log(`Đúng hạng thực tế (#${real})`, 'log-ok');
+  render();
+}
+async function relay(ev) {
+  node('cq-relay', 'is-active', true);
+  await hop('cq-l-pr', `Relay: SELECT … FROM outbox → ${ev.id}`);
+  await hop('cq-l-rk', `Relay publish ${ev.id}`); node('cq-relay', 'is-active', false);
+  await hop('cq-l-kl', `Leaderboard nhận ${ev.id} (bản relay)`);
+  const r = applyToRedis(ev);
+  if (r === 'ok') { await lb(`ZADD leaderboard ${compositeText(ev)} ${ev.sv}`); log('Leaderboard đẩy thay đổi hạng qua WebSocket/SSE', 'log-info'); }
+  else { state.dedup++; log(`${ev.id} đã xử lý → bỏ qua (idempotent theo eventId)`, 'log-ok'); }
+  render();
 }
 
-function resetSim() {
-  scores = { 'u1': 0, 'u2': 0 };
-  seq = 1;
-  document.getElementById('es-log').innerHTML = '<div style="color:var(--text-dim); font-style:italic">Event Store trống...</div>';
-  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
-  document.getElementById('row-u1').innerHTML = `<td>user_01</td><td>0</td>`;
-  document.getElementById('row-u2').innerHTML = `<td>user_02</td><td>0</td>`;
-  document.getElementById('dot1').style.opacity = 0;
-  document.getElementById('dot2').style.opacity = 0;
+// ── Projection rebuild (§7.5) ────────────────────────────────────────────────────────────
+async function replay() {
+  if (state.running) return;
+  if (!state.events.length) { log('Chưa có sự kiện nào — nộp vài bài trước.', 'log-warn'); return; }
+  state.running = true; ['cq-run', 'cq-replay', 'cq-reset'].forEach(id => $(id).disabled = true);
+  log(`— Dựng view learning_progress: replay ${state.events.length} sự kiện từ đầu —`, 'log-warn');
+  state.progress = {};
+  for (const ev of [...state.events].reverse()) {
+    (state.progress[ev.sv] = state.progress[ev.sv] || []).push(ev.score);
+    renderProgress(); await sleep(STEP / 3);
+  }
+  log('Xong: view mới có đủ lịch sử mọi lần nộp — không cần migration dữ liệu cũ', 'log-ok');
+  state.running = false; ['cq-run', 'cq-replay', 'cq-reset'].forEach(id => $(id).disabled = false);
 }
+function renderProgress() {
+  const p = state.progress;
+  $('cq-progress').querySelector('tbody').innerHTML = p
+    ? Object.entries(p).sort().map(([sv, xs]) => `<tr><td>${sv}</td><td class="num">${xs.length}</td><td>${xs.join(' → ')}</td></tr>`).join('')
+    : '<tr><td colspan="3">Chưa dựng — bấm "Dựng view từ events".</td></tr>';
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────────────────
+function render() {
+  const m = MODES[state.mode], redis = state.mode === 'redis';
+  [['cq-modes', 'mode'], ['cq-faults', 'fault']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('cq-title').textContent = m.label; $('cq-hint').textContent = m.hint;
+  $('cq-pg-sub').textContent = redis ? 'submissions + outbox' : 'submissions';
+  $('cq-kafka-sub').textContent = 'topic scores';
+  $('cq-l-sync').toggleAttribute('data-hidden', !redis);
+  ['cq-l-pr', 'cq-l-rk'].forEach(id => $(id).toggleAttribute('data-hidden', !redis));
+  node('cq-relay', 'is-off', !redis);
+  $('cq-l-ck').toggleAttribute('data-hidden', redis);
+  const board = ranking(state.redis), lastSv = state.events[0] && state.events[0].sv;
+  $('cq-board').querySelector('tbody').innerHTML = board.length
+    ? board.map(r => {
+        const real = rankOf(state.truth, r.sv), stale = real !== r.rank || state.truth[r.sv].score !== r.score;
+        return `<tr class="${r.sv === lastSv ? 'is-current' : ''}"><td class="num">#${r.rank}</td><td>${r.sv}</td><td class="num">${r.score}</td><td class="${stale ? 'bad' : ''}">${stale ? 'chưa cập nhật' : ''}</td></tr>`;
+      }).join('')
+    : '<tr><td colspan="4">Chưa có điểm.</td></tr>';
+  $('cq-events').querySelector('tbody').innerHTML = state.events.length
+    ? state.events.map(e => `<tr><td>ScoreUpdated ${e.id}</td><td>${e.sv}</td><td class="num">${e.score}</td><td class="num">v${e.v}</td></tr>`).join('')
+    : '<tr><td colspan="4">Chưa có sự kiện.</td></tr>';
+  renderProgress();
+  $('cq-note').textContent = NOTES[state.mode + '.' + state.fault];
+  $('cq-n').textContent = state.n; $('cq-stale').textContent = state.stale; $('cq-dedup').textContent = state.dedup;
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function reset() {
+  if (state.running) return;
+  Object.assign(state, { i: 0, t: 0, eid: 0, truth: {}, redis: {}, versions: {}, applied: new Set(), events: [], progress: null, n: 0, stale: 0, dedup: 0 });
+  $('cq-log').textContent = '';
+  log('Nộp vài bài ở chế độ bất đồng bộ, rồi chuyển sang đồng bộ + outbox và so sánh ô "Xem ngay thấy hạng cũ".', 'log-info');
+  render();
+}
+$('cq-run').addEventListener('click', run);
+$('cq-replay').addEventListener('click', replay);
+$('cq-reset').addEventListener('click', reset);
+reset();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-resetSim();
-
 </script>
 </body>
 </html>
-
-
-
-

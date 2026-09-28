@@ -12,149 +12,14 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    .sim-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin: 24px 0;
-    }
-    @media (max-width: 768px) {
-      .sim-container { grid-template-columns: 1fr; }
-    }
-
-    .system-panel {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .system-panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
-    .panel-sync::before { background: var(--danger, #ef4444); }
-    .panel-ecst::before { background: var(--success, #22c55e); }
-
-    .sys-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 14px;
-      font-family: var(--font-mono);
-    }
-    .panel-sync .sys-title { color: var(--danger); }
-    .panel-ecst .sys-title { color: var(--success); }
-
-    .arch-diagram {
-      border: 1px solid var(--border);
-      background: var(--bg-surface);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    
-    .service-box {
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-      background: var(--bg-card);
-      font-weight: bold;
-      font-size: 14px;
-      position: relative;
-      z-index: 2;
-    }
-    .db-box {
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 6px;
-      font-size: 11px;
-      margin-top: 8px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text-dim);
-    }
-    
-    .kafka-broker {
-      border: 2px dashed #a855f7;
-      border-radius: 8px;
-      padding: 12px;
-      text-align: center;
-      background: rgba(168,85,247,0.1);
-      color: #a855f7;
-      font-weight: bold;
-      margin: 16px 0;
-    }
-
-    .btn-action {
-      width: 100%;
-      margin-bottom: 12px;
-    }
-    
-    .log-box {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 120px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    .log-line { margin-bottom: 3px; line-height: 1.4; }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    
-    .anim-request {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--primary);
-      box-shadow: 0 0 5px var(--primary);
-      z-index: 10;
-      opacity: 0;
-    }
-    
-    @keyframes moveRight {
-      0% { left: 20%; top: 50%; opacity: 1; }
-      100% { left: 80%; top: 50%; opacity: 1; }
-    }
-    
-    @keyframes moveLeft {
-      0% { left: 80%; top: 50%; opacity: 1; background: var(--success); box-shadow: 0 0 5px var(--success);}
-      100% { left: 20%; top: 50%; opacity: 1; background: var(--success); box-shadow: 0 0 5px var(--success);}
-    }
-
-    @keyframes failPulse {
-      0% { left: 20%; top: 50%; transform: scale(1); background: var(--danger); box-shadow: 0 0 10px var(--danger); opacity: 1; }
-      50% { left: 20%; top: 50%; transform: scale(2); background: var(--danger); box-shadow: 0 0 20px var(--danger); opacity: 0; }
-      100% { left: 20%; top: 50%; transform: scale(1); opacity: 0; }
-    }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-    }
-    .stat-val { font-family: var(--font-mono); font-weight: bold; }
-
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
+<!-- ── Scroll Progress Bar ── -->
 <div id="progress-bar" class="progress-bar-top"></div>
 
+<!-- ── Sticky Act Nav ── -->
 <nav class="act-nav" id="act-nav">
   <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
   <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
@@ -162,18 +27,19 @@
   <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
 </nav>
 
+<!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">Event-Carried State Transfer</h1>
-  <p class="pattern-subtitle">Đồng bộ trạng thái qua event thay vì truy vấn đồng bộ (Sync API)</p>
+  <p class="pattern-subtitle">Giữ bản sao dữ liệu của service khác, cập nhật bằng event — thay vì hỏi mỗi lần cần</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Data Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Martin Fowler</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2017</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.5 §5.6</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.7 §7.3 · Ch.5 §5.6</span></div>
   </div>
 </header>
 
-<!-- ACT 1 -->
+<!-- ── ACT 1: The Problem ── -->
 <section class="act-section" id="act1" data-collapsible>
   <div class="act-label">
     <div class="act-number">1</div>
@@ -183,26 +49,26 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trong kiến trúc microservices, dữ liệu phân tán ở nhiều service khác nhau. Khi một service cần dữ liệu từ service khác (ví dụ: <code>Order Service</code> cần thông tin <code>Customer</code>), cách tiếp cận phổ biến là gọi API đồng bộ (Synchronous API). 
-    Tuy nhiên, điều này tạo ra <strong>sự phụ thuộc chặt chẽ (tight coupling)</strong> về thời gian chạy (runtime).
+  <p class="section-intro">
+    Tách database xong, vấn đề tiếp theo xuất hiện ngay: service A cần dữ liệu mà service B sở hữu. Trong KBM, Assignment cần hiện tên câu hỏi (của Core) và tên sinh viên (của Auth). Gọi API mỗi lần cần, hay giữ một bản sao tại chỗ? (§7.3)
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Availability</div></div>
-      <h3>Rủi ro tính sẵn sàng</h3>
-      <p>Nếu Customer Service bị lỗi hoặc phản hồi chậm, Order Service cũng sẽ không thể hoàn thành yêu cầu tạo đơn hàng, dẫn đến lỗi dây chuyền (Cascading Failure).</p>
+      <div class="problem-icon"><div class="badge badge-danger">Phụ thuộc runtime</div></div>
+      <h3>Owner ngừng thì người đọc ngừng theo</h3>
+      <p>Gọi API luôn đọc được dữ liệu mới nhất, nhưng gắn hai service về thời gian: Core ngừng thì trang danh sách bài tập của Assignment cũng không hiện được, dù Assignment vẫn chạy bình thường.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Performance</div></div>
-      <h3>Độ trễ tăng cao</h3>
-      <p>Mỗi lần Order Service xử lý, nó phải đợi phản hồi qua mạng từ Customer Service. Điều này cộng dồn độ trễ mạng (network latency) vào tổng thời gian phản hồi.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">N+1</div></div>
+      <h3>Độ trễ mạng cộng dồn</h3>
+      <p>Một trang 20 dòng, mỗi dòng một lời gọi lấy tên câu hỏi là 20 lượt đi về qua mạng. Gom thành một lời gọi theo lô đỡ hơn nhiều — nhưng vẫn là phụ thuộc runtime.</p>
     </div>
   </div>
+
 </section>
 
-<!-- ACT 2 -->
+<!-- ── ACT 2: The Pattern ── -->
 <section class="act-section" id="act2" data-collapsible>
   <div class="act-label">
     <div class="act-number">2</div>
@@ -214,31 +80,35 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      <strong>Event-Carried State Transfer</strong>: Service sở hữu dữ liệu (Producer) sẽ phát (publish) một sự kiện (event) mỗi khi dữ liệu thay đổi. Sự kiện này <strong>mang theo toàn bộ trạng thái (state)</strong> mới. Service cần dữ liệu (Consumer) lắng nghe các sự kiện này và duy trì một <strong>bản sao cục bộ (local read replica)</strong> của dữ liệu đó.
+      Service sở hữu dữ liệu phát một event mỗi khi dữ liệu thay đổi, và event mang theo trạng thái mới — không chỉ báo "có thay đổi". Service cần dữ liệu lắng nghe và giữ một bản sao chỉ đọc tại chỗ, đọc bản sao đó thay vì gọi qua mạng.
     </p>
-    <div class="definition-attribution">— Martin Fowler, 2017</div>
+    <div class="definition-attribution">— Martin Fowler (2017) · loại message "Document" · Rocha [5, Ch.3]</div>
   </div>
+
+  <p class="section-intro">
+    "Duplication is far better than coupling" (Newman) — nhưng có điều kiện. Bản sao đổi lấy khả năng đọc khi owner ngừng và tốc độ truy vấn tại chỗ; cái giá là thêm dung lượng, nhất quán cuối (eventual consistency) với khoảng dữ liệu cũ tạm thời, và một luồng event phải xây, khởi tạo và giám sát. Chỉ hợp với dữ liệu tham chiếu ít đổi, và phải có một nguồn sự thật duy nhất: thay đổi chảy một chiều từ owner sang bản sao (§7.3).
+  </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>State-Carrying Events</h3>
-      <p>Sự kiện không chỉ thông báo "có thay đổi", mà mang theo payload chứa trạng thái mới (ví dụ: <code>{"id":"C1", "name":"Alice", "address":"..."}</code>).</p>
+      <h3>Document event</h3>
+      <p>Bản chụp toàn bộ entity khi thay đổi, đặt tên theo danh từ — <code>UserDocument</code>, <code>QuestionDocument</code> — kèm version để consumer bỏ qua bản cũ đến muộn (§5.6).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Local Cache / Replica</h3>
-      <p>Consumer lưu trữ dữ liệu cần thiết vào database cục bộ của mình. Khi cần truy vấn, nó đọc trực tiếp từ database này mà không cần gọi qua mạng.</p>
+      <h3>Bản sao chỉ đọc</h3>
+      <p>Chỉ giữ trường cần dùng (tên câu hỏi, độ khó). Không bao giờ sửa bản sao rồi đẩy ngược về owner — sửa là việc của owner.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Event Broker (Kafka)</h3>
-      <p>Làm trung gian truyền tải sự kiện, đảm bảo Consumer có thể nhận được dữ liệu ngay cả khi nó bị gián đoạn tạm thời, giúp decouple hoàn toàn 2 service.</p>
+      <h3>Khởi tạo và đối soát</h3>
+      <p>Bulk export/sync khi dựng service mới, đối soát định kỳ để vá chỗ lệch; event được phát qua Transactional Outbox để không mất (Ch.7, Ch.10).</p>
     </div>
   </div>
 </section>
 
-<!-- ACT 3 -->
+<!-- ── ACT 3: How It Works ── -->
 <section class="act-section" id="act3">
   <div class="act-label">
     <div class="act-number">3</div>
@@ -248,76 +118,59 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 16px; line-height: 1.7; color: var(--text-secondary);">
-    Mô phỏng: <strong>Order Service</strong> cần lấy thông tin <code>Customer</code> để tạo đơn hàng. 
-    Bật/tắt trạng thái của <strong>Customer Service</strong> để xem sự khác biệt giữa việc gọi API đồng bộ và việc sử dụng Event-Carried State Transfer (sao chép cục bộ).
-  </p>
+  <p class="section-intro">Giảng viên mở danh sách bài tập của lớp trên Assignment mỗi 5 giây: 20 dòng, 8 câu hỏi khác nhau, tên câu hỏi do Core sở hữu. So sánh ba cách lấy tên câu hỏi trong bốn tình huống. Độ trễ và thời điểm là minh họa; thời gian là thời gian mô phỏng.</p>
 
-  <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-    <strong>Trạng thái Customer Service:</strong>
-    <button id="btn-toggle-customer" class="btn btn-primary" style="background: var(--success); border-color: var(--success);" onclick="toggleCustomerService()">✅ ONLINE</button>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Tình huống</span><div class="sim-chips" id="ec-scens"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Cách lấy</span><div class="sim-chips" id="ec-ways"></div></div>
+    <button class="sim-btn primary-action" id="ec-run" type="button">▶ Chạy</button>
   </div>
 
-  <div class="sim-container">
-    <!-- Sync API -->
-    <div class="system-panel panel-sync">
-      <div class="sys-title">❌ Gọi Đồng Bộ (Sync REST API)</div>
-      <div class="arch-diagram" style="display: flex; justify-content: space-between; align-items: center; padding: 40px 16px;">
-        <div class="service-box">
-          Order Service
-          <div class="db-box">Order DB (No Customer Data)</div>
-        </div>
-        <div style="color: var(--text-dim); font-size: 24px;">
-          ⇄
-          <div class="anim-request" id="anim-sync-req"></div>
-        </div>
-        <div class="service-box" id="sync-customer-box">
-          Customer Service
-          <div class="db-box">Customer DB</div>
-        </div>
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="ec-title"></span> <span class="sim-hint" id="ec-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="ec-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="ec-gv"><div class="sim-node-name">Giảng viên</div><div class="sim-node-sub">mở danh sách lớp</div></div>
+        <div class="sim-node is-core" id="ec-asg"><div class="sim-node-name">Assignment</div><div class="sim-node-sub" id="ec-asg-sub"></div></div>
+        <div class="sim-node" id="ec-core"><div class="sim-node-name">Core</div><div class="sim-node-sub" id="ec-core-sub"></div></div>
+        <div class="sim-node" id="ec-copy" style="grid-column:2;grid-row:2"><div class="sim-node-name">Bản sao</div><div class="sim-node-sub" id="ec-copy-sub"></div></div>
+        <div class="sim-node" id="ec-kafka" style="grid-column:3;grid-row:2"><div class="sim-node-name">Kafka</div><div class="sim-node-sub">QuestionUpdated</div></div>
       </div>
-      <button class="btn btn-action btn-primary" onclick="simSync()">Tạo Đơn Hàng (Sync)</button>
-      <div class="log-box" id="log-sync"></div>
-      <div class="stat-row">
-        <span>Độ trễ trung bình:</span> <span class="stat-val" id="sync-latency" style="color: var(--warning);">-- ms</span>
-      </div>
-      <div class="stat-row">
-        <span>Tỷ lệ thành công:</span> <span class="stat-val" id="sync-success">100%</span>
-      </div>
+      <svg class="d-links">
+        <path id="ec-l-gv" data-from="ec-gv" data-to="ec-asg"></path>
+        <path id="ec-l-api" data-from="ec-asg" data-to="ec-core"></path>
+        <path id="ec-l-local" data-from="ec-asg" data-to="ec-copy"></path>
+        <path id="ec-l-pub" data-from="ec-core" data-to="ec-kafka" class="is-dashed"></path>
+        <path id="ec-l-sub" data-from="ec-kafka" data-to="ec-copy" class="is-dashed"></path>
+      </svg>
     </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="ec-s-calls">0</div><div class="sim-stat-lbl">Lời gọi sang Core</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="ec-s-err">0</div><div class="sim-stat-lbl">Lần tải lỗi</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="ec-s-stale">0</div><div class="sim-stat-lbl">Lần hiện cũ / thiếu</div></div>
+    </div>
+  </div>
 
-    <!-- ECST -->
-    <div class="system-panel panel-ecst">
-      <div class="sys-title">✓ Event-Carried State Transfer</div>
-      <div class="arch-diagram">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="service-box">
-            Order Service
-            <div class="db-box" style="border-color: var(--success); color: var(--success);">Order DB + Customer Cache</div>
-          </div>
-          <div class="service-box" id="ecst-customer-box">
-            Customer Service
-            <div class="db-box">Customer DB</div>
-          </div>
-        </div>
-        <div class="kafka-broker">
-          Kafka: CustomerEvents Topic
-          <div style="font-size: 10px; font-weight: normal; margin-top: 4px;">Update ➝ ➝ ➝ Sync</div>
-        </div>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Mỗi lần tải trang <span class="sim-hint">mới nhất ở dưới</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="ec-table">
+          <thead><tr><th>t (s)</th><th>Bối cảnh</th><th class="num">Gọi</th><th class="num">Tải</th><th>Hiển thị</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
-      <button class="btn btn-action btn-primary" onclick="simEcst()">Tạo Đơn Hàng (Local Data)</button>
-      <div class="log-box" id="log-ecst"></div>
-      <div class="stat-row">
-        <span>Độ trễ trung bình:</span> <span class="stat-val" id="ecst-latency" style="color: var(--success);">-- ms</span>
-      </div>
-      <div class="stat-row">
-        <span>Tỷ lệ thành công:</span> <span class="stat-val" id="ecst-success">100%</span>
-      </div>
+      <p class="sim-note" id="ec-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Assignment lấy dữ liệu bằng <span class="sim-hint" id="ec-code-hint"></span></div>
+      <pre class="sim-code" id="ec-code"></pre>
+      <div class="sim-log" id="ec-log" aria-live="polite" style="margin-top:12px"></div>
     </div>
   </div>
 </section>
 
-<!-- ACT 4 -->
+<!-- ── ACT 4: KBM Apply It ── -->
 <section class="act-section" id="act4">
   <div class="act-label">
     <div class="act-number">4</div>
@@ -327,71 +180,117 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trong hệ thống Quản lý Đào tạo (KBM), thông tin sinh viên được sở hữu bởi <strong>User Service</strong>, nhưng rất nhiều service khác (Enrollment, Assignment, Grade) cần truy vấn tên sinh viên để hiển thị báo cáo hoặc email.
+  <p class="section-intro">
+    Core và Assignment của KBM đang dùng chung <code>app_db</code>, và Assignment đọc thẳng bảng câu hỏi của Core. Lộ trình trong Ch.7 đi ba bước: tách schema, chuyển sang gọi API, rồi mới nhân bản dữ liệu tham chiếu qua event — mỗi bước giảm một kiểu phụ thuộc và thêm một kiểu chi phí.
   </p>
 
-  <h3 class="sub-heading">Giải pháp tại KBM</h3>
-  <div class="sub-label">Tránh N+1 HTTP Calls bằng ECST</div>
+  <!-- Gap Table -->
+  <h3 class="sub-heading">Gap Analysis — Assignment đọc dữ liệu của Core và Auth</h3>
+  <div class="sub-label">Theo §7.3, case study KBM (§7.6) và phụ lục anti-pattern</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Service</th>
-          <th>Hành động</th>
-          <th>Dữ liệu Local Cache</th>
+          <th>Khía cạnh</th>
+          <th>Tình huống</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">User Service (Producer)</td>
-          <td>Phát sự kiện <code>UserUpdatedEvent</code> khi sinh viên đổi tên/email lên Kafka.</td>
-          <td>(Source of Truth)</td>
+          <td class="gap-label">Join xuyên schema</td>
+          <td>Assignment truy vấn thẳng bảng câu hỏi của Core — ranh giới dữ liệu chỉ có trên giấy.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Tách <code>core_schema</code>/<code>assignment_schema</code>, role riêng và <code>REVOKE</code> quyền đọc chéo (Giai đoạn 1).</td>
         </tr>
         <tr>
-          <td class="gap-label">Enrollment Service (Consumer)</td>
-          <td>Lắng nghe event, cập nhật bảng <code>student_read_models(id, name, email)</code>.</td>
-          <td>Tên, Email (để join khi query danh sách lớp)</td>
+          <td class="gap-label">Tên câu hỏi</td>
+          <td>Sau khi chặn join, Assignment vẫn cần tên và độ khó để hiển thị.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Trước: <code>GET /api/questions/batch</code> (Giai đoạn 2). Sau: bản sao cục bộ cập nhật bằng <code>QuestionUpdated</code> (Giai đoạn 3).</td>
         </tr>
         <tr>
-          <td class="gap-label">Grade Service (Consumer)</td>
-          <td>Lắng nghe event, lưu tên để in bảng điểm.</td>
-          <td>Tên sinh viên</td>
+          <td class="gap-label">Tên sinh viên</td>
+          <td><code>users</code> thuộc Auth; gọi Auth mỗi lần hiện tên thì Auth ngừng là mất tên.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Dữ liệu tham chiếu, ít đổi — hợp để nhân bản một chiều từ Auth.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Khởi tạo, phát event</td>
+          <td>Bản sao rỗng khi dựng mới; event phát ngoài transaction có thể mất.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Bulk export/sync hoặc đối soát định kỳ; phát event qua Transactional Outbox.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <!-- Timeline -->
+  <h3 class="sub-heading">Lộ trình</h3>
+  <div class="sub-label">Case study KBM (§7.6) — đề xuất, chưa phải việc KBM đã làm xong</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Giai đoạn 1</div>
+      <h4>Tách schema</h4>
+      <p>Ưu tiên cao, chi phí thấp. Database role riêng, chặn cứng đọc chéo schema để không ai lách được ranh giới.</p>
+      <span class="t-badge orange">§7.6</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Giai đoạn 2</div>
+      <h4>Truy cập qua API</h4>
+      <p>Thay truy vấn chéo schema bằng Feign <code>GET /api/questions/batch</code>. Luôn mới nhất, nhưng Assignment phụ thuộc Core lúc runtime.</p>
+      <span class="t-badge orange">§7.6</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Giai đoạn 3</div>
+      <h4>Nhân bản qua event</h4>
+      <p>Core phát <code>QuestionUpdated</code>; Assignment giữ bản sao chỉ phần tham chiếu (tên, độ khó). Cần bulk sync ban đầu và outbox.</p>
+      <span class="t-badge orange">§7.6 · Ch.10</span>
+    </div>
+  </div>
+
+  <!-- Decision Guide -->
   <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Nên dùng ECST khi</div>
+        <div class="decision-title">Nhân bản khi</div>
       </div>
       <ul class="decision-list">
-        <li>Cần hiệu năng cao, giảm network latency.</li>
-        <li>Consumer cần tính sẵn sàng cao, không thể phụ thuộc vào uptime của Producer.</li>
-        <li>Dữ liệu thay đổi ít (low churn) nhưng đọc nhiều (read-heavy).</li>
+        <li>Dữ liệu tham chiếu: tên người dùng, tên khóa học, tên câu hỏi.</li>
+        <li>Cấu hình gần như tĩnh: loại database, danh mục.</li>
+        <li>Đọc nhiều hơn hẳn ghi, và người đọc cần chạy tiếp khi owner ngừng.</li>
+        <li>Chấp nhận được vài giây dữ liệu cũ.</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Không nên dùng khi</div>
+        <div class="decision-title">Không nhân bản, hoặc chưa, khi</div>
       </div>
       <ul class="decision-list">
-        <li>Dữ liệu thay đổi liên tục (ví dụ: giá chứng khoán tick theo giây) → event storm.</li>
-        <li>Yêu cầu Strong Consistency tuyệt đối (ECST chỉ mang lại Eventual Consistency).</li>
-        <li>Payload sự kiện quá lớn (ví dụ: file, tài liệu lớn).</li>
+        <li>Dữ liệu giao dịch ghi hai chiều (điểm, trạng thái bài nộp) — chỉ được sao một chiều sang read model.</li>
+        <li>Không xác định được ai là nguồn sự thật — dấu hiệu ranh giới context chưa đúng (Ch.2).</li>
+        <li>Phải luôn đọc bản mới nhất ngay sau khi ghi.</li>
+        <li>Chưa có cách khởi tạo và đối soát bản sao — service mới sẽ chạy với dữ liệu rỗng.</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về chia sẻ dữ liệu và tích hợp hệ thống trong sách.</p>
-  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-05')"><div class="badge badge-info">Read</div> Chương 5 — Giao tiếp Bất đồng bộ →</a>
+  <p>Đọc chi tiết về ba chiến lược truy cập dữ liệu xuyên service và khi nào chấp nhận nhân bản (§7.3), cùng bốn loại message (§5.6).</p>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-07')"><div class="badge badge-info">Read</div> Chương 7 — Quản lý Dữ liệu →</a>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-05')" style="margin-top: 8px;"><div class="badge badge-info">Read</div> Chương 5 — Giao tiếp Bất đồng bộ →</a>
 </div>
 
 <!-- ── Book Identity Strip (Phase 6 — F-05) ──
@@ -406,125 +305,184 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: ba cách lấy dữ liệu xuyên service (§7.3; lộ trình §7.6) ────────────────────────
+// Kịch bản xác định. Minh họa, sách không nêu số: 15 ms mỗi lời gọi, 25 ms một lời gọi theo lô,
+// 3 ms đọc bản sao, timeout 2 s khi Core ngừng, consumer chậm 12 s trong tình huống đổi tên.
+const LOADS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+const SCENS = {
+  normal:    { label: 'Bình thường', hint: 'Core chạy, không ai sửa gì' },
+  down:      { label: 'Core ngừng', hint: 'Core ngừng từ t=13 s tới t=37 s' },
+  rename:    { label: 'Đổi tên câu hỏi', hint: 't=18 s đổi tên Q7; consumer chậm 12 s' },
+  bootstrap: { label: 'Dựng instance mới', hint: 't=18 s dựng lại Assignment; t=38 s đối soát' },
+};
+const WAYS = {
+  n1:    { label: 'API từng dòng' },
+  batch: { label: 'API theo lô' },
+  ecst:  { label: 'Bản sao qua event' },
+};
+const CODE = {
+  n1: `// mỗi dòng một lời gọi Feign
+for (Assignment a : page) {
+  Question q = coreClient
+      .getQuestion(a.questionId());
+  rows.add(view(a, q.title()));
+}
+// 20 dòng = 20 lượt đi về`,
+  batch: `// Giai đoạn 2 (§7.6): một lời gọi
+Set<Long> ids = page.stream()
+    .map(Assignment::questionId)
+    .collect(toSet());   // 8 id
+// GET /api/questions/batch
+Map<Long, Question> qs =
+    coreClient.getBatch(ids);`,
+  ecst: `// Giai đoạn 3 (§7.6): đọc bản sao
+// consumer: QuestionUpdated
+//   → upsert question_copy
+//     (id, title, difficulty,
+//      version)
+SELECT a.*, q.title
+FROM assignment a
+JOIN question_copy q
+  ON q.id = a.question_id;`,
+};
+const NOTES = {
+  'normal.n1': 'Luôn mới nhất và dễ viết, nhưng mỗi lần tải là 20 lượt đi về sang Core. Tốn thời gian và tải Core — bài toán N+1 (§7.3).',
+  'normal.batch': 'Gom 8 id vào một lời gọi: nhanh hơn nhiều, vẫn luôn mới nhất. Đây là Giai đoạn 2 trong lộ trình của KBM — đủ tốt nếu Core luôn sẵn sàng.',
+  'normal.ecst': 'Không lời gọi nào sang Core, truy vấn tại chỗ vài mili-giây. Lúc bình thường khác biệt chủ yếu là tốc độ; cái giá nằm ở luồng event phía sau.',
+  'down.n1': 'Core ngừng thì mọi cách gọi API đều ngừng theo: trang lỗi sau khi chờ hết timeout. Assignment vẫn chạy, chỉ thiếu dữ liệu của service khác — đúng nghĩa temporal coupling.',
+  'down.batch': 'Gom lô không giúp gì khi Core ngừng: một lời gọi hay hai mươi lời gọi thì cũng phụ thuộc runtime như nhau.',
+  'down.ecst': 'Bản sao vẫn đọc được khi Core ngừng — lý do chính để chọn cách này. Trong lúc đó không có thay đổi mới nào tới được, nên bản sao đứng yên ở trạng thái cuối cùng đã biết.',
+  'rename.n1': 'Gọi API thấy tên mới ngay lần tải kế tiếp.',
+  'rename.batch': 'Gọi API theo lô cũng thấy tên mới ngay lần tải kế tiếp.',
+  'rename.ecst': 'Tên mới chỉ tới bản sao khi consumer xử lý xong event: trong khoảng đó giảng viên thấy tên cũ. Đó là eventual consistency — chấp nhận được với tên câu hỏi, không chấp nhận được với điểm số.',
+  'bootstrap.n1': 'Instance mới gọi API nên có dữ liệu ngay.',
+  'bootstrap.batch': 'Instance mới gọi API theo lô nên có dữ liệu ngay.',
+  'bootstrap.ecst': 'Instance mới khởi động với bản sao rỗng và chỉ nhận thay đổi từ lúc bật consumer; câu hỏi ít đổi thì có thể thiếu tên rất lâu. Cần bulk export/sync lúc dựng, hoặc đối soát định kỳ như ở t=38 s (Ch.7).',
+};
 
-// ── Sim Logic ──
-let customerOnline = true;
-let syncStats = { total: 0, success: 0, totalLat: 0 };
-let ecstStats = { total: 0, success: 0, totalLat: 0 };
-
-function toggleCustomerService() {
-  customerOnline = !customerOnline;
-  const btn = document.getElementById('btn-toggle-customer');
-  const boxSync = document.getElementById('sync-customer-box');
-  const boxEcst = document.getElementById('ecst-customer-box');
-  
-  if (customerOnline) {
-    btn.innerHTML = '✅ ONLINE';
-    btn.style.background = 'var(--success)';
-    btn.style.borderColor = 'var(--success)';
-    boxSync.style.opacity = '1';
-    boxSync.style.borderColor = 'var(--border)';
-    boxEcst.style.opacity = '1';
-    boxEcst.style.borderColor = 'var(--border)';
-    log('sync', 'Customer Service trở lại ONLINE', 'info');
-    log('ecst', 'Customer Service trở lại ONLINE (Kafka sync tiếp tục)', 'info');
-  } else {
-    btn.innerHTML = '❌ OFFLINE';
-    btn.style.background = 'var(--danger)';
-    btn.style.borderColor = 'var(--danger)';
-    boxSync.style.opacity = '0.5';
-    boxSync.style.borderColor = 'var(--danger)';
-    boxEcst.style.opacity = '0.5';
-    boxEcst.style.borderColor = 'var(--danger)';
-    log('sync', 'Customer Service chuyển sang OFFLINE!', 'err');
-    log('ecst', 'Customer Service chuyển sang OFFLINE!', 'warn');
+// Kết quả của một lần tải trang ở thời điểm t.
+function load(scen, way, t) {
+  const coreDown = scen === 'down' && t >= 13 && t < 37;
+  const ctx = coreDown ? 'Core ngừng' : scen === 'rename' && t >= 18 && t < 30 ? 'Q7 vừa đổi tên' : scen === 'bootstrap' && t >= 18 && t < 38 ? 'instance mới' : scen === 'bootstrap' && t >= 38 ? 'đã đối soát' : '—';
+  if (way !== 'ecst') {
+    const calls = way === 'n1' ? 20 : 1;
+    if (coreDown) return { t, ctx, calls: 1, ms: 2000, show: 'lỗi', cls: 'bad', err: 1 };
+    return { t, ctx, calls, ms: way === 'n1' ? 300 : 25, show: scen === 'rename' && t >= 18 ? 'tên mới' : 'đủ, mới nhất', cls: 'good' };
   }
+  if (scen === 'rename' && t >= 18 && t < 30) return { t, ctx, calls: 0, ms: 3, show: 'Q7 tên cũ', cls: 'bad', stale: 1 };
+  if (scen === 'bootstrap' && t >= 18 && t < 38) return { t, ctx, calls: 0, ms: 3, show: 'thiếu 8/8 tên', cls: 'bad', stale: 1 };
+  if (coreDown) return { t, ctx, calls: 0, ms: 3, show: 'đủ (bản đã biết)', cls: 'good' };
+  return { t, ctx, calls: 0, ms: 3, show: scen === 'rename' && t >= 30 ? 'tên mới' : 'đủ', cls: 'good' };
 }
-
-function now() { return new Date().toLocaleTimeString('en-US', { hour12: false }); }
-
-function log(sys, msg, cls) {
-  const el = document.getElementById(`log-${sys}`);
-  const div = document.createElement('div');
-  div.className = 'log-line';
-  div.innerHTML = `<span class="log-time">[${now()}]</span> <span style="color: var(--${cls === 'err'?'danger':cls === 'ok'?'success':cls === 'warn'?'warning':'text-secondary'});">${msg}</span>`;
-  el.appendChild(div);
-  el.scrollTop = el.scrollHeight;
-  while (el.children.length > 20) el.removeChild(el.firstChild);
-}
-
-function updateStats(sys, isSuccess, lat) {
-  let s = sys === 'sync' ? syncStats : ecstStats;
-  s.total++;
-  if (isSuccess) {
-    s.success++;
-    s.totalLat += lat;
+function events(scen, way) {
+  const L = [];
+  if (scen === 'down') { L.push([13, 'Core ngừng', 'log-err']); L.push([37, 'Core chạy lại', 'log-ok']); }
+  if (scen === 'rename') {
+    L.push([18, 'Giảng viên đổi tên Q7 trên Core', 'log-warn']);
+    if (way === 'ecst') { L.push([18.2, 'Core phát QuestionUpdated{id: Q7, version: 4} qua outbox', 'log-info']); L.push([30, 'Consumer của Assignment xử lý xong event → bản sao Q7 version 4', 'log-ok']); }
   }
-  
-  const latEl = document.getElementById(`${sys}-latency`);
-  if (s.success > 0) {
-    latEl.textContent = Math.round(s.totalLat / s.success) + ' ms';
+  if (scen === 'bootstrap') {
+    L.push([18, 'Dựng lại Assignment trên máy mới', 'log-warn']);
+    if (way === 'ecst') { L.push([18.5, 'question_copy rỗng — consumer chỉ nhận thay đổi từ bây giờ', 'log-err']); L.push([38, 'Chạy đối soát: bulk sync 8 câu hỏi từ Core', 'log-ok']); }
   }
-  
-  const sucEl = document.getElementById(`${sys}-success`);
-  const rate = Math.round((s.success / s.total) * 100);
-  sucEl.textContent = rate + '%';
-  sucEl.style.color = rate > 90 ? 'var(--success)' : rate > 50 ? 'var(--warning)' : 'var(--danger)';
+  return L;
 }
 
-async function simSync() {
-  const syncBtn = document.querySelector('.panel-sync .btn-action');
-  syncBtn.disabled = true;
+// ── Hiển thị ──────────────────────────────────────────────
+const state = { scen: 'normal', way: 'n1', running: false };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function chips(elId, obj, key) {
+  Object.entries(obj).forEach(([v, s]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = s.label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; reset(); } });
+    $(elId).appendChild(b);
+  });
+}
+chips('ec-scens', SCENS, 'scen'); chips('ec-ways', WAYS, 'way');
+function log(t, msg, cls) {
+  $('ec-log').insertAdjacentHTML('beforeend', `<div>${t === null ? '' : `<span class="log-time">t=${t}s</span>`}<span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('ec-log').scrollTop = $('ec-log').scrollHeight;
+}
+function link(id, cls, base) { const el = $(id); el.setAttribute('class', [base || '', cls ? 'is-' + cls : ''].join(' ').trim()); }
+function hide(id, on) { if (on) $(id).setAttribute('data-hidden', ''); else $(id).removeAttribute('data-hidden'); }
+function nodeCls(id, cls) { const n = $(id); ['is-active', 'is-danger', 'is-warn', 'is-off'].forEach(c => n.classList.remove(c)); if (cls) n.classList.add(cls); }
 
-  log('sync', 'Order Svc: Bắt đầu tạo đơn...', 'info');
-  const anim = document.getElementById('anim-sync-req');
-  
-  if (!customerOnline) {
-    // Fail immediately visually
-    anim.style.animation = 'none';
-    void anim.offsetWidth; // trigger reflow
-    anim.style.animation = 'failPulse 1s forwards';
-    log('sync', 'Order Svc: LỖI! Gọi HTTP GET /customers/123 Timeout (Connection Refused).', 'err');
-    updateStats('sync', false, 0);
-    syncBtn.disabled = false;
-    return;
+function showTopology(r) {
+  const ecst = state.way === 'ecst', t = r ? r.t : 0;
+  const coreDown = state.scen === 'down' && r && t >= 13 && t < 37;
+  hide('ec-l-api', ecst); hide('ec-l-local', !ecst); hide('ec-l-pub', !ecst); hide('ec-l-sub', !ecst);
+  nodeCls('ec-copy', ecst ? (r && r.stale ? 'is-warn' : '') : 'is-off');
+  nodeCls('ec-kafka', ecst ? '' : 'is-off');
+  nodeCls('ec-core', coreDown ? 'is-danger' : '');
+  $('ec-core-sub').textContent = coreDown ? 'ngừng' : 'owner câu hỏi';
+  $('ec-asg-sub').textContent = r ? `tải ${r.ms >= 1000 ? r.ms / 1000 + ' s' : r.ms + ' ms'}` : ({ n1: 'Feign từng dòng', batch: 'Feign theo lô', ecst: 'đọc bản sao' })[state.way];
+  nodeCls('ec-asg', r && r.err ? 'is-danger' : '');
+  $('ec-copy-sub').textContent = !ecst ? 'không dùng' : r && r.stale ? r.show : 'question_copy';
+  link('ec-l-gv', r ? 'primary' : '');
+  link('ec-l-api', r ? (r.err ? 'danger' : 'primary') : '');
+  link('ec-l-local', r ? (r.stale ? 'warning' : 'primary') : '');
+  link('ec-l-pub', coreDown ? '' : 'primary', 'is-dashed');
+  link('ec-l-sub', r && r.stale ? 'warning' : 'primary', 'is-dashed');
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function renderRows(rows) {
+  $('ec-table').querySelector('tbody').innerHTML = rows.length
+    ? rows.map(r => `<tr><td>${r.t}</td><td>${r.ctx}</td><td class="num">${r.calls}</td><td class="num${r.ms >= 1000 ? ' bad' : ''}">${r.ms >= 1000 ? r.ms / 1000 + ' s' : r.ms + ' ms'}</td><td class="${r.cls}">${r.show}</td></tr>`).join('')
+    : '<tr><td colspan="5">Chọn tình huống và cách lấy, rồi bấm Chạy.</td></tr>';
+  const sc = $('ec-table').closest('.sim-scroll'); sc.scrollTop = sc.scrollHeight;
+  $('ec-s-calls').textContent = rows.reduce((s, r) => s + r.calls, 0);
+  $('ec-s-err').textContent = rows.filter(r => r.err).length;
+  $('ec-s-stale').textContent = rows.filter(r => r.stale).length;
+}
+function reset() {
+  const key = state.scen + '.' + state.way;
+  document.querySelectorAll('#ec-scens .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.scen));
+  document.querySelectorAll('#ec-ways .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.way));
+  $('ec-title').textContent = SCENS[state.scen].label; $('ec-hint').textContent = SCENS[state.scen].hint;
+  $('ec-code-hint').textContent = WAYS[state.way].label;
+  $('ec-code').textContent = CODE[state.way];
+  $('ec-note').textContent = NOTES[key];
+  $('ec-log').textContent = ''; log(null, 'Chạy lần lượt ba cách lấy trong cùng một tình huống để so sánh.', 'log-info');
+  renderRows([]); showTopology(null);
+}
+async function run() {
+  if (state.running) return;
+  state.running = true; $('ec-run').disabled = true;
+  const rows = [], evs = events(state.scen, state.way);
+  $('ec-log').textContent = '';
+  log(null, `— ${SCENS[state.scen].label} · ${WAYS[state.way].label} —`, 'log-warn');
+  let ei = 0;
+  for (const t of LOADS) {
+    while (ei < evs.length && evs[ei][0] <= t) { const [et, m, c] = evs[ei++]; log(et, m, c); }
+    const r = load(state.scen, state.way, t);
+    rows.push(r); renderRows(rows); showTopology(r);
+    await sleep(450);
   }
-
-  // Success path
-  anim.style.animation = 'none';
-  void anim.offsetWidth;
-  anim.style.animation = 'moveRight 0.6s forwards';
-  log('sync', 'Order Svc: HTTP GET /customers/123...', 'info');
-  
-  await new Promise(r => setTimeout(r, 600)); // network delay out
-  
-  anim.style.animation = 'moveLeft 0.6s forwards';
-  await new Promise(r => setTimeout(r, 600)); // network delay in
-  
-  const latency = 120 + Math.floor(Math.random() * 50); // 120-170ms
-  log('sync', `Order Svc: Nhận data thành công. Đã tạo đơn. (Trễ: ${latency}ms)`, 'ok');
-  
-  updateStats('sync', true, latency);
-  syncBtn.disabled = false;
+  while (ei < evs.length) { const [et, m, c] = evs[ei++]; log(et, m, c); }
+  state.running = false; $('ec-run').disabled = false;
 }
+reset();
+$('ec-run').addEventListener('click', run);
 
-async function simEcst() {
-  const ecstBtn = document.querySelector('.panel-ecst .btn-action');
-  ecstBtn.disabled = true;
-
-  log('ecst', 'Order Svc: Bắt đầu tạo đơn...', 'info');
-  
-  // Local read is always fast, regardless of customer svc status
-  const latency = 5 + Math.floor(Math.random() * 5); // 5-10ms
-  
-  await new Promise(r => setTimeout(r, latency));
-  
-  log('ecst', `Order Svc: Query Local Cache thành công. Đã tạo đơn. (Trễ: ${latency}ms)`, 'ok');
-  updateStats('ecst', true, latency);
-  ecstBtn.disabled = false;
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === items.length - 1) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
 }
-
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
+    2026-09-28 (WP-B Ch.06): nhãn theo DIAGRAM_DESIGN.md §17; "Phase N" → "Giai đoạn N" (dạng đã nghỉ hưu).
     Fig 6.1 — Two-Phase Commit (2PC) Sequence Diagram
     =========================================================
     Tier 1 HTML migration từ fig-6-1.svg
@@ -43,7 +44,7 @@
 
         <!-- Phase 1 header -->
         <div class="d-mt-1" style="margin-bottom: 4px;">
-          <span class="d-badge-phase">Phase 1 — Prepare</span>
+          <span class="d-badge-phase">Giai đoạn 1 — Prepare</span>
         </div>
 
         <!-- Coord(0) → Core(1): PREPARE?  [left=0.5, line=1, right=1.5] -->
@@ -64,27 +65,27 @@
           <div style="flex:0.5"></div>
         </div>
 
-        <!-- Core(1) → Coord(0): YES (ready)  [backward, dashed; left=0.5, line=1, right=1.5] -->
+        <!-- Core(1) → Coord(0): YES (sẵn sàng)  [backward, dashed; left=0.5, line=1, right=1.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1">
-            <span class="d-seq-msg-text d-text-success">YES (ready)</span>
+            <span class="d-seq-msg-text d-text-success">YES (sẵn sàng)</span>
           </div>
           <div style="flex:1.5"></div>
         </div>
 
-        <!-- Judge(2) → Coord(0): YES (ready)  [backward, dashed; left=0.5, line=2, right=0.5] -->
+        <!-- Judge(2) → Coord(0): YES (sẵn sàng)  [backward, dashed; left=0.5, line=2, right=0.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:2">
-            <span class="d-seq-msg-text d-text-success">YES (ready)</span>
+            <span class="d-seq-msg-text d-text-success">YES (sẵn sàng)</span>
           </div>
           <div style="flex:0.5"></div>
         </div>
 
         <!-- Phase 2 header -->
         <div class="d-mt-1" style="margin-bottom: 4px;">
-          <span class="d-badge-phase">Phase 2 — Commit</span>
+          <span class="d-badge-phase">Giai đoạn 2 — Commit</span>
         </div>
 
         <!-- Coord(0) → Core(1): COMMIT!  [left=0.5, line=1, right=1.5] -->
@@ -133,8 +134,8 @@
     <div class="d-box d-danger d-mt-2">
       <div class="d-title d-mb-1">Anti-pattern trong Microservices</div>
       <div style="font-size:12px; line-height:1.6;">
-        2PC <strong>không phù hợp</strong> cho microservices: single point of failure (Coordinator),
-        high latency (2 round-trips), lock resources xuyên service.<br>
+        2PC <strong>không phù hợp</strong> cho microservices: Coordinator là điểm lỗi duy nhất,
+        độ trễ cao (2 lượt đi về), khoá tài nguyên xuyên service.<br>
         <strong>Giải pháp thay thế:</strong> Saga pattern (Hình 6.2 – 6.6)
       </div>
     </div>

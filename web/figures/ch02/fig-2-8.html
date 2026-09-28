@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <!--
+    2026-09-28 (WP-B Ch.02): chữ theo DIAGRAM_DESIGN.md §17 (mô tả tiếng Việt), cột bằng nhau; ghi "bổ sung sau" cho hai context
+    Code Practice và Examination &amp; Proctoring như chú thích hình.
     Fig 2.8 — 7 Bounded Contexts trong KBM
     =========================================================
     Layout: 7 business-context boxes in 4+3 grid + shared library note
@@ -10,7 +12,7 @@
               Academic Management, Examination & Proctoring, DevOps Practice
     Capture: gen-diagrams.ps1 → fig-2-8.png → Typst image()
   -->
-  <title>Fig 2.8 — 7 Bounded Contexts in KBM | Ch.2</title>
+  <title>Fig 2.8 — Các bounded context của KBM | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 
@@ -19,53 +21,55 @@
   <div class="diagram-canvas" data-fig-id="FIG-2.8" data-ref="CH02-SEC">
 
     <div class="d-cluster d-mb-2">
-      <span class="d-label">Business Contexts (excluding supporting services)</span>
+      <span class="d-label">Bảy bounded context core (chưa kể hai context supporting)</span>
 
       <!-- Top row: 4 contexts -->
-      <div class="d-row d-gap-1 d-mt-1 d-mb-1">
+      <div class="d-row d-gap-1 d-mt-1 d-mb-1" style="align-items: stretch;">
 
-        <div class="d-box d-infra text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-infra text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">Identity &amp; Access</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-auth</div>
-          <div class="d-sub" style="opacity: 0.7;">JWT, OAuth2, SSO, roles</div>
+          <div class="d-sub" style="opacity: 0.7;">JWT, OAuth2, SSO, phân quyền</div>
         </div>
 
-        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-domain text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">SQL Practice</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-core + kbm-judge-sql</div>
-          <div class="d-sub" style="opacity: 0.7;">questions, exams, submissions</div>
+          <div class="d-sub" style="opacity: 0.7;">câu hỏi, kỳ thi, bài nộp</div>
         </div>
 
-        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-domain text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">Network Practice</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-judge-network</div>
           <div class="d-sub" style="opacity: 0.7;">TCP, UDP, RMI, SOAP, REST, gRPC</div>
         </div>
 
-        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-domain text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">Code Practice</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-judge-code</div>
           <div class="d-sub" style="opacity: 0.7;">C/C++, Java · DOMjudge</div>
+          <div class="d-sub d-text-muted">(bổ sung sau)</div>
         </div>
 
       </div>
 
       <!-- Bottom row: 3 contexts -->
-      <div class="d-row d-gap-1">
+      <div class="d-row d-gap-1" style="align-items: stretch;">
 
-        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-domain text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">Academic Management</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-academic</div>
-          <div class="d-sub" style="opacity: 0.7;">courses, grades, attendance, thesis</div>
+          <div class="d-sub" style="opacity: 0.7;">khóa học, điểm, điểm danh, đồ án</div>
         </div>
 
-        <div class="d-box d-domain text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-domain text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">Examination &amp; Proctoring</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-exam-client (+ kbm-core)</div>
-          <div class="d-sub" style="opacity: 0.7;">contest, anti-cheat, lockdown</div>
+          <div class="d-sub" style="opacity: 0.7;">contest, chống gian lận, lockdown</div>
+          <div class="d-sub d-text-muted">(bổ sung sau)</div>
         </div>
 
-        <div class="d-box d-infra text-center" style="flex: 1; padding: 14px;">
+        <div class="d-box d-infra text-center" style="flex: 1 1 0; min-width: 0; padding: 14px;">
           <div class="d-title d-mb-1">DevOps Practice</div>
           <div class="d-mono d-mb-1" style="opacity: 0.8;">kbm-devops-api / -infra / -web</div>
           <div class="d-sub" style="opacity: 0.7;">Go, k3s, Sysbox, pod lab</div>
@@ -77,7 +81,7 @@
 
     <!-- Shared library note -->
     <div class="d-box d-note text-center">
-      <div class="d-sub">A shared library should only hold cross-cutting concerns; domain logic must stay in owning contexts.</div>
+      <div class="d-sub">Shared library chỉ nên chứa phần kỹ thuật dùng chung; logic domain ở lại context sở hữu nó.</div>
     </div>
 
   </div><!-- /.diagram-canvas -->

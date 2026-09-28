@@ -3,162 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 2.5 — Context Map — KBM LMS
-    =========================================================
-    Tier 1 HTML migration từ fig-2-5.svg
-    Layout: Grid of bounded contexts with relationship arrows
-    Capture: gen-diagrams.ps1 → fig-2-5.png → Typst image()
+    Fig 2.5 — Context Map của KBM
+    2026-09-28 (WP-B Ch.02): vẽ lại. Bản cũ nối các context thành một dây chuyền (Identity → SQL → Network → DevOps,
+    nhãn "protocol", "shared JWT") không khớp bảng quan hệ ngay trên hình và dùng 7 mũi tên position:absolute.
+    Nay quan hệ theo bảng tbl:bounded-context-relationships và §2.5: Customer-Supplier từ Identity & Access,
+    Open Host Service từ SQL Practice, Conformist với GitHub Classroom, ACL tới Cổng Quản lý Đào tạo,
+    Academic Management còn dùng chung app_db với SQL Practice. Mũi tên d-links, chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 2.5 — Context Map KBM LMS | Ch.2</title>
+  <title>Fig 2.5 — Context Map của KBM | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-  <style>
-    .ctx-box {
-      border-radius: 12px;
-      border: 1.5px solid;
-      padding: 10px 12px;
-      text-align: center;
-      flex: 1;
-    }
-    .ctx-title { font-size: 13px; font-weight: 700; }
-    .ctx-role  {  font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; opacity: 0.75; }
-    .ctx-sub   {  color: var(--diagram-color-muted); margin-top: 4px; }
-    .rel-arrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 2px;
-      flex-shrink: 0;
-      min-width: 50px;
-    }
-    .rel-label {
-      
-      color: var(--diagram-color-muted);
-      background: var(--diagram-color-surface);
-      border: 1px solid var(--diagram-color-line-muted);
-      border-radius: 4px;
-      padding: 1px 4px;
-      white-space: nowrap;
-    }
-  </style>
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.5" data-ref="CH02-SEC">
+    <div style="display: grid; grid-template-columns: 250px 270px 250px; gap: 64px 96px; align-items: center; margin: 0 auto; width: fit-content;">
 
-    <div class="d-col" style="width: 1000px; margin: 0 auto; gap: 48px; position: relative;">
-      <!-- Shared Arrow Defs -->
-      <svg width="0" height="0" style="position:absolute;">
-        <defs>
-          <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-            <polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)"/>
-          </marker>
-        </defs>
-      </svg>
-
-      <!-- TOP ROW -->
-      <div class="d-row" style="gap: 0; align-items: stretch;">
-        <!-- Box 1 -->
-        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px; position: relative;">
-          <div class="d-title">Identity Service</div>
-          <div class="d-sub d-text-info fw-bold d-mt-1">UPSTREAM</div>
-          <div class="d-sub d-mt-1">JWT / OAuth2</div>
-          
-          <!-- Arrow Down to Shared Library -->
-          <div style="position: absolute; bottom: -48px; left: 50%; transform: translateX(-50%); height: 48px;">
-            <svg width="12" height="48" style="display:block;"><line x1="6" y1="0" x2="6" y2="44" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
-          </div>
-        </div>
-        
-        <!-- Arrow 1->2 Spacer -->
-        <div class="d-col d-center" style="width: 66px; position: relative;">
-          <div class="d-arrow-label" style="position: absolute; top: -14px;">auth</div>
-          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
-        </div>
-
-        <!-- Box 2 -->
-        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">SQL Lab</div>
-          <div class="d-sub d-text-success fw-bold d-mt-1">CORE DOMAIN</div>
-          <div class="d-sub d-mt-1">Questions, exams</div>
-        </div>
-
-        <!-- Arrow 2->3 Spacer -->
-        <div class="d-col d-center" style="width: 66px; position: relative;">
-          <div class="d-arrow-label" style="position: absolute; top: -14px;">protocol</div>
-          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
-        </div>
-
-        <!-- Box 3 -->
-        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">Network Lab</div>
-          <div class="d-sub fw-bold d-mt-1">PROTOCOL DOMAIN</div>
-          <div class="d-sub d-mt-1">TCP/UDP/RMI</div>
-        </div>
-
-        <!-- Arrow 3->4 Spacer -->
-        <div class="d-col d-center" style="width: 66px; position: relative;">
-          <div class="d-arrow-label" style="position: absolute; top: -14px; white-space: nowrap;">shared JWT</div>
-          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
-        </div>
-
-        <!-- Box 4 -->
-        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">DevOps Lab</div>
-          <div class="d-sub fw-bold d-mt-1">POLYGLOT</div>
-          <div class="d-sub d-mt-1">Go + k3s</div>
-        </div>
+      <div class="d-box d-legacy text-center" id="cm-qldt" style="grid-column: 1; grid-row: 1; border-style: dashed;">
+        <div class="d-title">Cổng Quản lý Đào tạo</div>
+        <div class="d-sub">hệ thống ngoài</div>
+      </div>
+      <div class="d-box d-infra text-center" id="cm-auth" style="grid-column: 2; grid-row: 1;">
+        <div class="d-title">Identity &amp; Access</div>
+        <div class="d-mono d-mt-1">kbm-auth</div>
+        <div class="d-sub">generic · upstream</div>
+      </div>
+      <div class="d-box d-infra text-center" id="cm-devops" style="grid-column: 3; grid-row: 1;">
+        <div class="d-title">DevOps Practice</div>
+        <div class="d-sub">Go + k3s, dùng chung JWT</div>
       </div>
 
-      <!-- BOTTOM ROW -->
-      <div class="d-row" style="gap: 0; align-items: stretch;">
-        <!-- Box 5 (Under Box 1) -->
-        <div class="d-box d-danger d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">Shared Library</div>
-          <div class="d-sub d-mt-1">(23 files)</div>
-          <div class="d-sub d-mt-1">JWT, BaseEntity</div>
-        </div>
-
-        <!-- Arrow 5->6 Spacer -->
-        <div class="d-col d-center" style="width: 66px; position: relative;">
-          <div class="d-arrow-label d-text-danger" style="position: absolute; top: -14px; border-color: var(--diagram-color-danger-border); white-space: nowrap;">Shared DB</div>
-          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-danger-border)" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/></svg>
-        </div>
-
-        <!-- Box 6 (Under Box 2) -->
-        <div class="d-box d-domain d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">Academic Service</div>
-          <div class="d-sub d-text-success fw-bold d-mt-1">CONTEXT</div>
-          <div class="d-sub d-mt-1">Courses, grades</div>
-        </div>
-
-        <!-- Arrow 6->7 Spacer -->
-        <div class="d-col d-center" style="width: 66px; position: relative;">
-          <div class="d-arrow-label" style="position: absolute; top: -14px;">events</div>
-          <svg width="66" height="12"><line x1="0" y1="6" x2="62" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arrow)"/></svg>
-        </div>
-
-        <!-- Box 7 (Under Box 3) -->
-        <div class="d-box d-infra d-col d-center text-center" style="width: 200px; padding: 16px;">
-          <div class="d-title">Communication</div>
-          <div class="d-sub fw-bold d-mt-1">SUPPORTING</div>
-          <div class="d-sub d-mt-1">Kafka, WS</div>
-        </div>
-
-        <!-- Spacer to keep layout balanced (since top row has 4 boxes) -->
-        <div style="width: 66px;"></div>
-        <div style="width: 200px;"></div>
+      <div class="d-box d-domain text-center" id="cm-net" style="grid-column: 1; grid-row: 2;">
+        <div class="d-title">Network Practice</div>
+        <div class="d-sub">ranh giới theo protocol</div>
+      </div>
+      <div class="d-box d-domain text-center" id="cm-sql" style="grid-column: 2; grid-row: 2; border-width: 2px;">
+        <div class="d-title">SQL Practice</div>
+        <div class="d-mono d-mt-1">kbm-core + judge</div>
+        <div class="d-sub">core domain</div>
+      </div>
+      <div class="d-box d-service text-center" id="cm-acad" style="grid-column: 3; grid-row: 2;">
+        <div class="d-title">Academic Management</div>
+        <div class="d-sub">supporting</div>
       </div>
 
-      <!-- Legend / issues -->
-      <div class="d-box d-note d-mt-2">
-        <div class="d-title d-mb-1" >Relationships &amp; Issues:</div>
-        <div class="d-sub">Identity is <strong>Upstream</strong> — SQL/Network/DevOps share authentication | Communication is <strong>Supporting</strong></div>
-        <div class="d-sub d-mt-1 d-text-danger"><strong>Issue:</strong> Shared DB between SQL and Academic creates coupling; shared library is too broad (23 files)</div>
+      <div class="d-box d-storage text-center" id="cm-db" style="grid-column: 2; grid-row: 3;">
+        <div class="d-title">app_db</div>
+        <div class="d-sub">database dùng chung</div>
       </div>
-
+      <div class="d-box d-legacy text-center" id="cm-gh" style="grid-column: 3; grid-row: 3; border-style: dashed;">
+        <div class="d-title">GitHub Classroom</div>
+        <div class="d-sub">hệ thống ngoài</div>
+      </div>
     </div>
 
+    <div class="d-box d-note d-mt-3" style="max-width: 960px; margin-left: auto; margin-right: auto;">
+      <div class="d-sub"><strong>Customer-Supplier</strong>: Identity &amp; Access (U) phục vụ các context phía sau (D) &nbsp;·&nbsp; <strong>OHS</strong>: SQL Practice mở API dữ liệu câu hỏi &nbsp;·&nbsp; <strong>Conformist</strong>: Academic dùng nguyên mô hình của GitHub Classroom &nbsp;·&nbsp; <strong>ACL</strong>: lớp dịch khi tích hợp hệ thống ngoài</div>
+      <div class="d-sub d-mt-1 d-text-danger">Nét đứt đỏ: Academic Management và SQL Practice còn chung <code>app_db</code> — coupling cần gỡ (Ch.7).</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="cm-qldt" data-to="cm-auth" data-label="ACL"></path>
+      <path data-from="cm-auth" data-to="cm-sql" data-label="U → D"></path>
+      <path data-from="cm-auth" data-to="cm-devops" data-label="JWT"></path>
+      <path data-from="cm-sql" data-to="cm-net" data-label="OHS"></path>
+      <path data-from="cm-sql" data-to="cm-acad" data-label="OHS"></path>
+      <path data-from="cm-gh" data-to="cm-acad" data-label="Conformist"></path>
+      <path data-from="cm-sql" data-to="cm-db" class="is-danger is-dashed" data-arrow="both"></path>
+      <path data-from="cm-acad" data-to="cm-db" data-from-side="left" data-from-at="0.85" data-to-side="right" data-route="channel" data-channel="right" class="is-danger is-dashed" data-arrow="both"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

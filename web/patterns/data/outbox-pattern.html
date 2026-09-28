@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -314,7 +314,7 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
-<script src="../../js/diagram-links.js?v=8998bdd1"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
 // ── Act 3: Dual write vs Transactional Outbox (Chương 10 §10.3, Chương 5 §5.5) ─────
 // Theo sách: KBM hiện lưu bài rồi gọi submitProducer.send() (dual write); Kafka không khả dụng →
@@ -479,6 +479,22 @@ function reset() {
 $('ob-run').addEventListener('click', run);
 $('ob-reset').addEventListener('click', reset);
 reset();
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === items.length - 1) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
 </script>
 </body>
 </html>

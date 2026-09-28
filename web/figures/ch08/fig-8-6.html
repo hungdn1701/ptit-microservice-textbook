@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.6 — Gateway Identity Flow
-    =========================================================
-    Tier 1 HTML migration
-    Layout: Sequence diagram
-    Capture: gen-diagrams.ps1 -> fig-8-6.png -> Typst image()
+    Fig 8.6 — Luồng JWT tại Gateway: bằng chứng có chữ ký và context định danh dẫn xuất
+    2026-09-28 (WP-B Ch.08): tiêu đề kịch bản (d-sep-title) nằm dưới đường đời nên bị cắt chữ "Scenario" (roadmap) → nhãn
+    kịch bản đặt trong vùng giữa hai đường đời. Việt hoá nhãn theo DIAGRAM_DESIGN.md §17. Ghi rõ đây là luồng mục tiêu
+    Tier 1 và hiện trạng KBM khác (X-User-* header, rủi ro được chấp nhận có điều kiện) — theo hai đoạn ngay sau hình.
   -->
-  <title>Fig 8.6 — Gateway Identity Flow | Ch.8</title>
+  <title>Fig 8.6 — Luồng JWT tại Gateway | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.6">
-
+  <div class="diagram-canvas" data-fig-id="FIG-8.6" data-ref="CH08-SEC">
     <div class="d-seq-container">
-      <!-- Participants -->
       <div class="d-seq-participants">
         <div class="d-seq-actor">
           <div class="d-seq-actor-box d-legacy">Client</div>
@@ -29,85 +26,66 @@
           <div class="d-seq-actor-box d-service">Core Service</div>
         </div>
       </div>
-
-      <!-- SCENARIO 1: Invalid token -->
-      <div class="d-sep-title d-mt-2 d-mb-1">
-        <span class="fw-semibold d-text-muted" style="font-size: 13px;">Scenario 1: Invalid Token</span>
-      </div>
-
       <div class="d-seq-messages">
-        <!-- Request with invalid token -->
+        <div class="d-seq-msg" style="min-height: 32px;">
+          <div style="flex:0.58;"></div>
+          <div class="d-zone d-zone-danger text-center" style="flex:0.84;">Kịch bản 1: token không hợp lệ</div>
+          <div style="flex:1.58;"></div>
+        </div>
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/admin (invalid token)</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/admin (token sai)</span></div>
           <div style="flex:1.5;"></div>
         </div>
-        <!-- Token check -->
-        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
-          <div style="flex:0.5;"></div>
-          <div style="flex:1; display:flex; justify-content:center;">
-            <div class="d-zone d-zone-danger text-center" style="font-size: 12px; padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Token INVALID</div>
-          </div>
-          <div style="flex:1.5;"></div>
-        </div>
-        <!-- 401 back -->
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line dashed danger reverse" style="flex:1;"><span class="d-seq-msg-text d-text-danger fw-semibold">401 Unauthorized</span></div>
           <div style="flex:1.5;"></div>
         </div>
-        <div class="text-center" style="margin:2px 0;"><span class="d-sub d-text-danger" style="font-style:italic;">Request DOES NOT reach Core Service</span></div>
-      </div>
+        <div class="d-seq-msg" style="min-height: 32px;">
+          <div style="flex:1.58;"></div>
+          <div class="d-zone d-zone-danger text-center" style="flex:0.84;">request không tới Core</div>
+          <div style="flex:0.58;"></div>
+        </div>
 
-      <!-- SCENARIO 2: Valid token -->
-      <div class="d-sep-title d-mt-3 d-mb-1">
-        <span class="fw-semibold d-text-muted" style="font-size: 13px;">Scenario 2: Valid Token</span>
-      </div>
-
-      <div class="d-seq-messages">
-        <!-- Request with valid token -->
+        <div class="d-seq-msg d-mt-2" style="min-height: 32px;">
+          <div style="flex:0.58;"></div>
+          <div class="d-zone d-zone-success text-center" style="flex:0.84;">Kịch bản 2: token hợp lệ</div>
+          <div style="flex:1.58;"></div>
+        </div>
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/questions (valid token)</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/questions (token đúng)</span></div>
           <div style="flex:1.5;"></div>
         </div>
-        <!-- Token check -->
-        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
+        <div class="d-seq-msg">
+          <div style="flex:1.5;"></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">token đã ký + context dẫn xuất</span></div>
           <div style="flex:0.5;"></div>
-          <div style="flex:1; display:flex; justify-content:center;">
-            <div class="d-zone d-zone-success text-center" style="font-size: 12px; padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Token valid</div>
+        </div>
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:2.08;"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:0.84;">
+            xác minh issuer, audience, chữ ký<br>
+            <span>rồi tự phân quyền</span>
           </div>
-          <div style="flex:1.5;"></div>
+          <div style="flex:0.08;"></div>
         </div>
-        <!-- Forward -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Forward signed proof + derived context</span></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">response</span></div>
           <div style="flex:0.5;"></div>
         </div>
-        <!-- Resource verification and authorization -->
-        <div class="d-seq-msg d-mt-1" style="min-height:auto;">
-          <div style="flex:1.5;"></div>
-          <div style="flex:1; display:flex; justify-content:center;">
-            <div class="d-zone d-zone-info text-center" style="padding: 2px 8px; border-radius: 4px; white-space:nowrap;">Verify proof + local authorization</div>
-          </div>
-          <div style="flex:0.5;"></div>
-        </div>
-        <!-- Response back -->
-        <div class="d-seq-msg">
-          <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response</span></div>
-          <div style="flex:0.5;"></div>
-        </div>
-        <!-- To client -->
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
-          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to client</span></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">response</span></div>
           <div style="flex:1.5;"></div>
         </div>
       </div>
-    </div><!-- /.d-seq-container -->
-
-  </div>
+    </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub"><strong>Đây là luồng mục tiêu (Tier 1).</strong> Hiện trạng KBM: Gateway chèn <code>X-User-Id</code>, <code>X-User-Roles</code>; một số service tin header này, số khác tự parse JWT — rủi ro được chấp nhận có điều kiện, không phải phòng thủ chiều sâu.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

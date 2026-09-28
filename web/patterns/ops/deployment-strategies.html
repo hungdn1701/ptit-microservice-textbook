@@ -4,163 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deployment Strategies — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Deployment Strategies — so sánh Rolling Update, Blue/Green và Canary cho microservices trên Kubernetes.">
+  <meta name="description" content="Deployment Strategies — so sánh All-at-once, Rolling Update, Blue/Green, Canary và Shadow, cùng migration Expand/Contract khi hai phiên bản chạy song song.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="Deployment Strategies — Pattern Story">
-  <meta property="og:description" content="Deployment Strategies — so sánh Rolling Update, Blue/Green và Canary cho microservices trên Kubernetes.">
+  <meta property="og:description" content="Deployment Strategies — so sánh All-at-once, Rolling Update, Blue/Green, Canary và Shadow, cùng migration Expand/Contract khi hai phiên bản chạy song song.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom CSS for Deployment Strategies Simulator */
-    .simulator-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin: 32px 0;
-    }
-    
-    .strategy-tabs {
-      display: flex;
-      gap: 6px;
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
-      padding: 4px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-    }
-    
-    .strategy-tab {
-      flex: 1;
-      padding: 10px 14px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: transparent;
-      color: var(--text-secondary);
-      border: none;
-      font-family: var(--font-sans);
-    }
-    .strategy-tab:hover {
-      color: var(--text-main);
-      background: rgba(255,255,255,0.03);
-    }
-    .strategy-tab.active {
-      background: var(--primary);
-      color: var(--on-primary);
-    }
-
-    .instance-display-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin: 16px 0;
-    }
-
-    .instance-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 10px;
-      margin: 14px 0;
-    }
-
-    .instance {
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid var(--border);
-    }
-    .instance.v1 {
-      background: var(--primary-dim);
-      color: var(--primary);
-      border-color: rgba(255, 122, 0, 0.25);
-    }
-    .instance.v2 {
-      background: var(--success-dim);
-      color: var(--success);
-      border-color: rgba(34, 211, 160, 0.25);
-    }
-    .instance.down {
-      background: rgba(255,255,255,0.02);
-      color: var(--text-dim);
-      border-color: var(--border);
-      opacity: 0.4;
-    }
-
-    .traffic-split-container {
-      margin-top: 20px;
-    }
-    .traffic-title {
-      font-size: 11.5px;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .traffic-split-bar {
-      display: flex;
-      height: 24px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-    }
-    .traffic-v1 {
-      background: var(--primary);
-      color: var(--on-primary);
-      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10.5px;
-      font-weight: 700;
-    }
-    .traffic-v2 {
-      background: var(--success);
-      color: var(--on-primary);
-      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10.5px;
-      font-weight: 700;
-    }
-
-    .phase-info-box {
-      padding: 16px;
-      background: rgba(255,255,255,0.02);
-      border-left: 3px solid var(--primary);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      font-size: 12.5px;
-      line-height: 1.6;
-      margin-top: 20px;
-      color: var(--text-secondary);
-    }
-    .phase-step {
-      font-weight: 700;
-      color: var(--primary);
-      font-family: var(--font-mono);
-      margin-right: 6px;
-    }
-
-    .sim-controls-btn {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -178,12 +30,12 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">Zero-Downtime Deployment</h1>
-  <p class="pattern-subtitle">Blue/Green, Canary, và Rolling Deployment — Đảm bảo tính sẵn sàng cao (High Availability) khi nâng cấp ứng dụng</p>
+  <p class="pattern-subtitle">Rolling, Blue/Green, Canary, Shadow — đổi phiên bản mà sinh viên không bị gián đoạn, và lùi lại được khi có lỗi</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Deployment Patterns</span></div>
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">DevOps / SRE Community</span></div>
-    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">~2010s</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.12 §12.5</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Humble & Farley</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2010</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.12 §12.4–12.5</span></div>
   </div>
 </header>
 
@@ -197,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Big Bang deployment đòi hỏi shutdown phiên bản cũ trước khi khởi động phiên bản mới. Quy trình này gây downtime kéo dài, ảnh hưởng trực tiếp đến SLA và trải nghiệm người dùng.
+  <p class="section-intro">
+    Triển khai kiểu "dừng → deploy → khởi động" (all-at-once) đơn giản nhất, nhưng trong lúc đổi, không ai dùng được hệ thống. Với KBM, đó là sinh viên bị gián đoạn giữa buổi thực hành. Hai câu hỏi của mọi lần phát hành: làm sao để người dùng không bị gián đoạn, và phiên bản mới có lỗi thì lùi lại nhanh thế nào (§12.5)?
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-warning">Downtime</div></div>
-      <h3>Downtime kéo dài</h3>
-      <p>Quá trình thay thế ứng dụng yêu cầu server ngừng nhận request để khởi tạo JVM/Container mới (thường tốn 2-5 phút). Với hệ thống high-traffic, downtime này gây rớt hàng ngàn request.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Downtime</div></div>
+      <h3>Dừng cả hệ thống để đổi phiên bản</h3>
+      <p>Mỗi lần deploy là một khoảng không ai nộp được bài. Có lỗi thì rollback lại là thêm một lần dừng nữa — MTTR tăng đúng lúc đang có sự cố.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Rollback</div></div>
-      <h3>Complex Rollback</h3>
-      <p>Nếu phát hiện lỗi nghiêm trọng sau khi deploy, rollback đòi hỏi lặp lại toàn bộ quá trình shutdown/startup. Làm tăng Mean Time To Recovery (MTTR) và rủi ro mất mát dữ liệu.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">Hai phiên bản</div></div>
+      <h3>Code cũ gặp schema mới</h3>
+      <p>Mọi cách không gián đoạn đều có lúc v1 và v2 cùng chạy trên một database. Migration đổi tên cột là v1 lỗi ngay — một phần request thành công, một phần hỏng, khó gỡ và khó lùi (§12.4).</p>
     </div>
   </div>
 
@@ -228,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Sử dụng Load Balancer để điều hướng traffic linh hoạt giữa cluster v1 và v2. Đảm bảo luôn có ít nhất một healthy cluster phục vụ request trong suốt quá trình nâng cấp, đạt mức zero downtime.
+      Luôn giữ đủ instance khỏe để phục vụ trong khi thay phiên bản, và điều khiển lưu lượng đi đâu bằng router: thay dần từng instance (Rolling), chuyển cả khối một lần giữa hai môi trường (Blue/Green), cho một phần nhỏ lưu lượng thử trước (Canary), hoặc chỉ gửi bản sao lưu lượng để kiểm chứng (Shadow).
     </p>
-    <div class="definition-attribution">— Continuous Delivery · Jez Humble & David Farley</div>
+    <div class="definition-attribution">— Continuous Delivery · Humble &amp; Farley (2010) · Newman [4a, Ch.6]</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Các mô hình zero-downtime phổ biến, lựa chọn dựa trên resource constraints và infrastructure maturity:
+  <p class="section-intro">
+    Không có chiến lược tốt nhất, chỉ có chiến lược hợp với rủi ro của thay đổi (Newman): bản vá nhỏ dùng Rolling — rẻ nhưng lùi chậm; thay đổi lớn dùng Blue/Green — lùi tức thời nhưng tốn gấp đôi hạ tầng; tính năng thử nghiệm dùng Canary — lỗi chỉ chạm một phần nhỏ người dùng; rủi ro về hiệu năng dưới tải thật thì Shadow trước. Và cả bốn đều cần migration tương thích ngược, vì chuyển router không đưa database về như cũ.
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 01</div>
-      <h3>Blue/Green Deployment</h3>
-      <p>Duy trì 2 môi trường identical (Blue: v1, Green: v2). Khi Green pass quality gates, Load Balancer switch 100% traffic từ Blue sang Green tức thì.</p>
+      <h3>Rolling · Blue/Green</h3>
+      <p>Rolling thay lần lượt từng instance, chỉ cần dư một instance. Blue/Green chạy hai bản hoàn chỉnh, đổi <code>selector</code> của Service để chuyển — và đổi lại để lùi (lst:12_5).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 02</div>
-      <h3>Canary Deployment</h3>
-      <p>Deploy v2 trên một subset nhỏ (Canary nodes). Route 5-10% real traffic sang Canary để monitor telemetry. Mở rộng rollout nếu các chỉ số ổn định.</p>
+      <h3>Canary · Shadow</h3>
+      <p>Canary đưa khoảng 10% lưu lượng sang bản mới (<code>canary-weight: "10"</code>, lst:12_6), theo dõi metrics rồi mở rộng. Shadow nhân bản lưu lượng, bỏ phản hồi — không phải cách phát hành mà là cách kiểm chứng trước.</p>
     </div>
     <div class="anatomy-card">
-      <div class="anatomy-num">Chiến lược 03</div>
-      <h3>Rolling Update</h3>
-      <p>Upgrade tuần tự các nodes trong cluster. Shutdown v1 node, startup v2 node và verify qua health check trước khi tiếp tục với node tiếp theo.</p>
+      <div class="anatomy-num">Điều kiện chung</div>
+      <h3>Expand/Contract</h3>
+      <p>Expand: thêm cột mới, giữ cột cũ. Chuyển dữ liệu bằng job nền. Contract: xóa cột cũ chỉ khi v1 đã dừng hẳn. Migration chạy thành bước riêng, trước khi deploy (lst:12_4).</p>
     </div>
   </div>
 </section>
@@ -266,44 +118,36 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Chọn deployment strategy và click **Deploy v2** để quan sát state changes của cluster instances và cơ chế traffic split.
-  </p>
+  <p class="section-intro">Một service của KBM chạy 4 instance, mỗi bước khoảng một phút với khoảng 1.000 request. Cảnh báo cần hai bước dữ liệu lỗi mới kích hoạt rollback. Chọn tình huống và chiến lược, rồi so sánh gián đoạn, số request lỗi và số instance phải chạy. Các con số là minh họa.</p>
 
-  <div class="simulator-box">
-    <div class="strategy-tabs">
-      <button class="strategy-tab active" id="tab-bluegreen" onclick="selectStrategy('bluegreen')">Blue/Green</button>
-      <button class="strategy-tab" id="tab-canary" onclick="selectStrategy('canary')">Canary</button>
-      <button class="strategy-tab" id="tab-rolling" onclick="selectStrategy('rolling')">Rolling Update</button>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Tình huống</span><div class="sim-chips" id="dp-scens"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Chiến lược</span><div class="sim-chips" id="dp-strats"></div></div>
+    <button class="sim-btn primary-action" id="dp-run" type="button">▶ Deploy v2</button>
+  </div>
+
+  <div class="sim-grid sim-grid--wide">
+    <div class="sim-panel is-primary">
+      <div class="sim-panel-title"><span id="dp-title"></span> <span class="sim-hint" id="dp-hint"></span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="dp-table">
+          <thead><tr><th class="num">#</th><th>Bước</th><th>Instance</th><th class="num">v2</th><th class="num">Lỗi</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-val" id="dp-s-down">0</div><div class="sim-stat-lbl">Phút gián đoạn</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="dp-s-err">0</div><div class="sim-stat-lbl">Request lỗi</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="dp-s-max">4</div><div class="sim-stat-lbl">Instance tối đa</div></div>
+      </div>
     </div>
-
-    <div class="instance-display-box">
-      <h3 class="sub-heading" id="strategy-title" style="margin-top:0;">Blue/Green Deployment</h3>
-      <p id="strategy-desc" style="font-size:12.5px; color:var(--text-secondary); margin-bottom:16px; line-height:1.5;"></p>
-
-      <div style="display:flex; gap:8px; margin-bottom:12px;">
-        <span class="badge badge-info" style="background:var(--primary-dim); border-color:var(--primary); color:var(--primary)">v1 (Blue)</span>
-        <span class="badge badge-success" style="background:var(--success-dim); border-color:var(--success); color:var(--success)">v2 (Green)</span>
-      </div>
-
-      <div id="instances-display"></div>
-
-      <div class="traffic-split-container">
-        <div class="traffic-title">Traffic Allocation (Routing Distribution)</div>
-        <div class="traffic-split-bar">
-          <div class="traffic-v1" id="tv1" style="width:100%;">v1: 100%</div>
-          <div class="traffic-v2" id="tv2" style="width:0%;"></div>
-        </div>
-      </div>
-
-      <div class="phase-info-box" id="phase-info"></div>
-
-      <div class="sim-controls-btn">
-        <button class="btn btn-primary" id="deploy-btn" onclick="deploy()" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary);">Deploy v2</button>
-        <button class="btn" onclick="resetStrategy()">Reset</button>
-      </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Lệnh / cấu hình <span class="sim-hint" id="dp-code-hint"></span></div>
+      <pre class="sim-code" id="dp-code"></pre>
+      <p class="sim-note" id="dp-note"></p>
     </div>
   </div>
+  <div class="sim-legend"><span><span class="badge badge-info">v1</span> đang phục vụ</span><span><span class="badge badge-success">v2</span> đang phục vụ</span><span><span class="badge badge-warning">…</span> đang khởi động / chờ</span><span><span class="badge badge-danger">v1</span> lỗi với schema mới</span></div>
 </section>
 
 <!-- ── ACT 4: KBM Apply It ── -->
@@ -316,112 +160,114 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Áp dụng linh hoạt deployment strategies cho từng nhóm dịch vụ trong KBM để cân bằng giữa operational complexity và system reliability.
+  <p class="section-intro">
+    LMS chính của KBM chạy Docker Compose trên hạ tầng nhỏ, triển khai kiểu all-at-once — mục duy nhất bị đánh giá đỏ trong bảng trưởng thành triển khai, vì sinh viên bị gián đoạn khi deploy (§12.7). Nhưng lời giải không phải một chiến lược cho mọi lúc: sách chọn theo khung thời gian của nhà trường, và chỉ lên Kubernetes khi tải thật sự vượt khả năng của Docker Compose.
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Strategy Comparison & Application</h3>
-  <div class="sub-label">Technical tradeoffs and infrastructure decisions</div>
+  <h3 class="sub-heading">Gap Analysis — triển khai của KBM</h3>
+  <div class="sub-label">Theo bảng mức trưởng thành triển khai và phân tích bối cảnh nghiệp vụ (§12.7), migration trong pipeline (§12.4)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Strategy</th>
-          <th>Downtime</th>
-          <th>Infra Cost</th>
-          <th>Rollback Speed</th>
-          <th>KBM Application</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Blue/Green</td>
-          <td>Không (Zero)</td>
-          <td><span class="b-high">2x (Highest)</span></td>
-          <td>Tức thời (Instant)</td>
-          <td><code>kbm-auth</code>: Core service, resource footprint nhỏ, yêu cầu tuyệt đối zero downtime và instant rollback.</td>
+          <td class="gap-label">Chiến lược triển khai</td>
+          <td>All-at-once (stop → deploy → start): có downtime.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Blue/Green trước và sau kỳ thi; Rolling giữa tuần; all-at-once vẫn chấp nhận được trong bảo trì dịp nghỉ hè.</td>
         </tr>
         <tr>
-          <td class="gap-label">Canary</td>
-          <td>Không (Zero)</td>
-          <td><span class="b-med">+10% - 20%</span></td>
-          <td>Nhanh (Fast)</td>
-          <td><code>kbm-core</code>: Complex business logic service, yêu cầu traffic validation trên production trước khi full rollout.</td>
+          <td class="gap-label">CI/CD</td>
+          <td>GitLab CI phủ các phần chính; vài phần còn build trên máy cá nhân, SSH vào để deploy.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Phủ đều CI/CD, build một lần triển khai mọi nơi; deploy tự động lên staging có smoke test.</td>
         </tr>
         <tr>
-          <td class="gap-label">Rolling Update</td>
-          <td>Gần như không (Near-Zero)</td>
-          <td><span class="b-low">Không thay đổi</span></td>
-          <td>Trung bình (Slow)</td>
-          <td><code>kbm-judge-sql</code>: Worker queue consumers, nâng cấp tuần tự không gây request drop.</td>
+          <td class="gap-label">Migration</td>
+          <td>Schema và code là hai artifact; sai thứ tự hoặc không tương thích ngược thì downtime hay hỏng dữ liệu.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Expand/Contract; migration là bước riêng trước deploy (Flyway, <code>web-application-type=none</code>).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Rollback</td>
+          <td>Cơ chế rollback chưa nhất quán giữa các phân hệ.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Mỗi lần deploy kèm kế hoạch khôi phục; tránh deploy trước hoặc trong đợt thi, buổi thực hành.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">CI/CD Automation Roadmap</h3>
-  <div class="sub-label">Standardizing the deployment pipeline in KBM</div>
+  <h3 class="sub-heading">Lộ trình</h3>
+  <div class="sub-label">Lộ trình tăng dần trong case study Ch.12 (§12.7) — chưa phải việc KBM đã làm xong</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1 · Tuần 1</div>
-      <h4>Standardize Health Check Endpoints</h4>
-      <p>Tích hợp Spring Actuator. Implement <code>/actuator/health</code> để cung cấp chính xác Readiness và Liveness probes.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev</span>
+      <div class="timeline-phase">Giai đoạn 1</div>
+      <h4>Phủ đều CI/CD</h4>
+      <p>Nỗ lực thấp, tác động cao: mọi service tự chạy test và build image sau mỗi lần đẩy mã; không đoạn mã nào chưa qua kiểm thử lên production.</p>
+      <span class="t-badge orange">§12.7</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Configure Kubernetes Rolling Updates</h4>
-      <p>Cấu hình <code>RollingUpdate</code> strategy trong K8s Deployment. Set <code>maxSurge: 25%</code> và <code>maxUnavailable: 0</code> để đảm bảo healthy pods capacity.</p>
-      <span class="t-badge green">✓ Require healthy probes before routing traffic</span>
+      <div class="timeline-phase">Giai đoạn 2</div>
+      <h4>Triển khai tự động</h4>
+      <p>Staging tự động + smoke test + bước duyệt thủ công trước production; health check cho mỗi service; không ai phải SSH vào máy chủ.</p>
+      <span class="t-badge orange">§12.7</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3 · Tuần 3</div>
-      <h4>Implement Service Mesh (Istio) for Canary Routing</h4>
-      <p>Deploy Istio Gateway. Cấu hình VirtualService route 10% traffic (hoặc theo HTTP Headers) sang Canary pods, monitor telemetry trước khi full cutover.</p>
-      <span class="t-badge orange">Dự kiến: 2 devs × 1 tuần</span>
+      <div class="timeline-phase">Giai đoạn 3</div>
+      <h4>Zero-downtime</h4>
+      <p>Rolling với nhiều instance song song, hoặc Blue/Green cho thời điểm tải cao như kỳ thi — kèm migration Expand/Contract.</p>
+      <span class="t-badge orange">§12.7 · §12.4</span>
     </div>
     <div class="timeline-item" data-delay="750">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4 · Tuần 4</div>
-      <h4>Database Migration with Expand/Contract Pattern</h4>
-      <p>Ngăn schema conflict khi v1 và v2 chạy song song. Áp dụng Expand/Contract: add non-breaking schema changes, deploy app, sau đó remove obsolete schema.</p>
-      <span class="t-badge green">✓ Resolve DB mismatch during parallel runs</span>
+      <div class="timeline-phase">Giai đoạn 4</div>
+      <h4>Kubernetes, khi thật sự cần</h4>
+      <p>Tự phục hồi và mở rộng, đổi lấy khối lượng vận hành lớn — chỉ khi tải vượt Docker Compose. Kubernetes cho hệ thống vài service là anti-pattern.</p>
+      <span class="t-badge orange">§12.7</span>
     </div>
   </div>
 
   <!-- Decision Guide -->
-  <h3 class="sub-heading" style="margin-top:40px;">Decision Guide</h3>
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Recommended When</div>
+        <div class="decision-title">Chọn theo rủi ro của thay đổi</div>
       </div>
       <ul class="decision-list">
-        <li>Hệ thống 24/7 không có maintenance window</li>
-        <li>Tần suất release cao (multiple times a day)</li>
-        <li>Downtime gây ảnh hưởng trực tiếp đến doanh thu hoặc SLA</li>
-        <li>Hạ tầng hỗ trợ tốt automation (Kubernetes, AWS ECS, Consul)</li>
+        <li>Bản vá nhỏ: Rolling — rẻ, lùi chậm hơn.</li>
+        <li>Thay đổi lớn, thời điểm nhạy cảm (trước/sau kỳ thi): Blue/Green — lùi tức thời, tốn gấp đôi.</li>
+        <li>Tính năng thử nghiệm: Canary — lỗi chỉ chạm một phần nhỏ người dùng.</li>
+        <li>Rủi ro hiệu năng dưới tải thật (bộ chấm mới): Shadow trước, chỉ bản cũ được ghi điểm.</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Not Recommended When</div>
+        <div class="decision-title">All-at-once vẫn hợp lý, hoặc zero-downtime chưa đủ, khi</div>
       </div>
       <ul class="decision-list">
-        <li>Dự án nội bộ/thử nghiệm chấp nhận downtime ngoài giờ hành chính</li>
-        <li>Chứa breaking database schema changes không tương thích ngược</li>
-        <li>Infrastructure resource constraints cực kỳ hạn hẹp</li>
-        <li>Monolith có startup time quá lớn (> 15 phút)</li>
+        <li>Bảo trì lớn dịp nghỉ hè, không ai đang dùng hệ thống.</li>
+        <li>Migration không tương thích ngược mà chưa tách được Expand/Contract.</li>
+        <li>Hạ tầng không đủ chạy hai bản song song, hoặc chưa có metrics để canary có ý nghĩa.</li>
+        <li>Shadow mà bản mới vẫn ghi vào cùng database hay gửi email — hậu quả nhân đôi.</li>
       </ul>
     </div>
   </div>
@@ -429,7 +275,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Tham khảo chi tiết về Deployment Strategies, CI/CD Pipeline, Health Probes, và Expand/Contract Database Migration trong textbook.</p>
+  <p>Đọc chi tiết về bốn chiến lược triển khai (§12.5), migration Expand/Contract trong pipeline (§12.4) và case study triển khai của KBM (§12.7).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-12')"><div class="badge badge-info">Read</div> Chương 12 — Triển khai &amp; DevOps →</a>
 </div>
 
@@ -446,123 +292,189 @@
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
-
-// ── Simulator Logic ──────────────────────────────────────
-let strategy = 'bluegreen';
-let phase = 0;
-
-const strategies = {
-  bluegreen: {
-    title: 'Blue/Green Deployment',
-    desc: 'Duy trì 2 môi trường identical. Switch 100% traffic sang Green ngay khi pass quality gate.',
-    phases: [
-      { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> 100% traffic trỏ tới Blue (v1). Green (v2) đang được provisioning.' },
-      { instances: 'v1 v1 v1 v1 v1 v1|v2 v2 v2 v2 v2 v2', v1: 100, v2: 0, info: '<span class="phase-step">Phase 1:</span> Green (v2) ready và pass tests. 100% real traffic vẫn route vào Blue.' },
-      { instances: 'down down down down down down|v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 2:</span> Traffic Switch! 100% traffic sang Green. Blue chuyển sang standby để hỗ trợ instant rollback.' }
-    ]
-  },
-  canary: {
-    title: 'Canary Deployment',
-    desc: 'Deploy v2 lên subset nhỏ, điều hướng traffic tỉ lệ thấp để monitor telemetry trước khi full rollout.',
-    phases: [
-      { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> 100% cluster chạy v1.' },
-      { instances: 'v1 v1 v1 v1 v1 v2', v1: 85, v2: 15, info: '<span class="phase-step">Phase 1:</span> Deploy Canary Instance. Route ~15% traffic và monitor error rate.' },
-      { instances: 'v1 v1 v1 v2 v2 v2', v1: 50, v2: 50, info: '<span class="phase-step">Phase 2:</span> Canary telemetry an toàn. Scale v2 lên 50% cluster. Split 50/50 traffic.' },
-      { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 3:</span> Full rollout hoàn tất. 100% traffic route vào v2.' }
-    ]
-  },
-  rolling: {
-    title: 'Rolling Update',
-    desc: 'Upgrade tuần tự các instances. Đảm bảo overall capacity không bị sụt giảm đột ngột.',
-    phases: [
-      { instances: 'v1 v1 v1 v1 v1 v1', v1: 100, v2: 0, info: '<span class="phase-step">Phase 0:</span> Cluster 6 instances chạy v1 healthy.' },
-      { instances: 'v2 v1 v1 v1 v1 v1', v1: 83, v2: 17, info: '<span class="phase-step">Phase 1:</span> Node đầu tiên update lên v2. 5 nodes v1 handle traffic.' },
-      { instances: 'v2 v2 v1 v1 v1 v1', v1: 67, v2: 33, info: '<span class="phase-step">Phase 2:</span> Tiếp tục upgrade node thứ 2 lên v2.' },
-      { instances: 'v2 v2 v2 v2 v1 v1', v1: 33, v2: 67, info: '<span class="phase-step">Phase 3:</span> Upgrade thêm 2 nodes. Hệ thống chạy song song 2 versions.' },
-      { instances: 'v2 v2 v2 v2 v2 v2', v1: 0, v2: 100, info: '<span class="phase-step">Phase 4:</span> Rolling update hoàn tất. Toàn cluster chạy v2.' }
-    ]
-  }
+// ── Act 3: năm cách phát hành × bốn tình huống (§12.4–12.5) ──────────────────────────────
+// Kịch bản xác định. Minh họa, sách không nêu: 4 instance, ~1.000 request mỗi bước, v2 lỗi 20% request,
+// cảnh báo cần 2 bước dữ liệu lỗi mới kích hoạt rollback; canary 10% (theo lst:12_6).
+const N = 4, REQ = 1000;
+const SCENS = {
+  ok:     { label: 'v2 ổn' },
+  bug:    { label: 'v2 lỗi 20% request' },
+  rename: { label: 'Đổi tên cột' },
+  ec:     { label: 'Đổi tên cột + Expand/Contract' },
 };
+const STRATS = {
+  all:    { label: 'All-at-once' },
+  rolling:{ label: 'Rolling' },
+  bg:     { label: 'Blue/Green' },
+  canary: { label: 'Canary' },
+  shadow: { label: 'Shadow' },
+};
+const CODE = {
+  all: `# hiện trạng KBM (Docker Compose)
+docker compose stop kbm-academic
+# … chạy migration …
+docker compose up -d kbm-academic
+# lỗi → làm lại lần nữa với image cũ`,
+  rolling: `# thay lần lượt từng instance,
+# chờ health check rồi mới sang cái kế
+for i in 1 2 3 4; do
+  replace kbm-academic-$i --image v2
+  wait_healthy kbm-academic-$i
+done`,
+  bg: `# lst:12_5 — Green đứng chờ, chưa có traffic
+kubectl apply -f deployment-green.yaml
+# test xong → chuyển router
+kubectl patch service kbm-academic-svc \\
+  -p '{"spec":{"selector":{"version":"green"}}}'
+# lùi: đổi selector về "blue"`,
+  canary: `# lst:12_6 — Nginx Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "10"
+# ổn định → tăng weight; lỗi → gỡ canary`,
+  shadow: `# nhân bản traffic sang v2, bỏ phản hồi
+# KBM (§12.5): judge mới chấm song song,
+# so kết quả với bản cũ;
+# CHỈ bản cũ được ghi điểm cho sinh viên
+mirror: kbm-judge-v2   # không ghi DB chung`,
+};
+const EC_SQL = `\n-- Expand/Contract (§12.4)\nALTER TABLE grades ADD COLUMN he_so_10 DECIMAL;\n-- … deploy v2, backfill bằng job nền …\n-- sau khi v1 dừng hẳn:\nALTER TABLE grades DROP COLUMN he_so_4;`;
 
-function selectStrategy(s) {
-  strategy = s;
-  phase = 0;
-  document.querySelectorAll('.strategy-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`tab-${s}`).classList.add('active');
-  renderPhase();
-}
-
-function deploy() {
-  const s = strategies[strategy];
-  if (phase < s.phases.length - 1) {
-    phase++;
-    renderPhase();
-  }
-}
-
-function resetStrategy() {
-  phase = 0;
-  renderPhase();
-}
-
-function renderPhase() {
-  const s = strategies[strategy];
-  const p = s.phases[phase];
-  document.getElementById('strategy-title').textContent = s.title;
-  document.getElementById('strategy-desc').textContent = s.desc;
-
-  // Render instances layout
-  const groups = p.instances.split('|');
-  let html = '';
-  groups.forEach((g, gi) => {
-    if (gi > 0) {
-      html += '<div style="margin:16px 0; font-size:10.5px; font-family:var(--font-mono); color:var(--text-dim); text-align:center; letter-spacing:0.1em;">─── GREEN ENVIRONMENT (v2) ───</div>';
-    } else if (strategy === 'bluegreen') {
-      html += '<div style="margin:8px 0; font-size:10.5px; font-family:var(--font-mono); color:var(--text-dim); text-align:center; letter-spacing:0.1em;">─── BLUE ENVIRONMENT (v1) ───</div>';
+// Sinh các bước. inst: mảng nhãn 'v1' | 'v2' | 'start' | 'bad' (v1 lỗi với schema mới).
+function plan(strat, scen) {
+  const S = [], bug = scen === 'bug', rename = scen === 'rename', ec = scen === 'ec';
+  let v1Broken = false;
+  const add = (label, inst, v2, opts = {}) => {
+    const serving = inst.filter(x => x !== 'start').length;
+    const shown = inst.map(x => x === 'v1' && v1Broken ? 'bad' : x);
+    // Lỗi người dùng: phần lưu lượng tới v1 hỏng (schema) + phần tới v2 lỗi (bug).
+    let err = opts.down ? 1 : 0;
+    if (!opts.down) err = (v1Broken ? (100 - v2) / 100 : 0) + (bug && !opts.mirror ? v2 / 100 * 0.2 : 0);
+    S.push({ label, inst: shown, v2: opts.mirror ? 0 : v2, err: Math.min(1, err), down: !!opts.down, count: inst.length, serving, note: opts.note });
+  };
+  const v1s = k => Array(k).fill('v1'), v2s = k => Array(k).fill('v2'), st = k => Array(k).fill('start');
+  const migrate = () => {
+    if (rename) { v1Broken = true; }
+  };
+  if (ec) add('Expand: thêm cột mới, giữ cột cũ', v1s(N), 0);
+  if (strat === 'all') {
+    add('Dừng toàn bộ v1', [], 0, { down: 1 });
+    migrate(); if (rename) S[S.length - 1].label = 'Dừng v1, chạy migration';
+    add('Khởi động v2', st(N), 0, { down: 1 });
+    add('v2 phục vụ 100%', v2s(N), 100);
+    if (bug) { add('Cảnh báo kích hoạt', v2s(N), 100); add('Dừng v2, chạy lại v1', st(N), 0, { down: 1 }); add('v1 phục vụ lại', v1s(N), 0); }
+  } else if (strat === 'rolling') {
+    migrate(); if (rename) add('Migration: đổi tên cột', v1s(N), 0);
+    for (let k = 1; k <= N; k++) {
+      add(`Thay instance ${k}/${N}`, v2s(k).concat(v1s(N - k)), k / N * 100);
+      if (bug && k === 2) break;
     }
-    html += '<div class="instance-grid">';
-    g.trim().split(' ').forEach(v => {
-      let disp = v.toUpperCase();
-      if (v === 'down') disp = 'OFFLINE';
-      html += `<div class="instance ${v}">${disp}</div>`;
-    });
-    html += '</div>';
-  });
-  document.getElementById('instances-display').innerHTML = html;
-
-  // Update traffic split bar
-  document.getElementById('tv1').style.width = p.v1 + '%';
-  document.getElementById('tv1').textContent = p.v1 > 0 ? `v1: ${p.v1}%` : '';
-  document.getElementById('tv2').style.width = p.v2 + '%';
-  document.getElementById('tv2').textContent = p.v2 > 0 ? `v2: ${p.v2}%` : '';
-
-  // Update phase info
-  document.getElementById('phase-info').innerHTML = p.info;
-  document.getElementById('deploy-btn').disabled = (phase >= s.phases.length - 1);
+    if (bug) { add('Cảnh báo → lùi instance 2', v2s(1).concat(v1s(N - 1)), 25); add('Lùi instance 1', v1s(N), 0); }
+  } else if (strat === 'bg') {
+    migrate(); if (rename) add('Migration: đổi tên cột', v1s(N), 0);
+    add('Dựng Green (v2 × 4), chưa có traffic', v1s(N).concat(st(N)), 0);
+    add('Smoke test trên Green', v1s(N).concat(st(N)), 0);
+    add('Chuyển router → Green', v2s(N).concat(v1s(N)), 100);
+    if (bug) { add('Cảnh báo kích hoạt', v2s(N).concat(v1s(N)), 100); add('Chuyển router về Blue', v1s(N).concat(v2s(N)), 0); }
+    else add('Ổn định → tắt Blue', v2s(N), 100);
+  } else if (strat === 'canary') {
+    migrate(); if (rename) add('Migration: đổi tên cột', v1s(N), 0);
+    add('1 instance v2, 10% traffic', v1s(N).concat(['v2']), 10);
+    if (bug) { add('Cảnh báo kích hoạt', v1s(N).concat(['v2']), 10); add('Gỡ canary', v1s(N), 0); }
+    else { add('Metrics ổn → 50%', v2s(2).concat(v1s(2)), 50); add('100%, gỡ v1', v2s(N), 100); }
+  } else {
+    migrate(); if (rename) add('Migration trên DB dùng chung', v1s(N), 0);
+    add('Dựng v2 nhận bản sao traffic', v1s(N).concat(st(N)), 0, { mirror: 1 });
+    add(bug ? 'So kết quả: 20% lệch → phát hiện lỗi' : rename ? 'So kết quả: v1 lỗi vì schema mới' : 'So kết quả v1/v2: khớp', v1s(N).concat(v2s(N)), 0, { mirror: 1 });
+    add(bug ? 'Gỡ v2 — chưa phát hành' : 'Kiểm chứng xong — phát hành bằng cách khác', v1s(N), 0);
+  }
+  if (ec && strat !== 'shadow') add('Contract: xóa cột cũ (v1 đã dừng)', S[S.length - 1].inst, S[S.length - 1].v2);
+  return S;
 }
+function note(strat, scen) {
+  const base = {
+    all: 'All-at-once: đơn giản, không cần hạ tầng thêm, nhưng mỗi lần deploy — và mỗi lần rollback — là một khoảng gián đoạn.',
+    rolling: 'Rolling: chỉ cần dư một instance, không gián đoạn. Lùi lại cũng phải thay lần lượt từng instance, nên chậm hơn.',
+    bg: 'Blue/Green: lùi lại chỉ là đổi selector — tức thời. Cái giá là hai bộ instance chạy song song trong lúc chuyển.',
+    canary: 'Canary: bản mới chỉ nhận 10% lưu lượng trong lúc theo dõi metrics; chi phí thêm một instance.',
+    shadow: 'Shadow: người dùng không bao giờ chạm vào v2 — đây là kiểm chứng, không phải phát hành; tốn gấp đôi và phải cô lập mọi tác dụng phụ.',
+  }[strat];
+  const add = {
+    ok: '',
+    bug: { all: ' v2 lỗi thì 100% người dùng chịu lỗi cho tới khi dừng lại, và rollback thêm một phút gián đoạn.',
+           rolling: ' Lỗi tăng theo số instance đã thay; lùi lại cần thêm hai bước.',
+           bg: ' Toàn bộ người dùng gặp lỗi ngay khi chuyển, nhưng chỉ tới lúc đổi router về Blue.',
+           canary: ' Lỗi chỉ chạm khoảng 10% lưu lượng rồi canary bị gỡ — ít request lỗi nhất trong các cách phát hành.',
+           shadow: ' Lỗi được phát hiện khi so kết quả mà không người dùng nào chịu.' }[strat],
+    rename: { all: ' Với migration không tương thích, all-at-once lại "an toàn": không lúc nào v1 và v2 cùng chạy — đổi bằng downtime.',
+              rolling: ' Migration chạy trước deploy: từ lúc đó mọi instance v1 còn lại đọc cột đã đổi tên và lỗi — lỗi giảm dần theo số instance đã thay.',
+              bg: ' Blue (v1) hỏng ngay khi migration chạy, trước cả lúc chuyển router; và nếu v2 có lỗi, đổi router về Blue cũng không cứu được vì database đã khác.',
+              canary: ' Canary giữ 90% lưu lượng ở v1 — đúng phần đang hỏng vì schema mới. Cách thận trọng nhất lại cho nhiều lỗi nhất.',
+              shadow: ' Shadow cần database riêng cho v2; migration chạy trên database dùng chung thì v1 hỏng như mọi cách khác.' }[strat],
+    ec: ' Expand/Contract giữ cột cũ cho tới khi v1 dừng hẳn, nên v1 và v2 cùng chạy được — mọi chiến lược đều sạch lỗi, đổi lại migration tách thành nhiều bước.',
+  }[scen];
+  return base + (add || '');
+}
+
+// ── Hiển thị ──────────────────────────────────────────────
+const state = { scen: 'bug', strat: 'all', running: false };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function chips(elId, obj, key) {
+  Object.entries(obj).forEach(([v, s]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = s.label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; reset(); } });
+    $(elId).appendChild(b);
+  });
+}
+chips('dp-scens', SCENS, 'scen'); chips('dp-strats', STRATS, 'strat');
+const BADGE = { v1: ['info', 'v1'], v2: ['success', 'v2'], start: ['warning', '…'], bad: ['danger', 'v1'] };
+const inst = xs => xs.length ? xs.map(x => `<span class="badge badge-${BADGE[x][0]}">${BADGE[x][1]}</span>`).join(' ') : '<span class="bad">không có</span>';
+function renderRows(rows) {
+  $('dp-table').querySelector('tbody').innerHTML = rows.length
+    ? rows.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.label}</td><td>${inst(r.inst)}</td><td class="num">${r.v2}%</td><td class="num${r.err ? ' bad' : ''}">${r.down ? 'gián đoạn' : Math.round(r.err * 100) + '%'}</td></tr>`).join('')
+    : '<tr><td colspan="5">Chọn tình huống và chiến lược, rồi bấm Deploy v2.</td></tr>';
+  const sc = $('dp-table').closest('.sim-scroll'); sc.scrollTop = sc.scrollHeight;
+  $('dp-s-down').textContent = rows.filter(r => r.down).length;
+  $('dp-s-err').textContent = rows.reduce((s, r) => s + Math.round(r.err * REQ), 0).toLocaleString('vi-VN');
+  $('dp-s-max').textContent = rows.length ? Math.max(N, ...rows.map(r => r.count)) : N;
+}
+function reset() {
+  document.querySelectorAll('#dp-scens .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.scen));
+  document.querySelectorAll('#dp-strats .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.strat));
+  $('dp-title').textContent = STRATS[state.strat].label; $('dp-hint').textContent = SCENS[state.scen].label;
+  $('dp-code-hint').textContent = STRATS[state.strat].label;
+  $('dp-code').textContent = CODE[state.strat] + (state.scen === 'ec' ? EC_SQL : '');
+  $('dp-note').textContent = note(state.strat, state.scen);
+  renderRows([]);
+}
+async function run() {
+  if (state.running) return;
+  state.running = true; $('dp-run').disabled = true;
+  const steps = plan(state.strat, state.scen), rows = [];
+  for (const s of steps) { rows.push(s); renderRows(rows); await sleep(600); }
+  state.running = false; $('dp-run').disabled = false;
+}
+reset();
+$('dp-run').addEventListener('click', run);
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-renderPhase();
-
 </script>
 </body>
 </html>
-
-
-
-

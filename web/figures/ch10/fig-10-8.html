@@ -2,66 +2,73 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <!--
+    Fig 10.8 — Branch by Abstraction: chuyển đổi an toàn qua feature flag
+    2026-09-28 (WP-B Ch.10): 6 mũi tên <svg><line> rời → d-links. Chú thích nói "qua feature flag" và văn bản liệt kê 4 bước
+    (tạo abstraction → hiện thực mới sau flag → chuyển lưu lượng dần → gỡ cũ), bản cũ chỉ có 3 khung và không có flag →
+    4 khung, flag tắt/bật thể hiện bằng nét liền/đứt. Hộp "Mã cũ" trên cùng (thực chất là mã gọi) → "Mã gọi". Chữ theo §17.
+  -->
   <title>Fig 10.8 — Branch by Abstraction | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.8">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-grid-3 d-gap-2" style="align-items:start;">
-      <!-- Step 1 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">1</span> Tạo lớp trừu tượng</div>
-        <div class="d-col d-gap-1" style="align-items:center;">
-          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;">
-            <div class="d-title">Triển khai cũ</div>
-          </div>
+  <div class="diagram-canvas" data-fig-id="FIG-10.8" data-ref="CH10-SEC">
+    <div class="d-grid-4 d-gap-2" style="align-items: stretch;">
+      <div class="d-cluster">
+        <span class="d-label"><span class="d-step">1</span> Tạo abstraction</span>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 44px; margin-top: 12px;">
+          <div class="d-box d-legacy text-center" id="b1-call"><div class="d-title">Mã gọi</div></div>
+          <div class="d-box d-highlight text-center" id="b1-if"><div class="d-title">Interface</div></div>
+          <div class="d-box d-legacy text-center" id="b1-old"><div class="d-title">Bản cũ</div></div>
         </div>
       </div>
-
-      <!-- Step 2 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">2</span> Triển khai mới</div>
-        <div class="d-col d-gap-1" style="align-items:center;">
-          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
-          <div class="d-row d-gap-1" style="width:100%;">
-            <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-            <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          </div>
-          <div class="d-row d-gap-1" style="width:100%;">
-            <div class="d-box d-legacy text-center" style="flex:1; padding:8px;"><div class="d-title" >Cũ</div></div>
-            <div class="d-box d-service text-center" style="flex:1; padding:8px;"><div class="d-title" >Mới</div></div>
-          </div>
+      <div class="d-cluster">
+        <span class="d-label"><span class="d-step">2</span> Bản mới, flag tắt</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 44px 12px; margin-top: 12px;">
+          <div class="d-box d-legacy text-center" id="b2-call" style="grid-column: 1 / 3;"><div class="d-title">Mã gọi</div></div>
+          <div class="d-box d-highlight text-center" id="b2-if" style="grid-column: 1 / 3;"><div class="d-title">Interface + flag</div></div>
+          <div class="d-box d-legacy text-center" id="b2-old"><div class="d-title">Cũ</div></div>
+          <div class="d-box d-service text-center" id="b2-new"><div class="d-title">Mới</div></div>
         </div>
       </div>
-
-      <!-- Step 3 -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;"><span class="d-step">3</span> Xóa cũ</div>
-        <div class="d-col d-gap-1" style="align-items:center;">
-          <div class="d-box d-legacy text-center" style="width:100%; padding:10px;"><div class="d-title">Mã cũ</div></div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-highlight text-center" style="width:100%; padding:10px;"><div class="d-title">Interface</div></div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-service text-center" style="width:100%; padding:10px;">
-            <div class="d-title">Triển khai mới</div>
-          </div>
+      <div class="d-cluster">
+        <span class="d-label"><span class="d-step">3</span> Bật flag dần</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 44px 12px; margin-top: 12px;">
+          <div class="d-box d-legacy text-center" id="b3-call" style="grid-column: 1 / 3;"><div class="d-title">Mã gọi</div></div>
+          <div class="d-box d-highlight text-center" id="b3-if" style="grid-column: 1 / 3;"><div class="d-title">Interface + flag</div></div>
+          <div class="d-box d-legacy text-center" id="b3-old"><div class="d-title">Cũ</div></div>
+          <div class="d-box d-service text-center" id="b3-new"><div class="d-title">Mới</div></div>
+        </div>
+      </div>
+      <div class="d-cluster">
+        <span class="d-label"><span class="d-step">4</span> Gỡ bản cũ</span>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 44px; margin-top: 12px;">
+          <div class="d-box d-legacy text-center" id="b4-call"><div class="d-title">Mã gọi</div></div>
+          <div class="d-box d-highlight text-center" id="b4-if"><div class="d-title">Interface</div></div>
+          <div class="d-box d-service text-center" id="b4-new"><div class="d-title">Bản mới</div></div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Nét liền là đường đang chạy, nét đứt là đường đã sẵn sàng nhưng chưa dùng. Tắt flag là quay lại bản cũ ngay, không cần deploy — đổi lại, trong thời gian chuyển phải duy trì cả hai bản và dọn flag khi xong.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="b1-call" data-to="b1-if"></path>
+      <path data-from="b1-if" data-to="b1-old"></path>
+      <path data-from="b2-call" data-to="b2-if"></path>
+      <path data-from="b2-if" data-to="b2-old" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="b2-if" data-to="b2-new" data-from-side="bottom" data-to-side="top" data-to-align class="is-dashed"></path>
+      <path data-from="b3-call" data-to="b3-if"></path>
+      <path data-from="b3-if" data-to="b3-old" data-from-side="bottom" data-to-side="top" data-to-align class="is-dashed"></path>
+      <path data-from="b3-if" data-to="b3-new" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="b4-call" data-to="b4-if"></path>
+      <path data-from="b4-if" data-to="b4-new"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

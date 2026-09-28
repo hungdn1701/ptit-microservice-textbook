@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
+    2026-09-28 (WP-B Ch.04): nhãn mũi tên theo DIAGRAM_DESIGN.md §17 (tiếng Việt; tên API/code giữ nguyên).
     Fig 4.4 — Server-side Discovery
     =========================================================
     Tier 1 HTML migration từ fig-4-4.svg
@@ -51,7 +52,7 @@
         <div class="d-row" style="min-height: 36px; align-items: center; gap: 0;">
           <div style="flex:1.5; min-width: 0;"></div>
           <div style="flex:0; padding:0 4px; display:flex; justify-content:center;">
-            <div class="d-zone d-zone-warning text-center" style="padding: 4px 10px; white-space: nowrap; border-width: 1.5px; z-index: 2;"><span class="d-step">2</span> Chọn instance<br><span class="fw-normal">query Service Registry</span></div>
+            <div class="d-zone d-zone-warning text-center" style="padding: 4px 10px; white-space: nowrap; border-width: 1.5px; z-index: 2;"><span class="d-step">2</span> Chọn instance<br><span class="fw-normal">tra Service Registry</span></div>
           </div>
           <div style="flex:2.5; min-width: 0;"></div>
         </div>
@@ -60,7 +61,7 @@
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
           <div class="d-seq-msg-line" style="flex:1;">
-            <span class="d-seq-msg-text"><span class="d-step">3</span> Forward to healthy instance</span>
+            <span class="d-seq-msg-text"><span class="d-step">3</span> chuyển tới instance còn khỏe</span>
           </div>
           <div style="flex:1.5;"></div>
         </div>
@@ -69,7 +70,7 @@
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;">
-            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> Result</span>
+            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> kết quả</span>
           </div>
           <div style="flex:1.5;"></div>
         </div>
@@ -78,7 +79,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;">
-            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> Forward response</span>
+            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">R</span> trả response</span>
           </div>
           <div style="flex:2.5;"></div>
         </div>
@@ -95,7 +96,7 @@
           <span class="d-sub">AWS ALB, Nginx, Kubernetes Service. Client không cần biết instance nào.</span>
         </div>
         <div>
-          <span class="d-title">Trade-off: </span>
+          <span class="d-title">Đánh đổi: </span>
           <span class="d-sub">Thêm 1 hop mạng, nhưng client đơn giản hơn — không cần tích hợp thư viện LB.</span>
         </div>
       </div>

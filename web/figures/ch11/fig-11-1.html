@@ -2,47 +2,44 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.1 — LMS Request Flow — Observability context | Ch.11</title>
+  <!--
+    Fig 11.1 — Luồng request qua 5+ services: lỗi xảy ra ở đâu?
+    2026-09-28 (WP-B Ch.11): cổng cũ (Gateway :8080, Core :8081) trái với Ch.08 (Gateway :9001, kbm-core :8080); Core → Judge
+    vẽ như gọi đồng bộ, trong khi pipeline chấm đi qua Kafka (Ch.05). Nay theo chuỗi trong bảng tbl:three_pillars_roles
+    (User → Gateway → Core → Judge → MySQL) có Kafka ở giữa, thêm PostgreSQL của Core; ba câu hỏi của đoạn ngay trước hình
+    gắn vào chỗ chúng xảy ra. Mũi tên <svg><line> → d-links. Chữ theo DIAGRAM_DESIGN.md §17.
+  -->
+  <title>Fig 11.1 — Luồng request qua nhiều service | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.1">
-    <div class="d-pipeline">
-      <div class="d-box d-legacy text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
-        <div class="d-title">Student</div>
-      </div>
-      <div class="d-arrow-svg-wrapper" style="width: 32px;">
-        <svg width="32" height="12"><defs><marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-muted)"/></marker></defs><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-      <div class="d-box d-highlight text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
-        <div class="d-title">API Gateway</div>
-        <div class="d-mono" style="margin-top:4px;">:8080</div>
-      </div>
-      <div class="d-arrow-svg-wrapper" style="width: 32px;">
-        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-      <div class="d-box d-service text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
-        <div class="d-title">Core Service</div>
-        <div class="d-mono" style="margin-top:4px;">:8081</div>
-      </div>
-      <div class="d-arrow-svg-wrapper" style="width: 32px;">
-        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-      <div class="d-box d-highlight text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
-        <div class="d-title">Judge Service</div>
-        <div class="d-mono" style="margin-top:4px;">:8082</div>
-      </div>
-      <div class="d-arrow-svg-wrapper" style="width: 32px;">
-        <svg width="32" height="12"><line x1="0" y1="6" x2="24" y2="6" stroke="var(--diagram-color-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-      <div class="d-box d-storage text-center" style="padding:14px 8px; height: 72px; display:flex; flex-direction:column; justify-content:center;">
-        <div class="d-title">Database</div>
-      </div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.1" data-ref="CH11-SEC">
+    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 60px 40px; align-items: center;">
+      <div class="d-box d-legacy text-center" id="f1-user"><div class="d-title">Sinh viên</div><div class="d-sub">nộp bài</div></div>
+      <div class="d-box d-highlight text-center" id="f1-gw"><div class="d-title">Gateway</div><div class="d-sub d-mono">:9001</div></div>
+      <div class="d-box d-service text-center" id="f1-core"><div class="d-title">Core</div><div class="d-sub d-mono">:8080</div></div>
+      <div class="d-box d-event text-center" id="f1-kafka"><div class="d-title">Kafka</div><div class="d-sub">submissions</div></div>
+      <div class="d-box d-service text-center" id="f1-judge"><div class="d-title">Judge</div><div class="d-sub d-mono">:8082</div></div>
+      <div class="d-box d-storage text-center" id="f1-mysql"><div class="d-title">MySQL</div><div class="d-sub">sandbox</div></div>
+      <div class="d-box d-storage text-center" id="f1-pg" style="grid-column: 3;"><div class="d-title">PostgreSQL</div></div>
+      <div class="d-zone d-zone-warning text-center" style="grid-column: 4 / 7;">chậm 5 giây: do mạng, do truy vấn database, hay do Kafka consumer lag?</div>
     </div>
-    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
-      <div class="d-sub text-center" style="line-height:1.5;">Khi request đi qua nhiều service, cần Observability để trace, debug và monitor toàn bộ flow.</div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Mỗi service có log, database và chu trình triển khai riêng. Khi request lỗi: service nào gây ra, ở bước nào trong chuỗi — không một log đơn lẻ nào trả lời được. Đó là việc của observability.</div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="f1-user" data-to="f1-gw"></path>
+      <path data-from="f1-gw" data-to="f1-core"></path>
+      <path data-from="f1-core" data-to="f1-kafka"></path>
+      <path data-from="f1-kafka" data-to="f1-judge"></path>
+      <path data-from="f1-judge" data-to="f1-mysql"></path>
+      <path data-from="f1-core" data-to="f1-pg"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

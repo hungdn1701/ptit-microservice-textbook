@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
+    2026-09-28 (WP-B Ch.06): nhãn theo DIAGRAM_DESIGN.md §17; "Phase N" → "Giai đoạn N" (dạng đã nghỉ hưu).
     Fig 6.3 — Choreography Saga Sequence Diagram
     =========================================================
     Tier 1 HTML migration từ fig-6-3.svg
@@ -53,11 +54,11 @@
           <div style="flex:3"></div>
         </div>
 
-        <!-- Core(0) → Kafka(1): Pub: SubmissionCreated  [left=0.5, line=1, right=2.5] -->
+        <!-- Core(0) → Kafka(1): publish SubmissionCreated  [left=0.5, line=1, right=2.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
           <div class="d-seq-msg-line" style="flex:1">
-            <span class="d-seq-msg-text">Pub: SubmissionCreated</span>
+            <span class="d-seq-msg-text">publish SubmissionCreated</span>
           </div>
           <div style="flex:2.5"></div>
         </div>
@@ -66,7 +67,7 @@
         <div class="d-seq-msg">
           <div style="flex:1.5"></div>
           <div class="d-seq-msg-line" style="flex:1">
-            <span class="d-seq-msg-text">Consume</span>
+            <span class="d-seq-msg-text">nhận</span>
           </div>
           <div style="flex:1.5"></div>
         </div>
@@ -80,11 +81,11 @@
           <div style="flex:1"></div>
         </div>
 
-        <!-- Judge(2) → Kafka(1): Pub: SubmissionJudged  [backward; left=1.5, line=1, right=1.5] -->
+        <!-- Judge(2) → Kafka(1): publish SubmissionJudged  [backward; left=1.5, line=1, right=1.5] -->
         <div class="d-seq-msg">
           <div style="flex:1.5"></div>
           <div class="d-seq-msg-line reverse" style="flex:1">
-            <span class="d-seq-msg-text">Pub: SubmissionJudged</span>
+            <span class="d-seq-msg-text">publish SubmissionJudged</span>
           </div>
           <div style="flex:1.5"></div>
         </div>
@@ -93,7 +94,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
           <div class="d-seq-msg-line reverse" style="flex:1">
-            <span class="d-seq-msg-text">Consume</span>
+            <span class="d-seq-msg-text">nhận</span>
           </div>
           <div style="flex:2.5"></div>
         </div>
@@ -107,11 +108,11 @@
           <div style="flex:3"></div>
         </div>
 
-        <!-- Core(0) → Kafka(1): Pub: ScoreUpdated  [left=0.5, line=1, right=2.5] -->
+        <!-- Core(0) → Kafka(1): publish ScoreUpdated  [left=0.5, line=1, right=2.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
           <div class="d-seq-msg-line" style="flex:1">
-            <span class="d-seq-msg-text">Pub: ScoreUpdated</span>
+            <span class="d-seq-msg-text">publish ScoreUpdated</span>
           </div>
           <div style="flex:2.5"></div>
         </div>
@@ -120,7 +121,7 @@
         <div class="d-seq-msg">
           <div style="flex:1.5"></div>
           <div class="d-seq-msg-line" style="flex:2">
-            <span class="d-seq-msg-text">Consume</span>
+            <span class="d-seq-msg-text">nhận</span>
           </div>
           <div style="flex:0.5"></div>
         </div>

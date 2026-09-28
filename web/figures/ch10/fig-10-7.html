@@ -2,51 +2,53 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 10.7 — Anti-Corruption Layer (ACL) | Ch.10</title>
+  <!--
+    Fig 10.7 — Anti-Corruption Layer: lớp dịch giữa service mới và legacy
+    2026-09-28 (WP-B Ch.10): mũi tên giữa hai cụm không rõ chiều (roadmap "hướng mũi tên mơ hồ": từ service mới trỏ sang
+    legacy trong khi dữ liệu đi ngược lại) → luồng dữ liệu một chiều bằng d-links theo đúng ví dụ KBM ngay sau hình: Core
+    gửi event dạng cũ {problem_id, source, testcases} qua Kafka, SubmissionEventAdapter của Judge dịch sang JudgeRequest.
+    Mô tả tiếng Anh → tiếng Việt (§17); thêm đánh đổi (adapter phải bảo trì, kiểm bằng consumer-driven contract).
+  -->
+  <title>Fig 10.7 — Anti-Corruption Layer | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.7">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-row d-gap-2" style="align-items:stretch;">
-      <!-- New Service -->
-      <div class="d-cluster" style="flex:2; padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">New Service (clean model)</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box d-service text-center" style="padding:12px;">
-            <div class="d-title">Business Logic</div>
-            <div class="d-sub">Clean domain model</div>
-          </div>
-          <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-highlight text-center" style="padding:12px;">
+  <div class="diagram-canvas" data-fig-id="FIG-10.7" data-ref="CH10-SEC">
+    <div style="display: grid; grid-template-columns: 200px 130px auto; gap: 80px; align-items: center; justify-content: center;">
+      <div class="d-box d-legacy text-center" id="ac7-core">
+        <div class="d-title">Core Service</div>
+        <div class="d-sub">phía legacy</div>
+        <div class="d-sub d-mono d-mt-1">{problem_id, source, testcases}</div>
+      </div>
+      <div class="d-box d-event text-center" id="ac7-kafka"><div class="d-title">Kafka</div></div>
+      <div class="d-cluster">
+        <span class="d-label">Judge Service — mô hình mới</span>
+        <div style="display: grid; grid-template-columns: 210px 230px; gap: 56px; align-items: center; margin-top: 12px;">
+          <div class="d-box d-highlight text-center" id="ac7-acl" style="border-width: 2px;">
             <div class="d-title">Anti-Corruption Layer</div>
-            <div class="d-sub">Translate between models</div>
+            <div class="d-sub d-mono">SubmissionEventAdapter</div>
+          </div>
+          <div class="d-box d-service text-center" id="ac7-dom">
+            <div class="d-title">Business logic</div>
+            <div class="d-sub d-mono">JudgeRequest{questionId, sqlStatement, expectedResults}</div>
           </div>
         </div>
       </div>
-
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Legacy -->
-      <div class="d-cluster" style="flex:2; padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Legacy System</div>
-        <div class="d-box d-legacy text-center" style="padding:16px;">
-          <div class="d-title">Monolith API</div>
-          <div class="d-sub">Legacy data model</div>
-        </div>
-      </div>
     </div>
 
-    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
-      <div class="d-sub text-center" style="line-height:1.5;">ACL dịch data giữa legacy model và clean model. New service không bao giờ phụ thuộc trực tiếp vào legacy schema.</div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Được</strong>: tên và cấu trúc cũ dừng lại ở adapter — Core đổi format thì chỉ sửa một chỗ, logic của Judge không phụ thuộc schema legacy.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: thêm một lớp code phải bảo trì; ánh xạ cần được kiểm, vd. bằng consumer-driven contract (Pact).</div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="ac7-core" data-to="ac7-kafka" data-label="event cũ" data-label-side="above"></path>
+      <path data-from="ac7-kafka" data-to="ac7-acl" data-to-side="left"></path>
+      <path data-from="ac7-acl" data-to="ac7-dom" data-label="dịch" data-label-side="above"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

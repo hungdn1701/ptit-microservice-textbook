@@ -4,247 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Message Broker — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Message Broker pattern — trung gian truyền thông điệp bất đồng bộ giữa các microservices với Apache Kafka.">
+  <meta name="description" content="Message Broker — giao tiếp bất đồng bộ qua Kafka trong pipeline chấm bài của KBM: partition, consumer group, offset và idempotency.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="Message Broker — Pattern Story">
-  <meta property="og:description" content="Message Broker pattern — trung gian truyền thông điệp bất đồng bộ giữa các microservices với Apache Kafka.">
+  <meta property="og:description" content="Message Broker — giao tiếp bất đồng bộ qua Kafka trong pipeline chấm bài của KBM: partition, consumer group, offset và idempotency.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom CSS for Apache Kafka Simulator */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .canvas-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-    }
-
-    .kafka-canvas {
-      min-height: 480px;
-      border: 1px dashed var(--border);
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: var(--radius-md);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-      padding: 20px;
-    }
-
-    .node {
-      position: absolute;
-      background: var(--bg-surface);
-      border: 2px solid var(--border);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      color: var(--text-main);
-      text-align: center;
-      box-shadow: var(--shadow-medium);
-      z-index: 2;
-      font-size: 11.5px;
-    }
-    
-    /* Roles */
-    .producer {
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    
-    .consumer-group {
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 1px dashed var(--info);
-      padding: 24px 12px 12px;
-      border-radius: var(--radius-lg);
-      display: flex;
-      gap: 12px;
-      background: rgba(59, 130, 246, 0.03);
-      position: absolute;
-    }
-    .consumer-group::before {
-      content: 'Consumer Group: judge-group';
-      position: absolute;
-      top: -9px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-surface);
-      padding: 2px 8px;
-      font-size: 8.5px;
-      font-family: var(--font-mono);
-      color: var(--info);
-      border: 1px solid var(--info);
-      border-radius: 99px;
-      font-weight: 700;
-    }
-    
-    .consumer {
-      background: var(--bg-card);
-      border: 2px solid var(--border);
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      color: var(--text-secondary);
-      font-weight: 700;
-      transition: all 0.3s ease;
-    }
-
-    /* Topic / Partitions */
-    .topic-box {
-      position: absolute;
-      top: 140px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 2px solid var(--warning);
-      border-radius: var(--radius-md);
-      background: rgba(245, 158, 11, 0.03);
-      padding: 24px 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 280px;
-    }
-    .topic-box::before {
-      content: 'Topic: submissions';
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-surface);
-      padding: 2px 8px;
-      font-size: 9px;
-      font-family: var(--font-mono);
-      color: var(--warning);
-      border: 1px solid var(--warning);
-      border-radius: 99px;
-      font-weight: 700;
-    }
-    
-    .partition {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 0 4px;
-      gap: 3px;
-      position: relative;
-      overflow: hidden;
-    }
-    .partition::before {
-      content: attr(data-id);
-      position: absolute;
-      left: 4px;
-      top: 2px;
-      font-size: 8px;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-    }
-
-    .msg-block {
-      width: 24px;
-      height: 24px;
-      background: var(--success);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      color: #000;
-      animation: slideInMsg 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      margin-left: 2px;
-    }
-    .msg-block.consumed {
-      background: var(--success-dim);
-      color: var(--success);
-      border: 1px solid rgba(34, 211, 160, 0.2);
-    }
-    @keyframes slideInMsg { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    /* Moving Messages */
-    .flying-msg {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      background: var(--success);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--success-glow);
-      z-index: 10;
-      transform: translate(-50%, -50%);
-      left: var(--from-x);
-      top: var(--from-y);
-    }
-    @keyframes flyPath {
-      0% { left: var(--from-x); top: var(--from-y); opacity: 0.2; }
-      20% { opacity: 1; }
-      100% { left: var(--to-x); top: var(--to-y); opacity: 1; }
-    }
-
-    /* Offset Pointers */
-    .offset-marker {
-      position: absolute;
-      bottom: 2px;
-      width: 2px;
-      height: 10px;
-      background: var(--info);
-      transition: left 0.3s;
-    }
-
-    .dashboard-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .sim-log {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 250px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    .log-line {
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    .log-prod { color: var(--primary); }
-    .log-brok { color: var(--warning); }
-    .log-cons { color: var(--info); }
-    .log-evt { color: var(--success); }
-    .log-sys { color: var(--text-main); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -261,13 +29,13 @@
 
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
-  <h1 class="pattern-title">Message Broker (Apache Kafka)</h1>
-  <p class="pattern-subtitle">Cơ chế message queue phân tán, phân vùng dữ liệu và đảm bảo xử lý song song tin cậy</p>
+  <h1 class="pattern-title">Message Broker</h1>
+  <p class="pattern-subtitle">Kafka trong pipeline chấm bài — partition, consumer group, offset</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Communication Patterns</span></div>
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Enterprise Integration Patterns (EIP)</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Hohpe & Woolf (Enterprise Integration Patterns)</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2003</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.5 §5.2</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.5 §5.1–5.5, §5.9</span></div>
   </div>
 </header>
 
@@ -281,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Khi giao tiếp đồng bộ qua REST API, hệ thống bị phụ thuộc (tight coupling) vào tính sẵn sàng của dịch vụ đích. Nếu dịch vụ đích chậm hoặc crash, luồng xử lý của caller sẽ đứt gãy.
+  <p class="section-intro">
+    Chương 4 đã chỉ ra ba giới hạn của giao tiếp đồng bộ: phụ thuộc về thời gian (temporal coupling), sự cố dây chuyền, và độ trễ cộng dồn. Chấm bài là nơi cả ba lộ rõ nhất — nhất là khi 100+ sinh viên dồn nộp bài trong vài phút cuối giờ thi (§5.1, §5.9).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Blocking</div></div>
-      <h3>Thread Blocking ở caller</h3>
-      <p>Khi gọi REST đồng bộ từ <code>kbm-core</code> sang <code>kbm-judge-sql</code>, do biên dịch tốn 2-5s, thread của caller bị block. Dưới tải cao, thread pool cạn kiệt, gây treo hệ thống.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Temporal coupling</div></div>
+      <h3>Nộp bài phải chờ chấm xong</h3>
+      <p>Nếu Core Service gọi đồng bộ sang Judge Service, sinh viên chờ tới khi chấm xong mới nhận phản hồi; Judge đang quá tải hay tạm ngừng thì chính việc nộp bài cũng hỏng theo.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Message Loss</div></div>
-      <h3>Mất message (Message Loss)</h3>
-      <p>Nếu <code>kbm-judge-sql</code> gặp sự cố crash do quá tải CPU, mọi request đến lúc đó sẽ failed (lỗi 500). Dữ liệu nộp bài bị mất vĩnh viễn, không thể khôi phục.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">Dồn tải</div></div>
+      <h3>Tải không lớn, nhưng dồn cục</h3>
+      <p>Tính trung bình thì lượng bài nộp vừa phải, nhưng dồn vào vài phút cuối kỳ thi. Hệ thống cần nhận bài ngay (enqueue nhanh) và chấm dần theo sức của Judge, không để hàng đợi tràn ngược lên người nộp.</p>
     </div>
   </div>
 
@@ -312,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Chuyển đổi sang giao tiếp bất đồng bộ: Producer đẩy message vào <strong>Topic</strong> trên <strong>Message Broker</strong>. Broker lưu message bền vững trong các log file (chia thành các <strong>Partitions</strong>). Các Consumers kết hợp thành <strong>Consumer Group</strong> để chia sẻ tải đọc partitions và xử lý song song (pull-based).
+      Producer gửi message vào broker rồi tiếp tục việc của mình; consumer lấy message ra xử lý khi sẵn sàng. Broker giữ message giữa hai bên, nên hai service không cần hoạt động cùng lúc.
     </p>
-    <div class="definition-attribution">— Message Broker Pattern · Enterprise Integration Patterns</div>
+    <div class="definition-attribution">— Chris Richardson · Microservices Patterns, Ch.3</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Cơ chế <strong>Offset</strong> đánh dấu vị trí message đã consume. Nếu consumer crash và khởi động lại, nó sẽ resume từ Offset đã commit gần nhất, đảm bảo at-least-once delivery và chống mất data.
+  <p class="section-intro">
+    Đây là đánh đổi có chủ đích: được tính sẵn sàng và tách rời, mất tính nhất quán tức thời — phải chấp nhận eventual consistency, lo thứ tự message và xử lý trùng lặp. Chọn broker cũng là đánh đổi: Kafka (durable) giữ message để đọc lại và cho nhiều consumer cùng đọc; RabbitMQ (ephemeral) mạnh ở định tuyến linh hoạt và hàng đợi tác vụ (§5.2).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Topic & Partitioning</h3>
-      <p>Message được lưu trong <strong>Topic</strong>. Để scale-out, Topic được chia thành nhiều <strong>Partitions</strong> phân tán trên các Broker, giúp tăng throughput đồng thời.</p>
+      <h3>Topic, partition, partition key</h3>
+      <p>Topic chia thành partition để xử lý song song. Message cùng key vào cùng partition nên giữ được thứ tự. KBM dùng key <code>userId</code> cho topic <code>submissions</code> — thứ tự công bằng cho từng sinh viên.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Consumer Group</h3>
-      <p>Nhóm các consumer instances cùng consume một Topic. Mỗi Partition chỉ assign cho tối đa 1 Consumer trong group, đảm bảo message ordering trong phạm vi partition.</p>
+      <h3>Consumer group</h3>
+      <p>Các consumer trong một group chia nhau partition; mỗi partition chỉ giao cho tối đa một consumer. Số consumer hoạt động không vượt quá số partition — instance dư ra chỉ đứng chờ.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Offset Commitment</h3>
-      <p>Chỉ số vị trí message trong partition. Sau khi xử lý, consumer <strong>Commit Offset</strong> về Kafka, xác nhận đã hoàn thành xử lý, giúp an toàn phục hồi khi có sự cố.</p>
+      <h3>Offset và cam kết giao nhận</h3>
+      <p>Offset như dấu kẹp sách đặt ngay sau message cuối đã xử lý. Commit trước khi xử lý xong → có thể mất message; commit sau → at-least-once, có thể trùng, nên consumer phải idempotent (§5.5).</p>
     </div>
   </div>
 </section>
@@ -350,45 +118,59 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Dùng nút <strong>Produce</strong> để đẩy yêu cầu vào ngẫu nhiên partition, sau đó bấm <strong>Consume</strong> để Judge instance pull message và commit offset.
-  </p>
+  <p class="section-intro">Topic <code>submissions</code> của KBM, consumer group <code>judge-group</code> có 3 Judge instance, key = <code>userId</code> (§5.3–5.4). Gửi 6 bài và đổi từng yếu tố: số partition, cách commit offset, và một sự cố — bài chạy chậm 30 giây hoặc một Judge sập giữa chừng (§5.9).</p>
 
-  <div class="simulator-container">
-    <!-- Left column: Visual canvas -->
-    <div class="canvas-card">
-      <div class="kafka-canvas">
-        <div class="node producer">Core Service<br><span style="font-size:9.5px; font-weight:normal; color:var(--text-dim)">(Producer)</span></div>
-        
-        <div class="topic-box" id="topic-box">
-          <div class="partition" id="p0" data-id="P-0"><div class="offset-marker" id="marker-p0" style="left: 0px;"></div></div>
-          <div class="partition" id="p1" data-id="P-1"><div class="offset-marker" id="marker-p1" style="left: 0px;"></div></div>
-          <div class="partition" id="p2" data-id="P-2"><div class="offset-marker" id="marker-p2" style="left: 0px;"></div></div>
-        </div>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Partition</span><div class="sim-chips" id="mb-parts"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Commit</span><div class="sim-chips" id="mb-commits"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Sự cố</span><div class="sim-chips" id="mb-faults"></div></div>
+    <button class="sim-btn primary-action" id="mb-run" type="button">▶ Gửi 6 bài</button>
+    <button class="sim-btn" id="mb-reset" type="button">Làm lại</button>
+  </div>
 
-        <div class="consumer-group">
-          <div class="consumer" id="c0">Judge 1</div>
-          <div class="consumer" id="c1">Judge 2</div>
-          <div class="consumer" id="c2">Judge 3</div>
-        </div>
-
-        <!-- Animation Layer -->
-        <div id="anim-layer" style="position: absolute; inset: 0; pointer-events: none;"></div>
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="mb-title"></span> <span class="sim-hint" id="mb-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="mb-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-core" id="mb-core" style="grid-column:1;grid-row:2"><div class="sim-node-name">Core Service</div><div class="sim-node-sub">producer · key userId</div></div>
+        <div class="sim-node" id="mb-p0" style="grid-column:2;grid-row:1"><div class="sim-node-name">P0</div><div class="sim-node-sub" id="mb-p0-sub"></div></div>
+        <div class="sim-node" id="mb-p1" style="grid-column:2;grid-row:2"><div class="sim-node-name">P1</div><div class="sim-node-sub" id="mb-p1-sub"></div></div>
+        <div class="sim-node" id="mb-p2" style="grid-column:2;grid-row:3"><div class="sim-node-name">P2</div><div class="sim-node-sub" id="mb-p2-sub"></div></div>
+        <div class="sim-node" id="mb-j0" style="grid-column:3;grid-row:1"><div class="sim-node-name">Judge 1</div><div class="sim-node-sub" id="mb-j0-sub"></div></div>
+        <div class="sim-node" id="mb-j1" style="grid-column:3;grid-row:2"><div class="sim-node-name">Judge 2</div><div class="sim-node-sub" id="mb-j1-sub"></div></div>
+        <div class="sim-node" id="mb-j2" style="grid-column:3;grid-row:3"><div class="sim-node-name">Judge 3</div><div class="sim-node-sub" id="mb-j2-sub"></div></div>
       </div>
-
-      <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="produceMsg()" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12.5px;">Gửi Bài (Produce)</button>
-        <button class="btn" onclick="consumeMsg()" style="border-color:var(--info); color:var(--info); font-size:12.5px;">Chấm Bài (Consume)</button>
-        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12.5px;">Reset</button>
-      </div>
+      <svg class="d-links">
+        <path id="mb-l-c0" data-from="mb-core" data-to="mb-p0"></path>
+        <path id="mb-l-c1" data-from="mb-core" data-to="mb-p1"></path>
+        <path id="mb-l-c2" data-from="mb-core" data-to="mb-p2"></path>
+        <path id="mb-l-00" data-from="mb-p0" data-to="mb-j0"></path>
+        <path id="mb-l-11" data-from="mb-p1" data-to="mb-j1"></path>
+        <path id="mb-l-22" data-from="mb-p2" data-to="mb-j2"></path>
+        <path id="mb-l-01" data-from="mb-p0" data-to="mb-j1" class="is-dashed"></path>
+      </svg>
     </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="mb-span">—</div><div class="sim-stat-lbl">Chấm xong cả lô sau</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="mb-lost">0</div><div class="sim-stat-lbl">Bài mất kết quả</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="mb-busy">0/3</div><div class="sim-stat-lbl">Judge có việc</div></div>
+    </div>
+  </div>
 
-    <!-- Right column: Logs -->
-    <div class="dashboard-panel">
-      <div class="dashboard-title">Kafka Events & Broker Logs</div>
-      <div class="sim-log" id="sys-log">
-        <div class="log-sys">Kafka Cluster initialized. 3 Partitions created. judge-group active.</div>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Bài nộp <span class="sim-hint">thời gian mô phỏng</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="mb-table">
+          <thead><tr><th>Bài · key</th><th>P → Judge</th><th class="num">Xong</th><th>Kết quả</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
+      <p class="sim-note" id="mb-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">Core · Kafka · Judge</span></div>
+      <div class="sim-log" id="mb-log" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -403,80 +185,85 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    KBM sử dụng Apache Kafka làm event streaming pipeline, giúp bảo vệ master node trước traffic spike khi nộp bài.
+  <p class="section-intro">
+    KBM dùng Kafka cho pipeline chấm bài: topic <code>submissions</code> (Core → Judge, key <code>userId</code>), <code>judge-results</code> (Judge → Core, key <code>submissionId</code>), rồi Core đẩy kết quả tới sinh viên qua WebSocket; lúc nộp, sinh viên nhận <code>202 Accepted</code>. Kafka được chọn vì throughput, thứ tự theo key, replay và consumer group; cái giá là tác vụ chấm chạy dài trên consumer thread gây Head-of-Line Blocking — với việc đó, competing consumers của RabbitMQ hay một DB queue có khi hợp hơn (§5.2, §5.7, §5.9).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Gap Analysis & Message Broker Options</h3>
-  <div class="sub-label">So sánh cấu trúc Queue và Log-based</div>
+  <h3 class="sub-heading">Gap Analysis — pipeline chấm bài</h3>
+  <div class="sub-label">Trích bảng phân tích vấn đề Kafka pipeline (§5.9)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Tiêu chí</th>
-          <th>RabbitMQ (Classic Queue)</th>
-          <th>Apache Kafka (Log-Based)</th>
-          <th>Lý do chọn Kafka cho KBM</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Khả năng Replay (Chấm lại)</td>
-          <td>Không hỗ trợ (message bị xóa sau khi ack).</td>
-          <td><span class="b-high">Có</span> (Lưu trữ bằng append-only log trên disk).</td>
-          <td>Hỗ trợ rewind offset để re-process (chấm lại) khi test case thay đổi.</td>
+          <td class="gap-label">Commit offset</td>
+          <td>Auto-commit: commit trước khi xử lý xong → có thể mất message.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Manual commit sau khi xử lý thành công.</td>
         </tr>
         <tr>
-          <td class="gap-label">Message Ordering</td>
-          <td>Khó đảm bảo khi có nhiều concurrent consumers.</td>
-          <td>Đảm bảo strict ordering theo Partition.</td>
-          <td>Dùng <code>studentId</code> làm routing key để đảm bảo các bài của một user xử lý tuần tự.</td>
+          <td class="gap-label">Idempotency</td>
+          <td>Consumer chưa idempotent: message trùng có thể cho kết quả sai.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Kiểm tra <code>submissionId</code> trước khi chấm; chắc chắn hơn với ràng buộc <code>UNIQUE</code> / <code>ON CONFLICT DO NOTHING</code>.</td>
         </tr>
         <tr>
-          <td class="gap-label">Throughput</td>
-          <td>Trung bình (~10K msg/s).</td>
-          <td><span class="b-high">Cao (>1M msg/s)</span>.</td>
-          <td>Chịu traffic spike lớn (hàng ngàn request Submit đồng thời).</td>
+          <td class="gap-label">Dead Letter Topic</td>
+          <td>Message lỗi bị retry vô hạn hoặc mất; một poison pill chặn cả pipeline.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td><code>@RetryableTopic</code> (3 lần) + Dead Letter Topic.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Partition</td>
+          <td><code>submissions</code> có 1 partition: 3 Judge nhưng chỉ 1 hoạt động.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Tăng partition kèm thêm Judge — và tách consumer thread khỏi execution thread, vì bài chậm vẫn chặn bài cùng partition.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Monitoring</td>
+          <td>Không nắm được consumer lag.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Consumer lag metrics + alerting; <code>correlationId</code> xuyên pipeline.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Lộ trình triển khai hạ tầng Kafka</h3>
-  <div class="sub-label">Các bước tích hợp an toàn hệ thống hàng đợi</div>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo đề xuất migration ở §5.9 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1 · Tuần 1</div>
-      <h4>Provision Kafka Cluster & Partitions</h4>
-      <p>Cài đặt Kafka KRaft mode. Tạo topic <code>submissions</code> với 3 partitions để map 1-1 với 3 Judge instances nhằm tối ưu load balancing.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+      <div class="timeline-phase">Giai đoạn 1 · Độ tin cậy</div>
+      <h4>Manual commit, retry có giới hạn, DLT, idempotency</h4>
+      <p>Commit offset sau khi chấm xong; <code>@RetryableTopic</code> với 3 lần thử lại rồi chuyển sang Dead Letter Topic; kiểm tra <code>submissionId</code> trước khi chấm.</p>
+      <span class="t-badge orange">Ưu tiên cao</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Tích hợp Spring Kafka Producer vào kbm-core</h4>
-      <p>Dùng <code>KafkaTemplate</code>. Gắn Message Key là <code>studentId</code> để đảm bảo request từ cùng user được route vào một partition (strict ordering).</p>
-      <span class="t-badge green">✓ Async non-blocking API</span>
+      <div class="timeline-phase">Giai đoạn 2 · Observability</div>
+      <h4>Consumer lag và correlationId</h4>
+      <p>Theo dõi consumer lag bằng Kafka Exporter + Prometheus; thêm <code>correlationId</code> từ submission tới judge, result và notification để truy vết.</p>
+      <span class="t-badge orange">Ưu tiên cao</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3 · Tuần 3</div>
-      <h4>Cấu hình Consumer Group ở kbm-judge-sql</h4>
-      <p>Dùng <code>@KafkaListener(groupId="judge-group")</code>. Khai báo concurrency để auto-assign partitions và xử lý message song song.</p>
-      <span class="t-badge orange">Dự kiến: 2 devs × 1 tuần</span>
-    </div>
-    <div class="timeline-item" data-delay="750">
-      <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4 · Tuần 4</div>
-      <h4>Triển khai Dead Letter Queue (DLQ)</h4>
-      <p>Các message lỗi (gây crash hoặc exceed retry limit) sẽ chuyển sang <code>submissions-dlq</code> để tránh poison pill block toàn bộ luồng xử lý.</p>
-      <span class="t-badge green">✓ Fault tolerance & Resilience</span>
+      <div class="timeline-phase">Giai đoạn 3 · Hiệu năng</div>
+      <h4>Tách consumer thread khỏi execution thread</h4>
+      <p>Consumer chỉ lấy message rồi giao cho thread pool (quản lý offset cẩn thận), hoặc dùng Confluent Parallel Consumer. Tăng partition và số Judge tương ứng.</p>
+      <span class="t-badge orange">Khi cần mở rộng</span>
     </div>
   </div>
 
@@ -486,25 +273,24 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Nên dùng Apache Kafka khi</div>
+        <div class="decision-title">Kafka hợp khi</div>
       </div>
       <ul class="decision-list">
-        <li>Cần async communication để decouple producer và consumer.</li>
-        <li>High write throughput (Event streaming, Logs, Metrics).</li>
-        <li>Cần replayability (Event sourcing, data processing pipeline).</li>
-        <li>Cần strict ordering dựa trên message key.</li>
+        <li>Cần nhận nhanh lượng lớn message dồn cục và xử lý dần (bài nộp trong kỳ thi).</li>
+        <li>Cần thứ tự theo key và đọc lại được (replay) khi phải xử lý lại.</li>
+        <li>Nhiều consumer cùng đọc một luồng sự kiện (audit, phân tích học tập).</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Không nên dùng khi</div>
+        <div class="decision-title">Cân nhắc lựa chọn khác khi</div>
       </div>
       <ul class="decision-list">
-        <li>Kiến trúc monolith đơn giản, tải thấp (Over-engineering).</li>
-        <li>Yêu cầu synchronous request-response (RPC/REST phù hợp hơn).</li>
-        <li>Hạ tầng hạn chế RAM/Disk (Kafka tốn nhiều resources).</li>
-        <li>Consumer chưa handle được idempotency.</li>
+        <li>Tác vụ chạy dài, không cần thứ tự: competing consumers (RabbitMQ) tránh Head-of-Line Blocking.</li>
+        <li>Job gắn chặt với state trong database, cần enqueue cùng transaction: DB queue (DevOps Lab của KBM).</li>
+        <li>Lưu lượng vừa phải, ít consumer — DB queue đủ và đơn giản hơn.</li>
+        <li>Chọn chỉ vì đội ngũ đã quen một broker, chưa xét bài toán.</li>
       </ul>
     </div>
   </div>
@@ -512,7 +298,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về Message Broker, Apache Kafka, Offset Management, Partitioning, Consumer Group và Dead Letter Queue trong sách.</p>
+  <p>Đọc chi tiết về hai trường phái broker (§5.2), kiến trúc Kafka (§5.3), producer/consumer trong KBM (§5.4), delivery guarantees và idempotency (§5.5), pipeline contest (§5.9).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-05')"><div class="badge badge-info">Read</div> Chương 5 — Giao tiếp Bất đồng bộ →</a>
 </div>
 
@@ -528,156 +314,206 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: topic submissions / judge-group (Chương 5 §5.3–5.5, §5.9) ─────────────────────────
+// Theo sách: submissions hiện 1 partition, judge-group 3 instance (chỉ 1 hoạt động); key = userId;
+// auto-commit → có thể mất message; manual commit + kiểm tra submissionId (Giai đoạn 1).
+// Head-of-Line Blocking: bài chạy 30 s chặn bài 1 s cùng partition (ví dụ của sách, §5.9).
+// Thời gian là thời gian mô phỏng; mỗi partition xử lý tuần tự, các partition song song.
+const PARTS = { '1': '1 partition (hiện tại)', '3': '3 partition (đề xuất)' };
+const COMMITS = { auto: 'Auto', manual: 'Manual + idempotent' };
+const FAULTS = { none: 'Không', slow: 'Bài chạy 30 s', crash: 'Judge 1 sập' };
+const MSGS = [['#1', 'sv-01'], ['#2', 'sv-02'], ['#3', 'sv-04'], ['#4', 'sv-03'], ['#5', 'sv-02'], ['#6', 'sv-05']];
+// hash(userId) % 3 — cố định để thấy key co-location: sv-01 và sv-04 cùng P0.
+const KEY_PART = { 'sv-01': 0, 'sv-02': 1, 'sv-03': 2, 'sv-04': 0, 'sv-05': 1 };
+const REBALANCE = 3;
+const state = { parts: '1', commit: 'auto', fault: 'none', running: false, rows: [], span: null, lost: 0 };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 300;
 
-// ── Simulator Logic ──────────────────────────────────────
-let seq = 1;
-let pState = [0, 0, 0];
-let cOffset = [0, 0, 0];
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; clearRun(); render(); } });
+    el.appendChild(b);
+  });
+}
+chips($('mb-parts'), PARTS, 'parts');
+chips($('mb-commits'), COMMITS, 'commit');
+chips($('mb-faults'), FAULTS, 'fault');
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
+function log(msg, cls) {
+  $('mb-log').insertAdjacentHTML('beforeend', `<div><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('mb-log').scrollTop = $('mb-log').scrollHeight;
+}
+function link(id, cls) {
+  $(id).setAttribute('class', [id === 'mb-l-01' ? 'is-dashed' : '', cls ? 'is-' + cls : ''].join(' ').trim());
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
+
+// ── Lập lịch: mỗi partition một hàng đợi tuần tự; Judge sở hữu partition theo consumer group ──
+function schedule() {
+  const n = +state.parts, fault = state.fault, manual = state.commit === 'manual';
+  const queues = [[], [], []];
+  MSGS.forEach(([id, sv]) => queues[n === 1 ? 0 : KEY_PART[sv]].push({ id, sv }));
+  const steps = [], rows = {};
+  queues.forEach((q, p) => {
+    let t = 0, owner = p, crashed = false, handled = 0;
+    q.forEach(m => {
+      const dur = fault === 'slow' && m.id === '#1' ? 30 : 1;
+      const row = rows[m.id] = { id: m.id, sv: m.sv, p, judge: owner, done: null, res: '' };
+      // Judge 1 (chủ P0) sập khi đang chấm message thứ hai của nó.
+      if (fault === 'crash' && p === 0 && !crashed && handled === 1) {
+        crashed = true;
+        steps.push({ t, kind: 'start', m, p, j: owner });
+        steps.push({ t: t + dur / 2, kind: 'crash', m, p, j: owner });
+        t += dur / 2 + REBALANCE; owner = 1;
+        steps.push({ t, kind: 'rebalance', p, j: owner });
+        if (manual) {
+          steps.push({ t, kind: 'redeliver', m, p, j: owner });
+          t += dur; Object.assign(row, { judge: owner, done: t, res: 'chấm lại' });
+          steps.push({ t, kind: 'done', m, p, j: owner, row });
+        } else Object.assign(row, { done: null, res: 'mất' });
+        handled++; return;
+      }
+      steps.push({ t, kind: 'start', m, p, j: owner });
+      t += dur; handled++;
+      Object.assign(row, { judge: owner, done: t, res: 'đã chấm' });
+      steps.push({ t, kind: 'done', m, p, j: owner, row });
+    });
+  });
+  steps.sort((a, b) => a.t - b.t || (a.kind === 'done' ? -1 : 1));
+  return { steps, rows: MSGS.map(([id]) => rows[id]) };
 }
 
-function getCenterInLayer(el, layerRect) {
-  const r = el.getBoundingClientRect();
-  return {
-    x: r.left - layerRect.left + (r.width / 2),
-    y: r.top - layerRect.top + (r.height / 2)
-  };
-}
-
-async function animateBetween(fromEl, toEl, duration = 450) {
-  const layer = document.getElementById('anim-layer');
-  const layerRect = layer.getBoundingClientRect();
-  const from = getCenterInLayer(fromEl, layerRect);
-  const to = getCenterInLayer(toEl, layerRect);
-  
-  const dot = document.createElement('div');
-  dot.className = 'flying-msg';
-  dot.style.setProperty('--from-x', `${from.x}px`);
-  dot.style.setProperty('--from-y', `${from.y}px`);
-  dot.style.setProperty('--to-x', `${to.x}px`);
-  dot.style.setProperty('--to-y', `${to.y}px`);
-  dot.style.animation = `flyPath ${duration}ms ease-in-out forwards`;
-  
-  layer.appendChild(dot);
-  await sleep(duration);
-  if (dot.parentNode) {
-    layer.removeChild(dot);
+async function run() {
+  if (state.running) return;
+  state.running = true; $('mb-run').disabled = true; $('mb-reset').disabled = true;
+  clearRun(); $('mb-log').textContent = '';
+  const n = +state.parts, manual = state.commit === 'manual';
+  log(`— ${PARTS[state.parts]} · commit ${COMMITS[state.commit]} · sự cố: ${FAULTS[state.fault]} —`, 'log-warn');
+  node('mb-core', 'is-active', true);
+  for (const [id, sv] of MSGS) {
+    const p = n === 1 ? 0 : KEY_PART[sv];
+    link('mb-l-c' + p, 'primary');
+    log(`t=0 · Core send(${id}, key=${sv}) → P${p}`, 'log-info');
+    await sleep(STEP / 2); link('mb-l-c' + p, '');
   }
-}
-
-function logSys(msg, type = 'sys') {
-  const log = document.getElementById('sys-log');
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-line';
-  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
-  log.appendChild(entry);
-  log.scrollTop = log.scrollHeight;
-}
-
-async function produceMsg() {
-  const msgId = `S-${seq++}`;
-  const pIdx = Math.floor(Math.random() * 3);
-  logSys(`Producer: Đang gửi bài làm ${msgId} tới Partition P-${pIdx}`, 'prod');
-
-  await animateBetween(
-    document.querySelector('.producer'),
-    document.getElementById(`p${pIdx}`)
-  );
-
-  pState[pIdx]++;
-  const partitionEl = document.getElementById(`p${pIdx}`);
-  const block = document.createElement('div');
-  block.className = 'msg-block';
-  block.textContent = msgId;
-  block.id = `msg-${pIdx}-${pState[pIdx]}`;
-  partitionEl.appendChild(block);
-
-  logSys(`Broker: Đã ghi bài ${msgId} vào partition P-${pIdx} (Offset: ${pState[pIdx]})`, 'brok');
-}
-
-async function consumeMsg() {
-  let pIdx = -1;
-  for (let i = 0; i < 3; i++) {
-    if (cOffset[i] < pState[i]) {
-      pIdx = i;
-      break;
+  node('mb-core', 'is-active', false);
+  log('Core trả 202 Accepted cho từng bài — không chờ chấm', 'log-ok');
+  const { steps, rows } = schedule();
+  state.rows = rows.map(r => ({ ...r, shown: false })); render();
+  for (const s of steps) {
+    const L = s.p === 0 && s.j === 1 ? 'mb-l-01' : `mb-l-${s.p}${s.p}`;
+    const tt = `t=${s.t}s`;
+    if (s.kind === 'start') {
+      link(L, s.m.id === '#1' && state.fault === 'slow' ? 'warning' : 'primary'); node('mb-j' + s.j, 'is-active', true);
+      log(`${tt} · Judge ${s.j + 1} nhận ${s.m.id} (${s.m.sv}) từ P${s.p}${state.commit === 'auto' ? ' — auto-commit offset' : ''}`, 'log-info');
+      if (s.m.id === '#1' && state.fault === 'slow') log(`${s.m.id} chạy 30 s — mọi bài sau trong P${s.p} phải chờ`, 'log-warn');
+    } else if (s.kind === 'done') {
+      link(L, ''); node('mb-j' + s.j, 'is-active', false);
+      const r = state.rows.find(x => x.id === s.m.id); r.shown = true;
+      log(`${tt} · ${s.m.id} chấm xong${manual ? ' → commit offset' : ''}`, 'log-ok');
+    } else if (s.kind === 'crash') {
+      link(L, 'danger'); node('mb-j0', 'is-danger', true); node('mb-j0', 'is-active', false);
+      log(`${tt} · Judge 1 sập khi đang chấm ${s.m.id}`, 'log-err');
+      if (!manual) { const r = state.rows.find(x => x.id === s.m.id); r.shown = true; log(`Offset của ${s.m.id} đã auto-commit → không ai đọc lại message này`, 'log-err'); }
+      await sleep(STEP); link(L, '');
+    } else if (s.kind === 'rebalance') {
+      log(`${tt} · rebalance: P0 giao cho Judge 2`, 'log-warn');
+      $('mb-l-01').removeAttribute('data-hidden'); $('mb-l-00').setAttribute('data-hidden', '');
+    } else if (s.kind === 'redeliver') {
+      log(`${tt} · Judge 2 đọc lại ${s.m.id} từ offset đã commit gần nhất · isAlreadyJudged(${s.m.id}) = false → chấm`, 'log-ok');
     }
+    render(); await sleep(STEP);
   }
-
-  if (pIdx === -1) {
-    logSys('Consumers: Không tìm thấy tin nhắn mới trong hàng đợi.', 'sys');
-    return;
-  }
-
-  cOffset[pIdx]++;
-  const msgEl = document.getElementById(`msg-${pIdx}-${cOffset[pIdx]}`);
-  if (!msgEl) {
-    logSys(`Consumer: Lỗi không khớp offset tại P-${pIdx}.`, 'sys');
-    return;
-  }
-  const msgId = msgEl.textContent;
-  const cIdx = pIdx; // simple mapping for demo: Partition 0 -> Judge 1, etc.
-  
-  logSys(`Consumer Judge ${cIdx + 1}: Bắt đầu đọc bài làm ${msgId} từ P-${pIdx} (Offset ${cOffset[pIdx]})`, 'cons');
-
-  // Slide offset marker
-  const marker = document.getElementById(`marker-p0`); // wait, get actual marker
-  const actMarker = document.querySelector(`#p${pIdx} .offset-marker`);
-  actMarker.style.left = `${cOffset[pIdx] * 30}px`;
-
-  await animateBetween(msgEl, document.getElementById(`c${cIdx}`));
-  msgEl.classList.add('consumed');
-  logSys(`Consumer Judge ${cIdx + 1}: Chấm xong bài làm ${msgId}. Tiến hành COMMIT OFFSET.`, 'evt');
-
-  const cNode = document.getElementById(`c${cIdx}`);
-  cNode.style.borderColor = 'var(--success)';
-  cNode.style.boxShadow = '0 0 12px var(--success-glow)';
-  setTimeout(() => {
-    cNode.style.borderColor = '';
-    cNode.style.boxShadow = 'none';
-  }, 600);
+  state.lost = state.rows.filter(r => r.done === null).length;
+  state.span = Math.max(...state.rows.filter(r => r.done !== null).map(r => r.done));
+  const waitNote = state.fault === 'slow' ? ` — bài cùng partition với #1 xong lúc ${state.rows.filter(r => r.p === state.rows[0].p && r.id !== '#1').map(r => r.done + 's').join(', ')}` : '';
+  log(`Xong: lô 6 bài chấm xong sau ${state.span}s, ${state.lost} bài mất${waitNote}`, state.lost ? 'log-err' : 'log-ok');
+  state.running = false; $('mb-run').disabled = false; $('mb-reset').disabled = false;
+  render();
 }
 
-function resetSim() {
-  seq = 1;
-  pState = [0, 0, 0];
-  cOffset = [0, 0, 0];
-
-  for (let i = 0; i < 3; i++) {
-    const p = document.getElementById(`p${i}`);
-    Array.from(p.querySelectorAll('.msg-block')).forEach((el) => el.remove());
-    p.querySelector('.offset-marker').style.left = '0px';
-  }
-
-  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Kafka Cluster Ready. 3 Partitions created. judge-group active.</div>';
+function clearRun() {
+  state.rows = []; state.span = null; state.lost = 0;
+  node('mb-j0', 'is-danger', false);
+  $('mb-l-01').setAttribute('data-hidden', ''); $('mb-l-00').removeAttribute('data-hidden');
 }
+function note() {
+  const n = state.parts, c = state.commit, f = state.fault;
+  if (f === 'slow') return n === '1'
+    ? 'Một partition: bài 30 s của sv-01 chặn cả 5 bài sau, dù hai Judge khác rảnh (Head-of-Line Blocking, §5.3).'
+    : 'Ba partition: bài của người khác không còn phải chờ — nhưng sv-04 cùng partition với sv-01 (key co-location) vẫn bị chặn. Tăng partition không đủ; cần tách consumer thread khỏi việc chấm (§5.9).';
+  if (f === 'crash') return c === 'auto'
+    ? 'Auto-commit: offset đã commit trước khi chấm xong, nên sau rebalance không ai đọc lại bài đang chấm dở — mất kết quả (§5.9).'
+    : 'Manual commit: bài đang chấm dở chưa được commit nên được đọc lại sau rebalance. Cái giá là at-least-once — nếu Judge sập sau khi ghi kết quả mà trước khi commit, bài sẽ đến lần hai; kiểm tra submissionId chặn chấm trùng (§5.5).';
+  return n === '1'
+    ? 'Một partition nên chỉ Judge 1 có việc; Judge 2, 3 đứng chờ — số consumer hoạt động không vượt quá số partition. Đây là hiện trạng của KBM.'
+    : 'Ba partition chia theo hash(userId): ba Judge cùng làm, thứ tự mỗi sinh viên vẫn giữ trong partition của họ.';
+}
+function render() {
+  const n = +state.parts;
+  [['mb-parts', 'parts'], ['mb-commits', 'commit'], ['mb-faults', 'fault']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('mb-title').textContent = `topic submissions · ${PARTS[state.parts]}`;
+  $('mb-hint').textContent = `judge-group · commit ${COMMITS[state.commit].toLowerCase()}`;
+  const used = [0, 1, 2].filter(p => p < n);
+  [0, 1, 2].forEach(p => {
+    const on = p < n;
+    node('mb-p' + p, 'is-off', !on);
+    $('mb-l-c' + p).toggleAttribute('data-hidden', !on);
+    if (p > 0) $(`mb-l-${p}${p}`).toggleAttribute('data-hidden', !on);
+    const keys = MSGS.filter(([, sv]) => (n === 1 ? 0 : KEY_PART[sv]) === p).map(([, sv]) => sv);
+    $(`mb-p${p}-sub`).textContent = on ? ([...new Set(keys)].join(', ') || 'trống') : 'chưa có';
+  });
+  const busy = new Set(state.rows.length ? state.rows.map(r => r.judge) : used);
+  [0, 1, 2].forEach(j => {
+    // Partition Judge j đang giữ: mặc định Pj (nếu tồn tại); P0 chuyển sang Judge 2 sau rebalance.
+    const owned = new Set(j < n ? ['P' + j] : []);
+    if (state.rows.some(r => r.p === 0 && r.judge === j && j !== 0)) owned.add('P0');
+    const dead = $('mb-j' + j).classList.contains('is-danger');
+    $(`mb-j${j}-sub`).textContent = dead ? 'đã sập' : owned.size ? [...owned].join(' + ') : 'đứng chờ (idle)';
+    node('mb-j' + j, 'is-off', !owned.size && !dead);
+  });
+  $('mb-table').querySelector('tbody').innerHTML = state.rows.length
+    ? state.rows.map(r => `<tr><td>${r.id} · ${r.sv}</td><td>P${r.p} → J${r.judge + 1}</td><td class="num">${r.shown && r.done !== null ? r.done + 's' : r.shown ? '—' : '…'}</td><td class="${!r.shown ? '' : r.done === null ? 'bad' : 'good'}">${r.shown ? r.res : 'đang chờ'}</td></tr>`).join('')
+    : '<tr><td colspan="4">Chưa gửi bài.</td></tr>';
+  $('mb-note').textContent = note();
+  $('mb-span').textContent = state.span === null ? '—' : state.span + ' s';
+  $('mb-lost').textContent = state.lost;
+  $('mb-busy').textContent = `${busy.size}/3`;
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function reset() {
+  if (state.running) return;
+  clearRun(); $('mb-log').textContent = '';
+  log('Chọn số partition, cách commit và một sự cố, rồi bấm Gửi 6 bài. Thử "Bài chạy 30 s" ở cả 1 và 3 partition.', 'log-info');
+  render();
+}
+$('mb-run').addEventListener('click', run);
+$('mb-reset').addEventListener('click', reset);
+reset();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-resetSim();
-
 </script>
 </body>
 </html>
-
-
-
-

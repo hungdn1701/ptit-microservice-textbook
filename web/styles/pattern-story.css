@@ -10,6 +10,66 @@
   --font-body: var(--font-sans);
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   BẢNG MÀU TRANG PATTERN — "IDE" (2026-09-27, design/PATTERN-DESIGN.md §6)
+   Chỉ trang Pattern nạp file này → ghi đè token của base-style.css cho riêng
+   trang Pattern; portal (shell) giữ nguyên màu cam thương hiệu.
+   Vai trò màu (mỗi màu một nghĩa, không dùng màu để trang trí):
+     --primary   xanh — TƯƠNG TÁC & TRẠNG THÁI CHỌN (chip, nút chạy, node active, đường đang chạy)
+     --brand     cam  — DẤU THƯƠNG HIỆU, chỉ ở ">_" tiêu đề và nút "Chương N"
+     --chrome    xám  — khung trang (số Act, "##", "$", Giai đoạn, meta, chấm timeline)
+     --code-fg        — chữ trong <code>
+     success/warning/danger/info — KẾT QUẢ, không dùng cho khung
+   Chữ đặt trên nền --primary-dim dùng --primary-fg (đậm/sáng hơn một bậc) để giữ ≥ 4,5:1 cả khi hover.
+   Tương phản đo ≥ 4,5:1 trên mọi nền của từng theme (dark: #0d1117/#161b22/#21262d;
+   light: #fff/#f6f8fa/#eff2f5). Đổi màu → đo lại, xem PATTERN-DESIGN.md §6.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --bg: #0d1117; --bg-surface: #0d1117; --bg-card: #161b22; --bg-card-hover: #1c2128;
+  --bg-elevated: #21262d; --bg-overlay: rgba(13, 17, 23, 0.88);
+  --border: #30363d; --border-hover: #3d444d; --border-inner: #262c33;
+  --text-main: #e6edf3; --text-secondary: #9198a1; --text-dim: #8b949e;
+  --primary: #4493f8; --primary-hover: #58a6ff; --primary-fg: #58a6ff; /* chữ trên nền --primary-dim */
+  --primary-dim: rgba(68, 147, 248, 0.12); --primary-dim-hover: rgba(68, 147, 248, 0.20);
+  --primary-glow: transparent; --primary-gradient: none; --on-primary: #0d1117;
+  --border-active: rgba(68, 147, 248, 0.45); --text-accent: var(--primary);
+  --success: #3fb950; --success-dim: rgba(63, 185, 80, 0.12); --success-glow: transparent;
+  --warning: #d29922; --warning-dim: rgba(210, 153, 34, 0.12);
+  --danger: #f85149;  --danger-dim: rgba(248, 81, 73, 0.12);
+  --info: #58a6ff;    --info-dim: rgba(88, 166, 255, 0.12);
+  --brand: #f0883e; --brand-hover: #f5a261; --on-brand: #0d1117;
+  --chrome: #9198a1; --code-fg: #79c0ff; --code-bg: rgba(110, 118, 129, 0.16);
+  --success-fg: #56d364; --warning-fg: #e3b341; --danger-fg: #ff7b72; --info-fg: #79c0ff; /* chữ trên nền *-dim */
+  --shadow-glow: none; --shadow-glow-strong: none;
+  --grid-color: transparent;
+}
+.light {
+  --bg: #ffffff; --bg-surface: #f6f8fa; --bg-card: #ffffff; --bg-card-hover: #f6f8fa;
+  --bg-elevated: #eff2f5; --bg-overlay: rgba(255, 255, 255, 0.92);
+  --border: #d1d9e0; --border-hover: #b7c0c9; --border-inner: #e1e6eb;
+  --text-main: #1f2328; --text-secondary: #59636e; --text-dim: #636c76;
+  --primary: #0969da; --primary-hover: #0550ae; --primary-fg: #0757b8;
+  --primary-dim: rgba(9, 105, 218, 0.08); --primary-dim-hover: rgba(9, 105, 218, 0.14);
+  --on-primary: #ffffff; --border-active: rgba(9, 105, 218, 0.45);
+  --success: #1a7f37; --success-dim: rgba(26, 127, 55, 0.08);
+  --warning: #8a5c00; --warning-dim: rgba(138, 92, 0, 0.08);
+  --danger: #d1242f;  --danger-dim: rgba(209, 36, 47, 0.08);
+  --info: #0969da;    --info-dim: rgba(9, 105, 218, 0.08);
+  --brand: #b04500; --brand-hover: #8f3800; --on-brand: #ffffff;
+  --chrome: #59636e; --code-fg: #0550ae; --code-bg: rgba(175, 184, 193, 0.2);
+  --success-fg: #116329; --warning-fg: #6c4400; --danger-fg: #a40e26; --info-fg: #0550ae;
+  --shadow-glow: none; --shadow-glow-strong: none;
+  --grid-color: transparent;
+}
+/* Badge của base-style.css có viền rgba cứng theo bảng màu cũ và chữ mảnh trên nền pha màu
+   (đo trên trang render: badge ✓/✗ ở light 4,0–4,3:1; "Read" trong nút chương 1,04:1). */
+.badge-success { color: var(--success-fg); border-color: color-mix(in srgb, var(--success) 35%, transparent); }
+.badge-warning { color: var(--warning-fg); border-color: color-mix(in srgb, var(--warning) 35%, transparent); }
+.badge-danger  { color: var(--danger-fg);  border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+.badge-info    { color: var(--info-fg);    border-color: color-mix(in srgb, var(--info) 35%, transparent); }
+.badge-primary { color: var(--primary-fg); border-color: var(--border-active); }
+.chapter-btn .badge { background: transparent; color: var(--on-brand); border-color: currentColor; }
+
 /* ── Reset & Body ── */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -65,7 +125,6 @@ html { scroll-behavior: smooth; }
   transform-origin: top center;
   transform: scaleY(var(--scroll-progress, 0));
   z-index: -1;
-  box-shadow: 0 0 10px var(--primary);
   /* Optional: ease-out makes it slightly smoother, but scroll drives it directly */
 }
 
@@ -109,7 +168,7 @@ html { scroll-behavior: smooth; }
   background: var(--bg);
   border-color: var(--primary);
   color: var(--primary);
-  box-shadow: inset 2px 0 0 var(--primary), 0 0 10px rgba(255, 122, 0, 0.2);
+  box-shadow: inset 2px 0 0 var(--primary);
 }
 
 /* Give it a tiny cursor effect when active */
@@ -189,14 +248,14 @@ html { scroll-behavior: smooth; }
 }
 .pattern-title::before {
   content: ">_ ";
-  color: var(--primary);
+  color: var(--brand);
   opacity: 0.9;
   font-weight: 700;
 }
 .pattern-subtitle {
   font-size: 1rem; color: var(--text-secondary);
   line-height: 1.6; max-width: 680px; margin: 0 0 24px 0;
-  border-left: 2px solid var(--primary-dim-hover);
+  border-left: 2px solid var(--border-hover);
   padding-left: 16px;
 }
 .pattern-meta {
@@ -237,7 +296,7 @@ html { scroll-behavior: smooth; }
 .meta-value {
   font-size: 12px;
   font-weight: 500;
-  color: var(--primary);
+  color: var(--text-main);
 }
 
 /* ── Act Sections ── */
@@ -253,7 +312,7 @@ html { scroll-behavior: smooth; }
   transform: translateX(-50%);
   width: 150px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--primary-dim), transparent);
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
 .act-section p {
   font-family: var(--font-sans);
@@ -264,10 +323,10 @@ html { scroll-behavior: smooth; }
 }
 .act-section p code {
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--code-bg);
   padding: 2px 6px;
   border-radius: 4px;
-  color: var(--primary);
+  color: var(--code-fg);
   font-size: 0.9em;
 }
 hr.act-divider {
@@ -279,14 +338,14 @@ hr.act-divider {
   display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-left: 2px solid var(--primary);
+  border-left: 2px solid var(--chrome);
   padding: 16px 20px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
 }
 .act-number {
   width: auto; height: auto; border-radius: 0;
-  background: transparent; color: var(--primary);
+  background: transparent; color: var(--chrome);
   display: block; font-weight: 700; font-size: 20px; flex-shrink: 0; margin-top: 0;
 }
 .act-number::before { content: "["; color: var(--text-dim); font-weight: 400; }
@@ -306,7 +365,7 @@ hr.act-divider {
   display: flex; align-items: baseline; gap: 12px;
   margin: 0;
 }
-.act-title::before { content: "$"; color: var(--primary); font-size: 0.9em; font-weight: 700; }
+.act-title::before { content: "$"; color: var(--chrome); font-size: 0.9em; font-weight: 700; }
 .section-intro { font-size: 14px; color: var(--text-secondary); line-height: 1.8; max-width: 660px; margin-bottom: 28px; margin-top: 0; }
 
 /* ── Act 1: Problem Cards ── */
@@ -335,35 +394,30 @@ hr.act-divider {
 .incident-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
 .incident-content h4 { font-size: 12.5px; font-weight: 700; color: var(--danger); margin-bottom: 6px; }
 .incident-content p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
-.incident-content code { font-family: var(--font-mono); font-size: 11.5px; color: var(--primary); }
+.incident-content code { font-family: var(--font-mono); font-size: 11.5px; color: var(--code-fg); }
 
 /* ── Act 2: Pattern Definition ── */
 .pattern-definition {
-  background: linear-gradient(135deg, rgba(255, 122, 0, 0.08) 0%, rgba(20,20,22,0.8) 100%);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--primary);
-  border-radius: var(--radius-xl); padding: 40px 48px; margin: 40px 0;
+  border-left: 3px solid var(--chrome);
+  border-radius: var(--radius-md); padding: 40px 48px; margin: 40px 0;
   position: relative; overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
-}
-.light .pattern-definition {
-  background: linear-gradient(135deg, rgba(255, 122, 0, 0.05) 0%, rgba(255,255,255,0.8) 100%);
 }
 .pattern-definition::before {
   content: '\201C'; position: absolute; top: -10px; left: 20px;
-  font-size: 140px; color: rgba(255, 122, 0, 0.12); font-weight: 900; line-height: 1; pointer-events: none;
+  font-size: 140px; color: var(--border); font-weight: 900; line-height: 1; pointer-events: none;
   font-family: Georgia, serif;
 }
 .pattern-definition::after {
   content: ''; position: absolute; top: 0; right: 0; width: 200px; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 122, 0, 0.04));
+  background: none;
   pointer-events: none;
 }
 .definition-text { font-size: 1.25rem; line-height: 1.8; color: var(--text-main); font-weight: 500; font-style: italic; position: relative; z-index: 1; letter-spacing: -0.01em; }
-.definition-text strong { color: var(--primary); font-weight: 700; }
+.definition-text strong { color: var(--text-main); font-weight: 700; }
 .definition-attribution { margin-top: 24px; font-size: 12.5px; color: var(--text-dim); font-family: var(--font-mono); letter-spacing: .08em; text-transform: uppercase; font-weight: 600; display: flex; align-items: center; gap: 12px; }
-.definition-attribution::before { content: ''; width: 30px; height: 1px; background: var(--primary); opacity: 0.5; }
+.definition-attribution::before { content: ''; width: 30px; height: 1px; background: var(--chrome); opacity: 0.5; }
 
 .pattern-anatomy { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 24px 0; }
 @media (min-width: 640px) { .pattern-anatomy { grid-template-columns: repeat(3, 1fr); } }
@@ -372,7 +426,7 @@ hr.act-divider {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: 18px 16px; text-align: center;
 }
-.anatomy-num { font-size: 10px; font-family: var(--font-mono); color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.anatomy-num { font-size: 10px; font-family: var(--font-mono); color: var(--chrome); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
 .anatomy-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
 .anatomy-card p { font-size: 11.5px; color: var(--text-secondary); line-height: 1.55; }
 
@@ -396,7 +450,7 @@ hr.act-divider {
   letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
 }
 .tag-before  { background: rgba(244,63,94,.1);  color: var(--danger);  border: 1px solid rgba(244,63,94,.2); }
-.tag-process { background: var(--primary-dim);  color: var(--primary); border: 1px solid rgba(255,122,0,.2); }
+.tag-process { background: var(--primary-dim);  color: var(--primary-fg); border: 1px solid var(--border-active); }
 .tag-after   { background: var(--success-dim);  color: var(--success); border: 1px solid rgba(34,211,160,.2); }
 .tag-info    { background: rgba(96,165,250,.1); color: var(--info);    border: 1px solid rgba(96,165,250,.2); }
 
@@ -414,9 +468,9 @@ hr.act-divider {
   text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid var(--border);
 }
 .gap-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
-.gap-table tr:hover td { background: var(--primary-dim); }
+.gap-table tr:hover td { background: var(--bg-card-hover); }
 .gap-label { font-weight: 700; color: var(--text-main) !important; font-family: var(--font-mono); font-size: 12px; }
-.gap-table code { font-family: var(--font-mono); font-size: 11px; color: var(--primary); }
+.gap-table code { font-family: var(--font-mono); font-size: 11px; color: var(--code-fg); }
 .b-high { color: var(--danger); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
 .b-med  { color: var(--warning); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
 .b-low  { color: var(--success); font-weight: 700; font-size: 10.5px; font-family: var(--font-mono); }
@@ -435,9 +489,9 @@ hr.act-divider {
   border: 2px solid var(--border); background: var(--bg); transition: all .3s ease;
 }
 .timeline-item.visible .timeline-dot {
-  border-color: var(--primary); background: var(--primary); box-shadow: 0 0 10px var(--primary-glow);
+  border-color: var(--chrome); background: var(--chrome);
 }
-.timeline-phase { font-size: 10px; font-family: var(--font-mono); color: var(--primary); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
+.timeline-phase { font-size: 10px; font-family: var(--font-mono); color: var(--chrome); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
 .timeline-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
 .timeline-item p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; }
 .t-badge {
@@ -447,17 +501,17 @@ hr.act-divider {
   background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-secondary);
 }
 .t-badge.green  { background: var(--success-dim); border-color: rgba(34,211,160,.2); color: var(--success); }
-.t-badge.orange { background: var(--primary-dim); border-color: rgba(255,122,0,.2); color: var(--primary); }
+.t-badge.orange { background: transparent; border-color: var(--border-hover); color: var(--text-secondary); } /* tên lớp giữ vì 21 trang dùng; nghĩa = ghi chú trung tính */
 
 /* Play button */
 .play-btn {
   padding: 8px 20px; border-radius: var(--radius-sm);
-  background: var(--primary); border: none; color: var(--on-primary);
+  background: var(--primary-dim); border: 1px solid var(--primary); color: var(--primary-fg);
   font-size: 12px; font-weight: 700; cursor: pointer;
   font-family: var(--font-sans); margin-bottom: 20px; transition: all .2s ease;
   min-height: 44px;
 }
-.play-btn:hover { background: var(--primary-hover); }
+.play-btn:hover { background: var(--primary-dim-hover); }
 .play-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Decision Grid ── */
@@ -481,11 +535,11 @@ hr.act-divider {
 .chapter-btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 26px; border-radius: var(--radius-sm);
-  background: var(--primary); color: var(--on-primary);
+  background: var(--brand); color: var(--on-brand);
   font-size: 13px; font-weight: 700; text-decoration: none; transition: all .2s ease;
   min-height: 44px;
 }
-.chapter-btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.chapter-btn:hover { background: var(--brand-hover); }
 
 /* ── Simulator Control Button (shared — was duplicated inline in circuit-breaker.html;
      graphql-vs-rest.html and outbox-pattern.html used the .sim-btn class in HTML
@@ -515,12 +569,12 @@ hr.act-divider {
   cursor: not-allowed;
 }
 .sim-btn.primary-action {
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
+  background: var(--primary-dim);
+  color: var(--primary-fg);
+  border: 1px solid var(--primary);
 }
 .sim-btn.primary-action:hover:not(:disabled) {
-  background: var(--primary-hover);
+  background: var(--primary-dim-hover);
 }
 
 /* ── Shared JS helpers (class-based) ── */
@@ -534,16 +588,16 @@ hr.act-divider {
   color: var(--text-main);
   display: flex; align-items: center; gap: 8px;
 }
-.sub-heading::before { content: '##'; color: var(--primary); opacity: 0.8; font-weight: 400; }
+.sub-heading::before { content: '##'; color: var(--chrome); opacity: 0.8; font-weight: 400; }
 .sub-label { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; font-family: var(--font-mono); }
 
 /* ── Terminal / Console Theme ── */
 :root {
-  --bg-terminal: #0a0b0f;
+  --bg-terminal: #010409;
   --terminal-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
 }
 .light {
-  --bg-terminal: #f3f4f6;
+  --bg-terminal: #f6f8fa;
   --terminal-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
 }
 
@@ -625,7 +679,7 @@ hr.act-divider {
 }
 .arch-card.selected {
   border-color: var(--primary);
-  box-shadow: var(--shadow-glow), var(--shadow-card-hover);
+  box-shadow: var(--shadow-card-hover);
   background: var(--bg-card-hover);
 }
 .arch-card.selected-ms {
@@ -682,7 +736,6 @@ hr.act-divider {
 .module-pill.highlight {
   border-color: var(--primary);
   color: var(--primary);
-  box-shadow: 0 0 12px rgba(255,122,0,0.15);
   background: var(--primary-dim);
   transform: translateY(-1px);
 }
@@ -834,7 +887,7 @@ hr.act-divider {
   color: var(--text-secondary); cursor: pointer;
 }
 .sim-chip:hover { color: var(--text-main); border-color: var(--text-dim); }
-.sim-chip.is-active { color: var(--on-primary, #000); background: var(--primary); border-color: var(--primary); }
+.sim-chip.is-active { color: var(--primary-fg); background: var(--primary-dim); border-color: var(--primary); }
 
 /* Sơ đồ nút trong Act 3: vị trí bằng lưới, đường nối bằng js/diagram-links.js (.d-links-root) */
 .sim-canvas { position: relative; padding: 8px 4px; }
@@ -875,7 +928,7 @@ hr.act-divider {
 .rel-item-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
 .rel-item-head .rel-target { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
 .rel-item p { font-size: 12px; line-height: 1.55; color: var(--text-secondary); margin: 0; }
-.sim-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.sim-scroll { max-height: 300px; overflow-y: auto; overflow-x: auto; padding-right: 4px; } /* panel overflow:hidden → bảng rộng phải cuộn ngang trong vùng này */
 .sim-grid > .sim-panel { display: flex; flex-direction: column; }
 .sim-grid > .sim-panel .sim-log { flex: 1; }
 .sim-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 11px; color: var(--text-dim); }
@@ -899,7 +952,7 @@ hr.act-divider {
 .sim-table td.num { font-family: var(--font-mono); font-weight: 700; color: var(--text-main); text-align: right; }
 .sim-table th.num { text-align: right; }
 .sim-table tr.is-current td { background: var(--primary-dim); }
-.sim-table td.bad { color: var(--danger); } .sim-table td.good { color: var(--success); }
+.sim-table td.bad, .sim-table span.bad { color: var(--danger); } .sim-table td.good, .sim-table span.good { color: var(--success); }
 .sim-nodes--row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 72px; }
 .sim-node.is-active { border-color: var(--primary); background: var(--primary-dim); }
 .sim-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 4px 0 14px; }
@@ -917,6 +970,8 @@ hr.act-divider {
   .d-links-root .d-link-label.is-above { transform: translate(10px, -50%); }
 }
 
+@media (max-width: 640px) { .sim-table { font-size: 11.5px; } .sim-table th, .sim-table td { padding: 6px 5px; } }
+
 /* Kit v2 — bổ sung 2026-09-26 (outbox-pattern; dùng lại cho message-broker, saga…) */
 .sim-control { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 /* Lưới node 3 cột có đường nối NGANG giữa các cột → khe cột đủ rộng cho mũi tên (≥ 32px). */
@@ -925,5 +980,62 @@ hr.act-divider {
 .sim-node.is-danger { border-color: var(--danger); background: var(--danger-dim, transparent); }
 .sim-node.is-danger .sim-node-sub { color: var(--danger); }
 .sim-node.is-off { opacity: .35; border-style: dashed; }
+/* 2026-09-27 (circuit-breaker): trạng thái "cảnh báo" (HALF-OPEN, đang thử) và lưới node một cột (state machine dọc). */
+.sim-node.is-warn { border-color: var(--warning); background: var(--warning-dim, transparent); }
+.sim-node.is-warn .sim-node-sub { color: var(--warning-fg, var(--warning)); }
+.sim-nodes--col { grid-template-columns: minmax(0, 1fr); gap: 36px 0; padding: 0 16%; }
 /* .act-section p (0,1,1) thắng .sim-note → ghi rõ ngữ cảnh để ghi chú trong panel giữ cỡ chữ của kit. */
 .act-section .sim-note { font-size: 12.5px; line-height: 1.6; }
+
+/* Kit v2 — bổ sung 2026-09-27 (rest-api-explorer; dùng cho mọi Act 3 cần hiện request/response, cấu hình) */
+.sim-code {
+  background: var(--bg-terminal, var(--bg-surface)); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 12px; margin: 0; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.55;
+  color: var(--text-secondary); white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow: auto;
+}
+.sim-code .k { color: var(--code-fg, var(--primary)); } .sim-code .ok { color: var(--success); }
+.sim-code .err { color: var(--danger); } .sim-code .warn { color: var(--warning); }
+/* Tiêu đề bảng dính trên đầu khi bảng cuộn trong .sim-scroll (bảng tự cuộn xuống dòng mới nhất). */
+.sim-scroll .sim-table thead th { position: sticky; top: 0; z-index: 1; background: var(--bg-card); }
+
+/* Kit v2 — .sim-steps (2026-09-27): stepper dùng chung cho saga-orchestration, strangler-fig-migration.
+   Mỗi bước: chấm số · tiêu đề + mô tả · nhãn loại; trạng thái is-active / is-done / is-fail / is-warn / is-off. */
+.sim-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sim-step {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: start;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface);
+  transition: border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+.sim-step-dot {
+  width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border-hover);
+  display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+}
+.sim-step-title { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
+.sim-step-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5; }
+.sim-step-tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); white-space: nowrap; }
+.sim-step.is-active { border-color: var(--primary); background: var(--primary-dim); }
+.sim-step.is-active .sim-step-dot { border-color: var(--primary); color: var(--primary-fg, var(--primary)); }
+.sim-step.is-done .sim-step-dot { border-color: var(--success); color: var(--success-fg, var(--success)); }
+.sim-step.is-fail { border-color: var(--danger); }
+.sim-step.is-fail .sim-step-dot { border-color: var(--danger); color: var(--danger-fg, var(--danger)); }
+.sim-step.is-warn { border-color: var(--warning); }
+.sim-step.is-warn .sim-step-dot { border-color: var(--warning); color: var(--warning-fg, var(--warning)); }
+.sim-step.is-off { opacity: .4; }
+@media (max-width: 640px) { .sim-step { grid-template-columns: 24px minmax(0, 1fr); } .sim-step-tag { grid-column: 2; } }
+
+/* Kit v2 — .sim-wf (2026-09-28, distributed-tracing): biểu đồ waterfall/Gantt của một trace.
+   Mỗi dòng: tên span · thanh (margin-left = thời điểm bắt đầu, width = thời lượng, theo % trục) · thời lượng.
+   Không dùng position:absolute — thanh nằm trong luồng bình thường của track. */
+.sim-wf { display: flex; flex-direction: column; gap: 6px; }
+.sim-wf-row { display: grid; grid-template-columns: minmax(0, 13em) minmax(0, 1fr) 4.2em; gap: 8px; align-items: center; }
+.sim-wf-name { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sim-wf-name .svc { color: var(--text-dim); }
+.sim-wf-track { height: 14px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; display: flex; }
+.sim-wf-bar { height: 100%; min-width: 2px; border-radius: 3px; background: var(--primary); opacity: .85; }
+.sim-wf-bar.is-danger { background: var(--danger); } .sim-wf-bar.is-warn { background: var(--warning); }
+.sim-wf-bar.is-muted { background: var(--text-dim); }
+.sim-wf-dur { font-family: var(--font-mono); font-size: 11px; color: var(--text-main); text-align: right; }
+.sim-wf-sep { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); margin-top: 6px; }
+.sim-wf-axis { display: grid; grid-template-columns: minmax(0, 13em) minmax(0, 1fr) 4.2em; gap: 8px; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+.sim-wf-axis > span:nth-child(2) { display: flex; justify-content: space-between; }
+@media (max-width: 640px) { .sim-wf-row, .sim-wf-axis { grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr) 3.6em; gap: 6px; } }

@@ -3,102 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 1.2 — Kiến trúc phân cấp SOA theo Erl
-    =========================================================
-    Tier 1 HTML migration
+    Fig 1.2 — Bốn kiểu kiến trúc SOA (Thomas Erl)
+    2026-09-28 (WP-B Ch.01): bỏ khung lồng nhau làm hộp bên phải lệch cột và 5 <line> toạ độ cứng; dựng lại thành
+    lưới 2 cột — bốn cấp của Erl (thụt lề dần = cấp trên chứa cấp dưới) nối sang hiện thân trong thực tiễn bằng d-links.
+    Chữ theo DIAGRAM_DESIGN.md §17: tên kiến trúc/pattern tiếng Anh, mô tả tiếng Việt.
   -->
-  <title>Fig 1.2 — Erl's SOA Layered Architecture | Ch.1</title>
+  <title>Fig 1.2 — Bốn kiểu kiến trúc SOA | Ch.1</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-1.2" data-ref="CH01-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
 
+    <div class="d-cluster" style="padding: 24px;">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px 72px; align-items: stretch;">
 
-    <div class="d-cluster d-col" style="padding: 24px;">
-      
-      <!-- Headers for the two aspects -->
-      <div class="d-row" style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--diagram-color-line-muted);">
-        <div class="d-grow d-col" style="gap: 4px;">
-          <div class="d-title d-title-lg d-text-success">Khía cạnh Nghiệp vụ / Logic</div>
-          <div class="d-sub d-text-muted">Mô hình phân cấp kiến trúc (Thomas Erl)</div>
+        <!-- Tiêu đề hai cột -->
+        <div class="d-col" style="gap: 4px; padding-bottom: 12px; border-bottom: 2px solid var(--diagram-color-line-muted);">
+          <div class="d-title d-title-lg d-text-success">Mô hình phân cấp của Erl</div>
+          <div class="d-sub d-text-muted">khía cạnh nghiệp vụ — mỗi cấp chứa cấp bên dưới</div>
         </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-col" style="width: 280px; flex-shrink: 0; gap: 4px;">
-          <div class="d-title d-title-lg d-text-info">Khía cạnh Công nghệ / Triển khai</div>
-          <div class="d-sub d-text-muted">Các mẫu kiến trúc trong thực tiễn</div>
+        <div class="d-col" style="gap: 4px; padding-bottom: 12px; border-bottom: 2px solid var(--diagram-color-line-muted);">
+          <div class="d-title d-title-lg d-text-info">Hiện thân trong thực tiễn</div>
+          <div class="d-sub d-text-muted">khía cạnh công nghệ, triển khai</div>
         </div>
-      </div>
 
-      <!-- Level 4: Enterprise -->
-      <div class="d-row" style="margin-bottom: 24px;">
-        <div class="d-grow">
-          <span class="d-label d-mb-0">Service-Oriented Enterprise Architecture</span>
+        <!-- Cấp 4 -->
+        <div class="d-box d-legacy d-col d-gap-1" id="erl-enterprise" style="margin-left: 0;">
+          <div class="d-title">Service-Oriented Enterprise Architecture</div>
+          <div class="d-sub">toàn doanh nghiệp: mọi inventory và quy trình</div>
         </div>
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <div class="d-box d-legacy d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
+        <div class="d-box d-legacy d-col d-gap-1" id="p-soa">
           <div class="d-title">Traditional SOA</div>
-          <div class="d-sub">Focus on enterprise-level design</div>
-        </div>
-      </div>
-
-      <!-- Level 3: Inventory -->
-      <div class="d-box d-col" style="padding: 24px; border: 1.5px dashed var(--diagram-color-line-muted); background: var(--diagram-color-surface);">
-        
-        <div class="d-row" style="margin-bottom: 24px;">
-          <div class="d-grow">
-            <div class="d-title">Service Inventory Architecture</div>
-          </div>
-          <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <div class="d-box d-note d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
-            <div class="d-title">Service Registry &amp; Discovery</div>
-            <div class="d-sub">Global service catalog and routing</div>
-          </div>
+          <div class="d-sub">thiết kế ở cấp doanh nghiệp</div>
         </div>
 
-        <!-- Level 2: Composition -->
-        <div class="d-box d-col" style="padding: 24px; border: 1.5px dashed var(--diagram-color-line-muted); background: var(--diagram-color-surface);">
-          
-          <div class="d-row" style="margin-bottom: 24px;">
-            <div class="d-grow">
-              <div class="d-title">Service Composition Architecture</div>
-            </div>
-            <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-            <div class="d-box d-warning d-col d-gap-1" style="width: 280px; flex-shrink: 0;">
-              <div class="d-title">Saga Pattern, API Gateway</div>
-              <div class="d-sub">Service Composition / Orchestration</div>
-            </div>
-          </div>
-
-          <!-- Level 1: Service -->
-          <div class="d-box d-service d-col" style="padding: 24px;">
-            <div class="d-row">
-              <div class="d-col d-gap-1 d-grow">
-                <div class="d-title">Service Architecture</div>
-                <div class="d-sub" style="opacity: 0.85;">Focus on internal structure of an independent service</div>
-              </div>
-              <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-              <div class="d-box d-service d-col d-gap-1" style="width: 280px; flex-shrink: 0; background: var(--diagram-color-surface);">
-                <div class="d-title">Microservices Architecture</div>
-                <div class="d-sub">Focus on service-level design</div>
-              </div>
-            </div>
-          </div>
-          <!-- /Level 1 -->
-
+        <!-- Cấp 3 -->
+        <div class="d-box d-note d-col d-gap-1" id="erl-inventory" style="margin-left: 28px;">
+          <div class="d-title">Service Inventory Architecture</div>
+          <div class="d-sub">tập dịch vụ dùng chung của một tổ chức</div>
         </div>
-        <!-- /Level 2 -->
+        <div class="d-box d-note d-col d-gap-1" id="p-registry">
+          <div class="d-title">Service Registry &amp; Discovery</div>
+          <div class="d-sub">danh mục dịch vụ, định tuyến</div>
+        </div>
+
+        <!-- Cấp 2 -->
+        <div class="d-box d-warning d-col d-gap-1" id="erl-composition" style="margin-left: 56px;">
+          <div class="d-title">Service Composition Architecture</div>
+          <div class="d-sub">nhiều dịch vụ ghép thành một quy trình</div>
+        </div>
+        <div class="d-box d-warning d-col d-gap-1" id="p-compose">
+          <div class="d-title">Saga, API Gateway</div>
+          <div class="d-sub">tổ hợp và điều phối dịch vụ</div>
+        </div>
+
+        <!-- Cấp 1 -->
+        <div class="d-box d-service d-col d-gap-1" id="erl-service" style="margin-left: 84px;">
+          <div class="d-title">Service Architecture</div>
+          <div class="d-sub">cấu trúc bên trong một dịch vụ độc lập</div>
+        </div>
+        <div class="d-box d-service d-col d-gap-1" id="p-micro">
+          <div class="d-title">Microservices</div>
+          <div class="d-sub">thiết kế ở cấp từng service</div>
+        </div>
 
       </div>
-      <!-- /Level 3 -->
-
     </div>
 
+    <svg class="d-links">
+      <path data-from="erl-enterprise" data-to="p-soa" class="is-dashed"></path>
+      <path data-from="erl-inventory" data-to="p-registry" class="is-dashed"></path>
+      <path data-from="erl-composition" data-to="p-compose" class="is-dashed"></path>
+      <path data-from="erl-service" data-to="p-micro" class="is-dashed"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

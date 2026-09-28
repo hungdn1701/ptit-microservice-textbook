@@ -3,211 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Gateway — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="API Gateway pattern — điểm truy cập duy nhất cho mọi client, tập trung xác thực, rate limiting và routing trong hệ thống microservices.">
+  <title>API Gateway Routing — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="API Gateway — điểm vào duy nhất: route theo path, lb:// qua Eureka, CORS, gỡ header giả, kiểm tra JWT, rate limit; Spring Cloud Gateway trong KBM.">
   <meta name="author" content="Đặng Ngọc Hùng">
-  <meta property="og:title" content="API Gateway — Pattern Story">
-  <meta property="og:description" content="API Gateway pattern — điểm truy cập duy nhất cho mọi client, tập trung xác thực, rate limiting và routing trong hệ thống microservices.">
+  <meta property="og:title" content="API Gateway Routing — Pattern Story">
+  <meta property="og:description" content="API Gateway — điểm vào duy nhất: route theo path, lb:// qua Eureka, CORS, gỡ header giả, kiểm tra JWT, rate limit; Spring Cloud Gateway trong KBM.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom styles for API Gateway Routing Simulator */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .canvas-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-      min-width: 0; /* let the grid track shrink; .gateway-canvas scrolls its own overflow instead of pushing the page wide */
-    }
-
-    .gateway-canvas {
-      min-height: 380px;
-      border: 1px dashed var(--border);
-      background: rgba(0,0,0,0.2);
-      border-radius: var(--radius-md);
-      margin-bottom: 20px;
-      position: relative;
-      /* overflow-x:auto (not hidden) — the packet's flight path is animated via
-         hardcoded pixel coordinates in JS (see runPipeline()), calibrated for this
-         3-column row at its natural width. On narrow viewports the row no longer
-         fits, so it scrolls horizontally instead of clipping/squishing nodes. */
-      overflow-x: auto;
-      overflow-y: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
-    }
-
-    .node {
-      background: var(--bg-surface);
-      border: 2px solid var(--border);
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      color: var(--text-main);
-      text-align: center;
-      box-shadow: var(--shadow-medium);
-      z-index: 2;
-      font-size: 11.5px;
-      flex-shrink: 0;
-    }
-    
-    .node-client {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    
-    .node-gateway {
-      border-color: var(--warning);
-      border-width: 2px;
-      border-style: dashed;
-      padding: 20px 14px;
-      min-width: 260px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-      background: rgba(10, 10, 10, 0.6);
-      border-radius: var(--radius-lg);
-    }
-    .node-gateway::before {
-      content: 'Spring Cloud Gateway';
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-surface);
-      padding: 2px 8px;
-      font-size: 9.5px;
-      font-family: var(--font-mono);
-      color: var(--warning);
-      border: 1px solid var(--warning);
-      border-radius: 99px;
-      font-weight: 700;
-    }
-    
-    .filter-box {
-      background: rgba(245, 158, 11, 0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      color: var(--text-secondary);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .filter-box.active {
-      background: var(--warning-dim);
-      color: var(--warning);
-      border-color: var(--warning);
-      box-shadow: 0 0 15px rgba(245,158,11,0.15);
-      transform: scale(1.03);
-    }
-    .filter-box.error {
-      background: var(--danger-dim);
-      color: var(--danger);
-      border-color: var(--danger);
-      box-shadow: 0 0 15px rgba(244,63,94,0.15);
-      transform: scale(1.03);
-    }
-
-    .node-services {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      flex-shrink: 0;
-    }
-    
-    .service {
-      background: var(--bg-surface);
-      border: 2px solid var(--border);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-size: 11px;
-      color: var(--text-secondary);
-      text-align: center;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow-medium);
-    }
-    .service.active {
-      border-color: var(--success);
-      color: var(--success);
-      box-shadow: 0 0 15px rgba(34,211,160,0.15);
-      background: var(--success-dim);
-    }
-
-    /* Animated Packet */
-    .packet {
-      position: absolute;
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      background: var(--primary);
-      color: var(--on-primary);
-      font-weight: 700;
-      box-shadow: var(--shadow-glow);
-      z-index: 10;
-      opacity: 0;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      white-space: nowrap;
-      line-height: 1.3;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .dashboard-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .sim-log {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 200px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    .log-line {
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    .log-success { color: var(--success); }
-    .log-error { color: var(--danger); }
-    .log-info { color: var(--info); }
-    .log-warn { color: var(--warning); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -224,13 +29,13 @@
 
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
-  <h1 class="pattern-title">Gateway Routing Pipeline</h1>
-  <p class="pattern-subtitle">Định tuyến thông minh và hợp nhất xử lý các mối quan tâm chéo (Cross-cutting Concerns)</p>
+  <h1 class="pattern-title">API Gateway Routing</h1>
+  <p class="pattern-subtitle">Một điểm vào cho mọi client — route theo path, xử lý cross-cutting concerns ở biên</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Infrastructure Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Chris Richardson</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2015</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.8 §8.1</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.8 §8.1–8.5</span></div>
   </div>
 </header>
 
@@ -244,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Thiếu API Gateway, các microservice nội bộ phải tự xử lý các tác vụ cross-cutting concerns (CORS, JWT validation, rate limiting, routing). Điều này gây khó khăn lớn trong phát triển và vận hành.
+  <p class="section-intro">
+    Không có gateway, web và mobile phải biết địa chỉ của từng service và gọi thẳng. Richardson chỉ ra năm hệ quả: nhiều endpoint, giao thức khác nhau, cross-cutting concerns phân tán, bề mặt tấn công rộng, và API nội bộ không hợp với client (§8.1).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Boilerplate</div></div>
-      <h3>Trùng lặp logic & Khó bảo trì (Boilerplate code)</h3>
-      <p>Nhiều service phải cài đặt thư viện và viết filter giải mã JWT tương tự nhau. Khi cập nhật thuật toán mã hóa (VD: HS256 sang RS256) hoặc đổi Secret Key, cần cập nhật cấu hình và redeploy toàn bộ service.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Coupling</div></div>
+      <h3>Client gắn chặt với sơ đồ nội bộ</h3>
+      <p>Frontend giữ URL của mọi service; tách, gộp hay đổi chỗ một service là phải sửa client. API nội bộ thiết kế cho máy chủ gọi máy chủ, trả dư dữ liệu hoặc bắt client gọi nhiều vòng — nặng nhất với mobile.</p>
     </div>
-    <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Security</div></div>
-      <h3>Rủi ro bảo mật & Inconsistent CORS</h3>
-      <p>Các microservice tự quản lý CORS dễ dẫn đến sai lệch cấu hình. Một cấu hình <code>Allow-Origin: *</code> nhầm lẫn có thể mở ra lỗ hổng. Ngoài ra, cấu hình CORS không đồng nhất gây lỗi preflight request trên trình duyệt.</p>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">Phân tán</div></div>
+      <h3>Mỗi service tự làm xác thực, CORS, rate limit</h3>
+      <p>Mỗi nơi một bộ phân tích JWT, một cấu hình CORS, một cách giới hạn lưu lượng: mã trùng lặp và chính sách trôi dạt. Mọi endpoint nội bộ lộ ra Internet làm bề mặt tấn công rộng thêm.</p>
     </div>
   </div>
 
@@ -275,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Sử dụng API Gateway làm single entry point. Thực thi Filter Chain tập trung (CORS, JWT validation, rate limiting) trước khi routing. Gateway sanitize identity header, xác minh external token và chuyển signed proof đúng audience; user context dẫn xuất chỉ hỗ trợ routing, log và rate limiting.
+      Mọi request của client đi qua một điểm vào duy nhất. Gateway xử lý tập trung các việc cắt ngang ở biên — CORS, xác thực, rate limit, logging — rồi định tuyến tới đúng service. Gateway không chứa business logic.
     </p>
-    <div class="definition-attribution">— API Gateway Routing · Microservice Patterns (Chris Richardson)</div>
+    <div class="definition-attribution">— Chris Richardson · Microservices Patterns, Ch.8</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Pattern này đưa internal service ra khỏi Internet và tập trung kiểm soát ingress. Private Network không phải identity proof: resource service vẫn xác minh signed proof theo trust tier và tự thực hiện authorization nghiệp vụ.
+  <p class="section-intro">
+    Đánh đổi: được một chỗ quản lý chính sách và che sơ đồ nội bộ; mất ở chỗ gateway thành điểm lỗi duy nhất (phải chạy nhiều instance sau load balancer) và dễ bị nhồi logic nghiệp vụ thành một monolith mới. Gateway kiểm tra ở biên, nhưng service đích vẫn xác minh bằng chứng danh tính và tự authorize (§8.1, §8.4).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Routing Predicates</h3>
-      <p>Điều kiện match URL pattern (VD: <code>/api/v1/courses/**</code>) để xác định downstream service thông qua Service Discovery.</p>
+      <h3>Route + Predicate</h3>
+      <p>Route nối một điều kiện với URI đích; Predicate là phép thử <code>Path</code>, <code>Method</code>… Ví dụ KBM: <code>Path=/api/core/**</code> → <code>lb://kbm-core</code>.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Pre/Post Filter Chain</h3>
-      <p>Filter thực thi trước (Pre) và sau (Post) quá trình routing. Pre-filter xử lý JWT validation, logging, rate limiting. Post-filter bổ sung response header, tracking latency, hoặc data compression.</p>
+      <h3>Filter chain</h3>
+      <p>Filter chạy trước/sau bước định tuyến: gỡ header định danh do client tự gửi, kiểm tra JWT (<code>alg</code>, chữ ký, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>), rate limit, gắn correlation ID.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Signed Gateway-to-Service Proof</h3>
-      <p>Sau ingress validation, Gateway giữ signed access token hoặc token exchange sang internal token đúng audience. Downstream xác minh proof và local authorization; <code>X-User-*</code> chỉ là context dẫn xuất, không phải nguồn quyền.</p>
+      <h3><code>lb://</code> + StripPrefix</h3>
+      <p><code>lb://</code> tra Eureka, chọn instance (round-robin) và chuyển tiếp. <code>StripPrefix=2</code> đổi <code>/api/core/questions</code> thành <code>/questions</code> — service không cần biết mình được gắn ở đâu trên gateway.</p>
     </div>
   </div>
 </section>
@@ -313,46 +118,61 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Chọn các kịch bản request để theo dõi luồng dữ liệu (packet) qua Filter Chain của Spring Cloud Gateway và cách header được biến đổi trước khi forward xuống downstream service.
-  </p>
+  <p class="section-intro">Spring Cloud Gateway của KBM với route thật trong §8.3. Gửi từng loại request qua chuỗi filter và xem request được biến đổi thế nào trước khi tới service. So sánh cấu hình hiện trạng với cấu hình sau Giai đoạn 1 (§8.5).</p>
 
-  <div class="simulator-container">
-    <!-- Left panel: visual canvas -->
-    <div class="canvas-card">
-      <div class="gateway-canvas" id="canvas">
-        <div class="node node-client">Client<br><span style="font-size:9px;font-weight:normal;color:var(--text-dim)">Browser</span></div>
-        
-        <div class="node-gateway">
-          <div class="filter-box" id="f-cors"><span>1. CORS Origin Check</span> <span id="s-cors">⏳</span></div>
-          <div class="filter-box" id="f-jwt"><span>2. JwtRequestFilter</span> <span id="s-jwt">⏳</span></div>
-          <div class="filter-box" id="f-route"><span>3. Path Predicate Match</span> <span id="s-route">⏳</span></div>
-          <div class="filter-box" id="f-strip"><span>4. StripPrefix=2 Filter</span> <span id="s-strip">⏳</span></div>
-        </div>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Cấu hình</span><div class="sim-chips" id="gw-configs"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Request</span><div class="sim-chips" id="gw-reqs"></div></div>
+    <button class="sim-btn primary-action" id="gw-run" type="button">▶ Gửi</button>
+    <button class="sim-btn" id="gw-reset" type="button">Làm lại</button>
+  </div>
 
-        <div class="node-services">
-          <div class="service" id="svc-core">core-service<br><span style="font-size:9.5px;font-weight:normal;color:var(--text-dim)">/questions</span></div>
-          <div class="service" id="svc-auth">auth-service<br><span style="font-size:9.5px;font-weight:normal;color:var(--text-dim)">/login</span></div>
-        </div>
-
-        <!-- The moving request packet -->
-        <div class="packet" id="req-packet"></div>
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="gw-title"></span> <span class="sim-hint" id="gw-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="gw-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="gw-client" style="grid-column:1;grid-row:3"><div class="sim-node-name">Client</div><div class="sim-node-sub" id="gw-client-sub"></div></div>
+        <div class="sim-node" id="gw-f1" style="grid-column:2;grid-row:1"><div class="sim-node-name">1 · CORS</div><div class="sim-node-sub" id="gw-f1-sub"></div></div>
+        <div class="sim-node" id="gw-f2" style="grid-column:2;grid-row:2"><div class="sim-node-name">2 · Gỡ header</div><div class="sim-node-sub">X-User-* do client gửi</div></div>
+        <div class="sim-node" id="gw-f3" style="grid-column:2;grid-row:3"><div class="sim-node-name">3 · JWT</div><div class="sim-node-sub">bỏ qua route công khai</div></div>
+        <div class="sim-node" id="gw-f4" style="grid-column:2;grid-row:4"><div class="sim-node-name">4 · Rate limit</div><div class="sim-node-sub">Redis token bucket</div></div>
+        <div class="sim-node is-core" id="gw-f5" style="grid-column:2;grid-row:5"><div class="sim-node-name">5 · Route</div><div class="sim-node-sub">Path → lb:// + StripPrefix</div></div>
+        <div class="sim-node" id="gw-s-auth" style="grid-column:3;grid-row:2"><div class="sim-node-name">kbm-auth</div><div class="sim-node-sub">/api/auth/**</div></div>
+        <div class="sim-node" id="gw-s-core" style="grid-column:3;grid-row:3"><div class="sim-node-name">kbm-core</div><div class="sim-node-sub">/api/core/**</div></div>
+        <div class="sim-node" id="gw-s-ac" style="grid-column:3;grid-row:4"><div class="sim-node-name">kbm-academic</div><div class="sim-node-sub">/api/assignment/**</div></div>
       </div>
-
-      <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="runPipeline('happy')" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">Core API (Happy Path)</button>
-        <button class="btn" onclick="runPipeline('no-token')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">Core API (No Token)</button>
-        <button class="btn btn-ghost" onclick="runPipeline('public')" style="font-size:12px;">Auth API (Public Route)</button>
-        <button class="btn" onclick="resetSim()" style="font-size:12px;">Reset</button>
-      </div>
+      <svg class="d-links">
+        <path id="gw-l-in" data-from="gw-client" data-to="gw-f1" data-to-side="left"></path>
+        <path id="gw-l-12" data-from="gw-f1" data-to="gw-f2"></path>
+        <path id="gw-l-23" data-from="gw-f2" data-to="gw-f3"></path>
+        <path id="gw-l-34" data-from="gw-f3" data-to="gw-f4"></path>
+        <path id="gw-l-45" data-from="gw-f4" data-to="gw-f5"></path>
+        <path id="gw-l-auth" data-from="gw-f5" data-to="gw-s-auth" data-from-side="right" data-to-side="left" data-route="channel" data-channel="left"></path>
+        <path id="gw-l-core" data-from="gw-f5" data-to="gw-s-core" data-from-side="right" data-to-side="left" data-route="channel" data-channel="left"></path>
+        <path id="gw-l-ac" data-from="gw-f5" data-to="gw-s-ac" data-from-side="right" data-to-side="left" data-route="channel" data-channel="left"></path>
+      </svg>
     </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="gw-pass">0</div><div class="sim-stat-lbl">Tới được service</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="gw-block">0</div><div class="sim-stat-lbl">Bị chặn ở biên</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="gw-spoof">0</div><div class="sim-stat-lbl">Header giả bị gỡ</div></div>
+    </div>
+  </div>
 
-    <!-- Right panel: live logs -->
-    <div class="dashboard-panel">
-      <div class="dashboard-title">Gateway Console Logs</div>
-      <div class="sim-log" id="sys-log">
-        <div style="font-style:italic; color:var(--text-dim)">Đang chờ request được gửi tới cổng Gateway...</div>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Request qua Gateway <span class="sim-hint">vào → ra</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="gw-table">
+          <thead><tr><th>Phần</th><th>Client gửi</th><th>Service nhận</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
+      <p class="sim-note" id="gw-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">JwtAuthGlobalFilter · RequestRateLimiter · route</span></div>
+      <div class="sim-log" id="gw-log" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -367,84 +187,79 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    KBM áp dụng routing pipeline tại Gateway để tối ưu hóa performance và security.
+  <p class="section-intro">
+    KBM có hai loại gateway: Spring Cloud Gateway cho LMS core (route theo path, JWT, CORS, rate limit) và một router theo hostname viết bằng Go cho DevOps Lab (định tuyến workspace, gắn với k3s/Sysbox). Một gateway chung là đủ cho LMS vì các web frontend cần API tương tự nhau; BFF chỉ đáng thêm khi có mobile app hay client có nhu cầu API khác hẳn (§8.1, §8.5).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Bảng phân tích định tuyến và bảo mật API</h3>
-  <div class="sub-label">Mapping bộ lọc cho các service group</div>
+  <h3 class="sub-heading">Gap Analysis — cấu hình Gateway</h3>
+  <div class="sub-label">Trích bảng phân tích cấu hình Gateway của KBM (§8.5)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>API Route Pattern</th>
-          <th>Downstream Service</th>
-          <th>JWT Validation</th>
-          <th>Downstream Identity</th>
-          <th>Strip Prefix</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label"><code>/api/auth/**</code></td>
-          <td><code>kbm-auth</code></td>
-          <td>Bypass (Public)</td>
-          <td>None</td>
-          <td><code>StripPrefix=1</code> (Giữ lại <code>/auth/**</code>)</td>
+          <td class="gap-label">CORS</td>
+          <td><code>allowedOrigins: "*"</code>.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Liệt kê origin cụ thể của các frontend; khai báo <code>allowed-headers</code> (thiếu là preflight kèm <code>Authorization</code> bị từ chối).</td>
         </tr>
         <tr>
-          <td class="gap-label"><code>/api/core/**</code></td>
-          <td><code>kbm-core</code></td>
-          <td><span class="b-high">Bắt buộc</span></td>
-          <td>Signed proof (<code>aud=kbm-core</code>) + derived context</td>
-          <td><code>StripPrefix=2</code> (Bỏ <code>/api/core</code>)</td>
+          <td class="gap-label">Identity validation</td>
+          <td>Gateway kiểm tra JWT; downstream lẫn giữa tin header và tự parse token, với JJWT 0.11.5 ở Gateway và 0.9.1 ở service.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Đồng bộ thư viện và hợp đồng xác minh; Spring Security OAuth2 Resource Server; RS256/JWKS; token exchange thay cho plain header.</td>
         </tr>
         <tr>
-          <td class="gap-label"><code>/api/assignments/**</code></td>
-          <td><code>kbm-academic</code></td>
-          <td><span class="b-high">Bắt buộc</span></td>
-          <td>Signed proof (<code>aud=kbm-academic</code>) + derived context</td>
-          <td><code>StripPrefix=2</code> (Bỏ <code>/api/assignments</code>)</td>
+          <td class="gap-label">Correlation ID</td>
+          <td>Không có.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>GlobalFilter gắn <code>X-Correlation-Id</code> (UUID) cho mọi request.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Rate limiting</td>
+          <td>Đã có Redis token bucket.</td>
+          <td><span class="b-low">LOW</span></td>
+          <td>Tinh chỉnh cho contest mode: giới hạn riêng cho <code>/submissions/**</code>.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Lộ trình triển khai Gateway</h3>
-  <div class="sub-label">Gateway Deployment Roadmap</div>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo đề xuất migration ở §8.5 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1 · Tuần 1</div>
-      <h4>Xây dựng Gateway Core & Cấu hình Routes YAML</h4>
-      <p>Khởi tạo Spring Cloud Gateway (WebFlux reactive engine, non-blocking). Cấu hình routing rule tới internal service qua Eureka Service Registry.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
+      <div class="timeline-phase">Giai đoạn 1 · Tăng cường bảo mật</div>
+      <h4>CORS allowlist, gỡ X-User-*, thống nhất hợp đồng JWT</h4>
+      <p>Liệt kê origin cụ thể; gỡ mọi <code>X-User-*</code> từ client, giữ <code>Authorization</code> cho tới khi có token nội bộ có chữ ký; thống nhất thư viện và kiểm tra <code>alg</code>/<code>iss</code>/<code>aud</code>/<code>exp</code>/<code>nbf</code>; chứng minh bằng cấu hình rằng chỉ Gateway gọi được service nội bộ.</p>
+      <span class="t-badge orange">Ưu tiên cao · chi phí thấp</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Chuẩn hóa JWT Filter & Signed Propagation</h4>
-      <p>Implement <code>JwtRequestFilter</code>: sanitize <code>X-User-*</code>, xác minh RSA token, kiểm tra issuer/audience/freshness và chuyển proof phù hợp tới downstream.</p>
-      <span class="t-badge green">✓ Resource service dùng verifier/JWKS thống nhất</span>
+      <div class="timeline-phase">Giai đoạn 2 · Observability</div>
+      <h4>Correlation ID và request logging</h4>
+      <p>GlobalFilter gắn <code>X-Correlation-Id</code>; ghi log request/response tại Gateway để truy vết xuyên service.</p>
+      <span class="t-badge orange">Ưu tiên trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3 · Tuần 3</div>
-      <h4>Cấu hình CORS & Cảnh báo an toàn an ninh</h4>
-      <p>Cấu hình Global CORS tại Gateway, xóa CORS ở downstream. Bổ sung HTTP Security Headers (X-Content-Type-Options, X-Frame-Options, Content-Security-Policy).</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
-    </div>
-    <div class="timeline-item" data-delay="750">
-      <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4 · Tuần 4</div>
-      <h4>Đồng bộ bảo mật mạng nội bộ (mTLS / Network Policy)</h4>
-      <p>Chỉ cho phép downstream service nhận traffic từ Gateway. Cấu hình Kubernetes NetworkPolicy hoặc Security Group để block mọi direct access từ Internet.</p>
-      <span class="t-badge green">✓ Thu hẹp network path; không suy ra user trust</span>
+      <div class="timeline-phase">Giai đoạn 3 · Bảo vệ và phân tầng tin cậy</div>
+      <h4>Rate limit cho contest, giới hạn payload, RS256/JWKS</h4>
+      <p>Giới hạn riêng cho <code>/submissions/**</code>, giới hạn kích thước tệp tải lên; chuyển sang RS256/JWKS và signed identity propagation đúng audience; workload identity/mTLS cho luồng nhạy cảm.</p>
+      <span class="t-badge orange">Ưu tiên trung bình</span>
     </div>
   </div>
 
@@ -454,25 +269,24 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Use cases</div>
+        <div class="decision-title">Một API Gateway chung đủ khi</div>
       </div>
       <ul class="decision-list">
-        <li>Kiến trúc gồm nhiều microservices độc lập.</li>
-        <li>Phục vụ đa dạng client (Web, Mobile, Third-party).</li>
-        <li>Cần quản lý tập trung security, CORS, rate limiting, access log.</li>
-        <li>Che giấu internal network topology, phòng chống port scanning attack.</li>
+        <li>Các client (web sinh viên, web quản trị) cần dữ liệu tương tự nhau.</li>
+        <li>Muốn một chỗ duy nhất cho CORS, xác thực ở biên, rate limit, correlation ID.</li>
+        <li>Đội nhỏ, chưa có mobile hay đối tác bên ngoài với nhu cầu API riêng.</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Anti-patterns</div>
+        <div class="decision-title">Cân nhắc thêm / tránh khi</div>
       </div>
       <ul class="decision-list">
-        <li>Monolith hoặc hệ thống đơn giản (tránh over-engineering).</li>
-        <li>Ứng dụng truyền tải file siêu lớn (nguy cơ network bottleneck tại Gateway).</li>
-        <li>Yêu cầu ultra-low latency (Gateway overhead ~1-3ms).</li>
-        <li>Các microservices hoàn toàn độc lập, không dùng chung authentication mechanism.</li>
+        <li>Có mobile app cần batched API và payload gọn → thêm Mobile BFF do đội mobile sở hữu.</li>
+        <li>Muốn gateway điều phối nghiệp vụ (tạo bài nộp rồi cập nhật điểm) — đó là việc của domain service/Saga.</li>
+        <li>Chỉ chạy một instance gateway — nó thành điểm lỗi duy nhất của cả hệ thống.</li>
+        <li>Coi request đi qua mạng nội bộ là đã xác thực — service đích vẫn phải xác minh bằng chứng.</li>
       </ul>
     </div>
   </div>
@@ -480,7 +294,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về API Gateway Pattern, Spring Cloud Gateway Filters, Predicates, CORS Policy và JWT Validation trong sách.</p>
+  <p>Đọc chi tiết về API Gateway và BFF (§8.1), Spring Cloud Gateway (§8.2), route với Eureka (§8.3), cross-cutting concerns (§8.4) và cấu hình Gateway của KBM (§8.5).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-08')"><div class="badge badge-info">Read</div> Chương 8 — API Gateway →</a>
 </div>
 
@@ -496,192 +310,164 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: chuỗi filter của Spring Cloud Gateway (Chương 8 §8.3–8.5) ────────────────────────
+// Route theo lst:lms_gateway_route_config: /api/core/** → lb://kbm-core, /api/assignment/** →
+// lb://kbm-academic, /api/auth/** → lb://kbm-auth, tất cả StripPrefix=2. JwtAuthGlobalFilter (order −1)
+// gỡ X-User-* do client gửi, bỏ qua route công khai, kiểm tra token, chèn lại X-User-Id/Roles, GIỮ
+// Authorization. Hiện trạng: CORS "*", chưa có Correlation ID; Giai đoạn 1–2: allowlist + X-Correlation-Id.
+// Tham số rate limit (3 request mỗi giây) chỉ là ví dụ để thấy 429.
+const CONFIGS = {
+  now:   { label: 'Hiện trạng KBM', hint: 'CORS allowedOrigins "*", chưa có correlation ID' },
+  after: { label: 'Sau Giai đoạn 1–2', hint: 'CORS allowlist, gắn X-Correlation-Id' },
+};
+const REQS = {
+  ok:     { label: 'Câu hỏi', method: 'GET', path: '/api/core/questions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: false },
+  login:  { label: 'Đăng nhập', method: 'POST', path: '/api/auth/login', origin: 'https://kbm.example.edu', token: null, spoof: false },
+  none:   { label: 'Thiếu token', method: 'GET', path: '/api/assignment/courses', origin: 'https://kbm.example.edu', token: null, spoof: false },
+  spoof:  { label: 'Header giả', method: 'GET', path: '/api/core/questions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: true },
+  evil:   { label: 'Origin lạ', method: 'GET', path: '/api/core/questions', origin: 'https://evil.example', token: 'hợp lệ', spoof: false },
+  burst:  { label: 'Dồn 5 lần', method: 'POST', path: '/api/core/submissions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: false, burst: 5 },
+};
+const ROUTES = [['/api/core/', 'kbm-core', 'gw-s-core', 'gw-l-core'], ['/api/assignment/', 'kbm-academic', 'gw-s-ac', 'gw-l-ac'], ['/api/auth/', 'kbm-auth', 'gw-s-auth', 'gw-l-auth']];
+const PUBLIC = ['/api/auth/login', '/api/auth/register'];
+const BUCKET = 3;
+const NOTES = {
+  ok:    'Path khớp /api/core/** → lb://kbm-core; StripPrefix=2 bỏ "/api/core". Authorization được giữ để service đích tự xác minh; X-User-* chỉ là context dẫn xuất (§8.4).',
+  login: 'Route công khai: JwtAuthGlobalFilter bỏ qua bước kiểm tra token, nhưng vẫn gỡ X-User-* trước khi chuyển tiếp.',
+  none:  'Thiếu token ở route cần xác thực → 401 ngay tại biên; service phía sau không phải làm gì.',
+  spoof: 'Client tự gửi X-User-Roles: ADMIN. Gateway gỡ header này trước, rồi chèn lại giá trị lấy từ token đã kiểm tra — service không bao giờ thấy header giả (§8.4).',
+  'evil.now':   'Hiện trạng CORS "*": trình duyệt cho trang của origin lạ đọc phản hồi. Với API không chủ đích phục vụ công khai, đó là chính sách quá rộng (§8.5).',
+  'evil.after': 'Allowlist: request mang Authorization phải qua preflight OPTIONS; origin lạ bị từ chối nên trình duyệt không gửi request thật. CORS là chính sách của trình duyệt, không chặn được công cụ ngoài trình duyệt; CSRF vẫn cần biện pháp riêng (Ch.9).',
+  burst: 'Redis token bucket (ví dụ: 3 request mỗi giây) — vượt ngưỡng nhận 429 Too Many Requests; client nên lùi dần (exponential backoff) thay vì bấm lại liên tục (§8.4).',
+};
+const state = { config: 'now', req: 'ok', running: false, pass: 0, block: 0, spoof: 0, rows: [] };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 330;
+const CHAIN = ['gw-l-in', 'gw-l-12', 'gw-l-23', 'gw-l-34', 'gw-l-45'];
 
-// ── Simulator Logic ──────────────────────────────────────
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function logSys(msg, type = 'system') {
-  const log = document.getElementById('sys-log');
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-line';
-  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
-  log.appendChild(entry);
-  log.scrollTop = log.scrollHeight;
-}
-
-function resetSim() {
-  document.getElementById('sys-log').innerHTML = '<div style="font-style:italic; color:var(--text-dim)">Đang chờ request được gửi tới cổng Gateway...</div>';
-  ['cors', 'jwt', 'route', 'strip'].forEach(id => {
-    document.getElementById(`f-${id}`).className = 'filter-box';
-    document.getElementById(`s-${id}`).textContent = '⏳';
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, m]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = m.label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; state.rows = []; render(); } });
+    el.appendChild(b);
   });
-  document.getElementById('svc-core').className = 'service';
-  document.getElementById('svc-auth').className = 'service';
-  
-  const pkt = document.getElementById('req-packet');
-  pkt.style.opacity = 0;
-  pkt.style.left = '40px';
-  pkt.style.top = '160px';
-  pkt.style.background = 'var(--primary)';
-  pkt.style.color = '#000';
+}
+chips($('gw-configs'), CONFIGS, 'config');
+chips($('gw-reqs'), REQS, 'req');
+
+function log(msg, cls) {
+  const t = new Date().toTimeString().slice(0, 8);
+  $('gw-log').insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('gw-log').scrollTop = $('gw-log').scrollHeight;
+}
+function link(id, cls) { $(id).setAttribute('class', cls ? 'is-' + cls : ''); if (window.__diagramLinks) window.__diagramLinks.redraw(); }
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
+function clearMarks() {
+  ['gw-f1', 'gw-f2', 'gw-f3', 'gw-f4', 'gw-f5', 'gw-s-auth', 'gw-s-core', 'gw-s-ac'].forEach(id => { node(id, 'is-active', false); node(id, 'is-danger', false); });
+  [...CHAIN, 'gw-l-auth', 'gw-l-core', 'gw-l-ac'].forEach(id => link(id, ''));
+}
+async function step(i, text, cls) { link(CHAIN[i], 'primary'); node('gw-f' + (i + 1), 'is-active', true); log(text, cls); await sleep(STEP); }
+async function stop(i, text) { link(CHAIN[i], 'danger'); node('gw-f' + (i + 1), 'is-danger', true); log(text, 'log-err'); state.block++; await sleep(STEP); }
+
+async function one(r, n, tokens) {
+  const after = state.config === 'after';
+  const tag = n ? ` (#${n})` : '';
+  clearMarks();
+  // 1 · CORS
+  if (r.origin !== 'https://kbm.example.edu' && after) { await stop(0, `CORS: preflight OPTIONS từ ${r.origin} bị từ chối (không có trong allowlist) → trình duyệt không gửi request thật`); return 'cors'; }
+  await step(0, `CORS: Origin ${r.origin} → ${after ? 'có trong allowlist' : 'cho phép ("*")'}${tag}`, r.origin !== 'https://kbm.example.edu' ? 'log-warn' : 'log-info');
+  // 2 · gỡ X-User-*
+  if (r.spoof) { state.spoof++; await step(1, 'Gỡ header X-User-Roles: ADMIN do client tự gửi', 'log-warn'); }
+  else await step(1, 'Gỡ X-User-* (không có header nào do client gửi)', 'log-info');
+  // 3 · JWT
+  const isPublic = PUBLIC.includes(r.path);
+  if (!isPublic && !r.token) { await stop(2, `${r.path}: thiếu token ở route cần xác thực → 401 Unauthorized`); return '401'; }
+  await step(2, isPublic ? 'Route công khai → bỏ qua kiểm tra token' : 'Token: alg, chữ ký, iss, aud=kbm-gateway, exp, nbf đạt → chèn X-User-Id, X-User-Roles từ claims; giữ Authorization', 'log-ok');
+  // 4 · rate limit
+  if (tokens.left <= 0) { await stop(3, `RequestRateLimiter: bucket rỗng → 429 Too Many Requests${tag}`); return '429'; }
+  tokens.left--;
+  await step(3, `RequestRateLimiter: còn ${tokens.left}/${BUCKET} token`, 'log-info');
+  // 5 · route
+  const rt = ROUTES.find(([p]) => r.path.startsWith(p));
+  const out = r.path.split('/').slice(3).join('/');
+  await step(4, `Path=${rt[0]}** → lb://${rt[1]} (Eureka + round-robin), StripPrefix=2 → /${out}`, 'log-info');
+  link(rt[3], 'primary'); node(rt[2], 'is-active', true);
+  log(`${rt[1]} nhận ${r.method} /${out}${after ? ' · X-Correlation-Id: ' + cid() : ''}`, 'log-ok');
+  state.pass++; await sleep(STEP);
+  return 'ok';
+}
+let cidN = 0; const cid = () => '7f3a-' + String(++cidN).padStart(4, '0');
+
+async function run() {
+  if (state.running) return;
+  state.running = true; $('gw-run').disabled = true; $('gw-reset').disabled = true;
+  const r = REQS[state.req], after = state.config === 'after';
+  log(`— ${r.method} ${r.path} · ${CONFIGS[state.config].label} —`, 'log-warn');
+  node('gw-client', 'is-active', true);
+  const tokens = { left: BUCKET };
+  let res = 'ok';
+  const n = r.burst || 1; const outcomes = [];
+  for (let k = 1; k <= n; k++) outcomes.push(await one(r, r.burst ? k : 0, tokens));
+  res = outcomes[outcomes.length - 1];
+  node('gw-client', 'is-active', false);
+  // Bảng vào → ra cho request (lần đầu tiên nếu dồn nhiều request).
+  const first = outcomes[0], rt = ROUTES.find(([p]) => r.path.startsWith(p));
+  const blocked = first !== 'ok';
+  state.rows = [
+    ['Dòng request', `${r.method} ${r.path}`, blocked ? '—' : `${r.method} /${r.path.split('/').slice(3).join('/')} → ${rt[1]}`],
+    ['Authorization', r.token ? 'Bearer …' : '(không có)', blocked ? '—' : (r.token ? 'Bearer … (giữ nguyên)' : '(không có)')],
+    ['X-User-Roles', r.spoof ? 'ADMIN (tự gắn)' : '(không có)', blocked ? '—' : (r.token ? 'STUDENT (từ token)' : '(không có)')],
+    ['X-Correlation-Id', '(không có)', blocked ? '—' : (after ? 'UUID do Gateway gắn' : '(không có)')],
+    ['Kết quả', '', first === 'ok' ? (r.burst ? `${outcomes.filter(o => o === 'ok').length}/${n} qua, ${outcomes.filter(o => o === '429').length} × 429` : 'tới service') : ({ cors: 'preflight bị từ chối (CORS)', '401': '401 tại Gateway', '429': '429 tại Gateway' })[first]],
+  ];
+  state.running = false; $('gw-run').disabled = false; $('gw-reset').disabled = false;
+  render();
 }
 
-async function runPipeline(scenario) {
-  resetSim();
-  await sleep(100);
-  const pkt = document.getElementById('req-packet');
-  pkt.style.opacity = 1;
-  
-  if (scenario === 'happy') {
-    logSys('📥 NHẬN REQUEST MỚI: GET /api/core/questions', 'info');
-    pkt.innerHTML = "GET /api/core/questions<br>[Auth: Bearer valid.jwt]";
-    
-    await sleep(600);
-    
-    // 1. CORS
-    pkt.style.left = '160px'; pkt.style.top = '80px';
-    document.getElementById('f-cors').className = 'filter-box active';
-    logSys('1. CORS Check: Gốc (Origin) hợp lệ. Cho phép đi tiếp.', 'success');
-    await sleep(800);
-    document.getElementById('f-cors').className = 'filter-box';
-
-    // 2. JWT
-    pkt.style.left = '160px'; pkt.style.top = '135px';
-    document.getElementById('f-jwt').className = 'filter-box active';
-    logSys('2. JwtRequestFilter: Token hợp lệ. Giải mã RSA claims...', 'success');
-    await sleep(600);
-    pkt.innerHTML = "GET /api/core/questions<br>[Proof: JWT aud=kbm-core]";
-    logSys('[Action] Gateway giữ/đổi signed proof; X-User-* chỉ là derived context', 'warn');
-    await sleep(800);
-    document.getElementById('f-jwt').className = 'filter-box';
-
-    // 3. Route Match
-    pkt.style.left = '160px'; pkt.style.top = '190px';
-    document.getElementById('f-route').className = 'filter-box active';
-    document.getElementById('s-route').textContent = 'Matched';
-    logSys('3. Path Predicate: Khớp đường dẫn /api/core/**. Trỏ sang core-service.', 'warn');
-    await sleep(800);
-    document.getElementById('f-route').className = 'filter-box';
-
-    // 4. StripPrefix
-    pkt.style.left = '160px'; pkt.style.top = '245px';
-    document.getElementById('f-strip').className = 'filter-box active';
-    logSys('4. StripPrefix=2: Bỏ tiền tố /api/core ra khỏi URL.', 'success');
-    await sleep(600);
-    pkt.innerHTML = "GET /questions<br>[Proof: JWT aud=kbm-core]";
-    await sleep(800);
-    document.getElementById('f-strip').className = 'filter-box';
-
-    // Forward to Core
-    pkt.style.left = '480px'; pkt.style.top = '100px';
-    document.getElementById('svc-core').className = 'service active';
-    logSys('[Routing] Chuyển tới core-service; service xác minh proof và local authorization...', 'info');
-    await sleep(1000);
-    pkt.style.opacity = 0;
-    document.getElementById('svc-core').className = 'service';
-    logSys('🎉 Hoàn tất: downstream service phản hồi 200 OK.', 'success');
-
-  } else if (scenario === 'no-token') {
-    logSys('📥 NHẬN REQUEST MỚI: GET /api/core/questions', 'info');
-    pkt.innerHTML = "GET /api/core/questions<br>[Auth: None]";
-    
-    await sleep(600);
-    
-    // 1. CORS
-    pkt.style.left = '160px'; pkt.style.top = '80px';
-    document.getElementById('f-cors').className = 'filter-box active';
-    logSys('1. CORS Check: Gốc (Origin) hợp lệ.', 'success');
-    await sleep(800);
-    document.getElementById('f-cors').className = 'filter-box';
-
-    // 2. JWT Fails
-    pkt.style.left = '160px'; pkt.style.top = '135px';
-    document.getElementById('f-jwt').className = 'filter-box error';
-    document.getElementById('s-jwt').textContent = 'FAILED';
-    pkt.style.background = 'var(--danger)';
-    pkt.style.color = '#fff';
-    logSys('2. JwtRequestFilter: Không tìm thấy JWT Token trong Authorization Header!', 'error');
-    await sleep(800);
-    
-    logSys('⛔ Ngắt mạch: Gateway chặn request và trả ngay lỗi 401 UNAUTHORIZED.', 'error');
-    pkt.innerHTML = "HTTP/1.1 401 Unauthorized";
-    pkt.style.left = '40px'; pkt.style.top = '160px';
-    await sleep(1000);
-    pkt.style.opacity = 0;
-    
-  } else if (scenario === 'public') {
-    logSys('📥 NHẬN REQUEST MỚI: POST /api/auth/login', 'info');
-    pkt.innerHTML = "POST /api/auth/login<br>body: {user, pwd}";
-    
-    await sleep(600);
-    
-    // 1. CORS
-    pkt.style.left = '160px'; pkt.style.top = '80px';
-    document.getElementById('f-cors').className = 'filter-box active';
-    logSys('1. CORS Check: Gốc (Origin) hợp lệ.', 'success');
-    await sleep(800);
-    document.getElementById('f-cors').className = 'filter-box';
-
-    // 2. JWT Skipped
-    pkt.style.left = '160px'; pkt.style.top = '135px';
-    document.getElementById('f-jwt').className = 'filter-box active';
-    document.getElementById('s-jwt').textContent = 'BYPASS';
-    logSys('2. JwtRequestFilter: Khớp whitelist API công khai. Bỏ qua xác thực.', 'warn');
-    await sleep(800);
-    document.getElementById('f-jwt').className = 'filter-box';
-
-    // 3. Route Match
-    pkt.style.left = '160px'; pkt.style.top = '190px';
-    document.getElementById('f-route').className = 'filter-box active';
-    document.getElementById('s-route').textContent = 'Matched';
-    logSys('3. Path Predicate: Khớp đường dẫn /api/auth/**. Trỏ sang auth-service.', 'warn');
-    await sleep(800);
-    document.getElementById('f-route').className = 'filter-box';
-
-    // 4. StripPrefix
-    pkt.style.left = '160px'; pkt.style.top = '245px';
-    document.getElementById('f-strip').className = 'filter-box active';
-    logSys('4. StripPrefix=1: Bỏ tiền tố /api ra khỏi URL.', 'success');
-    await sleep(600);
-    pkt.innerHTML = "POST /auth/login<br>body: {user, pwd}";
-    await sleep(800);
-    document.getElementById('f-strip').className = 'filter-box';
-
-    // Forward to Auth
-    pkt.style.left = '480px'; pkt.style.top = '180px';
-    document.getElementById('svc-auth').className = 'service active';
-    logSys('[Routing] Đang chuyển tiếp gói tin tới lb://auth-service/login...', 'info');
-    await sleep(1000);
-    pkt.style.opacity = 0;
-    document.getElementById('svc-auth').className = 'service';
-    logSys('🎉 Hoàn tất: downstream service phản hồi 200 OK.', 'success');
-  }
+function render() {
+  const c = CONFIGS[state.config], r = REQS[state.req];
+  [['gw-configs', 'config'], ['gw-reqs', 'req']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('gw-title').textContent = c.label; $('gw-hint').textContent = c.hint;
+  $('gw-f1-sub').textContent = state.config === 'after' ? 'allowlist origin' : 'allowedOrigins "*"';
+  $('gw-client-sub').textContent = `${r.method} ${r.path}`;
+  $('gw-table').querySelector('tbody').innerHTML = state.rows.length
+    ? state.rows.map(([a, b, d], k) => `<tr><td>${a}</td><td>${b}</td><td class="${k === 4 ? (d.startsWith('tới') || d.includes('qua') ? 'good' : 'bad') : ''}">${d}</td></tr>`).join('')
+    : '<tr><td colspan="3">Chọn một request rồi bấm Gửi.</td></tr>';
+  $('gw-note').textContent = NOTES[state.req] || NOTES[state.req + '.' + state.config];
+  $('gw-pass').textContent = state.pass; $('gw-block').textContent = state.block; $('gw-spoof').textContent = state.spoof;
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
 }
+function reset() {
+  if (state.running) return;
+  Object.assign(state, { pass: 0, block: 0, spoof: 0, rows: [] });
+  clearMarks(); $('gw-log').textContent = '';
+  log('Chọn cấu hình và một loại request, rồi bấm Gửi. Thử "Origin lạ" ở cả hai cấu hình.', 'log-info');
+  render();
+}
+$('gw-run').addEventListener('click', run);
+$('gw-reset').addEventListener('click', reset);
+reset();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-resetSim();
-
 </script>
 </body>
 </html>
-
-
-
-

@@ -3,139 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 7.2 — Database-per-Service vs Shared Database
-    =========================================================
-    Tier 1 HTML migration từ fig-7-2.svg
-    Layout: d-grid-2 side-by-side comparison
-    Capture: gen-diagrams.ps1 → fig-7-2.png → Typst image()
+    Fig 7.2 — Shared Database (đọc/ghi chung) và Database-per-Service (dữ liệu qua API)
+    2026-09-28 (WP-B Ch.07): cột Shared DB không có mũi tên (roadmap), cột trái dùng 3 <line> → d-links cả hai bên;
+    thêm đường API giữa các service ở bên database-per-service như chú thích hình. "OK BEST PRACTICE" / "[X] ANTI-PATTERN"
+    → nhãn tiếng Việt ("best practice" đã nghỉ hưu → "giải pháp khuyến nghị"). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 7.2 — Database-per-Service vs Shared Database | Ch.7</title>
+  <title>Fig 7.2 — Database-per-Service và Shared Database | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-7.2" data-ref="CH07-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-grid-2 d-gap-2 d-mb-2">
-
-      <!-- LEFT: Database-per-Service (GOOD) -->
-      <div class="d-cluster" style="display: flex; flex-direction: column;">
+    <div class="d-grid-2 d-gap-2 d-mb-2" style="align-items: stretch;">
+      <div class="d-cluster d-col">
         <span class="d-label">Database-per-Service</span>
-
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
-          <div class="d-row d-gap-1 d-mb-1" style="justify-content:center; align-items:flex-start;">
-            <!-- Service A -->
-            <div class="d-col d-gap-1" style="align-items:center;">
-              <div class="d-box d-service text-center" style="width:110px;">
-                <div class="d-title">Service A</div>
-              </div>
-              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-              <div class="d-box d-storage text-center" style="width:110px;">
-                <div class="d-title">DB A</div>
-              </div>
-            </div>
-    
-            <!-- Service B -->
-            <div class="d-col d-gap-1" style="align-items:center;">
-              <div class="d-box d-service text-center" style="width:110px;">
-                <div class="d-title">Service B</div>
-              </div>
-              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-              <div class="d-box d-storage text-center" style="width:110px;">
-                <div class="d-title">DB B</div>
-              </div>
-            </div>
-    
-            <!-- Service C -->
-            <div class="d-col d-gap-1" style="align-items:center;">
-              <div class="d-box d-service text-center" style="width:110px;">
-                <div class="d-title">Service C</div>
-              </div>
-              <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-              <div class="d-box d-storage text-center" style="width:110px;">
-                <div class="d-title">DB C</div>
-              </div>
-            </div>
-          </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 120px); gap: 48px 36px; justify-content: center; margin: 24px 0;">
+          <div class="d-box d-service text-center" id="dp-a"><div class="d-title">Service A</div></div>
+          <div class="d-box d-service text-center" id="dp-b"><div class="d-title">Service B</div></div>
+          <div class="d-box d-service text-center" id="dp-c"><div class="d-title">Service C</div></div>
+          <div class="d-box d-storage text-center" id="dp-da"><div class="d-title">DB A</div></div>
+          <div class="d-box d-storage text-center" id="dp-db"><div class="d-title">DB B</div></div>
+          <div class="d-box d-storage text-center" id="dp-dc"><div class="d-title">DB C</div></div>
         </div>
-
-        <div>
-          <div class="d-mb-1 d-text-muted text-center">
-            Mỗi service own DB riêng<br>Deploy độc lập, scale độc lập
-          </div>
-          <div class="d-box d-success text-center" style="padding:6px 14px;">
-            <div class="d-title">OK BEST PRACTICE</div>
-          </div>
-        </div>
+        <div class="d-text-muted text-center d-mb-1" style="margin-top: auto;">mỗi service sở hữu DB riêng, cần dữ liệu thì gọi API<br>triển khai độc lập, mở rộng độc lập</div>
+        <div class="d-box d-success text-center" style="padding: 6px 14px;"><div class="d-title">giải pháp khuyến nghị</div></div>
       </div>
 
-      <!-- RIGHT: Shared Database (BAD) -->
-      <div class="d-cluster" style="display: flex; flex-direction: column; border-color:var(--diagram-color-danger-border); background:var(--diagram-color-danger-bg);">
-        <span class="d-label d-text-danger" style="background:var(--diagram-color-danger-bg);">Shared Database</span>
-
-        <div class="d-col d-center d-mt-2 d-mb-2" style="position: relative; width: 100%; flex: 1; justify-content: center;">
-          
-          <!-- Services Row -->
-          <div class="d-row d-center" style="gap: 16px; width: 100%; position: relative; z-index: 2;">
-            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
-              <div class="d-title">Service A</div>
-            </div>
-            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
-              <div class="d-title">Service B</div>
-            </div>
-            <div class="d-box d-service text-center" style="width:110px; padding:8px 10px;">
-              <div class="d-title">Service C</div>
-            </div>
+      <div class="d-cluster d-col" style="border-color: var(--diagram-color-danger-border); background: var(--diagram-color-danger-bg);">
+        <span class="d-label d-text-danger">Shared Database</span>
+        <div class="d-col" style="align-items: center; gap: 48px; margin: 24px 0;">
+          <div class="d-row" style="gap: 24px;">
+            <div class="d-box d-service text-center" id="sh-a" style="width: 110px;"><div class="d-title">Service A</div></div>
+            <div class="d-box d-service text-center" id="sh-b" style="width: 110px;"><div class="d-title">Service B</div></div>
+            <div class="d-box d-service text-center" id="sh-c" style="width: 110px;"><div class="d-title">Service C</div></div>
           </div>
-
-          <!-- Fan-in Arrows -->
-          <!-- Total width: 110*3 + 16*2 = 362px -->
-          <div style="position: relative; width: 362px; height: 60px; margin-top: -16px; z-index: 1;">
-            <svg width="100%" height="100%" style="display:block; overflow:visible; position:absolute; top:0; left:0;">
-              <defs><marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-danger-border)" /></marker></defs>
-              <!-- A -> DB (15.2% is center of A) -->
-              <path d="M 15.2% 0 L 15.2% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
-              <!-- B -> DB (50% is center of B) -->
-              <path d="M 50% 0 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
-              <!-- C -> DB (84.8% is center of C) -->
-              <path d="M 84.8% 0 L 84.8% 28 L 50% 28 L 50% 56" stroke="var(--diagram-color-danger-border)" stroke-width="2" fill="none" marker-end="url(#arr-red)"/>
-            </svg>
-          </div>
-
-          <!-- Shared DB -->
-          <div class="d-box d-danger text-center" style="width:200px; z-index: 2;">
-            <div class="d-title">[DB] Shared DB</div>
-            <div class="d-sub">tất cả dùng chung</div>
-          </div>
-
+          <div class="d-box d-danger text-center" id="sh-db" style="width: 220px;"><div class="d-title">Shared DB</div><div class="d-sub">mọi service dùng chung</div></div>
         </div>
-
-        <div>
-          <div class="d-mb-1 d-text-danger text-center">
-            Schema coupling · Deploy coupling<br>Scale coupling · Performance bottleneck
-          </div>
-          <div class="d-box d-danger text-center" style="padding:6px 14px;">
-            <div class="d-title">[X] ANTI-PATTERN</div>
-          </div>
-        </div>
+        <div class="d-text-danger text-center d-mb-1" style="margin-top: auto;">schema coupling · deploy coupling<br>scale coupling · nghẽn hiệu năng</div>
+        <div class="d-box d-danger text-center" style="padding: 6px 14px;"><div class="d-title">anti-pattern</div></div>
       </div>
-
     </div>
 
-    <!-- LMS note -->
     <div class="d-box d-note">
-      <div class="d-title">LMS hiện tại: Core và Assignment SHARED DB (app_db) — cần tách</div>
-      <div class="d-sub">Xem lộ trình: Hình 7.5 và Chương 10 (Strangler Fig)</div>
+      <div class="d-title d-mb-1">KBM hiện tại: Core và Assignment dùng chung <code>app_db</code> — cần tách</div>
+      <div class="d-sub">lộ trình: Hình 7.5 và Chương 10 (Strangler Fig)</div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="dp-a" data-to="dp-da"></path>
+      <path data-from="dp-b" data-to="dp-db"></path>
+      <path data-from="dp-c" data-to="dp-dc"></path>
+      <path data-from="dp-a" data-to="dp-b" class="is-dashed" data-label="API" data-label-side="above"></path>
+      <path data-from="sh-a" data-to="sh-db" class="is-danger" data-arrow="both"></path>
+      <path data-from="sh-b" data-to="sh-db" class="is-danger" data-arrow="both"></path>
+      <path data-from="sh-c" data-to="sh-db" class="is-danger" data-arrow="both"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

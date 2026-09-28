@@ -4,159 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Config Server — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Config Server pattern — quản lý cấu hình tập trung cho microservices, hỗ trợ hot reload và version control.">
+  <meta name="description" content="Externalized configuration — đưa cấu hình ra khỏi image: biến môi trường, Config Server, ConfigMap/Secret; đánh đổi khi đổi một giá trị lúc hệ thống đang chạy.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="Config Server — Pattern Story">
-  <meta property="og:description" content="Config Server pattern — quản lý cấu hình tập trung cho microservices, hỗ trợ hot reload và version control.">
+  <meta property="og:description" content="Externalized configuration — đưa cấu hình ra khỏi image: biến môi trường, Config Server, ConfigMap/Secret; đánh đổi khi đổi một giá trị lúc hệ thống đang chạy.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom CSS for Config Server Simulator */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card-flex {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .arch-flow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      justify-content: center;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-    
-    .arch-node {
-      padding: 12px 18px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      text-align: center;
-      min-width: 110px;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow-medium);
-    }
-    .arch-node.active {
-      border-color: var(--primary);
-      box-shadow: 0 0 12px var(--primary-glow);
-      background: var(--primary-dim);
-    }
-    .arch-arrow {
-      color: var(--primary);
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .env-selector {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      background: rgba(255,255,255,0.02);
-      padding: 4px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-    .env-btn {
-      flex: 1;
-      padding: 8px 12px;
-      font-size: 11.5px;
-      font-weight: 700;
-      border-radius: var(--radius-sm);
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: var(--font-sans);
-    }
-    .env-btn:hover {
-      color: var(--text-main);
-    }
-    .env-btn.active {
-      background: var(--primary);
-      color: var(--on-primary);
-    }
-
-    .config-list-box {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: var(--bg-card);
-    }
-
-    .config-entry {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.2s;
-    }
-    .config-entry:last-child {
-      border-bottom: none;
-    }
-    .config-entry.changed {
-      background: rgba(255, 122, 0, 0.04);
-      border-left: 3px solid var(--primary);
-    }
-    .config-key {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--primary);
-    }
-    .config-val {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-main);
-      word-break: break-all;
-      padding: 0 10px;
-    }
-    .config-source {
-      font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 99px;
-      background: var(--bg-surface);
-      color: var(--text-dim);
-      border: 1px solid var(--border);
-    }
-
-    .sim-log {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 140px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-      margin-top: 14px;
-    }
-    .log-line {
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    .log-info { color: var(--info); }
-    .log-success { color: var(--success); }
-    .log-warn { color: var(--warning); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -173,13 +29,13 @@
 
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
-  <h1 class="pattern-title">Centralized Configuration</h1>
-  <p class="pattern-subtitle">Config Server — Quản lý cấu hình tập trung và tự động nạp nóng (Hot Reload)</p>
+  <h1 class="pattern-title">Externalized Config</h1>
+  <p class="pattern-subtitle">Đưa cấu hình ra khỏi image — biến môi trường, Config Server, ConfigMap/Secret</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Infrastructure Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Twelve-Factor App (Heroku)</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2011</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.11 §11.9</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.12 §12.4, Ch.9 §9.6</span></div>
   </div>
 </header>
 
@@ -193,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Khi mở rộng lên hàng chục microservices, việc lưu file cấu hình (database URL, credentials, timeouts) cục bộ trong từng container gây khó khăn lớn cho quá trình vận hành.
+  <p class="section-intro">
+    Cấu hình là mọi thứ thay đổi theo môi trường — URL cơ sở dữ liệu, khóa API, timeout, feature flag — trong khi mã nguồn thì không. Khi hai thứ này đóng gói chung trong một image, mỗi môi trường và mỗi lần đổi một giá trị đều kéo theo một lần build (§12.4).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Drift</div></div>
-      <h3>Configuration Drift</h3>
-      <p>Các môi trường (Dev, Staging, Prod) yêu cầu tham số khác nhau. Lưu cấu hình cục bộ dễ dẫn đến sai sót khi deploy (VD: quên đổi tham số trên Staging, vô tình kết nối nhầm DB Production).</p>
+      <div class="problem-icon"><div class="badge badge-danger">Build lại</div></div>
+      <h3>Mỗi môi trường một image</h3>
+      <p>Build riêng cho dev, staging, production tạo ra các artifact khác nhau: chạy tốt trên staging nhưng lỗi trên production. Đổi một timeout cũng phải sửa file, build, deploy lại.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Restart</div></div>
-      <h3>Rebuild & Restart Overhead</h3>
-      <p>Điều chỉnh một tham số nhỏ (VD: tăng Connection Pool size, giảm Timeout) đòi hỏi sửa file, build lại JAR và restart toàn bộ container, gây downtime không đáng có.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Secret lộ</div></div>
+      <h3>Secret nằm trong file cấu hình</h3>
+      <p><code>jwt.secretKey=mySecretKey123</code> trong <code>application.yml</code>, commit vào Git: ai đọc được repo — hay pull được image — đều có thể tạo JWT giả mạo (§9.6).</p>
     </div>
   </div>
 
@@ -224,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Sử dụng <strong>Config Server</strong> kết nối với Git Repository chứa toàn bộ file cấu hình. Microservices truy vấn Config Server lúc khởi động để tải cấu hình theo Profile. Khi có thay đổi, chỉ cần push lên Git và trigger Bus refresh để hot-reload cấu hình cho các downstream services mà không cần restart.
+      Tách cấu hình khỏi mã: image được build một lần và bất biến, còn giá trị riêng của từng môi trường được đưa vào lúc chạy. Build once, deploy everywhere.
     </p>
-    <div class="definition-attribution">— Centralized Configuration · Spring Cloud Config & Bus</div>
+    <div class="definition-attribution">— The Twelve-Factor App · Config</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    <strong>Spring Cloud Bus</strong> kết hợp Message Broker (VD: Kafka) broadcast tín hiệu refresh cấu hình đến mọi service instance gần như tức thời.
+  <p class="section-intro">
+    "Đưa vào lúc chạy" có nhiều mức, mỗi mức một đánh đổi: biến môi trường đơn giản nhưng đổi giá trị là phải khởi động lại; Config Server gom cấu hình vào Git có lịch sử và cho nạp lại khi đang chạy, đổi lại phải vận hành thêm một service; trên Kubernetes, ConfigMap/Secret làm sẵn phần lớn việc này. Secret nên đi riêng một đường (§9.6, §12.4).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Git Config Repo</h3>
-      <p>Centralized repository chứa các file YAML (VD: <code>application-prod.yml</code>). Được quản lý bằng Git version control, dễ dàng audit và rollback cấu hình.</p>
+      <h3>Nguồn cấu hình có phiên bản</h3>
+      <p>Cấu hình theo từng môi trường nằm ngoài image — biến môi trường, repo Git riêng cho cấu hình, hay manifest ConfigMap. Có lịch sử thì biết ai đổi gì, khi nào, và rollback được.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Config Server</h3>
-      <p>Middle service đọc cấu hình từ Git và expose qua REST API (định dạng JSON). Hỗ trợ mã hóa (encryption) cho các thông tin nhạy cảm (credentials, tokens).</p>
+      <h3>Config Server + client</h3>
+      <p>Spring Cloud Config đọc repo Git và phục vụ cấu hình theo tên service và profile. Bean đánh dấu <code>@RefreshScope</code> nạp lại giá trị khi gọi <code>/actuator/refresh</code>; Spring Cloud Bus phát tín hiệu đó tới mọi instance.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Spring Cloud Bus (Reload)</h3>
-      <p>Message bus đồng bộ cấu hình. Khi gọi API <code>/actuator/busrefresh</code>, một event được đẩy lên Kafka, yêu cầu toàn bộ client hot-reload cấu hình.</p>
+      <h3>Secret đi đường riêng</h3>
+      <p>Ba cấp trong §9.6: biến môi trường (tối thiểu) → cấu hình mã hóa (Spring Cloud Config + Jasypt, vẫn phải giữ khóa giải mã) → secret manager như Vault (xoay vòng tự động, nhật ký kiểm toán).</p>
     </div>
   </div>
 </section>
@@ -262,58 +118,59 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Chọn Environment Profile để xem các tham số cấu hình tương ứng. Bấm <strong>Push Config Change</strong> để giả lập quá trình hot-reload không downtime.
-  </p>
+  <p class="section-intro">Cùng một thay đổi trên <code>kbm-core</code> (2 instance), đi theo bốn cách cấp cấu hình. Xem mỗi cách phải làm những bước nào, có phải build lại hay khởi động lại không, và secret nằm ở đâu.</p>
 
-  <div class="simulator-container">
-    
-    <!-- Left panel: Env switcher and Configs -->
-    <div class="card card-flex">
-      <div>
-        <div class="dashboard-title" style="margin-bottom:12px;">Git Profiles Profile Selector</div>
-        <div class="env-selector" id="env-selector">
-          <button class="env-btn active" id="btn-dev" onclick="switchEnv('dev')">dev (Phát triển)</button>
-          <button class="env-btn" id="btn-staging" onclick="switchEnv('staging')">staging (Kiểm thử)</button>
-          <button class="env-btn" id="btn-prod" onclick="switchEnv('prod')">prod (Vận hành)</button>
-        </div>
-        <div class="config-list-box" id="config-list">
-          <!-- Rendered by JS -->
-        </div>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Cấu hình ở</span><div class="sim-chips" id="cf-modes"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Thay đổi</span><div class="sim-chips" id="cf-changes"></div></div>
+    <button class="sim-btn primary-action" id="cf-run" type="button">▶ Áp thay đổi</button>
+    <button class="sim-btn" id="cf-reset" type="button">Làm lại</button>
+  </div>
+
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="cf-title"></span> <span class="sim-hint" id="cf-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="cf-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="cf-op"><div class="sim-node-name">Người vận hành</div><div class="sim-node-sub" id="cf-op-sub"></div></div>
+        <div class="sim-node" id="cf-src"><div class="sim-node-name" id="cf-src-name"></div><div class="sim-node-sub" id="cf-src-sub"></div></div>
+        <div class="sim-node" id="cf-cs"><div class="sim-node-name">Config Server</div><div class="sim-node-sub">Spring Cloud Config</div></div>
+        <div class="sim-node" id="cf-ci"><div class="sim-node-name">CI · build image</div><div class="sim-node-sub">image mới</div></div>
+        <div class="sim-node is-core" id="cf-i1"><div class="sim-node-name">kbm-core #1</div><div class="sim-node-sub" id="cf-i1-sub"></div></div>
+        <div class="sim-node is-core" id="cf-i2"><div class="sim-node-name">kbm-core #2</div><div class="sim-node-sub" id="cf-i2-sub"></div></div>
       </div>
+      <svg class="d-links">
+        <path id="cf-l-os" data-from="cf-op" data-to="cf-src"></path>
+        <path id="cf-l-sc" data-from="cf-src" data-to="cf-ci" data-from-side="bottom" data-from-at="0.2" data-to-side="top"></path>
+        <path id="cf-l-ci" data-from="cf-ci" data-to="cf-i1"></path>
+        <path id="cf-l-s1" data-from="cf-src" data-to="cf-i1"></path>
+        <path id="cf-l-s2" data-from="cf-src" data-to="cf-i2" data-from-side="bottom" data-from-at="0.8" data-to-side="top"></path>
+        <path id="cf-l-scs" data-from="cf-src" data-to="cf-cs"></path>
+        <path id="cf-l-c2" data-from="cf-cs" data-to="cf-i2"></path>
+        <path id="cf-l-c1" data-from="cf-cs" data-to="cf-i1" data-from-side="bottom" data-from-at="0.2" data-to-side="top" data-to-at="0.8"></path>
+      </svg>
     </div>
-
-    <!-- Right panel: Flow and Hot Reload console -->
-    <div class="card card-flex">
-      <div>
-        <div class="dashboard-title">Architecture Flow</div>
-        <div class="arch-flow">
-          <div class="arch-node" id="node-git">
-            <span style="font-size:16px;">💾</span>
-            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">Git Config</div>
-          </div>
-          <div class="arch-arrow">→</div>
-          <div class="arch-node active" id="node-config">
-            <span style="font-size:16px;">🌐</span>
-            <div style="font-size:9.5px; font-weight:700; color:var(--primary);">Config Server</div>
-          </div>
-          <div class="arch-arrow">→</div>
-          <div class="arch-node" id="node-services">
-            <span style="font-size:16px;">[System]</span>
-            <div style="font-size:9.5px; font-weight:700; color:var(--text-secondary);">kbm-services</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid var(--border); padding-top:14px;">
-        <div class="dashboard-title" style="margin-bottom:8px;">Spring Cloud Bus Refresh Console</div>
-        <button class="btn btn-primary" onclick="hotReload()" style="width:100%; background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">Push Config Change (Nạp nóng)</button>
-        <div class="sim-log" id="reload-log">
-          <div><span class="log-time">[14:20:52]</span> <span class="log-info">Config server initialized. Reading git backend...</span></div>
-        </div>
-      </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="cf-build">—</div><div class="sim-stat-lbl">Build lại image</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="cf-restart">—</div><div class="sim-stat-lbl">Khởi động lại service</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="cf-history">—</div><div class="sim-stat-lbl">Lịch sử thay đổi</div></div>
     </div>
+  </div>
 
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Các bước <span class="sim-hint">theo thứ tự</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="cf-table">
+          <thead><tr><th class="num">#</th><th>Bước</th><th>Ghi chú</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sim-note" id="cf-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">vận hành · CI · kbm-core</span></div>
+      <div class="sim-log" id="cf-log" aria-live="polite"></div>
+    </div>
   </div>
 </section>
 
@@ -327,113 +184,100 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Config Server giúp KBM đảm bảo tính nhất quán (consistency) cấu hình xuyên suốt các môi trường mà không gây gián đoạn hệ thống.
+  <p class="section-intro">
+    LMS chính của KBM chạy trên Docker Compose: <code>application.yml</code> vẫn nằm trong container và cấu hình mới được tách một phần; secret được inject qua file <code>.env</code> thuần văn bản, còn <code>jwt.secretKey</code> có lúc gắn cứng trong <code>application.yml</code>. DevOps Lab chạy trên k3s. Với quy mô này, biến môi trường là bước đầu hợp lý; Config Server hay ConfigMap chỉ đáng thêm khi nhu cầu đổi giá trị lúc chạy và số service đủ lớn (§9.6, §12.7).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Configuration Management Solutions Comparison</h3>
+  <h3 class="sub-heading">Gap Analysis — cấu hình và secret</h3>
+  <div class="sub-label">Theo §9.6 (phân tích bảo mật) và §12.7 (mức trưởng thành triển khai)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Tiêu chí</th>
-          <th>Local Hardcoded Configuration</th>
-          <th>Spring Cloud Config Server</th>
-          <th>Kubernetes ConfigMap/Secret</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Lưu trữ tập trung</td>
-          <td>Không (Lưu phân tán).</td>
-          <td><span class="b-high">Có</span> (Lưu tại Git Repository).</td>
-          <td>Có (Lưu tại K8s etcd).</td>
+          <td class="gap-label">Secret</td>
+          <td>Một phần gắn cứng trong <code>application.yml</code> (commit vào Git), một phần qua biến môi trường; Compose dùng <code>.env</code> thuần văn bản.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Đưa secret ra biến môi trường ngay, <code>.env</code> vào <code>.gitignore</code> kèm <code>.env.example</code>; về sau Compose <code>secrets</code> hoặc Vault.</td>
         </tr>
         <tr>
-          <td class="gap-label">Hot Reload</td>
-          <td>Không (Yêu cầu rebuild & restart).</td>
-          <td>Hỗ trợ tốt (Qua Kafka Bus Refresh).</td>
-          <td>Có (Yêu cầu ứng dụng có cơ chế file-watching).</td>
+          <td class="gap-label">Cấu hình theo môi trường</td>
+          <td><code>application.yml</code> trong container; một số giá trị còn gắn cứng.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Toàn bộ giá trị phụ thuộc môi trường đưa vào lúc chạy; một image cho mọi môi trường.</td>
         </tr>
         <tr>
-          <td class="gap-label">Bảo mật dữ liệu nhạy cảm</td>
-          <td>Kém (Clear text trong source code).</td>
-          <td>Cao (AES/RSA encryption).</td>
-          <td>Cao (K8s Secret, RBAC).</td>
-        </tr>
-        <tr>
-          <td class="gap-label">Môi trường triển khai (KBM)</td>
-          <td>Deprecated.</td>
-          <td>Local Development (Docker Compose).</td>
-          <td>Production (Kubernetes).</td>
+          <td class="gap-label">Secret trong CI/CD</td>
+          <td>Pipeline mẫu cho KBM ở §12.4 cần nhiều secret (SSH key, JDBC URL theo từng môi trường).</td>
+          <td><span class="b-low">LOW</span></td>
+          <td>Secret gắn với Environment (staging/production) để không dùng chéo; không đặt credential trong file <code>.yml</code> của workflow.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Config Server Deployment Roadmap</h3>
-  <div class="sub-label">Các bước chuẩn hóa configuration</div>
+  <h3 class="sub-heading">Lộ trình</h3>
+  <div class="sub-label">Ghép từ §9.6 và §12.6–12.7 — trình tự đề xuất, không phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1 · Tuần 1</div>
-      <h4>Khởi tạo Git Config Repository</h4>
-      <p>Tạo private Git repo chứa các file <code>application*.yml</code>. Migrate toàn bộ local properties của các service sang repo này.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 2 ngày</span>
+      <div class="timeline-phase">Ngắn hạn · §9.6 Giai đoạn 1</div>
+      <h4>Secret ra biến môi trường</h4>
+      <p>Thay <code>secretKey: "…"</code> bằng <code>${JWT_SECRET_KEY}</code>; <code>.env</code> vào <code>.gitignore</code>, thêm <code>.env.example</code> không chứa giá trị thật — cải tiến bảo mật gần như không tốn chi phí.</p>
+      <span class="t-badge green">✓ Không còn secret trong Git</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2 · Tuần 2</div>
-      <h4>Deploy Config Server Project</h4>
-      <p>Khởi tạo Spring Boot Config Server project. Cấu hình kết nối SSH tới Git Repo. Bật annotation <code>@EnableConfigServer</code> và verify REST API.</p>
-      <span class="t-badge green">✓ Verify cấu hình JSON qua API thành công</span>
+      <div class="timeline-phase">Trung hạn · §12.4</div>
+      <h4>Một image cho mọi môi trường</h4>
+      <p>Tách nốt các giá trị còn gắn cứng khỏi <code>application.yml</code>; image build một lần và được đẩy qua staging, production.</p>
+      <span class="t-badge orange">Build once, deploy everywhere</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3 · Tuần 3</div>
-      <h4>Tích hợp Spring Cloud Bus với Kafka</h4>
-      <p>Tích hợp <code>spring-cloud-starter-bus-kafka</code> vào downstream services. Gắn annotation <code>@RefreshScope</code> cho các config bean để hỗ trợ hot-reload.</p>
-      <span class="t-badge orange">Dự kiến: 1 dev × 3 ngày</span>
-    </div>
-    <div class="timeline-item" data-delay="750">
-      <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4 · Tuần 4</div>
-      <h4>Sensitive Data Encryption</h4>
-      <p>Cấu hình JCE (Java Cryptography Extension) trên Config Server. Mã hóa mật khẩu DB thành format <code>{cipher}***</code> trên Git, ngăn ngừa lộ lọt credentials.</p>
-      <span class="t-badge green">✓ Triển khai Secure Configuration & Hot Reload thành công</span>
+      <div class="timeline-phase">Khi mở rộng · §9.6 Giai đoạn 3, §12.6</div>
+      <h4>Secret manager, ConfigMap/Secret</h4>
+      <p>Quản lý secret tập trung bằng Vault; nếu LMS chuyển lên Kubernetes, dùng ConfigMap/Secret (bật encryption at rest). Config Server là lựa chọn khi ở lại Spring Cloud mà cần đổi giá trị lúc chạy.</p>
+      <span class="t-badge orange">Phụ thuộc hướng hạ tầng</span>
     </div>
   </div>
 
   <!-- Decision Guide -->
-  <h3 class="sub-heading" style="margin-top:40px;">Use Cases / Anti-patterns</h3>
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
   <div class="decision-grid">
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Use cases</div>
+        <div class="decision-title">Config Server hợp khi</div>
       </div>
       <ul class="decision-list">
-        <li>Hệ thống có nhiều microservices độc lập.</li>
-        <li>Triển khai đa môi trường (Dev, Staging, Prod).</li>
-        <li>Cần điều chỉnh runtime parameters thường xuyên (timeout, threadpool size).</li>
-        <li>Yêu cầu centralized configuration, version control và audit logging qua Git.</li>
+        <li>Nhiều service, nhiều instance cần đổi ngưỡng hay feature flag lúc đang chạy, không khởi động lại.</li>
+        <li>Muốn một chỗ có lịch sử, review và rollback cho cấu hình của mọi service.</li>
+        <li>Chạy Spring Cloud ngoài Kubernetes (cùng bối cảnh với Eureka).</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Anti-patterns</div>
+        <div class="decision-title">Chưa cần / chọn cách khác khi</div>
       </div>
       <ul class="decision-list">
-        <li>Monolith hoặc hệ thống đơn giản (over-engineering).</li>
-        <li>Môi trường Cloud-Native 100% Kubernetes (Nên dùng K8s ConfigMap/Secret).</li>
-        <li>Thiếu hạ tầng Private Git repository an toàn.</li>
-        <li>Team chưa có kinh nghiệm vận hành asynchronous Event Bus/Message Broker.</li>
+        <li>Ít service, hiếm khi đổi giá trị — biến môi trường là đủ.</li>
+        <li>Đã chạy trên Kubernetes — ConfigMap/Secret cùng manifest trong Git làm được phần lớn việc này.</li>
+        <li>Không muốn thêm một service phải chạy HA: service không lấy được cấu hình lúc khởi động thì không lên được.</li>
+        <li>Giữ secret quan trọng — dùng secret manager, đừng chỉ dựa vào cấu hình mã hóa trong repo.</li>
       </ul>
     </div>
   </div>
@@ -441,8 +285,8 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về Centralized Configuration, Spring Cloud Config Server, Spring Cloud Bus, và mã hóa thông tin nhạy cảm trong sách.</p>
-  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-11')"><div class="badge badge-info">Read</div> Chương 11 — Observability →</a>
+  <p>Đọc chi tiết về externalized config và build once (§12.4), Kubernetes ConfigMap/Secret (§12.6), mức trưởng thành triển khai của KBM (§12.7) và ba cấp quản lý secret (§9.6).</p>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-12')"><div class="badge badge-info">Read</div> Chương 12 — Triển khai & DevOps →</a>
 </div>
 
 <!-- ── Book Identity Strip (Phase 6 — F-05) ──
@@ -457,132 +301,157 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
-
-// ── Simulator Logic ──────────────────────────────────────
-const configs = {
-  dev: [
-    { key: 'spring.datasource.url', val: 'jdbc:postgresql://localhost:5432/kbm_dev', src: 'application-dev.yml' },
-    { key: 'spring.datasource.pool-size', val: '5', src: 'application-dev.yml' },
-    { key: 'kbm.judge.timeout-ms', val: '30000', src: 'application.yml' },
-    { key: 'kbm.judge.sandbox.enabled', val: 'false', src: 'application-dev.yml' },
-    { key: 'eureka.client.service-url', val: 'http://localhost:8761/eureka', src: 'bootstrap.yml' },
-    { key: 'spring.kafka.bootstrap-servers', val: 'localhost:9092', src: 'application-dev.yml' },
-    { key: 'logging.level.root', val: 'DEBUG', src: 'application-dev.yml' },
-  ],
-  staging: [
-    { key: 'spring.datasource.url', val: 'jdbc:postgresql://staging-db:5432/kbm_staging', src: 'application-staging.yml', diff: true },
-    { key: 'spring.datasource.pool-size', val: '15', src: 'application-staging.yml', diff: true },
-    { key: 'kbm.judge.timeout-ms', val: '15000', src: 'application-staging.yml', diff: true },
-    { key: 'kbm.judge.sandbox.enabled', val: 'true', src: 'application-staging.yml', diff: true },
-    { key: 'eureka.client.service-url', val: 'http://eureka-staging:8761/eureka', src: 'bootstrap.yml', diff: true },
-    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-staging:9092', src: 'application-staging.yml', diff: true },
-    { key: 'logging.level.root', val: 'INFO', src: 'application-staging.yml', diff: true },
-  ],
-  prod: [
-    { key: 'spring.datasource.url', val: 'jdbc:postgresql://prod-db-cluster:5432/kbm_prod', src: 'application-prod.yml', diff: true },
-    { key: 'spring.datasource.pool-size', val: '40', src: 'application-prod.yml', diff: true },
-    { key: 'kbm.judge.timeout-ms', val: '8000', src: 'application-prod.yml', diff: true },
-    { key: 'kbm.judge.sandbox.enabled', val: 'true', src: 'application-prod.yml', diff: true },
-    { key: 'eureka.client.service-url', val: 'http://eureka-a:8761,http://eureka-b:8761/eureka', src: 'bootstrap.yml', diff: true },
-    { key: 'spring.kafka.bootstrap-servers', val: 'kafka-a:9092,kafka-b:9092,kafka-c:9092', src: 'application-prod.yml', diff: true },
-    { key: 'logging.level.root', val: 'WARN', src: 'application-prod.yml', diff: true },
-  ]
+// ── Act 3: bốn cách cấp cấu hình cho cùng một thay đổi (Ch.12 §12.4, §12.6; Ch.9 §9.6) ─────
+// Theo sách: externalized config qua biến môi trường, image bất biến (§12.4); KBM Compose dùng .env
+// plaintext, application.yml trong container (§12.6–12.7); ba cấp secret: env → Spring Cloud Config +
+// Jasypt → Vault (§9.6); feature flag bật/tắt lúc chạy qua Spring Cloud Config/Togglz/Unleash (§10.4).
+// Lưu ý: không phải giá trị nào cũng nạp lại được lúc chạy (vd. URL datasource) — mô phỏng ghi rõ.
+const MODES = {
+  image:  { label: 'Trong image', hint: 'application.yml đóng gói cùng mã nguồn', src: ['application.yml', 'trong repo mã nguồn'],
+            build: 'có', history: 'lẫn code' },
+  env:    { label: 'Biến môi trường', hint: '.env / biến môi trường khi khởi chạy container — cách KBM đang dùng cho secret', src: ['.env trên máy chủ', 'docker compose'],
+            build: 'không', history: 'không' },
+  server: { label: 'Config Server', hint: 'repo Git cấu hình → Spring Cloud Config → @RefreshScope', src: ['config-repo (Git)', 'kbm-core-prod.yml'],
+            build: 'không', history: 'Git log' },
+  k8s:    { label: 'ConfigMap/Secret', hint: 'Kubernetes — manifest trong Git (GitOps)', src: ['ConfigMap / Secret', 'manifest trong Git'],
+            build: 'không', history: 'Git log' },
 };
+const CHANGES = { timeout: 'Timeout Judge 3 s → 5 s', secret: 'Đổi mật khẩu DB', flag: 'Bật feature flag' };
+// Bước theo chế độ × thay đổi: [nhãn, ghi chú, link, lớp log]
+function plan(mode, ch) {
+  const S = [];
+  if (mode === 'image') {
+    S.push([ch === 'secret' ? 'Sửa mật khẩu trong application.yml' : 'Sửa application.yml', ch === 'secret' ? 'secret nằm trong repo và trong image' : 'cùng repo với mã nguồn', 'cf-l-os', ch === 'secret' ? 'log-err' : 'log-info']);
+    S.push(['Commit → CI build image mới', 'mỗi thay đổi cấu hình là một lần build', 'cf-l-sc', 'log-warn']);
+    S.push(['Deploy image mới, tạo lại #1 và #2', 'khởi động lại service', 'cf-l-ci', 'log-warn']);
+    return { steps: S, restart: 'có', risk: ch === 'secret' };
+  }
+  if (mode === 'env') {
+    S.push([ch === 'secret' ? 'Sửa DB_PASSWORD trong .env' : ch === 'flag' ? 'Sửa FEATURE_X=true trong .env' : 'Sửa JUDGE_TIMEOUT=5s trong .env', ch === 'secret' ? '.env thuần văn bản trên máy chủ (§12.6)' : 'image không đổi', 'cf-l-os', ch === 'secret' ? 'log-warn' : 'log-info']);
+    S.push(['docker compose up -d → tạo lại #1', 'biến môi trường chỉ đọc lúc khởi chạy', 'cf-l-s1', 'log-warn']);
+    S.push(['Tạo lại #2', 'mỗi instance một lần khởi động', 'cf-l-s2', 'log-warn']);
+    return { steps: S, restart: 'có', risk: false };
+  }
+  if (mode === 'server') {
+    S.push([ch === 'secret' ? 'Commit giá trị đã mã hóa {cipher}… vào config-repo' : 'Commit vào config-repo', ch === 'secret' ? 'Spring Cloud Config + Jasypt — vẫn phải giữ khóa giải mã (§9.6)' : 'có review, lịch sử, revert được', 'cf-l-os', 'log-info']);
+    S.push(['Config Server đọc commit mới', 'phục vụ theo tên service + profile', 'cf-l-scs', 'log-info']);
+    if (ch === 'secret') {
+      S.push(['Khởi động lại #1 và #2', 'datasource tạo lúc khởi động — không nạp lại được bằng refresh', 'cf-l-c1', 'log-warn']);
+      return { steps: S, restart: 'có', risk: false };
+    }
+    S.push(['POST /actuator/busrefresh', 'Spring Cloud Bus phát tới mọi instance', 'cf-l-c2', 'log-info']);
+    S.push(['#1, #2 nạp lại bean @RefreshScope', 'không khởi động lại', 'cf-l-c1', 'log-ok']);
+    return { steps: S, restart: 'không', risk: false };
+  }
+  S.push([ch === 'secret' ? 'kubectl apply Secret mới' : 'kubectl apply ConfigMap mới', ch === 'secret' ? 'Secret mặc định chỉ Base64 — bật encryption at rest (§12.6)' : 'manifest nằm trong Git', 'cf-l-os', ch === 'secret' ? 'log-warn' : 'log-info']);
+  S.push(['kubectl rollout restart → pod #1', 'nếu đọc qua biến môi trường thì phải khởi động lại pod', 'cf-l-s1', 'log-warn']);
+  S.push(['Pod #2 thay theo rolling update', 'không gián đoạn toàn bộ', 'cf-l-s2', 'log-warn']);
+  return { steps: S, restart: 'có (rolling)', risk: false };
+}
+const NOTES = {
+  image:  'Được: đơn giản, một file. Mất: mỗi lần đổi giá trị là một lần build và deploy; image khác nhau theo môi trường; secret nằm trong repo lẫn image (§9.6, §12.4).',
+  env:    'Được: image bất biến, không cần thêm hạ tầng. Mất: đổi giá trị phải tạo lại container; .env không có lịch sử, và là file thuần văn bản trên máy chủ.',
+  server: 'Được: một chỗ có lịch sử, đổi giá trị @RefreshScope khi đang chạy. Mất: thêm một service phải chạy HA; không phải giá trị nào cũng nạp lại được (datasource, pool); secret mã hóa trong repo vẫn cần giữ khóa.',
+  k8s:    'Được: có sẵn trong Kubernetes, rolling restart không gián đoạn. Mất: cần cluster; Secret mặc định chỉ Base64. Với KBM, LMS chính còn trên Compose, DevOps Lab trên k3s (§12.6).',
+};
+const state = { mode: 'env', change: 'timeout', running: false, steps: [], result: null };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 460;
+const LINKS = ['cf-l-os', 'cf-l-sc', 'cf-l-ci', 'cf-l-s1', 'cf-l-s2', 'cf-l-scs', 'cf-l-c2', 'cf-l-c1'];
+const USED = { image: ['cf-l-os', 'cf-l-sc', 'cf-l-ci'], env: ['cf-l-os', 'cf-l-s1', 'cf-l-s2'], server: ['cf-l-os', 'cf-l-scs', 'cf-l-c2', 'cf-l-c1'], k8s: ['cf-l-os', 'cf-l-s1', 'cf-l-s2'] };
 
-let currentEnv = 'dev';
-const logEl = document.getElementById('reload-log');
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, m]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = typeof m === 'string' ? m : m.label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state[key] !== v) { state[key] = v; state.steps = []; state.result = null; render(); } });
+    el.appendChild(b);
+  });
+}
+chips($('cf-modes'), MODES, 'mode');
+chips($('cf-changes'), CHANGES, 'change');
 
-function switchEnv(env) {
-  currentEnv = env;
-  document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`btn-${env}`).classList.add('active');
-  
-  // Highlight active node in flow
-  document.getElementById('node-git').className = 'arch-node active';
-  setTimeout(() => {
-    document.getElementById('node-git').className = 'arch-node';
-    document.getElementById('node-config').className = 'arch-node active';
-  }, 300);
+function log(msg, cls) {
+  const t = new Date().toTimeString().slice(0, 8);
+  $('cf-log').insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('cf-log').scrollTop = $('cf-log').scrollHeight;
+}
+function link(id, cls) { $(id).setAttribute('class', cls ? 'is-' + cls : ''); if (window.__diagramLinks) window.__diagramLinks.redraw(); }
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
 
-  renderConfig();
-  logSys(`Hệ thống: Vừa tải Profile [${env.toUpperCase()}]. Đọc từ ${env === 'dev' ? 'application-dev.yml' : 'application-' + env + '.yml'}`, 'info');
+async function run() {
+  if (state.running) return;
+  state.running = true; $('cf-run').disabled = true; $('cf-reset').disabled = true;
+  const p = plan(state.mode, state.change);
+  state.steps = []; state.result = null; render();
+  log(`— ${CHANGES[state.change]} · ${MODES[state.mode].label} —`, 'log-warn');
+  for (const [label, note, l, cls] of p.steps) {
+    state.steps.push([label, note]);
+    link(l, cls === 'log-err' ? 'danger' : cls === 'log-warn' ? 'warning' : 'primary');
+    if (l === 'cf-l-ci' || l === 'cf-l-s1' || l === 'cf-l-c1') node('cf-i1', 'is-active', true);
+    if (l === 'cf-l-s2' || l === 'cf-l-c2' || l === 'cf-l-c1' || l === 'cf-l-ci') node('cf-i2', 'is-active', true);
+    log(`${label} — ${note}`, cls);
+    render(); await sleep(STEP); link(l, '');
+  }
+  node('cf-i1', 'is-active', false); node('cf-i2', 'is-active', false);
+  state.result = p;
+  log(p.risk ? 'Áp dụng xong — nhưng mật khẩu mới đã nằm trong Git và trong image' : `Áp dụng xong: ${CHANGES[state.change]}`, p.risk ? 'log-err' : 'log-ok');
+  state.running = false; $('cf-run').disabled = false; $('cf-reset').disabled = false;
+  render();
 }
 
-function renderConfig() {
-  const el = document.getElementById('config-list');
-  el.innerHTML = configs[currentEnv].map(c => `
-    <div class="config-entry ${c.diff ? 'changed' : ''}">
-      <div>
-        <span class="config-key">${c.key}</span>
-        <div class="config-val" style="margin-top:4px;">${c.val}</div>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-        <span class="config-source">${c.src}</span>
-        ${c.diff ? '<span style="font-size:9px; font-weight:700; color:var(--primary); font-family:var(--font-mono)">CHANGED</span>' : ''}
-      </div>
-    </div>
-  `).join('');
+function render() {
+  const m = MODES[state.mode];
+  [['cf-modes', 'mode'], ['cf-changes', 'change']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('cf-title').textContent = m.label; $('cf-hint').textContent = m.hint;
+  $('cf-src-name').textContent = m.src[0]; $('cf-src-sub').textContent = m.src[1];
+  $('cf-op-sub').textContent = CHANGES[state.change];
+  node('cf-cs', 'is-off', state.mode !== 'server');
+  node('cf-ci', 'is-off', state.mode !== 'image');
+  node('cf-src', 'is-danger', state.mode === 'image' && state.change === 'secret');
+  const val = state.change === 'timeout' ? (state.result ? 'timeout 5 s' : 'timeout 3 s') : state.change === 'flag' ? (state.result ? 'flag: bật' : 'flag: tắt') : (state.result ? 'mật khẩu mới' : 'mật khẩu cũ');
+  $('cf-i1-sub').textContent = val; $('cf-i2-sub').textContent = val;
+  LINKS.forEach(id => $(id).toggleAttribute('data-hidden', !USED[state.mode].includes(id)));
+  $('cf-table').querySelector('tbody').innerHTML = state.steps.length
+    ? state.steps.map(([a, b], k) => `<tr><td class="num">${k + 1}</td><td>${a}</td><td>${b}</td></tr>`).join('')
+    : '<tr><td colspan="3">Chọn nơi đặt cấu hình và một thay đổi, rồi bấm Áp thay đổi.</td></tr>';
+  $('cf-note').textContent = NOTES[state.mode];
+  const r = state.result;
+  $('cf-build').textContent = r ? m.build : '—';
+  $('cf-restart').textContent = r ? r.restart : '—';
+  $('cf-history').textContent = r ? m.history : '—';
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
 }
-
-function logSys(msg, type = 'sys') {
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-line';
-  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
-  logEl.appendChild(entry);
-  logEl.scrollTop = logEl.scrollHeight;
+function reset() {
+  if (state.running) return;
+  state.steps = []; state.result = null;
+  $('cf-log').textContent = '';
+  log('Thử cùng một thay đổi ở cả bốn chế độ và so sánh ba ô số liệu. Đổi mật khẩu DB cho thấy secret nằm ở đâu.', 'log-info');
+  render();
 }
-
-function hotReload() {
-  logSys('POST /actuator/bus-refresh', 'info');
-  document.getElementById('node-config').className = 'arch-node active';
-  
-  setTimeout(() => {
-    logSys('Kafka Bus: Phát tán RefreshRemoteApplicationEvent...', 'warn');
-  }, 200);
-
-  setTimeout(() => {
-    logSys('kbm-auth: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
-  }, 500);
-
-  setTimeout(() => {
-    logSys('kbm-core: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
-  }, 800);
-
-  setTimeout(() => {
-    logSys('kbm-judge-sql: Nhận tín hiệu refresh event. Cập nhật @RefreshScope beans.', 'success');
-    document.getElementById('node-services').className = 'arch-node active';
-  }, 1100);
-
-  setTimeout(() => {
-    logSys('Hệ thống: Tất cả các instances đã cập nhật cấu hình mới. 0 restarts required.', 'ok');
-    document.getElementById('node-services').className = 'arch-node';
-  }, 1400);
-}
+$('cf-run').addEventListener('click', run);
+$('cf-reset').addEventListener('click', reset);
+reset();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-renderConfig();
-
 </script>
 </body>
 </html>
-
-
-
-

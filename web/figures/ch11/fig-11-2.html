@@ -2,44 +2,49 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <!--
+    Fig 11.2 — Ba trụ cột của Observability: Logs, Metrics, Traces
+    2026-09-28 (WP-B Ch.11): gạch đầu dòng tiếng Anh → tiếng Việt theo DIAGRAM_DESIGN.md §17; mỗi trụ cột thêm câu hỏi nó trả
+    lời và ví dụ KBM lấy nguyên từ bảng tbl:three_pillars_roles; thêm cách ba trụ cột phối hợp (đoạn sau bảng).
+  -->
   <title>Fig 11.2 — Ba trụ cột Observability | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.2">
-    <div class="d-row d-gap-2" style="align-items:stretch;">
-      <div class="d-box d-note text-center" style="flex:1; padding:16px;">
-        <div class="d-title d-title-lg d-mb-1">Logs</div>
-        <div class="d-sub">Ghi lại SỰ KIỆN đã xảy ra</div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.2" data-ref="CH11-SEC">
+    <div class="d-grid-3 d-gap-2" style="align-items: stretch;">
+      <div class="d-box d-note">
+        <div class="d-title d-title-lg text-center">Logs</div>
+        <div class="d-sub text-center d-mb-1">"chuyện gì đã xảy ra?"</div>
         <div class="d-sep"></div>
-        <div class="d-stack d-gap-1 text-left">
-          <div class="d-sub">• Structured JSON logs</div>
-          <div class="d-sub">• Error stack traces</div>
-          <div class="d-sub">• Audit trail</div>
-        </div>
+        <div class="d-sub">· log JSON có cấu trúc</div>
+        <div class="d-sub">· stack trace khi lỗi</div>
+        <div class="d-sub">· audit trail</div>
+        <div class="d-code d-mt-1">ERROR: SQL execution timeout for submission 123</div>
       </div>
-      <div class="d-box d-service text-center" style="flex:1; padding:16px;">
-        <div class="d-title d-title-lg d-mb-1">Metrics</div>
-        <div class="d-sub">Đo lường SỐ LIỆU theo thời gian</div>
+      <div class="d-box d-service">
+        <div class="d-title d-title-lg text-center">Metrics</div>
+        <div class="d-sub text-center d-mb-1">"hệ thống đang chạy thế nào?"</div>
         <div class="d-sep"></div>
-        <div class="d-stack d-gap-1 text-left">
-          <div class="d-sub">• Latency (p50, p99)</div>
-          <div class="d-sub">• Error rate</div>
-          <div class="d-sub">• Throughput (RPS)</div>
-        </div>
+        <div class="d-sub">· độ trễ p50, p99</div>
+        <div class="d-sub">· tỉ lệ lỗi</div>
+        <div class="d-sub">· throughput (request/giây)</div>
+        <div class="d-code d-mt-1">judge_execution_time_p99 = 4.2s</div>
       </div>
-      <div class="d-box d-highlight text-center" style="flex:1; padding:16px;">
-        <div class="d-title d-title-lg d-mb-1">Traces</div>
-        <div class="d-sub">Theo dõi HÀNH TRÌNH request</div>
+      <div class="d-box d-highlight">
+        <div class="d-title d-title-lg text-center">Traces</div>
+        <div class="d-sub text-center d-mb-1">"request đi qua những đâu?"</div>
         <div class="d-sep"></div>
-        <div class="d-stack d-gap-1 text-left">
-          <div class="d-sub">• Distributed tracing</div>
-          <div class="d-sub">• Span timing</div>
-          <div class="d-sub">• Service dependency</div>
-        </div>
+        <div class="d-sub">· hành trình xuyên service</div>
+        <div class="d-sub">· thời gian từng span</div>
+        <div class="d-sub">· quan hệ phụ thuộc</div>
+        <div class="d-code d-mt-1">User → Gateway → Core → Judge → MySQL (3.1s)</div>
       </div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub text-center">Metrics báo có vấn đề → traces chỉ ra nằm ở đâu → logs giải thích vì sao.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

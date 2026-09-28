@@ -2,52 +2,54 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.5 — Distributed Tracing — traceId propagation | Ch.11</title>
+  <!--
+    Fig 11.5 — Truyền Correlation ID xuyên suốt request, kể cả qua Kafka
+    2026-09-28 (WP-B Ch.11): chú thích nói Correlation ID nhưng bản cũ vẽ traceId/spanId của tracing, lại gắn span cho cả
+    Kafka broker và Database. Nay theo "Cơ chế hoạt động" ngay sau hình: Gateway sinh UUID vào header X-Correlation-Id,
+    service đọc header ghi vào MDC, Kafka mang ID trong message header, tìm correlationId trong log tập trung. Mũi tên
+    <svg><line> → d-links có nhãn kênh truyền. Chữ theo DIAGRAM_DESIGN.md §17.
+  -->
+  <title>Fig 11.5 — Truyền Correlation ID qua Kafka | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.5">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-    <div class="d-row d-gap-1" style="align-items:stretch;">
-      <div class="d-box d-highlight text-center" style="flex:1; padding:14px 8px;">
+  <div class="diagram-canvas" data-fig-id="FIG-11.5" data-ref="CH11-SEC">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 60px 120px; align-items: stretch;">
+      <div class="d-box d-highlight text-center" id="c5-gw">
         <div class="d-title">Gateway</div>
-        <div class="d-mono" >traceId: abc123</div>
-        <div class="d-mono" >spanId: span-1</div>
+        <div class="d-sub">sinh UUID nếu request chưa có</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-service text-center" style="flex:1; padding:14px 8px;">
-        <div class="d-title">Core Service</div>
-        <div class="d-mono" >traceId: abc123</div>
-        <div class="d-mono" >spanId: span-2</div>
+      <div class="d-box d-service text-center" id="c5-core">
+        <div class="d-title">Core</div>
+        <div class="d-sub">đọc header → MDC</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-event text-center" style="flex:1; padding:14px 8px;">
-        <div class="d-title">Kafka Broker</div>
-        <div class="d-mono" >traceId: abc123</div>
-        <div class="d-mono" >spanId: span-3</div>
+      <div class="d-box d-event text-center" id="c5-kafka">
+        <div class="d-title">Kafka</div>
+        <div class="d-sub">ID nằm trong message</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-highlight text-center" style="flex:1; padding:14px 8px;">
-        <div class="d-title">Judge Service</div>
-        <div class="d-mono" >traceId: abc123</div>
-        <div class="d-mono" >spanId: span-4</div>
+      <div class="d-box d-service text-center" id="c5-judge">
+        <div class="d-title">Judge</div>
+        <div class="d-sub">đọc header → MDC</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-storage text-center" style="flex:1; padding:14px 8px;">
-        <div class="d-title">Database</div>
-        <div class="d-mono" >traceId: abc123</div>
-        <div class="d-mono" >spanId: span-5</div>
+      <div class="d-box d-note text-center" id="c5-logs" style="grid-column: 2 / 5;">
+        <div class="d-title">Log tập trung</div>
+        <div class="d-sub d-mono">correlationId = abc-123 → mọi dòng log của request, cả đoạn bất đồng bộ</div>
       </div>
     </div>
-    <div class="d-box d-note d-mt-2" style="padding:12px 18px;">
-      <div class="d-sub text-center" style="line-height:1.5;">Cùng <span class="d-mono" style="display:inline;">traceId: abc123</span> xuyên suốt tất cả services → dễ dàng trace toàn bộ request flow.</div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">MDC gắn ID vào mọi dòng log của service. Ở Gateway (WebFlux) ID đi qua Reactor Context thay vì ThreadLocal/MDC.</div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="c5-gw" data-to="c5-core" data-label="HTTP header" data-label-side="above"></path>
+      <path data-from="c5-core" data-to="c5-kafka" data-label="message header" data-label-side="above"></path>
+      <path data-from="c5-kafka" data-to="c5-judge"></path>
+      <path data-from="c5-core" data-to="c5-logs" data-from-side="bottom" data-to-side="top" data-to-align class="is-dashed"></path>
+      <path data-from="c5-judge" data-to="c5-logs" data-from-side="bottom" data-to-side="top" data-to-align class="is-dashed"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

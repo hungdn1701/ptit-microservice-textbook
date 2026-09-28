@@ -2,44 +2,49 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.9 — LMS Observability — Hiện trạng | Ch.11</title>
+  <!--
+    Fig 11.9 — Đánh giá hiện trạng Observability của KBM
+    2026-09-28 (WP-B Ch.11): bản cũ lệch bảng tbl:maturity_by_component ngay sau: "No custom metrics / No distributed
+    tracing / Spring Boot default" viết như chưa có gì, trong khi bảng ghi đã có MDC một phần, Prometheus/Grafana một phần,
+    Correlation ID có nền tảng; lại thiếu Error handling và User tracking (Cấp 3). Nay chép đủ 5 thành phần với cấp độ, việc
+    cần làm theo Giai đoạn 2 của lộ trình Ch.10 (Loki + Grafana, Micrometer Tracing, metrics tuỳ biến). Chữ theo §17.
+  -->
+  <title>Fig 11.9 — Hiện trạng Observability của KBM | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.9">
-    <div class="d-row d-gap-2" style="align-items:stretch;">
-      <div class="d-box d-note" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center">Logs</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• Spring Boot default (console)</div>
-          <div class="d-sub">• Log qua MDC</div>
-          <div class="d-sub">• No centralized aggregation</div>
-        </div>
-        <div class="d-zone d-zone-warning d-mt-1" >Cần: JSON format + ELK/Loki</div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.9" data-ref="CH11-SEC">
+    <div class="d-grid-3 d-gap-2" style="align-items: stretch;">
+      <div class="d-box d-warning">
+        <div class="d-title">Logging · Cấp 2</div>
+        <div class="d-sub d-mt-1">MDC ở một số Java service; DevOps Lab dùng zerolog; chưa gom tập trung</div>
+        <div class="d-sub d-mt-1 fw-semibold">cần: JSON log + Loki / Grafana</div>
       </div>
-      <div class="d-box d-service" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center">Metrics</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• Actuator /health, /info</div>
-          <div class="d-sub">• Prometheus/Grafana</div>
-          <div class="d-sub">• No custom metrics</div>
-        </div>
-        <div class="d-zone d-zone-warning d-mt-1" >Cần: Micrometer + Grafana</div>
+      <div class="d-box d-warning">
+        <div class="d-title">Metrics · Cấp 2</div>
+        <div class="d-sub d-mt-1">Actuator/health + Prometheus/Grafana ở một phần hệ thống</div>
+        <div class="d-sub d-mt-1 fw-semibold">cần: metrics tuỳ biến (tần suất nộp bài, thời gian chấm)</div>
       </div>
-      <div class="d-box d-highlight" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center">Traces</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• No distributed tracing</div>
-          <div class="d-sub">• Correlation ID</div>
-          <div class="d-sub">• Debug = manual log grep</div>
-        </div>
-        <div class="d-zone d-zone-danger d-mt-1" >Cần: Zipkin / Jaeger</div>
+      <div class="d-box d-warning">
+        <div class="d-title">Tracing · Cấp 2</div>
+        <div class="d-sub d-mt-1">chưa có distributed tracing; Correlation ID có nền tảng, chưa chuẩn hoá đầu cuối</div>
+        <div class="d-sub d-mt-1 fw-semibold">cần: Micrometer Tracing (W3C Trace Context)</div>
       </div>
     </div>
-  </div>
+    <div class="d-grid-2 d-gap-2 d-mt-2" style="align-items: stretch;">
+      <div class="d-box d-success">
+        <div class="d-title">Error handling · Cấp 3</div>
+        <div class="d-sub d-mt-1"><code>@ControllerAdvice</code> + <code>ErrorCode</code> tốt; Gateway chưa nhất quán</div>
+      </div>
+      <div class="d-box d-success">
+        <div class="d-title">User tracking · Cấp 3</div>
+        <div class="d-sub d-mt-1">bất đồng bộ qua Kafka (Hình 11.8)</div>
+      </div>
+    </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub"><strong>Tổng thể: Cấp 2 đang lên Cấp 3.</strong> Chế độ thi cần metrics và cảnh báo thời gian thực; chế độ luyện tập chỉ cần giám sát cơ bản — không nhất thiết đầu tư đều cho mọi chỗ.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

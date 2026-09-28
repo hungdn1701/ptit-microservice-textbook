@@ -1,83 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.2 — API Gateway — Single Entry Point
-    =========================================================
-    Tier 1 HTML migration
-    Layout: Gateway -> 5 Services fan-out
-    Capture: gen-diagrams.ps1 -> fig-8-2.png -> Typst image()
+    Fig 8.2 — API Gateway: single entry point route đến từng service
+    2026-09-28 (WP-B Ch.08): Việt hoá lại (commit 68fe690 đã dịch sang tiếng Anh, trước khi §17 chốt). Mũi tên
+    <svg><line> → d-links có nhãn path theo đúng cấu hình route lst:lms_gateway_route_config: /api/core, /api/assignment,
+    /api/auth, /ws. Bỏ kbm-judge-sql — cấu hình không có route cho Judge. Thêm cái giá (single point of failure, §8
+    "Gateway là điểm vào duy nhất…"). Cổng giữ như bản trước.
   -->
-  <title>Fig 8.2 — API Gateway — Single Entry Point | Ch.8</title>
+  <title>Fig 8.2 — API Gateway | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.2">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-col d-center">
-      <!-- Client -->
-      <div class="d-box d-note text-center" style="min-width:220px; padding:12px 24px;">
+  <div class="diagram-canvas" data-fig-id="FIG-8.2" data-ref="CH08-SEC">
+    <div style="display: grid; grid-template-columns: repeat(4, 190px); gap: 56px 48px; margin: 0 auto; width: fit-content;">
+      <div class="d-box d-note text-center" id="gw-fe" style="grid-column: 2 / 4;">
         <div class="d-title">Frontend (React)</div>
+        <div class="d-sub">chỉ biết một địa chỉ</div>
       </div>
-
-      <!-- Arrow down to gateway -->
-      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Gateway -->
-      <div class="d-box d-gateway text-center" style="min-width:320px; padding:12px 24px;">
-        <div class="d-title">kbm-gateway</div>
-        <div class="d-sub">(Spring Cloud Gateway) :9001</div>
+      <div class="d-box d-gateway text-center" id="gw-gw" style="grid-column: 1 / 5; margin-bottom: 24px;">
+        <div class="d-title">kbm-gateway · :9001</div>
+        <div class="d-sub">Spring Cloud Gateway — định tuyến theo path, lb:// qua Eureka</div>
       </div>
-
-      <!-- Arrow down to services -->
-      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Services Cluster -->
-      <div class="d-cluster">
-        <div class="d-label d-mb-2 text-center" style="position:static;">Microservices</div>
-        <div class="d-row d-center d-gap-2" style="flex-wrap:wrap;">
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">kbm-core</div>
-            <div class="d-sub">:8080</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">kbm-academic</div>
-            <div class="d-sub">:8088</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">kbm-auth</div>
-            <div class="d-sub">:9005</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">kbm-judge-sql</div>
-            <div class="d-sub">:8082</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">kbm-notification</div>
-            <div class="d-sub">:8084</div>
-          </div>
-        </div>
+      <div class="d-box d-service text-center" id="gw-core">
+        <div class="d-title">kbm-core</div>
+      </div>
+      <div class="d-box d-service text-center" id="gw-acad">
+        <div class="d-title">kbm-academic</div>
+      </div>
+      <div class="d-box d-service text-center" id="gw-auth">
+        <div class="d-title">kbm-auth</div>
+      </div>
+      <div class="d-box d-service text-center" id="gw-noti">
+        <div class="d-title">kbm-notification</div>
       </div>
     </div>
 
-    <!-- Benefits callout -->
-    <div class="d-box d-success d-mt-3" style="padding:14px 18px;">
-      <div class="d-title d-mb-1">Benefits</div>
-      <div class="d-stack d-gap-1">
-        <div class="d-sub"><span class="d-step">1</span> Frontend only knows 1 URL (:9001). Gateway routes to the correct service.</div>
-        <div class="d-sub"><span class="d-step">2</span> Ingress validation/CORS are centralized; services verify proof and authorize locally.</div>
-        <div class="d-sub"><span class="d-step">3</span> Backend port/URL changes = only update Gateway config, no Frontend changes.</div>
-      </div>
+    <div class="d-box d-success d-mt-3">
+      <div class="d-title d-mb-1">Được</div>
+      <div class="d-sub"><span class="d-step">1</span> Frontend chỉ gọi một địa chỉ; đổi địa chỉ backend chỉ sửa cấu hình gateway.</div>
+      <div class="d-sub d-mt-1"><span class="d-step">2</span> CORS, rate limiting, xác thực ở biên làm một chỗ — service vẫn tự xác minh danh tính và phân quyền.</div>
+      <div class="d-sub d-mt-1"><span class="d-step">3</span> Service nội bộ (như Judge) không cần mở ra ngoài.</div>
+    </div>
+    <div class="d-box d-warning d-mt-2">
+      <div class="d-sub"><strong>Trả giá</strong>: thêm một thành phần phải vận hành, và điểm vào duy nhất cũng là điểm lỗi duy nhất — gateway cần nhiều instance.</div>
     </div>
 
-  </div>
+    <svg class="d-links">
+      <path data-from="gw-fe" data-to="gw-gw"></path>
+      <path data-from="gw-gw" data-to="gw-core" data-from-side="bottom" data-from-at="0.1" data-to-side="top" data-to-align data-label="/api/core/**"></path>
+      <path data-from="gw-gw" data-to="gw-acad" data-from-side="bottom" data-from-at="0.37" data-to-side="top" data-to-align data-label="/api/assignment/**"></path>
+      <path data-from="gw-gw" data-to="gw-auth" data-from-side="bottom" data-from-at="0.63" data-to-side="top" data-to-align data-label="/api/auth/**"></path>
+      <path data-from="gw-gw" data-to="gw-noti" data-from-side="bottom" data-from-at="0.9" data-to-side="top" data-to-align data-label="/ws/**"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

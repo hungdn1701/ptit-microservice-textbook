@@ -2,63 +2,51 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.1 — Automated Pipeline vs Manual Deployment | Ch.12</title>
+  <!--
+    Fig 12.1 — Triển khai thủ công và tự động
+    2026-09-28 (WP-B Ch.12): 6 mũi tên <svg><line> rời → d-links; nhãn tiếng Anh → tiếng Việt theo §17; thứ tự theo chú
+    thích (thủ công trước). "Zero human error" nói quá → "ít lỗi do thao tác tay"; "Works on my machine" là vấn đề của môi
+    trường (container, Hình 12.2), không phải của cách deploy → bỏ. Thêm cái giá của tự động hoá.
+  -->
+  <title>Fig 12.1 — Triển khai thủ công và tự động | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.1">
-
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-    <div class="d-grid-2 d-gap-4" style="align-items:stretch;">
-      <!-- Automated -->
-      <div class="d-cluster" style="padding:24px 20px; display:flex; flex-direction:column; align-items:center;">
-        <div class="d-label d-mb-3" style="position:static;">Automated Pipeline</div>
-        
-        <div class="d-col d-center" style="gap: 8px;">
-          <div class="d-box d-service text-center fw-semibold" style="width:160px; padding:12px;">Git Push</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-note text-center fw-semibold" style="width:160px; padding:12px;">CI Build</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-event text-center fw-semibold" style="width:160px; padding:12px;">Test</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-success text-center fw-semibold" style="width:160px; padding:12px;">Deploy</div>
+  <div class="diagram-canvas" data-fig-id="FIG-12.1" data-ref="CH12-SEC">
+    <div class="d-grid-2 d-gap-3" style="align-items: stretch;">
+      <div class="d-cluster d-col" style="align-items: center;">
+        <span class="d-label" style="align-self: flex-start;">Thủ công</span>
+        <div class="d-col" style="gap: 40px; width: 220px; margin: 16px 0 20px;">
+          <div class="d-box d-legacy text-center" id="m1-1"><div class="d-title">build trên máy cá nhân</div></div>
+          <div class="d-box d-legacy text-center" id="m1-2"><div class="d-title">copy lên server (scp)</div></div>
+          <div class="d-box d-legacy text-center" id="m1-3"><div class="d-title">SSH vào restart</div></div>
+          <div class="d-box d-danger text-center" id="m1-4"><div class="d-title">kiểm tra bằng tay</div></div>
         </div>
-
-        <div style="flex-grow: 1;"></div>
-        <div class="d-zone d-zone-success text-center" style="margin-top: 32px; width: 100%;">Repeatable · Fast · Zero human error</div>
+        <div class="d-zone d-zone-danger text-center" style="margin-top: auto; width: 100%;">dễ bỏ sót bước, sai thứ tự migration, khó rollback</div>
       </div>
-      
-      <!-- Manual -->
-      <div class="d-cluster" style="padding:24px 20px; display:flex; flex-direction:column; align-items:center;">
-        <div class="d-label d-mb-3" style="position:static;">Manual Deployment</div>
-        
-        <div class="d-col d-center" style="gap: 8px;">
-          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">Build locally</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">SCP to server</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-legacy text-center fw-semibold" style="width:160px; padding:12px;">SSH restart</div>
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          
-          <div class="d-box d-danger text-center fw-semibold" style="width:160px; padding:12px;">Manual deploy</div>
+      <div class="d-cluster d-col" style="align-items: center;">
+        <span class="d-label" style="align-self: flex-start;">Pipeline tự động</span>
+        <div class="d-col" style="gap: 40px; width: 220px; margin: 16px 0 20px;">
+          <div class="d-box d-service text-center" id="a1-1"><div class="d-title">git push</div></div>
+          <div class="d-box d-note text-center" id="a1-2"><div class="d-title">CI build</div></div>
+          <div class="d-box d-event text-center" id="a1-3"><div class="d-title">test</div></div>
+          <div class="d-box d-success text-center" id="a1-4"><div class="d-title">deploy</div></div>
         </div>
-
-        <div style="flex-grow: 1;"></div>
-        <div class="d-zone d-zone-danger text-center" style="margin-top: 32px; width: 100%;">Error-prone · Slow · "Works on my machine"</div>
+        <div class="d-zone d-zone-success text-center" style="margin-top: auto; width: 100%;">lặp lại được, nhanh, ít lỗi do thao tác tay — đổi lại phải dựng và bảo trì pipeline</div>
       </div>
-
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="m1-1" data-to="m1-2"></path>
+      <path data-from="m1-2" data-to="m1-3"></path>
+      <path data-from="m1-3" data-to="m1-4"></path>
+      <path data-from="a1-1" data-to="a1-2"></path>
+      <path data-from="a1-2" data-to="a1-3"></path>
+      <path data-from="a1-3" data-to="a1-4"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

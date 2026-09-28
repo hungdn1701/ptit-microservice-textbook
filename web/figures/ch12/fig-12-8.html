@@ -2,116 +2,69 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.8 — KBM Deployment Architecture — Abstract View | Ch.12</title>
+  <!--
+    Fig 12.8 — Kiến trúc triển khai của KBM ở mức khái quát
+    2026-09-28 (WP-B Ch.12): mũi tên giữa các tầng dạt mép trái, cột DevOps Lab trống nửa trên (roadmap) → hai cụm nối bằng
+    d-links. Tên thành phần Việt hoá ("Dịch vụ lõi", "Chấm bài"…) trái §17 (tên thành phần tiếng Anh) → tên theo Hình 8.7.
+    Theo §12 "Hiện trạng": LMS chính chạy Docker Compose; DevOps Lab dùng Go, k3s, Sysbox để chạy Docker/k8s lồng nhau không
+    cần --privileged — bản cũ ghi "Tenant Cluster" (không có trong văn bản) → workspace sinh viên, thêm Go router (Hình 8.7).
+  -->
+  <title>Fig 12.8 — Kiến trúc triển khai KBM | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.8">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
+  <div class="diagram-canvas" data-fig-id="FIG-12.8" data-ref="CH12-SEC">
+    <div style="display: grid; grid-template-columns: auto 270px; gap: 40px; justify-content: center; align-items: stretch;">
+      <div class="d-cluster">
+        <span class="d-label">LMS chính — Docker Compose</span>
+        <div style="display: grid; grid-template-columns: repeat(4, 130px); gap: 56px 20px; margin-top: 16px;">
+          <div class="d-box d-highlight text-center" id="d8-gw" style="grid-column: 1 / 5;"><div class="d-title">API Gateway</div><div class="d-sub">JWT, CORS, routing</div></div>
 
+          <div class="d-box d-note text-center" id="d8-auth"><div class="d-title">kbm-auth</div></div>
+          <div class="d-box d-service text-center" id="d8-acad"><div class="d-title">kbm-academic</div></div>
+          <div class="d-box d-service text-center" id="d8-core"><div class="d-title">kbm-core</div></div>
+          <div class="d-box d-service text-center" id="d8-noti"><div class="d-title">kbm-notification</div></div>
 
-    <div class="d-row d-gap-2" style="align-items: stretch;">
-      <!-- Khối LMS chính -->
-      <div class="d-col" style="flex: 7;">
-        <div class="d-cluster" style="padding: 16px; height: 100%;">
-          <div class="d-label d-mb-2 d-label-lg text-center" style="position:static;">LMS Chính (Core LMS)</div>
-          
-          <div class="d-col d-gap-2">
-            <!-- Danh tính dùng chung & lớp biên -->
-            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
-              <div class="d-label d-mb-1 text-center" style="position:static;">Danh tính dùng chung &amp; lớp biên</div>
-              <div class="d-row d-center d-gap-1">
-                <div class="d-box d-highlight text-center" style="flex:1; max-width:200px; padding:10px;">
-                  <div class="d-title">API Gateway</div>
-                  <div class="d-sub">JWT, CORS, Routing</div>
-                </div>
-                <div class="d-box d-note text-center" style="flex:1; max-width:200px; padding:10px;">
-                  <div class="d-title">Dịch vụ xác thực</div>
-                  <div class="d-sub">Đăng nhập, RBAC</div>
-                </div>
-                <div class="d-box d-storage text-center" style="flex:1; max-width:200px; padding:10px;">
-                  <div class="d-title">Eureka Registry</div>
-                  <div class="d-sub">khám phá dịch vụ</div>
-                </div>
-              </div>
-            </div>
-
-            <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-            <!-- Dịch vụ nghiệp vụ -->
-            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
-              <div class="d-label d-mb-1 text-center" style="position:static;">Dịch vụ nghiệp vụ (Docker containers)</div>
-              <div class="d-row d-center d-gap-1" style="flex-wrap:wrap;">
-                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
-                  <div class="d-title">Dịch vụ lõi</div>
-                  <div class="d-mono">:8080</div>
-                </div>
-                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
-                  <div class="d-title">Bài tập</div>
-                  <div class="d-mono">:8088</div>
-                </div>
-                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
-                  <div class="d-title">Chấm bài</div>
-                  <div class="d-mono">:8082</div>
-                </div>
-                <div class="d-box d-service text-center" style="flex:1; min-width:110px; max-width:150px; padding:10px;">
-                  <div class="d-title">Thông báo</div>
-                  <div class="d-mono">:8084</div>
-                </div>
-              </div>
-            </div>
-
-            <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-            <!-- Tầng dữ liệu -->
-            <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface);">
-              <div class="d-label d-mb-1 text-center" style="position:static;">Tầng dữ liệu</div>
-              <div class="d-row d-center d-gap-1">
-                <div class="d-box d-storage text-center" style="flex:1; max-width:180px; padding:10px;">
-                  <div class="d-title">PostgreSQL</div>
-                </div>
-                <div class="d-box d-event text-center" style="flex:1; max-width:180px; padding:10px;">
-                  <div class="d-title">Kafka</div>
-                </div>
-                <div class="d-box d-highlight text-center" style="flex:1; max-width:180px; padding:10px;">
-                  <div class="d-title">Redis Cache</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="d-box d-storage text-center" id="d8-pg" style="grid-column: 1 / 3;"><div class="d-title">PostgreSQL</div></div>
+          <div class="d-box d-event text-center" id="d8-kafka"><div class="d-title">Kafka</div></div>
+          <div class="d-box d-event text-center" id="d8-judge"><div class="d-title">Judge</div><div class="d-sub">nhận job qua Kafka</div></div>
+          <div class="d-box d-storage text-center" style="grid-column: 1 / 3;"><div class="d-title">Redis</div><div class="d-sub">rate limiting</div></div>
+          <div class="d-box d-infra text-center" style="grid-column: 3 / 5;"><div class="d-title">Eureka</div><div class="d-sub">service discovery</div></div>
         </div>
       </div>
 
-      <!-- Khối DevOps Lab -->
-      <div class="d-col" style="flex: 3;">
-        <div class="d-cluster" style="padding: 16px; height: 100%;">
-          <div class="d-label d-mb-2 d-label-lg text-center" style="position:static;">DevOps Lab</div>
-          
-          <div class="d-cluster" style="padding:14px; background: var(--diagram-color-surface); height: calc(100% - 40px); display: flex; flex-direction: column;">
-            <div class="d-label d-mb-2 text-center" style="position:static;">K3s / Sysbox</div>
-            
-            <div class="d-col d-gap-1" style="flex: 1; justify-content: center;">
-              <div class="d-box d-service text-center" style="padding:12px;">
-                <div class="d-title">Tenant Cluster 1</div>
-                <div class="d-sub">Container-in-Container</div>
-              </div>
-              <div class="d-box d-service text-center" style="padding:12px;">
-                <div class="d-title">Tenant Cluster 2</div>
-                <div class="d-sub">Container-in-Container</div>
-              </div>
-              <div class="d-box d-service text-center" style="padding:12px; border-style: dashed; background: transparent;">
-                <div class="d-title">...</div>
-              </div>
-            </div>
+      <div class="d-cluster d-col">
+        <span class="d-label">DevOps Lab</span>
+        <div class="d-col" style="gap: 56px; margin-top: 16px;">
+          <div class="d-box d-gateway text-center" id="d8-go"><div class="d-title">Go router</div><div class="d-sub">theo hostname</div></div>
+          <div class="d-box d-infra text-center" id="d8-k3s"><div class="d-title">k3s + Sysbox</div><div class="d-sub">Docker/k8s lồng nhau, không --privileged</div></div>
+          <div class="d-grid-2 d-gap-1">
+            <div class="d-box d-service text-center" id="d8-w1"><div class="d-title">workspace</div><div class="d-sub">SV 1</div></div>
+            <div class="d-box d-service text-center" id="d8-w2"><div class="d-title">workspace</div><div class="d-sub">SV 2 …</div></div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Cùng một hệ thống, hai cách triển khai theo nhu cầu: Docker Compose đủ cho LMS chính với đội nhỏ, dễ vận hành; DevOps Lab cần cô lập mạnh giữa sinh viên nên mới dùng k3s + Sysbox.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="d8-gw" data-to="d8-auth" data-from-side="bottom" data-from-at="0.11" data-to-side="top" data-to-align></path>
+      <path data-from="d8-gw" data-to="d8-acad" data-from-side="bottom" data-from-at="0.37" data-to-side="top" data-to-align></path>
+      <path data-from="d8-gw" data-to="d8-core" data-from-side="bottom" data-from-at="0.63" data-to-side="top" data-to-align></path>
+      <path data-from="d8-gw" data-to="d8-noti" data-from-side="bottom" data-from-at="0.89" data-to-side="top" data-to-align></path>
+      <path data-from="d8-core" data-to="d8-kafka" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="d8-kafka" data-to="d8-judge"></path>
+      <path data-from="d8-acad" data-to="d8-pg" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="d8-go" data-to="d8-k3s"></path>
+      <path data-from="d8-k3s" data-to="d8-w1" data-from-side="bottom" data-from-at="0.25" data-to-side="top" data-to-align></path>
+      <path data-from="d8-k3s" data-to="d8-w2" data-from-side="bottom" data-from-at="0.75" data-to-side="top" data-to-align></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

@@ -12,197 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom styling for Circuit Breaker simulation */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    .state-cards {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 640px) {
-      .state-cards {
-        flex-direction: column;
-      }
-    }
-
-    .state-card {
-      flex: 1;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-    .state-card::after {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: var(--radius-md);
-      border: 1px solid transparent;
-      pointer-events: none;
-      transition: all 0.3s ease;
-    }
-
-    /* Active States */
-    .state-card.active-closed {
-      border-color: rgba(34, 211, 160, 0.4);
-      background: rgba(34, 211, 160, 0.03);
-      box-shadow: 0 0 20px rgba(34, 211, 160, 0.08);
-    }
-    .state-card.active-closed::after {
-      border-color: var(--success);
-      box-shadow: 0 0 10px var(--success-dim);
-    }
-    .state-card.active-open {
-      border-color: rgba(244, 63, 94, 0.4);
-      background: rgba(244, 63, 94, 0.03);
-      box-shadow: 0 0 20px rgba(244, 63, 94, 0.08);
-    }
-    .state-card.active-open::after {
-      border-color: var(--danger);
-      box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
-    }
-    .state-card.active-half {
-      border-color: rgba(245, 158, 11, 0.4);
-      background: rgba(245, 158, 11, 0.03);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.08);
-    }
-    .state-card.active-half::after {
-      border-color: var(--warning);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
-    }
-
-    .state-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin: 0 auto 12px;
-      background: var(--text-dim);
-      transition: all 0.3s ease;
-    }
-    .active-closed .state-indicator { background: var(--success); box-shadow: 0 0 8px var(--success); }
-    .active-open .state-indicator { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-    .active-half .state-indicator { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
-
-    .state-name {
-      font-size: 14px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      margin-bottom: 6px;
-      letter-spacing: 0.05em;
-    }
-    .active-closed .state-name { color: var(--success); }
-    .active-open .state-name { color: var(--danger); }
-    .active-half .state-name { color: var(--warning); }
-
-    .state-brief {
-      font-size: 11px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .sim-controls {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-    }
-
-    .sim-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    /* .sim-btn moved to shared web/styles/pattern-story.css (Phase 5) */
-
-    .sim-dashboard {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .dashboard-title {
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-    }
-
-    .metric-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-    }
-    .metric-lbl { color: var(--text-secondary); }
-    .metric-val { font-family: var(--font-mono); font-weight: 700; }
-
-    .gauge-container {
-      height: 6px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .gauge-bar {
-      height: 100%;
-      width: 0%;
-      background: var(--success);
-      transition: width 0.3s ease, background-color 0.3s ease;
-    }
-
-    .sim-log {
-      grid-column: span 2;
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      height: 160px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    @media (max-width: 768px) {
-      .sim-log {
-        grid-column: span 1;
-      }
-    }
-    .log-line {
-      margin-bottom: 6px;
-      line-height: 1.5;
-      color: var(--text-secondary);
-    }
-    .log-time { color: var(--text-dim); margin-right: 8px; }
-    .log-success { color: var(--success); }
-    .log-error { color: var(--danger); }
-    .log-warn { color: var(--warning); }
-    .log-system { color: var(--info); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -220,7 +30,7 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">Circuit Breaker</h1>
-  <p class="pattern-subtitle">Ngắt mạch bảo vệ hệ thống khỏi Cascading Failures</p>
+  <p class="pattern-subtitle">Ngắt mạch sớm để lỗi của một service không lan ra cả hệ thống</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Resilience Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Michael Nygard</span></div>
@@ -239,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trong kiến trúc Microservices, một request thường đi qua chuỗi dịch vụ phân tán. Nếu dịch vụ downstream bị chậm hoặc lỗi, các dịch vụ upstream phải chờ đợi. Sự chờ đợi này dẫn đến cạn kiệt tài nguyên (thread pool) và gây sập hệ thống dây chuyền.
+  <p class="section-intro">
+    Trong monolith, database chậm thì cả ứng dụng chậm — nhưng lỗi hiện ra rõ ràng. Trong microservices, service B chậm thì A vẫn chạy, chỉ có các luồng của A bị chặn lại chờ B; C gọi A cũng chậm theo, và lỗi lan dây chuyền (cascading failure). Mạng sẽ timeout, service sẽ crash, database sẽ chậm: câu hỏi không phải "nếu" mà là "khi" lỗi xảy ra (§4.4, [5]).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Lỗi dây chuyền</div></div>
-      <h3>Cascading Failures</h3>
-      <p>Service A gọi Service B. Khi B phản hồi chậm (latency cao), các thread tại A bị block chờ đợi. Lượng request tăng làm thread pool cạn kiệt, khiến A không thể xử lý thêm request và sập theo B.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Cạn luồng</div></div>
+      <h3>Thread pool exhaustion</h3>
+      <p>Web server như một Phòng Giáo vụ có 200 chuyên viên (200 worker thread). Một dịch vụ phía sau chậm là cả 200 người đứng chờ nó — sinh viên mới bước vào không còn ai tiếp, dù việc của họ chẳng liên quan gì tới dịch vụ đang chậm.</p>
     </div>
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Bão retry</div></div>
-      <h3>Retry Storm</h3>
-      <p>Khi B gặp sự cố, các service upstream tự động retry liên tục. Traffic khổng lồ này dồn vào B khi nó đang cố gắng khởi động lại, khiến B liên tục bị overload và mất khả năng tự phục hồi.</p>
+      <h3>Retry storm</h3>
+      <p>Retry giúp vượt lỗi mạng thoáng qua, nhưng khi dịch vụ phía sau đã quá tải thì mỗi lần thử lại lại chờ hết timeout và dồn thêm tải đúng vào lúc nó đang cố phục hồi.</p>
     </div>
   </div>
 
@@ -270,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Giám sát các network calls. Khi error rate hoặc slow call rate vượt ngưỡng cấu hình, circuit breaker chuyển sang OPEN, từ chối forward request đến dịch vụ lỗi để ngăn cạn kiệt thread pool. Pattern áp dụng Fail Fast bằng cách ném Exception hoặc kích hoạt Fallback logic ngay lập tức.
+      Circuit Breaker quan sát kết quả các lời gọi. Tỷ lệ lỗi vượt ngưỡng thì mạch chuyển sang <code>OPEN</code>: mọi request bị từ chối ngay, không gửi tới downstream — caller không bị chặn luồng, callee không bị dồn tải khi đang phục hồi. Sau một khoảng chờ, <code>HALF-OPEN</code> cho vài request thử đi qua; thành công thì đóng lại, thất bại thì ngắt tiếp.
     </p>
-    <div class="definition-attribution">— Michael Nygard · Release It! (2007) · [5]</div>
+    <div class="definition-attribution">— Michael Nygard · Release It! (2007) · [5, Ch.7]</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Tương tự cầu dao điện bảo vệ thiết bị khi quá tải, Circuit Breaker ngắt kết nối ngay lập tức thay vì để hệ thống tiếp tục chịu tải và sụp đổ.
+  <p class="section-intro">
+    Circuit Breaker không thay Timeout, Retry hay Bulkhead — bốn cơ chế đi cùng nhau. Cái giá của nó: thêm một trạng thái phải giám sát, một bộ ngưỡng phải chỉnh (đủ nhạy để ngắt khi lỗi thật, đủ bao dung với chập chờn tạm thời), và một fallback phải thiết kế. Circuit Breaker không có fallback hợp lý chỉ đổi lỗi chậm thành exception nhanh trả thẳng cho người dùng (§4.4).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Circuit Breaker Proxy</h3>
-      <p>Proxy đứng giữa Caller và Callee để điều hướng cuộc gọi. Trong Spring Boot, thường được triển khai qua annotation <code>@CircuitBreaker</code> của Resilience4j.</p>
+      <h3>State machine</h3>
+      <p><code>CLOSED</code> cho đi và đếm lỗi trên cửa sổ trượt (10 lời gọi, ngưỡng 50%). <code>OPEN</code> chặn ngay trong 30 s. <code>HALF-OPEN</code> cho 3 lời gọi thử để quyết định đóng hay ngắt lại.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>State Machine</h3>
-      <p>Quản lý trạng thái Circuit Breaker: <code>CLOSED</code> (hoạt động bình thường), <code>OPEN</code> (chặn hoàn toàn, Fail Fast), và <code>HALF-OPEN</code> (cho phép lượng nhỏ request để thăm dò sự phục hồi).</p>
+      <h3>Fallback</h3>
+      <p>Phản hồi thay thế khi mạch ngắt hoặc hết lượt retry. Muốn hứa "bài sẽ được chấm sau" thì phải ghi lệnh vào hàng đợi bền vững trước; ghi thất bại thì trả lỗi tạm thời (503 + <code>Retry-After</code>).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Fallback Handler</h3>
-      <p>Logic thay thế khi Circuit Breaker OPEN hoặc có lỗi. Trả về cached data, đẩy message vào Message Queue, hoặc fallback response mặc định.</p>
+      <h3>Thứ tự decorator</h3>
+      <p>Resilience4j lồng <code>Retry( CircuitBreaker( TimeLimiter( Bulkhead( call ))))</code>: mỗi lần retry đi lại cả chuỗi và được Circuit Breaker đếm. <code>TimeoutException</code> phải có trong <code>retryExceptions</code>.</p>
     </div>
   </div>
 </section>
@@ -308,87 +118,71 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trình mô phỏng cách Resilience4j State Machine chuyển đổi trạng thái dựa trên kết quả của các requests.
-  </p>
+  <p class="section-intro">SQL Judge của KBM (§4.5): Core gửi bài tới <code>judge</code> coordinator, coordinator gọi worker theo DBMS. Lời gọi tới worker dùng cấu hình của sách: Timeout 5 s, Retry 3 lần (chờ 1 s, 2 s), Bulkhead 10 lời gọi đồng thời, Circuit Breaker cửa sổ 10 · ngưỡng 50% · chờ 30 s · 3 lời gọi thử (lst:4_3). Bài nộp xen kẽ MySQL / SQL Server; thời gian là thời gian mô phỏng.</p>
 
-  <div class="simulator-container">
-    <!-- Left panel: interactive state card and controls -->
-    <div class="sim-controls">
-      <div class="state-cards">
-        <div class="state-card" id="card-closed">
-          <div class="state-indicator"></div>
-          <div class="state-name">CLOSED</div>
-          <div class="state-brief">Mạch đóng.<br>Requests đi tới Judge.</div>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Kịch bản</span><div class="sim-chips" id="cb-scens"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Bảo vệ</span><div class="sim-chips" id="cb-cfgs"></div></div>
+    <button class="sim-btn primary-action" id="cb-run" type="button">▶ Chạy</button>
+  </div>
+
+  <div class="sim-grid sim-grid--wide">
+    <div class="sim-panel is-primary">
+      <div class="sim-panel-title"><span id="cb-title"></span> <span class="sim-hint" id="cb-hint"></span></div>
+      <div class="sim-canvas d-links-root" id="cb-canvas">
+        <div class="sim-nodes sim-nodes--flow">
+          <div class="sim-node is-external" id="cb-core"><div class="sim-node-name">Core</div><div class="sim-node-sub">nộp bài SQL</div></div>
+          <div class="sim-node is-core" id="cb-judge"><div class="sim-node-name">judge</div><div class="sim-node-sub" id="cb-judge-sub"></div></div>
+          <div class="sim-node" id="cb-mysql"><div class="sim-node-name">judge-mysql</div><div class="sim-node-sub" id="cb-mysql-sub"></div></div>
+          <div class="sim-node" id="cb-queue" style="grid-column:2;grid-row:2"><div class="sim-node-name">Hàng đợi</div><div class="sim-node-sub" id="cb-queue-sub"></div></div>
+          <div class="sim-node" id="cb-mssql" style="grid-column:3;grid-row:2"><div class="sim-node-name">judge-sqlserver</div><div class="sim-node-sub" id="cb-mssql-sub"></div></div>
         </div>
-        <div class="state-card" id="card-open">
-          <div class="state-indicator"></div>
-          <div class="state-name">OPEN</div>
-          <div class="state-brief">Ngắt mạch.<br>Requests bị chặn ngay.</div>
-        </div>
-        <div class="state-card" id="card-half">
-          <div class="state-indicator"></div>
-          <div class="state-name">HALF-OPEN</div>
-          <div class="state-brief">Mở một nửa.<br>Gửi request thử nghiệm.</div>
-        </div>
+        <svg class="d-links">
+          <path id="cb-l-in" data-from="cb-core" data-to="cb-judge"></path>
+          <path id="cb-l-my" data-from="cb-judge" data-to="cb-mysql"></path>
+          <path id="cb-l-ms" data-from="cb-judge" data-to="cb-mssql" data-route="channel" data-channel="left"></path>
+          <path id="cb-l-q" data-from="cb-judge" data-to="cb-queue" class="is-dashed"></path>
+        </svg>
       </div>
-
-      <div class="sim-buttons">
-        <button class="sim-btn primary-action" id="btn-success" onclick="simCall(true)">
-          <span>[OK] Gọi thành công (Success)</span>
-          <span style="font-family:var(--font-mono); font-size:11px;">Latency &lt; 200ms</span>
-        </button>
-        <button class="sim-btn" id="btn-failure" onclick="simCall(false)" style="border-color: rgba(244,63,94,0.3);">
-          <span style="color:var(--danger)">[Error] Gọi thất bại (Timeout/Error)</span>
-          <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim)">Latency &gt; 5000ms</span>
-        </button>
-        <button class="sim-btn" id="btn-wait" onclick="simWait()" disabled>
-          <span>[Wait] Đợi thời gian phục hồi (waitDuration)</span>
-          <span style="font-family:var(--font-mono); font-size:11px;">Mô phỏng 10 giây</span>
-        </button>
-        <button class="sim-btn" id="btn-reset" onclick="simReset()">
-          <span>[Reset] Reset trạng thái Circuit Breaker</span>
-          <span style="font-family:var(--font-mono); font-size:11px;">Về CLOSED</span>
-        </button>
+      <div class="sim-stats">
+        <div class="sim-stat"><div class="sim-stat-val" id="cb-ok">0</div><div class="sim-stat-lbl">Chấm ngay</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="cb-fb">0</div><div class="sim-stat-lbl">Chấm sau</div></div>
+        <div class="sim-stat"><div class="sim-stat-val" id="cb-hit">0</div><div class="sim-stat-lbl">SQL Server vạ lây</div></div>
       </div>
     </div>
-
-    <!-- Right panel: Dashboard metrics -->
-    <div class="sim-dashboard">
-      <div class="dashboard-title">Resilience4j Metrics</div>
-      
-      <div class="metric-row">
-        <span class="metric-lbl">Trạng thái hiện tại</span>
-        <span class="metric-val" id="val-state" style="color:var(--success)">CLOSED</span>
-      </div>
-
-      <div class="metric-row">
-        <span class="metric-lbl">Số cuộc gọi trượt (Sliding Window)</span>
-        <span class="metric-val" id="val-window">0 / 5</span>
-      </div>
-
-      <div>
-        <div class="metric-row">
-          <span class="metric-lbl">Tỷ lệ lỗi hiện tại (Error Rate)</span>
-          <span class="metric-val" id="val-rate">0%</span>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">State machine <span class="sim-hint" id="cb-sm-hint"></span></div>
+      <div class="sim-canvas d-links-root" id="cb-sm">
+        <div class="sim-nodes sim-nodes--col">
+          <div class="sim-node" id="cb-s-closed"><div class="sim-node-name">CLOSED</div><div class="sim-node-sub" id="cb-s-closed-sub">cho đi · đếm lỗi</div></div>
+          <div class="sim-node" id="cb-s-open"><div class="sim-node-name">OPEN</div><div class="sim-node-sub" id="cb-s-open-sub">chặn ngay</div></div>
+          <div class="sim-node" id="cb-s-half"><div class="sim-node-name">HALF-OPEN</div><div class="sim-node-sub" id="cb-s-half-sub">3 lời gọi thử</div></div>
         </div>
-        <div class="gauge-container">
-          <div class="gauge-bar" id="gauge-bar"></div>
-        </div>
-        <div style="font-size:10px; color:var(--text-dim); margin-top:5px; text-align:right;">
-          Ngưỡng ngắt mạch (threshold): 50% lỗi trong 5 cuộc gọi gần nhất
-        </div>
+        <svg class="d-links">
+          <path id="cb-t-trip" data-from="cb-s-closed" data-to="cb-s-open"></path>
+          <path id="cb-t-wait" data-from="cb-s-open" data-to="cb-s-half" data-from-at="0.3" data-to-at="0.3"></path>
+          <path id="cb-t-fail" data-from="cb-s-half" data-to="cb-s-open" data-from-at="0.7" data-to-at="0.7"></path>
+          <path id="cb-t-reset" data-from="cb-s-half" data-to="cb-s-closed" data-from-side="right" data-to-side="right" data-route="channel" data-channel="right"></path>
+        </svg>
       </div>
-
-      <div class="metric-row">
-        <span class="metric-lbl">Các cuộc gọi thành công liên tiếp</span>
-        <span class="metric-val" id="val-probe">0 / 3</span>
-      </div>
+      <p class="sim-note">Xuống: lỗi ≥ ngưỡng → OPEN; hết thời gian chờ → HALF-OPEN. Lên: thử lỗi → OPEN; thử đạt → CLOSED (đường bên phải).</p>
     </div>
+  </div>
 
-    <!-- Console log below -->
-    <div class="sim-log" id="sim-log">
-      <div><span class="log-time">[14:17:15]</span> <span class="log-system">Khởi tạo Resilience4j Circuit Breaker. Trạng thái: CLOSED. Sliding window size: 5 calls. Ngưỡng lỗi: 50%.</span></div>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Bài nộp theo khoảng thời gian <span class="sim-hint">kết cục cuối cùng</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="cb-table">
+          <thead><tr><th>t (s)</th><th>CB</th><th>MySQL</th><th>SQL Server</th><th class="num">Luồng</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sim-note" id="cb-note"></p>
+    </div>
+    <div class="sim-panel">
+      <div class="sim-panel-title">Log <span class="sim-hint">coordinator · Resilience4j</span></div>
+      <div class="sim-log" id="cb-log" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -403,82 +197,86 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Áp dụng Circuit Breaker cho các service calls trọng yếu trong KBM LMS giúp bảo vệ hệ thống khỏi các hiệu ứng quá tải cục bộ.
+  <p class="section-intro">
+    SQL Judge là coordinator/worker: Core chỉ gọi <code>judge</code>, <code>judge</code> dispatch tới <code>judge-mysql</code>, <code>judge-sqlserver</code>… theo DBMS (§4.5). Circuit Breaker có hai tầng bổ trợ nhau: instance <code>judge</code> ở Core bảo vệ Core khỏi cụm Judge như một tổng thể; Circuit Breaker theo từng worker thuộc về coordinator, để <code>judge-mysql</code> quá tải không kéo sập đường chấm của <code>judge-sqlserver</code>.
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Gap Analysis & Cấu hình Circuit Breaker KBM</h3>
-  <div class="sub-label">Đánh giá rủi ro và các tham số cấu hình Resilience4j phù hợp</div>
+  <h3 class="sub-heading">Gap Analysis — resilience của SQL Judge</h3>
+  <div class="sub-label">Theo bảng phân tích vấn đề SQL Judge (§4.5) và phần triển khai Resilience4j (§4.4)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Service Call</th>
-          <th>Vấn đề xảy ra</th>
-          <th>Rủi ro</th>
-          <th>Cấu hình Circuit Breaker phù hợp</th>
+          <th>Khía cạnh</th>
+          <th>Tình huống</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">kbm-core → kbm-judge-sql</td>
-          <td>Quá trình chấm bài lâu, làm cạn kiệt thread pool của core service.</td>
+          <td class="gap-label">Resilience theo worker</td>
+          <td><code>judge-mysql</code> ngừng hoạt động không được phép làm gián đoạn cả <code>judge</code> hay các worker khác.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Ngưỡng: 50%, waitDuration: 30s. Fallback: Đẩy submission vào RabbitMQ/Kafka để xử lý bất đồng bộ.</td>
+          <td>Circuit Breaker, Timeout, Retry riêng cho từng <code>judge-*</code> (Giai đoạn 2).</td>
         </tr>
         <tr>
-          <td class="gap-label">kbm-gateway → kbm-auth</td>
-          <td>Gateway mất kết nối tới Auth, gây block mọi route API.</td>
+          <td class="gap-label">Fallback</td>
+          <td>Worker gặp sự cố thì người dùng nhận lỗi kỹ thuật, hoặc bài nộp bị kẹt không rõ trạng thái.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Ngưỡng: 40%, waitDuration: 20s. Fallback: Sử dụng cached public keys để xác minh JWT stateless.</td>
+          <td>Thông báo "sẽ chấm khi sẵn sàng" chỉ sau khi đã ghi vào hàng đợi/outbox (key = <code>submissionId</code>); ghi thất bại thì 503 + <code>Retry-After</code>.</td>
         </tr>
         <tr>
-          <td class="gap-label">kbm-core → kbm-notification</td>
-          <td>Dịch vụ gửi thông báo chậm, làm kẹt luồng trả kết quả thi.</td>
+          <td class="gap-label">Executor</td>
+          <td><code>supplyAsync</code> một tham số chạy trên common ForkJoinPool dùng chung toàn JVM; lời gọi chờ Judge có thể làm đói luồng.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Ngưỡng: 60%, waitDuration: 60s. Fallback: Ghi nhận log và đẩy sang dịch vụ queue gửi bù sau.</td>
+          <td>Truyền <code>Executor</code> riêng, hoặc <code>@Bulkhead(type = THREADPOOL)</code> để tách thread pool.</td>
         </tr>
         <tr>
-          <td class="gap-label">kbm-academic → kbm-core</td>
-          <td>Lỗi đồng bộ điểm thi, đứt kết nối với Database.</td>
-          <td><span class="b-low">LOW</span></td>
-          <td>Ngưỡng: 70%, waitDuration: 45s. Fallback: Lưu trữ điểm cục bộ tại Assignment DB và kích hoạt sync-scheduler.</td>
+          <td class="gap-label">Retry một POST</td>
+          <td>Thử lại lệnh nộp bài có thể tạo bài nộp trùng.</td>
+          <td><span class="b-med">MED</span></td>
+          <td><code>JudgeRequest</code> mang <code>submissionId</code> làm idempotency key; <code>TimeoutException</code> nằm trong <code>retryExceptions</code>.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Lộ trình triển khai (Implementation Roadmap)</h3>
-  <div class="sub-label">Các bước thực hiện đưa Circuit Breaker lên Production</div>
+  <h3 class="sub-heading">Lộ trình</h3>
+  <div class="sub-label">Đề xuất migration cho SQL Judge (§4.5) — chưa phải việc KBM đã làm xong</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1</div>
-      <h4>Tích hợp Thư viện & Cấu hình</h4>
-      <p>Tích hợp <code>spring-cloud-starter-circuitbreaker-resilience4j</code>. Cấu hình <code>failure-rate-threshold</code> và <code>sliding-window-size</code> qua <code>application.yml</code>. Khai báo <code>@CircuitBreaker</code> trên Feign client.</p>
+      <div class="timeline-phase">Giai đoạn 1</div>
+      <h4>Làm rõ ownership</h4>
+      <p>Core chỉ gọi <code>judge</code>; mọi logic chọn DBMS nằm ở coordinator, không rò sang Core. Ưu tiên cao, chi phí thấp.</p>
+      <span class="t-badge orange">§4.5</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2</div>
-      <h4>Xây dựng Fallback Handler</h4>
-      <p>Implement Fallback methods cho từng Feign client. Fallback logic có thể trả về cached data hoặc publish event vào Message Queue. Thực hiện chaos testing (tắt các downstream services) để kiểm tra.</p>
+      <div class="timeline-phase">Giai đoạn 2</div>
+      <h4>Resilience theo worker</h4>
+      <p><code>@CircuitBreaker</code>, <code>@Retry</code>, <code>@TimeLimiter</code> riêng cho từng <code>judge-*</code>. <code>judge-mysql</code> ngừng thì fallback "Sandbox MySQL đang bận, bài sẽ được chấm khi sẵn sàng", <code>judge-sqlserver</code> không bị ảnh hưởng.</p>
+      <span class="t-badge orange">§4.5 · lst:4_2</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3</div>
-      <h4>Observability & Monitoring</h4>
-      <p>Export Resilience4j metrics qua Spring Boot Actuator. Đưa metrics <code>resilience4j.circuitbreaker.state</code> và <code>resilience4j.circuitbreaker.failure.rate</code> tới Prometheus. Xây dựng Grafana dashboard để monitor real-time.</p>
+      <div class="timeline-phase">Giai đoạn 3</div>
+      <h4>Chuẩn hóa worker contract</h4>
+      <p>Mọi worker nhận cùng <code>JudgeRequest</code>, trả cùng <code>JudgeResult</code>; định tuyến theo cấu hình thay vì ID gán cứng.</p>
+      <span class="t-badge orange">§4.5</span>
     </div>
     <div class="timeline-item" data-delay="750">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4</div>
-      <h4>Auto-tuning Threshold</h4>
-      <p>Dựa trên tải thực tế, tuning thông số: giảm <code>wait-duration-in-open-state</code> hoặc tinh chỉnh <code>sliding-window-size</code> để giảm độ nhạy sai và tối ưu latency.</p>
+      <div class="timeline-phase">Giai đoạn 4</div>
+      <h4>Luồng chấm kéo dài sang bất đồng bộ</h4>
+      <p>Submit → Kafka → coordinator → worker → result event. Luồng nộp bài SQL Contest đã chạy theo mô hình này (Chương 5); giai đoạn này mở rộng cho các luồng chấm còn đi đường đồng bộ.</p>
+      <span class="t-badge orange">§4.5 · Ch.5</span>
     </div>
   </div>
 
@@ -488,25 +286,25 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Nên dùng Circuit Breaker khi</div>
+        <div class="decision-title">Nên dùng khi</div>
       </div>
       <ul class="decision-list">
-        <li>Remote Procedure Calls (HTTP/gRPC/Thrift) đồng bộ.</li>
-        <li>Database queries với latency không ổn định.</li>
-        <li>Tích hợp 3rd-party APIs (Payment, SMS Gateway).</li>
-        <li>Ngăn lỗi lan rộng khi tài nguyên downstream hữu hạn.</li>
+        <li>Gọi đồng bộ qua mạng (HTTP, gRPC, Feign) tới service có thể chậm hoặc ngừng.</li>
+        <li>Nhiều downstream cần cách ly lỗi với nhau — như các worker theo DBMS.</li>
+        <li>Tích hợp hệ thống bên ngoài (QLĐT, GitHub Classroom) sau Anti-Corruption Layer.</li>
+        <li>Có một fallback có nghĩa với người dùng: hàng đợi chấm lại, dữ liệu cache, thông báo rõ ràng.</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Không nên dùng khi</div>
+        <div class="decision-title">Không cần, hoặc chưa đủ, khi</div>
       </div>
       <ul class="decision-list">
-        <li>In-process method calls (trong cùng một JVM).</li>
-        <li>Hệ thống message-driven dùng broker bất đồng bộ (Kafka/RabbitMQ).</li>
-        <li>Các luồng yêu cầu strict consistency (ACID) không chấp nhận fallback data.</li>
-        <li>Hệ thống ultra-low latency, overhead của Circuit Breaker là không thể chấp nhận.</li>
+        <li>Gọi hàm trong cùng process — không có mạng để ngắt.</li>
+        <li>Luồng đã bất đồng bộ qua broker: hàng đợi đã đệm tải, bảo vệ đặt ở consumer.</li>
+        <li>Chưa có Timeout: Circuit Breaker chỉ đếm được lỗi khi lời gọi kết thúc.</li>
+        <li>Ngưỡng chưa dựa trên số đo thật — bắt đầu từ giá trị khuyến nghị rồi chỉnh theo giám sát.</li>
       </ul>
     </div>
   </div>
@@ -514,7 +312,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về Circuit Breaker, Retry Storm, Bulkhead, và các chiến lược resilience khác trong tài liệu lý thuyết.</p>
+  <p>Đọc chi tiết về bốn resilience patterns và cấu hình Resilience4j (§4.4), cùng case study SQL Judge coordinator/worker (§4.5).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-04')"><div class="badge badge-info">Read</div> Chương 4 — Giao tiếp Đồng bộ →</a>
 </div>
 
@@ -530,143 +328,316 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: Circuit Breaker cho SQL Judge (Chương 4 §4.4–4.5) ─────────────────────────────
+// Mô phỏng rời rạc theo sự kiện, xác định (không ngẫu nhiên). Cấu hình theo lst:4_3:
+// Retry 3 lần (chờ 1 s, 2 s; không retry CallNotPermitted/BulkheadFull) → CircuitBreaker (count-based)
+// → TimeLimiter 5 s → Bulkhead 10 (chờ tối đa 0,5 s) → worker. Fallback ghi vào hàng đợi (lst:4_2).
+// Như Resilience4j: ngoại lệ ngoài recordExceptions (BulkheadFull) được CB tính là thành công;
+// kết quả của lời gọi bắt đầu ở trạng thái trước đó không được tính.
+// Minh họa, sách không nêu: Bulkhead tách 5 + 5 theo worker; mức lỗi 35% ở kịch bản chập chờn.
+const SCENS = {
+  hang:    { label: 'judge-mysql treo', gap: 0.2, dur: 16, win: 2,
+             cfgs: { none: 'Không CB', shared: 'CB chung', worker: 'CB theo worker', bulk: '+ Bulkhead riêng' } },
+  recover: { label: 'Phục hồi', gap: 1, dur: 30, win: 5, openedAt: -20,
+             cfgs: { healthy: 'Worker đã khỏe', still: 'Worker vẫn treo' } },
+  flaky:   { label: 'Lỗi chập chờn', gap: 0.5, dur: 30, win: 5,
+             cfgs: { ops: 'Vận hành 10 · 50%', high: 'Tải cao 20 · 30%' } },
+};
+const BOOK = { cb: 'worker', bulk: 'shared', size: 10, thr: 0.5, wait: 30, T: 5, cap: 10 };
+const CFG = {
+  'hang.none':       { ...BOOK, cb: 'none' },
+  'hang.shared':     { ...BOOK, cb: 'shared' },
+  'hang.worker':     { ...BOOK },
+  'hang.bulk':       { ...BOOK, bulk: 'worker' },
+  'recover.healthy': { ...BOOK },
+  'recover.still':   { ...BOOK },
+  'flaky.ops':       { ...BOOK },
+  'flaky.high':      { ...BOOK, size: 20, thr: 0.3, wait: 60 },
+};
+const HINTS = {
+  'hang.none': 'không Circuit Breaker',
+  'hang.shared': 'một Circuit Breaker cho mọi worker',
+  'hang.worker': 'Giai đoạn 2: mỗi judge-* một Circuit Breaker',
+  'hang.bulk': 'CB theo worker + Bulkhead 5 + 5 (minh họa)',
+  'recover.healthy': 'CB judge-mysql đã OPEN từ 20 s trước',
+  'recover.still': 'CB judge-mysql đã OPEN từ 20 s trước',
+  'flaky.ops': 'cửa sổ 10 · ngưỡng 50% · chờ 30 s',
+  'flaky.high': 'cửa sổ 20 · ngưỡng 30% · chờ 60 s',
+};
+const NOTES = {
+  'hang.none':       'Không có Circuit Breaker: mỗi bài MySQL giữ một luồng tới hết timeout 5 s, Retry nhân lên ba lần — có bài chờ 5 + 1 + 5 + 2 + 5 = 18 s mới nhận fallback. Mười luồng chung đầy dần bằng lời gọi treo, nên bài SQL Server — worker vẫn khỏe — cũng bị từ chối vì Bulkhead đầy: lỗi dây chuyền (§4.4).',
+  'hang.shared':     'Một Circuit Breaker chung: đơn giản, một bộ cấu hình, đủ dùng khi chỉ có một worker. Nhưng nó đếm lỗi chung, nên khi đủ ngưỡng nó chặn cả SQL Server — worker khỏe cũng bị ngắt theo. Nhiều worker thì cần tách (§4.5, vấn đề #3).',
+  'hang.worker':     'Circuit Breaker theo worker (Giai đoạn 2): judge-mysql ngắt riêng, bài MySQL nhận fallback ngay, SQL Server chấm tiếp. Còn một khoảng hở: trước khi cửa sổ 10 lời gọi đủ lỗi, các lời gọi treo vẫn chiếm luồng chung — Circuit Breaker phản ứng sau, không ngăn trước.',
+  'hang.bulk':       'Thêm Bulkhead riêng cho từng worker: lời gọi treo chỉ làm đầy phần của MySQL, SQL Server không phải chờ ngay từ đầu. Đổi lại là thêm cấu hình và luồng dự trữ có lúc nằm không. Circuit Breaker và Bulkhead bổ trợ nhau (§4.4, Kết hợp các patterns).',
+  'recover.healthy': 'Trong lúc OPEN, bài MySQL nhận fallback ngay, không ai giữ luồng. Hết 30 s mạch sang HALF-OPEN; 3 lời gọi thử thành công nên mạch đóng lại và bài MySQL được chấm bình thường.',
+  'recover.still':   'Lời gọi thử vẫn timeout nên mạch quay lại OPEN và chờ thêm 30 s. Chỉ 3 lời gọi thử được đi qua, nên một worker đang hồi phục không bị dồn tải (§4.4).',
+  'flaky.ops':       'Worker lỗi khoảng 35% lượt gọi (lỗi nhanh, như mất kết nối). Retry che phần lớn — chỉ vài bài lỗi cả 3 lần phải chấm sau; ngưỡng 50% không bị chạm nên mạch không ngắt, đúng với lỗi tạm thời.',
+  'flaky.high':      'Ngưỡng 30% trên cửa sổ 20 nhạy hơn: 35% lỗi là đủ ngắt, bài MySQL chuyển hết sang chấm sau trong 60 s dù worker vẫn chạy được phần lớn. Đổi lại, khi lỗi thật thì hệ thống được bảo vệ sớm hơn — chọn điểm cân bằng theo tải (bảng giá trị khuyến nghị, §4.4).',
+};
+const WNAME = { mysql: 'judge-mysql', mssql: 'judge-sqlserver' };
 
-// ── Simulator Logic ──────────────────────────────────────
-let state = 'CLOSED'; // CLOSED, OPEN, HALF-OPEN
-let history = []; // sliding window, max 5, true = success, false = failure
-let consecutiveSuccessCount = 0; // count success in HALF-OPEN
-let logEl = document.getElementById('sim-log');
-
-function addLog(msg, type = 'system') {
-  const time = new Date().toLocaleTimeString();
-  const entry = document.createElement('div');
-  entry.className = 'log-line';
-  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
-  logEl.appendChild(entry);
-  logEl.scrollTop = logEl.scrollHeight;
+// Hành vi worker cho một lượt gọi. n = số thứ tự lượt gọi MySQL (để lỗi chập chờn có quy luật cố định).
+function behavior(scen, cfg, w, n) {
+  if (w === 'mssql') return { ok: true, dur: 0.3 };
+  if (scen === 'hang' || (scen === 'recover' && cfg === 'still')) return { hang: true };
+  if (scen === 'flaky') return (n * 7) % 20 < 7 ? { ok: false, dur: 0.1 } : { ok: true, dur: 0.3 };
+  return { ok: true, dur: 0.3 };
 }
 
-function updateVisuals() {
-  // Update state card styling
-  document.getElementById('card-closed').className = 'state-card' + (state === 'CLOSED' ? ' active-closed' : '');
-  document.getElementById('card-open').className = 'state-card' + (state === 'OPEN' ? ' active-open' : '');
-  document.getElementById('card-half').className = 'state-card' + (state === 'HALF-OPEN' ? ' active-half' : '');
+function simulate(scen, cfg) {
+  const S = SCENS[scen], C = CFG[scen + '.' + cfg];
+  const ev = [], logs = [], samples = [], reqs = [], seen = new Set();
+  const push = e => { let i = ev.length; while (i > 0 && ev[i - 1].t > e.t) i--; ev.splice(i, 0, e); };
+  const once = (key, t, msg, cls) => { if (!seen.has(key)) { seen.add(key); logs.push({ t, msg, cls }); } };
+  const mkcb = () => ({ state: 'CLOSED', win: [], openedAt: 0, epoch: 0, issued: 0, res: [] });
+  const cbs = {};
+  if (C.cb === 'shared') cbs.all = mkcb();
+  if (C.cb === 'worker') { cbs.mysql = mkcb(); cbs.mssql = mkcb(); }
+  if (S.openedAt !== undefined) Object.assign(cbs.mysql, { state: 'OPEN', openedAt: S.openedAt });
+  const pools = C.bulk === 'worker'
+    ? { mysql: { cap: C.cap / 2, busy: 0, q: [] }, mssql: { cap: C.cap / 2, busy: 0, q: [] } }
+    : { all: { cap: C.cap, busy: 0, q: [] } };
+  const cbOf = w => cbs.all || cbs[w];
+  const poolOf = w => pools.all || pools[w];
+  const cbName = k => k === 'all' ? 'CB chung' : 'CB ' + WNAME[k];
+  let myCalls = 0;
 
-  // Update text & values
-  const stateValEl = document.getElementById('val-state');
-  stateValEl.textContent = state;
-  if (state === 'CLOSED') {
-    stateValEl.style.color = 'var(--success)';
-  } else if (state === 'OPEN') {
-    stateValEl.style.color = 'var(--danger)';
-  } else {
-    stateValEl.style.color = 'var(--warning)';
+  const toOpen = (k, cb, t, why) => { Object.assign(cb, { state: 'OPEN', openedAt: t, epoch: cb.epoch + 1, win: [], res: [] }); logs.push({ t, msg: `${cbName(k)} → OPEN (${why})`, cls: 'log-err' }); };
+  const toClosed = (k, cb, t) => { Object.assign(cb, { state: 'CLOSED', epoch: cb.epoch + 1, win: [], res: [] }); logs.push({ t, msg: `${cbName(k)} → CLOSED (lời gọi thử đạt)`, cls: 'log-ok' }); };
+  function tick(t) {
+    for (const [k, cb] of Object.entries(cbs)) if (cb.state === 'OPEN' && t >= cb.openedAt + C.wait) {
+      Object.assign(cb, { state: 'HALF_OPEN', epoch: cb.epoch + 1, issued: 0, res: [] });
+      logs.push({ t: cb.openedAt + C.wait, msg: `${cbName(k)} → HALF-OPEN (hết ${C.wait} s chờ)`, cls: 'log-warn' });
+    }
+  }
+  function record(att, ok, t) {
+    const k = att.cbk, cb = cbs[k];
+    if (!cb || att.epoch !== cb.epoch) return;
+    if (cb.state === 'CLOSED') {
+      cb.win.push(ok); if (cb.win.length > C.size) cb.win.shift();
+      const fails = cb.win.filter(x => !x).length;
+      if (cb.win.length >= C.size && fails / C.size >= C.thr) toOpen(k, cb, t, `${fails}/${C.size} lỗi ≥ ${C.thr * 100}%`);
+    } else if (cb.state === 'HALF_OPEN') {
+      cb.res.push(ok);
+      if (cb.res.length >= 3) { const f = cb.res.filter(x => !x).length; f / 3 >= C.thr ? toOpen(k, cb, t, `thử lỗi ${f}/3`) : toClosed(k, cb, t); }
+    }
+  }
+  function finish(r, t, kind, why) {
+    r.end = t; r.kind = kind; r.why = why;
+    if (kind === 'fallback') {
+      once('fb-' + r.w + why, t, `#${r.id} ${WNAME[r.w]}: ${why} → fallback "Sandbox ${r.w === 'mysql' ? 'MySQL' : 'SQL Server'} đang bận, bài sẽ được chấm khi sẵn sàng" (chờ ${(t - r.arrive).toFixed(1)} s)`, r.w === 'mssql' ? 'log-err' : 'log-warn');
+    }
+  }
+  function start(att, t) {
+    const pool = poolOf(att.r.w); pool.busy++;
+    const b = behavior(scen, cfg, att.r.w, att.r.w === 'mysql' ? myCalls++ : 0);
+    if (b.hang || b.dur > C.T) push({ t: att.start + C.T, type: 'end', att, ok: false, exc: 'timeout' });
+    else push({ t: t + b.dur, type: 'end', att, ok: b.ok, exc: b.ok ? null : 'io' });
   }
 
-  // Update failure rate
-  const errors = history.filter(x => x === false).length;
-  document.getElementById('val-window').textContent = `${errors} / ${history.length}`;
-  
-  const rate = history.length === 0 ? 0 : Math.round((errors / history.length) * 100);
-  document.getElementById('val-rate').textContent = `${rate}%`;
-  
-  const gaugeBar = document.getElementById('gauge-bar');
-  gaugeBar.style.width = `${rate}%`;
-  gaugeBar.style.backgroundColor = rate >= 50 ? 'var(--danger)' : 'var(--success)';
-
-  // Update probe success counts
-  document.getElementById('val-probe').textContent = state === 'HALF-OPEN' ? `${consecutiveSuccessCount} / 3` : 'N/A';
-
-  // Enable/disable wait button
-  document.getElementById('btn-wait').disabled = (state !== 'OPEN');
-}
-
-function simCall(success) {
-  if (state === 'OPEN') {
-    addLog("[Warning] Circuit Breaker đang NGẮT (OPEN). Chặn request ngay lập tức và kích hoạt Fallback handler.", "warn");
-    updateVisuals();
-    return;
+  for (let i = 0; i * S.gap < S.dur - 1e-9; i++) {
+    const r = { id: i + 1, w: i % 2 ? 'mssql' : 'mysql', arrive: +(i * S.gap).toFixed(2), attempts: 0 };
+    reqs.push(r); push({ t: r.arrive, type: 'attempt', r });
   }
-
-  if (state === 'CLOSED') {
-    history.push(success);
-    if (history.length > 5) {
-      history.shift();
-    }
-    
-    if (success) {
-      addLog("[OK] Gửi request thành công đến Judge Service.", "success");
-    } else {
-      addLog("[Error] Lỗi mạng hoặc Timeout xảy ra khi gọi Judge Service.", "error");
-    }
-
-    // Check threshold
-    const errors = history.filter(x => x === false).length;
-    const rate = (errors / history.length);
-    if (history.length >= 5 && rate >= 0.5) {
-      state = 'OPEN';
-      addLog("🚨 Tỷ lệ lỗi đạt " + Math.round(rate * 100) + "% (>= 50%). Circuit Breaker tự động nhảy sang trạng thái OPEN để bảo vệ hệ thống!", "error");
-    }
-  } else if (state === 'HALF-OPEN') {
-    if (success) {
-      consecutiveSuccessCount++;
-      addLog(`[CASE] Thử nghiệm thành công (${consecutiveSuccessCount}/3).`, "success");
-      if (consecutiveSuccessCount >= 3) {
-        state = 'CLOSED';
-        history = [];
-        consecutiveSuccessCount = 0;
-        addLog("[OK] 3/3 cuộc gọi thăm dò thành công liên tục. Judge Service đã ổn định trở lại. Khôi phục mạch điện (CLOSED)!", "success");
+  while (ev.length) {
+    const e = ev.shift(), t = e.t;
+    tick(t);
+    if (e.type === 'attempt') {
+      const r = e.r; r.attempts++;
+      const cb = cbOf(r.w), cbk = cbs.all ? 'all' : r.w;
+      if (cb && cb.state === 'OPEN') { finish(r, t, 'fallback', 'mạch OPEN'); }
+      else if (cb && cb.state === 'HALF_OPEN' && cb.issued >= 3) { finish(r, t, 'fallback', 'HALF-OPEN đã đủ 3 lời gọi thử'); }
+      else {
+        if (cb && cb.state === 'HALF_OPEN') { cb.issued++; logs.push({ t, msg: `#${r.id} là lời gọi thử ${cb.issued}/3 tới ${WNAME[r.w]}`, cls: 'log-warn' }); }
+        const att = { r, cbk, epoch: cb ? cb.epoch : 0, start: t };
+        const pool = poolOf(r.w);
+        if (pool.busy < pool.cap) start(att, t);
+        else { pool.q.push(att); push({ t: t + 0.5, type: 'bwait', att }); }
       }
-    } else {
-      state = 'OPEN';
-      consecutiveSuccessCount = 0;
-      history = [false]; // Reset window with initial failure
-      addLog("[Error] Thử nghiệm thất bại. Judge Service vẫn chưa ổn định. Ngắt Circuit Breaker trở lại (OPEN)!", "error");
+    } else if (e.type === 'bwait') {
+      const pool = poolOf(e.att.r.w), i = pool.q.indexOf(e.att);
+      if (i >= 0) {
+        pool.q.splice(i, 1); record(e.att, true, t);
+        once('bh-' + e.att.r.w, t, `Bulkhead ${pools.all ? 'chung' : WNAME[e.att.r.w]} đầy ${pool.cap}/${pool.cap} — #${e.att.r.id} ${WNAME[e.att.r.w]} chờ 0,5 s rồi bị từ chối`, 'log-err');
+        finish(e.att.r, t, 'fallback', 'Bulkhead đầy');
+      }
+    } else if (e.type === 'end') {
+      const att = e.att, r = att.r, pool = poolOf(r.w);
+      pool.busy--;
+      if (pool.q.length) start(pool.q.shift(), t);
+      record(att, e.ok, t);
+      if (e.ok) finish(r, t, 'ok');
+      else {
+        once('x-' + r.w + e.exc, t, `#${r.id} ${WNAME[r.w]}: ${e.exc === 'timeout' ? `TimeoutException sau ${C.T} s` : 'IOException (mất kết nối)'}${r.attempts < 3 ? ` → retry sau ${r.attempts} s` : ''}`, 'log-err');
+        if (r.attempts < 3) push({ t: t + (r.attempts === 1 ? 1 : 2), type: 'attempt', r });
+        else finish(r, t, 'fallback', e.exc === 'timeout' ? 'timeout cả 3 lần' : 'lỗi cả 3 lần');
+      }
     }
+    samples.push({ t, busy: Object.fromEntries(Object.entries(pools).map(([k, p]) => [k, p.busy])),
+                   cb: Object.fromEntries(Object.entries(cbs).map(([k, c]) => [k, c.state])) });
   }
-
-  updateVisuals();
+  logs.sort((a, b) => a.t - b.t);
+  return { S, C, reqs, logs, samples, pools: Object.keys(pools), cbKeys: Object.keys(cbs) };
 }
 
-function simWait() {
-  if (state !== 'OPEN') return;
-  addLog("⏳ Đã trôi qua 10 giây (waitDurationInOpenState). Chuyển mạch điện sang trạng thái HALF-OPEN để thăm dò.", "system");
-  state = 'HALF-OPEN';
-  consecutiveSuccessCount = 0;
-  updateVisuals();
+// ── Hiển thị ──────────────────────────────────────────────
+const state = { scen: 'hang', cfg: 'none', running: false };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const redraw = () => { if (window.__diagramLinks) window.__diagramLinks.redraw(); };
+const STATE_TXT = { CLOSED: 'CLOSED', OPEN: 'OPEN', HALF_OPEN: 'HALF-OPEN' };
+
+function renderChips() {
+  const el = $('cb-cfgs'); el.innerHTML = '';
+  Object.entries(SCENS[state.scen].cfgs).forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!state.running && state.cfg !== v) { state.cfg = v; reset(); } });
+    el.appendChild(b);
+  });
+}
+Object.entries(SCENS).forEach(([v, s]) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'sim-chip'; b.textContent = s.label; b.dataset.v = v;
+  b.addEventListener('click', () => { if (!state.running && state.scen !== v) { state.scen = v; state.cfg = Object.keys(s.cfgs)[0]; renderChips(); reset(); } });
+  $('cb-scens').appendChild(b);
+});
+
+function log(t, msg, cls) {
+  $('cb-log').insertAdjacentHTML('beforeend', `<div>${t === null ? '' : `<span class="log-time">t=${t.toFixed(1)}s</span>`}<span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('cb-log').scrollTop = $('cb-log').scrollHeight;
+}
+function link(id, cls, base) { $(id).setAttribute('class', [base || '', cls ? 'is-' + cls : ''].join(' ').trim()); }
+function nodeCls(id, cls) { const n = $(id); ['is-active', 'is-danger', 'is-warn', 'is-off'].forEach(c => n.classList.remove(c)); if (cls) n.classList.add(cls); }
+
+// Trạng thái CB "đáng xem": CB của judge-mysql (hoặc CB chung).
+function smKey(sim) { return sim.cbKeys.includes('all') ? 'all' : sim.cbKeys.includes('mysql') ? 'mysql' : null; }
+function snapshot(sim, t) {
+  let last = null; for (const s of sim.samples) { if (s.t <= t + 1e-9) last = s; else break; }
+  return last || { busy: Object.fromEntries(sim.pools.map(k => [k, 0])), cb: Object.fromEntries(sim.cbKeys.map(k => [k, k === 'mysql' && sim.S.openedAt !== undefined ? 'OPEN' : 'CLOSED'])) };
+}
+function showState(sim, snap, lastLog) {
+  const k = smKey(sim), st = k ? snap.cb[k] : null;
+  nodeCls('cb-s-closed', st === 'CLOSED' ? 'is-active' : st ? '' : 'is-off');
+  nodeCls('cb-s-open', st === 'OPEN' ? 'is-danger' : st ? '' : 'is-off');
+  nodeCls('cb-s-half', st === 'HALF_OPEN' ? 'is-warn' : st ? '' : 'is-off');
+  ['cb-t-trip', 'cb-t-wait', 'cb-t-fail', 'cb-t-reset'].forEach(id => link(id, ''));
+  if (lastLog && k) {
+    if (/→ OPEN/.test(lastLog.msg)) link(/thử lỗi/.test(lastLog.msg) ? 'cb-t-fail' : 'cb-t-trip', 'danger');
+    else if (/→ HALF-OPEN/.test(lastLog.msg)) link('cb-t-wait', 'warning');
+    else if (/→ CLOSED/.test(lastLog.msg)) link('cb-t-reset', 'primary');
+  }
+  const C = sim.C;
+  $('cb-s-closed-sub').textContent = `cửa sổ ${C.size} · ngưỡng ${C.thr * 100}%`;
+  $('cb-s-open-sub').textContent = `chặn ngay · chờ ${C.wait} s`;
+  $('cb-sm-hint').textContent = k ? (k === 'all' ? 'CB chung' : 'CB judge-mysql') : 'không có Circuit Breaker';
+}
+function showTopology(sim, snap, rows) {
+  const busy = snap.busy, C = sim.C;
+  $('cb-judge-sub').textContent = sim.pools.includes('all') ? `luồng ${busy.all}/${C.cap}` : `luồng ${busy.mysql}/${C.cap / 2} · ${busy.mssql}/${C.cap / 2}`;
+  const full = sim.pools.includes('all') ? busy.all >= C.cap : busy.mssql >= C.cap / 2;
+  nodeCls('cb-judge', full ? 'is-danger' : '');
+  const k = smKey(sim), myCb = k ? snap.cb[k] : null, msCb = sim.cbKeys.includes('mssql') ? snap.cb.mssql : (k === 'all' ? snap.cb.all : null);
+  const sick = state.scen === 'hang' || (state.scen === 'recover' && state.cfg === 'still');
+  nodeCls('cb-mysql', sick ? 'is-danger' : state.scen === 'flaky' ? 'is-warn' : '');
+  $('cb-mysql-sub').textContent = myCb ? 'CB ' + STATE_TXT[myCb] : (sick ? 'không phản hồi' : '');
+  if (!myCb && !sick) $('cb-mysql-sub').textContent = state.scen === 'flaky' ? 'lỗi ~35%' : 'hoạt động';
+  $('cb-mssql-sub').textContent = msCb ? 'CB ' + STATE_TXT[msCb] : 'hoạt động';
+  const win = rows[rows.length - 1];
+  const myBlocked = myCb === 'OPEN', msBlocked = msCb === 'OPEN';
+  link('cb-l-in', 'primary');
+  link('cb-l-my', myBlocked ? '' : sick || (win && win.my.bad) ? 'danger' : 'primary', myBlocked ? 'is-dashed' : '');
+  link('cb-l-ms', msBlocked ? '' : win && win.ms.fb ? 'danger' : 'primary', msBlocked ? 'is-dashed' : '');
+  const fbSoFar = rows.reduce((a, r) => a + r.my.fb + r.ms.fb, 0);
+  link('cb-l-q', win && (win.my.fb || win.ms.fb) ? 'warning' : '', 'is-dashed');
+  $('cb-queue-sub').textContent = `chờ: ${fbSoFar} bài`;
+  nodeCls('cb-queue', win && (win.my.fb || win.ms.fb) ? 'is-warn' : '');
+  redraw();
+}
+function summarize(sim, w) {
+  const a = w * sim.S.win, b = a + sim.S.win;
+  const inWin = sim.reqs.filter(r => r.arrive >= a - 1e-9 && r.arrive < b - 1e-9);
+  const part = ws => {
+    const rs = inWin.filter(r => r.w === ws), ok = rs.filter(r => r.kind === 'ok'), fb = rs.filter(r => r.kind === 'fallback');
+    const maxWait = fb.length ? Math.max(...fb.map(r => r.end - r.arrive)) : 0;
+    return { ok: ok.length, fb: fb.length, maxWait, bad: fb.some(r => r.end - r.arrive >= sim.C.T) };
+  };
+  let maxBusy = 0;
+  for (const s of sim.samples) if (s.t >= a && s.t < b) maxBusy = Math.max(maxBusy, Object.values(s.busy).reduce((x, y) => x + y, 0));
+  const snap = snapshot(sim, b), k = smKey(sim);
+  return { a, b, my: part('mysql'), ms: part('mssql'), maxBusy, cb: k ? STATE_TXT[snap.cb[k]] : '—' };
+}
+function cell(p) {
+  const out = [];
+  if (p.ok) out.push(`<span class="good">${p.ok} ✓</span>`);
+  if (p.fb) out.push(`<span class="${p.maxWait >= 5 ? 'bad' : ''}">${p.fb} chấm sau${p.maxWait >= 1 ? ` (≤${Math.round(p.maxWait)} s)` : ''}</span>`);
+  return out.join(' · ') || '—';
+}
+function renderRows(rows) {
+  $('cb-table').querySelector('tbody').innerHTML = rows.length
+    ? rows.map(r => `<tr><td>${r.a}–${r.b}</td><td>${r.cb}</td><td>${cell(r.my)}</td><td>${cell(r.ms)}</td><td class="num">${r.maxBusy}</td></tr>`).join('')
+    : '<tr><td colspan="5">Chọn kịch bản và cách bảo vệ, rồi bấm Chạy.</td></tr>';
+  const sc = $('cb-table').closest('.sim-scroll'); sc.scrollTop = sc.scrollHeight;
+  const sum = f => rows.reduce((a, r) => a + f(r), 0);
+  $('cb-ok').textContent = sum(r => r.my.ok + r.ms.ok);
+  $('cb-fb').textContent = sum(r => r.my.fb + r.ms.fb);
+  $('cb-hit').textContent = sum(r => r.ms.fb);
 }
 
-function simReset() {
-  state = 'CLOSED';
-  history = [];
-  consecutiveSuccessCount = 0;
-  addLog("↺ Circuit Breaker được đặt lại thủ công về CLOSED. Làm sạch sliding window.", "system");
-  updateVisuals();
+function reset() {
+  const key = state.scen + '.' + state.cfg, sim = simulate(state.scen, state.cfg);
+  document.querySelectorAll('#cb-scens .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.scen));
+  document.querySelectorAll('#cb-cfgs .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state.cfg));
+  $('cb-title').textContent = SCENS[state.scen].label; $('cb-hint').textContent = HINTS[key];
+  $('cb-note').textContent = NOTES[key];
+  $('cb-log').textContent = '';
+  log(null, 'Chọn cách bảo vệ rồi bấm Chạy; chạy lần lượt các cách để so sánh.', 'log-info');
+  renderRows([]);
+  const snap = snapshot(sim, -1);
+  showState(sim, snap, null); showTopology(sim, snap, []);
 }
+async function run() {
+  if (state.running) return;
+  state.running = true; $('cb-run').disabled = true;
+  const sim = simulate(state.scen, state.cfg), S = sim.S, rows = [];
+  $('cb-log').textContent = '';
+  log(null, `— ${S.label} · ${S.cfgs[state.cfg]} · ${Math.round(S.dur / S.gap)} bài nộp trong ${S.dur} s —`, 'log-warn');
+  let li = 0, lastLog = null;
+  for (let w = 0; w * S.win < S.dur; w++) {
+    const row = summarize(sim, w), end = row.b;
+    while (li < sim.logs.length && sim.logs[li].t < end) { const l = sim.logs[li++]; log(l.t, l.msg, l.cls); if (/→ (OPEN|CLOSED|HALF)/.test(l.msg)) lastLog = l; }
+    rows.push(row); renderRows(rows);
+    const snap = snapshot(sim, end);
+    showState(sim, snap, lastLog); showTopology(sim, snap, rows);
+    await sleep(650);
+  }
+  // Sự kiện sau khi ngừng nhận bài (lời gọi đang treo, retry cuối) — vẫn thuộc số bài ở trên.
+  while (li < sim.logs.length) { const l = sim.logs[li++]; log(l.t, l.msg, l.cls); }
+  const all = sim.reqs, last = Math.max(...all.map(r => r.end));
+  const ok = all.filter(r => r.kind === 'ok').length, fb = all.length - ok;
+  log(null, `Xong (bài cuối kết thúc ở t=${last.toFixed(1)}s): ${ok} chấm ngay, ${fb} chấm sau, ${all.filter(r => r.w === 'mssql' && r.kind !== 'ok').length} bài SQL Server vạ lây`, fb ? 'log-warn' : 'log-ok');
+  state.running = false; $('cb-run').disabled = false;
+}
+renderChips(); reset();
+$('cb-run').addEventListener('click', run);
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-updateVisuals();
-
 </script>
 </body>
 </html>
-
-
-
-

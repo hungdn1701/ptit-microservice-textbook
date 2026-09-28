@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.5 — Gateway + Eureka — Load Balanced Routing
-    =========================================================
-    Tier 1 HTML migration
-    Layout: Sequence diagram
-    Capture: gen-diagrams.ps1 -> fig-8-5.png -> Typst image()
+    Fig 8.5 — Luồng lb://: Eureka lookup + load balance + route
+    2026-09-28 (WP-B Ch.08): Việt hoá nhãn theo DIAGRAM_DESIGN.md §17 ("Query", "choose", "Forward request"); hai instance
+    đặt tên thống nhất (kbm-core #1 / #2, bản cũ "Core #2"); ba bước đánh số theo văn bản ngay sau hình (Lookup, Load
+    balance, Forward) và StripPrefix=2 (/api/core/questions → /questions).
   -->
-  <title>Fig 8.5 — Gateway + Eureka — Load Balanced Routing | Ch.8</title>
+  <title>Fig 8.5 — Luồng lb:// qua Eureka | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.5">
-
+  <div class="diagram-canvas" data-fig-id="FIG-8.5" data-ref="CH08-SEC">
     <div class="d-seq-container">
-      <!-- Participants -->
       <div class="d-seq-participants">
         <div class="d-seq-actor">
           <div class="d-seq-actor-box d-legacy">Client</div>
@@ -32,60 +29,53 @@
           <div class="d-seq-actor-box d-service">kbm-core #1</div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-service">Core #2</div>
+          <div class="d-seq-actor-box d-service">kbm-core #2</div>
         </div>
       </div>
-
       <div class="d-seq-messages">
-        <!-- 1. Client → Gateway -->
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">GET /api/core/questions</span></div>
           <div style="flex:3.5;"></div>
         </div>
-        <!-- 2. Gateway → Eureka -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">Query: kbm-core instances?</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">1 · instance của kbm-core?</span></div>
           <div style="flex:2.5;"></div>
         </div>
-        <!-- 3. Eureka → Gateway (response) -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">[core:8080, core:8081]</span></div>
           <div style="flex:2.5;"></div>
         </div>
-        <!-- LB decision -->
-        <div class="d-seq-msg d-mt-1 d-mb-1" style="min-height:auto;">
-          <div style="flex:1.5;"></div>
-          <div style="flex:1; display:flex; justify-content:center;">
-            <div class="d-box d-highlight" style="padding:4px 14px; font-size: 12px; white-space:nowrap;">
-              <div class="d-title">Round-Robin: choose kbm-core #1</div>
-            </div>
+        <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
+          <div style="flex:1.1;"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:0.8;">
+            2 · LoadBalancer chọn #1<br>
+            <span>round-robin mặc định</span>
           </div>
-          <div style="flex:2.5;"></div>
+          <div style="flex:3.1;"></div>
         </div>
-        <!-- 4. Gateway → kbm-core #1 -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">Forward request</span></div>
+          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">3 · GET /questions (StripPrefix=2)</span></div>
           <div style="flex:1.5;"></div>
         </div>
-        <!-- 5. kbm-core #1 → Gateway (response) -->
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">Response</span></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:2;"><span class="d-seq-msg-text">response</span></div>
           <div style="flex:1.5;"></div>
         </div>
-        <!-- 6. Gateway → Client (response) -->
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
-          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">Response to client</span></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">response</span></div>
           <div style="flex:3.5;"></div>
         </div>
       </div>
-    </div><!-- /.d-seq-container -->
-
-  </div>
+    </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub">Request sau có thể sang kbm-core #2 — Gateway chỉ cần tên service, không giữ IP hay port.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

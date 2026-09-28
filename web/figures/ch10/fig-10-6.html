@@ -2,55 +2,53 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 10.6 — CDC (Change Data Capture) Pattern | Ch.10</title>
+  <!--
+    Fig 10.6 — Outbox Pattern: sự kiện được ghi cùng giao dịch với dữ liệu nghiệp vụ
+    2026-09-28 (WP-B Ch.10): mũi tên CSS d-arrow-h (roadmap "css-arrow") → d-links tới từng bảng. Title cũ "CDC Pattern" →
+    theo chú thích. Khối kết luận cũ "đảm bảo tính nhất quán" → nói rõ bảo đảm gì (đã commit thì event sẽ được gửi, ít nhất
+    một lần — consumer idempotent, như Ch.05) và đánh đổi polling / CDC theo đoạn ngay sau hình. Chữ theo §17.
+  -->
+  <title>Fig 10.6 — Outbox Pattern | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.6">
-
-    <div class="d-row d-gap-1" style="align-items:stretch;">
-      
-      <div class="d-box d-service d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
+  <div class="diagram-canvas" data-fig-id="FIG-10.6" data-ref="CH10-SEC">
+    <div style="display: grid; grid-template-columns: 170px 260px 190px 170px; gap: 64px; align-items: center; justify-content: center;">
+      <div class="d-box d-service text-center" id="ob-svc">
         <div class="d-title">Service</div>
-        <div class="d-sub">Lưu data + outbox</div>
+        <div class="d-sub">ghi nghiệp vụ + event</div>
       </div>
-      
-      <div class="d-arrow-h" style="align-self:center;"></div>
-      
-      <!-- Transaction Boundary -->
-      <div class="d-box d-storage" style="padding:14px; position:relative; flex: 2;">
-        <div class="d-label d-mb-1 text-center">Transaction Boundary (Database)</div>
-        <div class="d-col d-gap-1">
-          <div class="d-box text-center" style="padding:8px; border: 1px solid var(--diagram-color-line);">
-            <div class="d-title">Business Table</div>
-          </div>
-          <div class="d-box d-warning text-center" style="padding:8px;">
-            <div class="d-title">Outbox Table</div>
-          </div>
+      <div class="d-cluster" style="border-color: var(--diagram-color-info-border);">
+        <span class="d-label d-text-info">Một transaction</span>
+        <div class="d-col" style="gap: 20px; margin-top: 12px;">
+          <div class="d-box d-storage text-center" id="ob-biz"><div class="d-title">Bảng nghiệp vụ</div></div>
+          <div class="d-box d-warning text-center" id="ob-out"><div class="d-title">Bảng outbox</div></div>
         </div>
       </div>
-      
-      <div class="d-arrow-h" style="align-self:center;"></div>
-      
-      <div class="d-box d-highlight d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
-        <div class="d-title">CDC / Poller</div>
-        <div class="d-sub">Đọc Outbox</div>
+      <div class="d-box d-highlight text-center" id="ob-relay">
+        <div class="d-title">Relay</div>
+        <div class="d-sub">polling publisher hoặc CDC (Debezium)</div>
       </div>
-      
-      <div class="d-arrow-h" style="align-self:center;"></div>
-      
-      <div class="d-box d-event d-col text-center" style="justify-content: center; padding:14px; flex: 1;">
+      <div class="d-box d-event text-center" id="ob-broker">
         <div class="d-title">Message Broker</div>
-        <div class="d-sub">Kafka/RabbitMQ</div>
+        <div class="d-sub">Kafka</div>
       </div>
-      
     </div>
 
-    <div class="d-box d-success d-mt-2" style="padding:12px 18px;">
-      <div class="d-title d-mb-1">Giải pháp Outbox Pattern</div>
-      <div class="d-sub" style="line-height:1.5;">Ghi Business Entity và Event vào Outbox table trong cùng 1 Database Transaction. Đảm bảo tính nhất quán giữa việc thay đổi dữ liệu và gửi event.</div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub"><strong>Bảo đảm</strong>: dữ liệu đã commit thì event chắc chắn được gửi — ít nhất một lần, nên consumer phải idempotent.</div>
+      <div class="d-sub"><strong>Chọn relay</strong>: polling dễ làm nhưng thêm tải cho DB và có độ trễ; CDC đọc transaction log, gần thời gian thực, đổi lại phải dựng thêm hạ tầng.</div>
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="ob-svc" data-to="ob-biz" data-from-side="right" data-to-side="left"></path>
+      <path data-from="ob-svc" data-to="ob-out" data-from-side="right" data-to-side="left"></path>
+      <path data-from="ob-out" data-to="ob-relay" data-from-side="right" data-to-side="left" data-label="đọc" data-label-side="above"></path>
+      <path data-from="ob-relay" data-to="ob-broker" data-label="publish" data-label-side="above"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

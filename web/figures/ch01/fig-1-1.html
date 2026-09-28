@@ -4,82 +4,76 @@
   <meta charset="UTF-8">
   <!--
     Fig 1.1 — Tiến hóa kiến trúc phần mềm doanh nghiệp
-    =========================================================
-    Tier 1 HTML migration
+    2026-09-28 (WP-B Ch.01): mũi tên neo theo hộp (d-links) thay 3 <line> toạ độ cứng; bốn cột rộng bằng nhau;
+    chữ theo DIAGRAM_DESIGN.md §17 (tên kiến trúc giữ tiếng Anh, mô tả tiếng Việt).
   -->
-  <title>Fig 1.1 — Evolution of Enterprise Software Architecture | Ch.1</title>
+  <title>Fig 1.1 — Tiến hóa kiến trúc phần mềm doanh nghiệp | Ch.1</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
 
   <div class="diagram-canvas" data-fig-id="FIG-1.1" data-ref="CH01-INTRO">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
 
     <div class="d-cluster">
-      <span class="d-label">Evolution of Enterprise Software Architecture</span>
-      
-      <div class="d-row d-gap-2 d-mt-2" style="align-items: stretch;">
-        
+      <span class="d-label">Tiến hóa kiến trúc phần mềm doanh nghiệp</span>
+
+      <div class="d-row d-mt-2" style="align-items: stretch; gap: 40px;">
+
         <!-- 1990s — Monolith -->
-        <div class="d-box d-legacy d-grow d-col text-left">
+        <div class="d-box d-legacy d-col text-left" id="era-1990" style="flex: 1 1 0; min-width: 0;">
           <div class="d-mb-1 fw-bold" style="font-size: 15px;">1990s</div>
-          <div class="d-title d-mb-2">Monolithic Architecture</div>
+          <div class="d-title d-mb-2">Monolith</div>
           <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
-            <li>Single unified unit</li>
-            <li>Simple, easy initial testing & deployment</li>
-            <li>Limited when scaling organization & system</li>
+            <li>Một khối thống nhất</li>
+            <li>Ban đầu dễ kiểm thử và triển khai</li>
+            <li>Khó mở rộng khi tổ chức và hệ thống lớn lên</li>
           </ul>
         </div>
-
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
 
         <!-- 2000s — SOA -->
-        <div class="d-box d-event d-grow d-col text-left">
+        <div class="d-box d-event d-col text-left" id="era-2000" style="flex: 1 1 0; min-width: 0;">
           <div class="d-mb-1 fw-bold" style="font-size: 15px;">2000s</div>
-          <div class="d-title d-mb-2">Service-Oriented Architecture (SOA)</div>
+          <div class="d-title d-mb-2">SOA</div>
           <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
-            <li>Focus on enterprise-level reuse</li>
-            <li>High dependency on Middleware (ESB, SOAP)</li>
-            <li>High complexity, difficult distributed governance</li>
+            <li>Tái sử dụng ở cấp doanh nghiệp</li>
+            <li>Phụ thuộc middleware (ESB, SOAP)</li>
+            <li>Phức tạp, khó quản trị phân tán</li>
           </ul>
         </div>
-
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
 
         <!-- 2010s — Microservices -->
-        <div class="d-box d-service d-grow d-col text-left">
+        <div class="d-box d-service d-col text-left" id="era-2010" style="flex: 1 1 0; min-width: 0;">
           <div class="d-mb-1 fw-bold" style="font-size: 15px;">2010s</div>
-          <div class="d-title d-mb-2">Microservices Architecture</div>
+          <div class="d-title d-mb-2">Microservices</div>
           <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
-            <li>Emphasizes Independent Deployability</li>
-            <li>Network-based communication (REST, gRPC, Messaging)</li>
-            <li>Driven by Containerization & Cloud Native</li>
+            <li>Mỗi service triển khai độc lập</li>
+            <li>Giao tiếp qua mạng (REST, gRPC, messaging)</li>
+            <li>Đi cùng container và cloud native</li>
           </ul>
         </div>
 
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-        <!-- 2020s — Evolved MS -->
-        <div class="d-box d-storage d-grow d-col text-left">
+        <!-- 2020s — Domain-driven -->
+        <div class="d-box d-storage d-col text-left" id="era-2020" style="flex: 1 1 0; min-width: 0;">
           <div class="d-mb-1 fw-bold" style="font-size: 15px;">2020s</div>
-          <div class="d-title d-mb-2">Domain-Driven Architecture</div>
+          <div class="d-title d-mb-2">Domain-Oriented</div>
           <ul style="padding-left: 16px; margin: 0; line-height: 1.55;">
-            <li>Domain-Oriented Microservices (DOMA)</li>
-            <li>The return of Modular Monolith</li>
-            <li>Optimized for fast flow delivery</li>
+            <li>Microservices hướng domain (DOMA)</li>
+            <li>Modular Monolith trở lại</li>
+            <li>Tối ưu cho fast flow</li>
           </ul>
         </div>
 
       </div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="era-1990" data-to="era-2000"></path>
+      <path data-from="era-2000" data-to="era-2010"></path>
+      <path data-from="era-2010" data-to="era-2020"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

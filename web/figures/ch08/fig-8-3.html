@@ -1,126 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.3 — API Gateway vs Backend for Frontend (BFF)
-    =========================================================
-    Tier 1 HTML migration
-    Layout: Side by side comparison of Gateway vs BFF
-    Capture: gen-diagrams.ps1 -> fig-8-3.png -> Typst image()
+    Fig 8.3 — API Gateway (một gateway chung) và BFF (gateway riêng cho từng client)
+    2026-09-28 (WP-B Ch.08): mô tả tiếng Anh (commit 68fe690) → tiếng Việt theo DIAGRAM_DESIGN.md §17; 10 mũi tên
+    <svg><line> rời → d-links. Thêm đánh đổi và lựa chọn của KBM theo §8.1 (một gateway cho LMS lõi; BFF khi client có nhu
+    cầu khác hẳn, do đội frontend quản lý — Newman [4a, Ch.4]).
   -->
-  <title>Fig 8.3 — API Gateway vs Backend for Frontend (BFF) | Ch.8</title>
+  <title>Fig 8.3 — API Gateway và BFF | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.3">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-grid-2 d-gap-3" style="align-items:start;">
-
-      <!-- LEFT: Single Gateway -->
-      <div class="d-cluster" style="padding:18px;">
-        <div class="d-label d-mb-2 text-center" style="position:static;">API Gateway (Single)</div>
-
-        <div class="d-col d-center">
-          <!-- Clients row -->
-          <div class="d-cluster" style="padding:8px 12px;">
-            <div class="d-label d-mb-1 text-center" style="position:static;">Clients</div>
-            <div class="d-row d-gap-2" style="justify-content:center;">
-              <div class="d-box d-note text-center" style="flex:1; min-width:80px; padding:10px 8px;">
-                <div class="d-title">Web</div>
-              </div>
-              <div class="d-box d-note text-center" style="flex:1; min-width:80px; padding:10px 8px;">
-                <div class="d-title">Mobile</div>
-              </div>
-            </div>
-          </div>
-
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-          <!-- Gateway -->
-          <div class="d-box d-gateway text-center" style="width:100%; padding:10px;">
-            <div class="d-title">API Gateway</div>
-          </div>
-
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-          <!-- Services -->
-          <div class="d-cluster" style="width:100%; padding:10px;">
-            <div class="d-box d-service text-center" style="padding:10px;">
-              <div class="d-title">Services</div>
-            </div>
-          </div>
+  <div class="diagram-canvas" data-fig-id="FIG-8.3" data-ref="CH08-SEC">
+    <div class="d-grid-2 d-gap-3" style="align-items: stretch;">
+      <div class="d-cluster d-col">
+        <span class="d-label">Một API Gateway chung</span>
+        <div style="display: grid; grid-template-columns: 150px 150px; gap: 56px 48px; justify-content: center; margin: 16px 0 20px;">
+          <div class="d-box d-note text-center" id="sg-web"><div class="d-title">Web</div></div>
+          <div class="d-box d-note text-center" id="sg-mob"><div class="d-title">Mobile</div></div>
+          <div class="d-box d-gateway text-center" id="sg-gw" style="grid-column: 1 / 3;"><div class="d-title">API Gateway</div></div>
+          <div class="d-box d-service text-center" id="sg-svc" style="grid-column: 1 / 3;"><div class="d-title">Services</div></div>
         </div>
-
-        <!-- Description -->
-        <div class="d-sep d-mt-2 d-mb-1"></div>
-        <div class="d-sub text-center" style="line-height:1.5;">
-          1 gateway for all clients<br>
-          Simple, but hard to optimize for each client type
-        </div>
+        <div class="d-sub" style="margin-top: auto;"><strong>Được</strong>: một chỗ để vận hành, đơn giản cho đội nhỏ.</div>
+        <div class="d-sub"><strong>Trả giá</strong>: khó tối ưu response cho từng loại client.</div>
+        <div class="d-sub d-mt-1 fw-semibold">KBM: một gateway cho phân hệ LMS lõi.</div>
       </div>
 
-      <!-- RIGHT: BFF -->
-      <div class="d-cluster" style="padding:18px;">
-        <div class="d-label d-mb-2 text-center" style="position:static;">Backend for Frontend (BFF)</div>
-
-        <div class="d-col d-center">
-          <!-- Clients row -->
-          <div class="d-row d-gap-2" style="width:100%;">
-            <div class="d-box d-note text-center" style="flex:1; padding:10px 8px;">
-              <div class="d-title">Web</div>
-            </div>
-            <div class="d-box d-note text-center" style="flex:1; padding:10px 8px;">
-              <div class="d-title">Mobile</div>
-            </div>
-          </div>
-
-          <!-- Separate arrows -->
-          <div class="d-row d-gap-2" style="width:100%;">
-            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          </div>
-
-          <!-- Separate BFFs -->
-          <div class="d-row d-gap-2" style="width:100%;">
-            <div class="d-box d-gateway text-center" style="flex:1; padding:10px 8px;">
-              <div class="d-title">Web BFF</div>
-            </div>
-            <div class="d-box d-gateway text-center" style="flex:1; padding:10px 8px;">
-              <div class="d-title">Mobile BFF</div>
-            </div>
-          </div>
-
-          <!-- Converge arrows -->
-          <div class="d-row d-gap-2" style="width:100%;">
-            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-            <div style="flex:1; display:flex; justify-content:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          </div>
-
-          <!-- Services -->
-          <div class="d-cluster" style="width:100%; padding:10px;">
-            <div class="d-box d-service text-center" style="padding:10px;">
-              <div class="d-title">Services</div>
-            </div>
-          </div>
+      <div class="d-cluster d-col">
+        <span class="d-label">Backend for Frontend (BFF)</span>
+        <div style="display: grid; grid-template-columns: 150px 150px; gap: 56px 48px; justify-content: center; margin: 16px 0 20px;">
+          <div class="d-box d-note text-center" id="bf-web"><div class="d-title">Web</div></div>
+          <div class="d-box d-note text-center" id="bf-mob"><div class="d-title">Mobile</div></div>
+          <div class="d-box d-gateway text-center" id="bf-wbff"><div class="d-title">Web BFF</div></div>
+          <div class="d-box d-gateway text-center" id="bf-mbff"><div class="d-title">Mobile BFF</div></div>
+          <div class="d-box d-service text-center" id="bf-svc" style="grid-column: 1 / 3;"><div class="d-title">Services</div></div>
         </div>
-
-        <!-- Description -->
-        <div class="d-sep d-mt-2 d-mb-1"></div>
-        <div class="d-sub text-center" style="line-height:1.5;">
-          Separate BFF for each client type<br>
-          Optimize response for each client type
-        </div>
+        <div class="d-sub" style="margin-top: auto;"><strong>Được</strong>: mỗi client có API vừa đúng nhu cầu (vd. mobile gom nhiều lời gọi thành một).</div>
+        <div class="d-sub"><strong>Trả giá</strong>: thêm service phải viết và vận hành — hợp khi đội frontend tự quản lý BFF của mình.</div>
       </div>
-
     </div>
-  </div>
+
+    <svg class="d-links">
+      <path data-from="sg-web" data-to="sg-gw" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="sg-mob" data-to="sg-gw" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="sg-gw" data-to="sg-svc"></path>
+      <path data-from="bf-web" data-to="bf-wbff"></path>
+      <path data-from="bf-mob" data-to="bf-mbff"></path>
+      <path data-from="bf-wbff" data-to="bf-svc" data-from-side="bottom" data-to-side="top" data-to-align></path>
+      <path data-from="bf-mbff" data-to="bf-svc" data-from-side="bottom" data-to-side="top" data-to-align></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

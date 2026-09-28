@@ -2,41 +2,48 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.4 — Centralized Log Aggregation Pipeline | Ch.11</title>
+  <!--
+    Fig 11.4 — Pipeline gom logs tập trung: từ service đến nơi lưu trữ
+    2026-09-28 (WP-B Ch.11): ba service chung một mũi tên (roadmap "3 mũi tên gộp làm 1") → mỗi service một d-link tới log
+    shipper. Nhãn "Application Services" → tiếng Việt (§17). Công cụ ghép theo đúng hai stack của bảng tbl:elk_vs_plg_stack
+    (ELK: Logstash/Elasticsearch/Kibana; PLG: Promtail/Loki/Grafana — KBM chọn PLG) thay cho Filebeat/Fluentd lẫn lộn.
+  -->
+  <title>Fig 11.4 — Pipeline gom logs tập trung | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.4">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-    <div class="d-row d-gap-1" style="align-items:stretch;">
-      <div class="d-col d-gap-1" style="flex:1;">
-        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Gateway</div></div>
-        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Core</div></div>
-        <div class="d-box d-service text-center" style="padding:10px;"><div class="d-title" style="font-size:12px;">Judge</div></div>
-        <div class="d-label text-center">Application Services</div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.4" data-ref="CH11-SEC">
+    <div style="display: grid; grid-template-columns: 150px 200px 200px 200px; grid-template-rows: repeat(3, auto); gap: 16px 64px; align-items: center; justify-content: center;">
+      <div class="d-box d-service text-center" id="p4-gw"><div class="d-title">Gateway</div></div>
+      <div class="d-box d-event text-center" id="p4-ship" style="grid-column: 2; grid-row: 1 / 4; align-self: stretch; display: flex; flex-direction: column; justify-content: center;">
+        <div class="d-title">Thu gom log</div>
+        <div class="d-sub">Promtail (PLG) · Logstash (ELK)</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-event text-center" style="flex:1; padding:14px; align-self:center;">
-        <div class="d-title">Log Shipper</div>
-        <div class="d-sub">Filebeat / Fluentd</div>
+      <div class="d-box d-highlight text-center" id="p4-store" style="grid-column: 3; grid-row: 1 / 4;">
+        <div class="d-title">Lưu trữ log</div>
+        <div class="d-sub">Loki · Elasticsearch</div>
       </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-highlight text-center" style="flex:1; padding:14px; align-self:center;">
-        <div class="d-title">Log Storage</div>
-        <div class="d-sub">Elasticsearch / Loki</div>
-      </div>
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      <div class="d-box d-note text-center" style="flex:1; padding:14px; align-self:center;">
+      <div class="d-box d-note text-center" id="p4-dash" style="grid-column: 4; grid-row: 1 / 4;">
         <div class="d-title">Dashboard</div>
-        <div class="d-sub">Kibana / Grafana</div>
+        <div class="d-sub">Grafana · Kibana</div>
       </div>
+      <div class="d-box d-service text-center" id="p4-core" style="grid-column: 1; grid-row: 2;"><div class="d-title">Core</div></div>
+      <div class="d-box d-service text-center" id="p4-judge" style="grid-column: 1; grid-row: 3;"><div class="d-title">Judge</div></div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Service chỉ ghi JSON ra stdout; bộ thu gom đọc và chuyển đi. PLG nhẹ, đi chung Grafana với metrics — hợp nhóm nhỏ như KBM; ELK tìm kiếm toàn văn mạnh hơn nhưng tốn tài nguyên hơn nhiều.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="p4-gw" data-to="p4-ship" data-from-side="right" data-to-side="left" data-to-align></path>
+      <path data-from="p4-core" data-to="p4-ship" data-from-side="right" data-to-side="left" data-to-align></path>
+      <path data-from="p4-judge" data-to="p4-ship" data-from-side="right" data-to-side="left" data-to-align></path>
+      <path data-from="p4-ship" data-to="p4-store"></path>
+      <path data-from="p4-store" data-to="p4-dash"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

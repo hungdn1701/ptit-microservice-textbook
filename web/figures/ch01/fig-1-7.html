@@ -3,116 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 1.7 — Decision Framework — 3 câu hỏi trước khi áp dụng Microservices
-    =========================================================
-    Tier 1 HTML migration
+    Fig 1.7 — Khung ra quyết định: ba câu hỏi trước khi chọn microservices
+    2026-09-28 (WP-B Ch.01): vẽ lại — hình thoi bị cắt chữ, 7 <line> + 13 nhãn position:absolute (nhãn "Unclear"
+    không có mũi tên) → lưới 2 cột, câu hỏi là hộp có số thứ tự, mọi nhánh là d-links có nhãn.
+    Chữ theo DIAGRAM_DESIGN.md §17. Cùng kiểu với fig-1-4.
   -->
-  <title>Fig 1.7 — Decision Framework: 3 Microservices Questions | Ch.1</title>
+  <title>Fig 1.7 — Khung ra quyết định: ba câu hỏi | Ch.1</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-1.7" data-ref="CH01-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
+    <div style="display: grid; grid-template-columns: 330px 380px; gap: 52px 96px; align-items: center; margin: 0 auto; width: fit-content;">
 
-
-    <div style="display: grid; grid-template-columns: 240px 60px 320px; align-items: center; justify-items: center; gap: 12px 0; margin: 0 auto; width: fit-content;">
-
-      <!-- Q1 -->
-      <div style="grid-column: 1; grid-row: 1; width: 100%;">
-        <div class="d-box d-warning text-center">
-          <div class="d-title">Microservices Not Needed Yet</div>
-          <div class="d-sub">Prioritize refactoring current system</div>
-        </div>
+      <div class="d-box d-warning text-center" id="q-notyet" style="grid-column: 1; grid-row: 1;">
+        <div class="d-title">Chưa cần microservices</div>
+        <div class="d-sub">ưu tiên tái cấu trúc hệ thống hiện tại</div>
       </div>
-      <div style="grid-column: 2; grid-row: 1;">
-        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
-        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Unclear</span>
-      </div>
-      </div>
-      <div style="grid-column: 3; grid-row: 1; width: 100%;">
-        <div class="d-condition d-note">
-          <div class="d-title"><span class="d-step">1</span> What is the core problem to solve?</div>
-        </div>
+      <div class="d-box d-note text-center" id="q-1" style="grid-column: 2; grid-row: 1;">
+        <div class="d-title"><span class="d-step">1</span> Vấn đề cốt lõi cần giải quyết là gì?</div>
       </div>
 
-      <!-- Arrow Down -->
-      <div style="grid-column: 3; grid-row: 2;">
-        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
-        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Clear</span>
+      <div class="d-box d-domain text-center" id="q-modular" style="grid-column: 1; grid-row: 2;">
+        <div class="d-title">Thử Modular Monolith</div>
+        <div class="d-sub">rủi ro thấp hơn, dễ vận hành hơn</div>
       </div>
-      </div>
-
-      <!-- Q2 -->
-      <div style="grid-column: 1; grid-row: 3; width: 100%;">
-        <div class="d-box d-domain text-center">
-          <div class="d-title">Try Modular Monolith</div>
-          <div class="d-sub">Lower risk, easier to operate</div>
-        </div>
-      </div>
-      <div style="grid-column: 2; grid-row: 3;">
-        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
-        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
-      </div>
-      </div>
-      <div style="grid-column: 3; grid-row: 3; width: 100%;">
-        <div class="d-condition d-note">
-          <div class="d-title"><span class="d-step">2</span> Can it be solved with a simpler solution?</div>
-        </div>
+      <div class="d-box d-note text-center" id="q-2" style="grid-column: 2; grid-row: 2;">
+        <div class="d-title"><span class="d-step">2</span> Giải pháp đơn giản hơn có đủ không?</div>
       </div>
 
-      <!-- Arrow Down -->
-      <div style="grid-column: 3; grid-row: 4;">
-        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
-        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
+      <div class="d-box d-warning text-center" id="q-train" style="grid-column: 1; grid-row: 3;">
+        <div class="d-title">Ưu tiên đào tạo</div>
+        <div class="d-sub">đầu tư DevOps và hệ phân tán</div>
       </div>
-      </div>
-
-      <!-- Q3 -->
-      <div style="grid-column: 1; grid-row: 5; width: 100%;">
-        <div class="d-box d-warning text-center">
-          <div class="d-title">Prioritize Training</div>
-          <div class="d-sub">Invest in DevOps &amp; Distributed Systems</div>
-        </div>
-      </div>
-      <div style="grid-column: 2; grid-row: 5;">
-        <div class="" style="position: relative; width: 60px; height: 24px; margin: 0 auto;">
-        <svg width="60" height="24" style="overflow:visible; position: absolute; left: 0; top: 0;"><line x1="60" y1="12" x2="2" y2="12" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">No</span>
-      </div>
-      </div>
-      <div style="grid-column: 3; grid-row: 5; width: 100%;">
-        <div class="d-condition d-note">
-          <div class="d-title"><span class="d-step">3</span> Does the team have enough operational maturity?</div>
-        </div>
+      <div class="d-box d-note text-center" id="q-3" style="grid-column: 2; grid-row: 3;">
+        <div class="d-title"><span class="d-step">3</span> Đội đã đủ trưởng thành về vận hành?</div>
       </div>
 
-      <!-- Arrow Down -->
-      <div style="grid-column: 3; grid-row: 6;">
-        <div class="" style="position: relative; width: 24px; height: 24px; margin: 0 auto;">
-        <svg width="2" height="24" style="overflow:visible; position: absolute; left: 11px; top: 0;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-        <span class="d-arrow-label" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);">Yes</span>
+      <div class="d-box d-domain text-center" id="q-go" style="grid-column: 2; grid-row: 4;">
+        <div class="d-title">Cân nhắc Microservices</div>
+        <div class="d-sub">bắt đầu với 1–2 service, tránh Big Bang Rewrite</div>
       </div>
-      </div>
-
-      <!-- Outcome: Go Microservices -->
-      <div style="grid-column: 3; grid-row: 7; width: 100%;">
-        <div class="d-box d-success text-center">
-          <div class="d-title">Consider adopting Microservices Architecture</div>
-          <div class="d-sub">Start with 1-2 services, avoid Big Bang Rewrite</div>
-        </div>
-      </div>
-
     </div>
 
+    <svg class="d-links">
+      <path data-from="q-1" data-to="q-notyet" data-label="Chưa rõ"></path>
+      <path data-from="q-1" data-to="q-2" data-label="Rõ"></path>
+      <path data-from="q-2" data-to="q-modular" data-label="Có"></path>
+      <path data-from="q-2" data-to="q-3" data-label="Không"></path>
+      <path data-from="q-3" data-to="q-train" data-label="Chưa"></path>
+      <path data-from="q-3" data-to="q-go" data-label="Rồi"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

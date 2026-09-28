@@ -3,115 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 7.5 — Lộ trình tách Database — 5 bước
-    =========================================================
-    Tier 1 HTML migration từ fig-7-5.svg
-    Layout: Horizontal 5-step pipeline + CSS gradient risk bar + detail note
-    NOTE: linearGradient risk bar replaced with CSS gradient div
-    Capture: gen-diagrams.ps1 → fig-7-5.png → Typst image()
+    Fig 7.5 — Năm chiến lược tách database (Newman [4b, Ch.4]) và 3 giai đoạn KBM chọn
+    2026-09-28 (WP-B Ch.07): mũi tên <svg><line> rời → d-links. Khối "LMS — Lộ trình đề xuất" cũ liệt kê 5 bước
+    (VIEW → API → schema → Kafka CDC → tách instance), trái với chú thích hình và bảng tbl:kbm-db-migration: KBM chỉ chọn
+    3 giai đoạn Separate Schema → API Wrapping → Full Split (nếu cần). Nay vẽ đúng 3 giai đoạn đó, kèm lúc nào dừng
+    (tip "Khi nào đủ?"). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 7.5 — Lộ trình tách Database — 5 bước | Ch.7</title>
+  <title>Fig 7.5 — Năm chiến lược tách database | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
-
-  <div class="diagram-canvas" data-fig-id="FIG-7.5" style="min-height:620px;" data-ref="CH07-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <!-- 5-step pipeline -->
-    <div class="d-row d-mb-1 d-gap-1" style="align-items:center;">
-
-      <!-- Step 1 -->
-      <div class="d-box d-success d-grow text-center" style="min-width:0;">
+  <div class="diagram-canvas" data-fig-id="FIG-7.5" data-ref="CH07-SEC">
+    <div class="d-label d-mb-1">Danh mục 5 chiến lược — xếp từ ít đến nhiều rủi ro</div>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 44px;">
+      <div class="d-box d-success text-center" id="ds-1">
         <div class="d-title"><span class="d-step">1</span> Database View</div>
-        <div class="d-sub">read-only projection</div>
+        <div class="d-sub d-mt-1">view chỉ đọc cho service mới, ẩn schema gốc</div>
       </div>
-
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Step 2 -->
-      <div class="d-box d-note d-grow text-center" style="min-width:0;">
+      <div class="d-box d-note text-center" id="ds-2">
         <div class="d-title"><span class="d-step">2</span> Wrapping Service</div>
-        <div class="d-sub">API trước DB</div>
+        <div class="d-sub d-mt-1">API đặt trước database, mọi truy cập đi qua đó</div>
       </div>
-
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Step 3 -->
-      <div class="d-box d-event d-grow text-center" style="min-width:0;">
+      <div class="d-box d-event text-center" id="ds-3">
         <div class="d-title"><span class="d-step">3</span> Separate Schema</div>
-        <div class="d-sub">namespace isolation</div>
+        <div class="d-sub d-mt-1">schema riêng, cùng DB server</div>
       </div>
-
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Step 4 -->
-      <div class="d-box d-warning d-grow text-center" style="min-width:0;">
+      <div class="d-box d-warning text-center" id="ds-4">
         <div class="d-title"><span class="d-step">4</span> Data Transfer</div>
-        <div class="d-sub">sync/async copy</div>
+        <div class="d-sub d-mt-1">copy sang DB mới, sync bằng event hoặc CDC</div>
       </div>
-
-      <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Step 5 -->
-      <div class="d-box d-service d-grow text-center" style="min-width:0;">
-        <div class="d-title"><span class="d-step">5</span> Full Database Split</div>
-        <div class="d-sub">independent DBs</div>
+      <div class="d-box d-service text-center" id="ds-5">
+        <div class="d-title"><span class="d-step">5</span> Full Split</div>
+        <div class="d-sub d-mt-1">DB server riêng cho từng service</div>
       </div>
-
     </div>
 
-    <!-- Risk gradient bar -->
-    <div class="d-mb-1" style="padding: 0 2px;">
-      <div style="height:8px; background: linear-gradient(90deg, var(--diagram-color-success-border) 0%, var(--diagram-color-warning-border) 50%, var(--diagram-color-danger-border) 100%); border-radius:4px;"></div>
+    <div class="d-mt-2">
+      <div style="height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--diagram-color-success-border) 0%, var(--diagram-color-warning-border) 50%, var(--diagram-color-danger-border) 100%);"></div>
       <div class="d-mt-1 d-text-muted" style="display: flex; justify-content: space-between;">
-        <span>⬅ Rủi ro: Thấp</span>
-        <span>Rủi ro: Cao ➡</span>
+        <span>ít rủi ro, còn coupling</span>
+        <span>cô lập tối đa, tốn công nhất</span>
       </div>
     </div>
 
-    <div class="d-sep"></div>
-
-    <!-- LMS detail steps note -->
-    <div class="d-box d-note">
-      <div class="d-title d-mb-1" >LMS — Lộ trình đề xuất</div>
-      <div class="d-stack d-gap-1" >
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Bước 1:</span>
-          Tạo VIEW cho Assignment đọc từ Core tables (không thay đổi code)
+    <div class="d-cluster d-mt-3">
+      <span class="d-label">KBM chọn 3 giai đoạn (bảng Lộ trình tách database)</span>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 72px; margin-top: 12px;">
+        <div class="d-box d-event text-center" id="kg-1">
+          <div class="d-title">Giai đoạn 1 · Separate Schema</div>
+          <div class="d-sub d-mt-1"><code>app_db</code> → schema <code>core</code> + <code>assignment</code></div>
+          <div class="d-sub d-text-muted">effort thấp</div>
         </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Bước 2:</span>
-          Tạo API endpoint trong Core để Assignment gọi thay vì query trực tiếp DB
+        <div class="d-box d-note text-center" id="kg-2">
+          <div class="d-title">Giai đoạn 2 · API Wrapping</div>
+          <div class="d-sub d-mt-1">thay truy vấn chéo schema bằng Feign call</div>
+          <div class="d-sub d-text-muted">effort trung bình</div>
         </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Bước 3:</span>
-          Tách schema: <code style="font-family:monospace; ">core_schema</code> và
-          <code style="font-family:monospace; ">assignment_schema</code> trong cùng PostgreSQL
-        </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Bước 4:</span>
-          Sync data qua Kafka CDC (Change Data Capture) từ core → assignment
-        </div>
-        <div style="font-size:12px;">
-          <span class="fw-semibold">Bước 5:</span>
-          Tách thành 2 PostgreSQL instances hoàn toàn độc lập
+        <div class="d-box d-service text-center" id="kg-3" style="border-style: dashed;">
+          <div class="d-title">Giai đoạn 3 · Full Split</div>
+          <div class="d-sub d-mt-1">tách PostgreSQL server — chỉ khi cần</div>
+          <div class="d-sub d-text-muted">effort cao</div>
         </div>
       </div>
-      <div class="d-sep" style="margin:8px 0;"></div>
-      <div class="text-center">
-         Mỗi bước rollback-able. Không cần làm tất cả cùng lúc.
-      </div>
+      <div class="d-sub d-mt-2">Mỗi giai đoạn là một điểm dừng được: Giai đoạn 1 đã chặn schema coupling ngầm; Giai đoạn 2 cần khi team lớn lên và muốn deploy độc lập thật sự; Giai đoạn 3 chỉ đáng làm khi các service cần scale khác nhau hoặc cần polyglot persistence.</div>
     </div>
 
+    <svg class="d-links">
+      <path data-from="ds-1" data-to="ds-2"></path>
+      <path data-from="ds-2" data-to="ds-3"></path>
+      <path data-from="ds-3" data-to="ds-4"></path>
+      <path data-from="ds-4" data-to="ds-5"></path>
+      <path data-from="kg-1" data-to="kg-2"></path>
+      <path data-from="kg-2" data-to="kg-3" class="is-dashed" data-label="nếu cần" data-label-side="above"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

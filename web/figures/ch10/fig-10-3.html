@@ -2,57 +2,53 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 10.3 — Database: Shared vs Per-Service | Ch.10</title>
+  <!--
+    Fig 10.3 — Shared Database (coupled) và Database-per-Service (decoupled)
+    2026-09-28 (WP-B Ch.10): 4 mũi tên <svg><line> rời → d-links; hai vùng kết luận tiếng Anh → tiếng Việt theo
+    DIAGRAM_DESIGN.md §17, viết dạng đánh đổi (per-service cũng có giá: dữ liệu liên service phải qua API/event).
+    Thêm ghi chú KBM theo đoạn ngay sau hình (Core và Assignment chia sẻ DB, migration không độc lập).
+  -->
+  <title>Fig 10.3 — Shared Database và Database-per-Service | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.3">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-grid-2 d-gap-2" style="align-items:start;">
-      <!-- Left: Shared DB -->
-      <div class="d-cluster" style="padding:16px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Shared Database</div>
-        <div class="d-row d-gap-1 d-mb-1" style="justify-content:center;">
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Core</div></div>
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Assignment</div></div>
+  <div class="diagram-canvas" data-fig-id="FIG-10.3" data-ref="CH10-SEC">
+    <div class="d-grid-2 d-gap-3" style="align-items: stretch;">
+      <div class="d-cluster d-col">
+        <span class="d-label">Shared Database</span>
+        <div style="display: grid; grid-template-columns: 170px 170px; gap: 56px 40px; justify-content: center; margin: 16px 0 20px;">
+          <div class="d-box d-service text-center" id="c3-sc"><div class="d-title">Core</div></div>
+          <div class="d-box d-service text-center" id="c3-sa"><div class="d-title">Assignment</div></div>
+          <div class="d-box d-danger text-center" id="c3-sdb" style="grid-column: 1 / 3;"><div class="d-title">Shared DB</div></div>
         </div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-        </div>
-        <div class="d-box d-storage text-center" style="padding:12px;">
-          <div class="d-title">Shared DB</div>
-        </div>
-        <div class="d-sep"></div>
-        <div class="d-zone d-zone-danger" >Tight coupling · Schema changes affect all</div>
+        <div class="d-sub" style="margin-top: auto;"><strong>Được</strong>: join, transaction ngay trong một DB.</div>
+        <div class="d-sub"><strong>Trả giá</strong>: đổi schema ảnh hưởng cả hai; không migrate, deploy độc lập được.</div>
       </div>
-
-      <!-- Right: Per-Service -->
-      <div class="d-cluster" style="padding:16px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Database-per-Service</div>
-        <div class="d-row d-gap-1 d-mb-1" style="justify-content:center;">
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Core</div></div>
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;"><div class="d-title">Assignment</div></div>
+      <div class="d-cluster d-col">
+        <span class="d-label">Database-per-Service</span>
+        <div style="display: grid; grid-template-columns: 170px 170px; gap: 56px 40px; justify-content: center; margin: 16px 0 20px;">
+          <div class="d-box d-service text-center" id="c3-pc"><div class="d-title">Core</div></div>
+          <div class="d-box d-service text-center" id="c3-pa"><div class="d-title">Assignment</div></div>
+          <div class="d-box d-storage text-center" id="c3-pcdb"><div class="d-title">Core DB</div></div>
+          <div class="d-box d-storage text-center" id="c3-padb"><div class="d-title">Assignment DB</div></div>
         </div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-          <div style="flex:1; text-align:center;"><svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg></div>
-        </div>
-        <div class="d-row d-gap-1">
-          <div class="d-box d-storage text-center" style="flex:1; padding:12px;"><div class="d-title">Core DB</div></div>
-          <div class="d-box d-storage text-center" style="flex:1; padding:12px;"><div class="d-title">Assignment DB</div></div>
-        </div>
-        <div class="d-sep"></div>
-        <div class="d-zone d-zone-success" >Loosely coupled · Independent deployment</div>
+        <div class="d-sub" style="margin-top: auto;"><strong>Được</strong>: đổi schema, migrate, deploy từng service riêng.</div>
+        <div class="d-sub"><strong>Trả giá</strong>: dữ liệu của nhau phải lấy qua API hoặc event, chấp nhận eventual consistency.</div>
       </div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub">KBM hiện ở bên trái: Core và Assignment dùng chung database — thứ tự tách ở Hình 10.4.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="c3-sc" data-to="c3-sdb" data-from-side="bottom" data-to-side="top" data-to-align class="is-danger" data-arrow="both"></path>
+      <path data-from="c3-sa" data-to="c3-sdb" data-from-side="bottom" data-to-side="top" data-to-align class="is-danger" data-arrow="both"></path>
+      <path data-from="c3-pc" data-to="c3-pcdb" data-arrow="both"></path>
+      <path data-from="c3-pa" data-to="c3-padb" data-arrow="both"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

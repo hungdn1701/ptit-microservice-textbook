@@ -4,177 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OAuth2 & JWT — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="OAuth2 & JWT pattern — xác thực phi trạng thái với token-based authentication cho microservices.">
+  <meta name="description" content="OAuth2 & JWT — phát hành, xác minh và làm mới token trong microservices; HS256 so với RS256 + JWKS, refresh token rotation.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="OAuth2 & JWT — Pattern Story">
-  <meta property="og:description" content="OAuth2 & JWT pattern — xác thực phi trạng thái với token-based authentication cho microservices.">
+  <meta property="og:description" content="OAuth2 & JWT — phát hành, xác minh và làm mới token trong microservices; HS256 so với RS256 + JWKS, refresh token rotation.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
-  <style>
-    /* Custom CSS for JWT & OAuth2 Simulator */
-    .simulator-container {
-      display: grid;
-      grid-template-columns: 1.3fr 0.7fr;
-      gap: 24px;
-      margin: 32px 0;
-    }
-    @media (max-width: 768px) {
-      .simulator-container {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .canvas-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-    }
-
-    .algo-switch {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      background: rgba(255,255,255,0.02);
-      padding: 4px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-    .algo-btn {
-      flex: 1;
-      padding: 8px 12px;
-      font-size: 11.5px;
-      font-weight: 700;
-      background: transparent;
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-family: var(--font-sans);
-      transition: all 0.2s ease;
-    }
-    .algo-btn:hover {
-      color: var(--text-main);
-    }
-    .algo-btn.active {
-      background: var(--primary);
-      color: var(--on-primary);
-    }
-
-    .flow-canvas {
-      min-height: 380px;
-      border: 1px dashed var(--border);
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: var(--radius-md);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-      padding: 20px;
-    }
-
-    .node {
-      position: absolute;
-      background: var(--bg-surface);
-      border: 2px solid var(--border);
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      color: var(--text-main);
-      text-align: center;
-      box-shadow: var(--shadow-medium);
-      z-index: 2;
-      font-size: 11.5px;
-      line-height: 1.4;
-    }
-    
-    .node-client { top: 150px; left: 24px; border-color: var(--primary); color: var(--primary); }
-    .node-auth { top: 20px; right: 24px; border-color: var(--success); color: var(--success); width: 180px; }
-    .node-api { bottom: 20px; right: 24px; border-color: var(--info); color: var(--info); width: 180px; }
-
-    /* Animated Messages */
-    .msg-bubble {
-      position: absolute;
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      background: var(--bg-surface);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      z-index: 10;
-      opacity: 0;
-      white-space: nowrap;
-      font-weight: 700;
-      box-shadow: var(--shadow-glow);
-    }
-    .msg-req { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
-    .msg-token { background: var(--success-dim); border-color: var(--success); color: var(--success); }
-    .msg-err { background: var(--danger-dim); border-color: var(--danger); color: var(--danger); }
-
-    /* Animations */
-    @keyframes loginReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 40px; left: calc(100% - 270px); opacity: 1; } }
-    @keyframes tokenRes { 0% { top: 40px; left: calc(100% - 270px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
-    @keyframes apiReq { 0% { top: 150px; left: 80px; opacity: 1; } 100% { top: 310px; left: calc(100% - 270px); opacity: 1; } }
-    @keyframes apiRes { 0% { top: 310px; left: calc(100% - 270px); opacity: 1; } 100% { top: 150px; left: 80px; opacity: 1; } }
-
-    /* Token Visualizer */
-    .token-viz {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      word-break: break-all;
-      background: var(--bg-terminal, #0a0b0f);
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      line-height: 1.5;
-    }
-    .t-header { color: #f43f5e; font-weight: 700; }  /* red header */
-    .t-payload { color: #a855f7; font-weight: 700; } /* purple payload */
-    .t-sign { color: #3b82f6; font-weight: 700; }    /* blue signature */
-    
-    .token-status {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 12px;
-    }
-
-    .dashboard-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .sim-log {
-      background: var(--bg-terminal, #0a0b0f);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      height: 180px;
-      overflow-y: auto;
-      box-shadow: var(--terminal-shadow);
-    }
-    .log-line {
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
-    .log-time { color: var(--text-dim); margin-right: 6px; }
-    .log-sys { color: var(--text-main); }
-    .log-ok { color: var(--success); }
-    .log-err { color: var(--danger); }
-    .log-warn { color: var(--warning); }
-  </style>
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
 </head>
 <body>
 
@@ -192,12 +30,12 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">JWT & OAuth2 Flow</h1>
-  <p class="pattern-subtitle">Cơ chế phát hành, xác thực Token và mã hóa chữ ký (Symmetric vs Asymmetric)</p>
+  <p class="pattern-subtitle">Phát hành, xác minh và làm mới token — HS256 so với RS256 + JWKS</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Security Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">IETF (RFC 6749, RFC 7519)</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2012 / 2015</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.9 §9.2</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.9 §9.2–9.4, §9.6</span></div>
   </div>
 </header>
 
@@ -211,20 +49,20 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Trong Microservices, nếu mỗi request đều buộc các downstream services gọi đồng bộ về Auth DB để validate Session, Auth DB sẽ trở thành bottleneck. Ngoài ra, việc dùng chung khóa đối xứng (Symmetric Key) tiềm ẩn rủi ro lộ khóa bảo mật.
+  <p class="section-intro">
+    Trong kiến trúc nguyên khối, đăng nhập tạo một phiên làm việc (session) trên máy chủ và trả về session ID qua cookie. Khi hệ thống tách thành nhiều service, câu hỏi "người gửi request này là ai" phải được trả lời ở mọi service — và cách trả lời quyết định cả hiệu năng lẫn mức độ an toàn (§9.2).
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Bottleneck</div></div>
-      <h3>Auth DB Bottleneck</h3>
-      <p>Khi có hàng ngàn concurrent requests, việc gọi vào Auth DB để validate Session làm DB quá tải. Nếu Auth Service sập, toàn bộ các dịch vụ khác (kể cả public API) cũng bị block theo.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Session</div></div>
+      <h3>Kho phiên dùng chung thành nút thắt</h3>
+      <p>Mọi service cùng tra một session store → thắt cổ chai và một điểm lỗi duy nhất (single point of failure). Còn nếu mỗi service giữ kho phiên riêng, người dùng phải đăng nhập lại mỗi khi chuyển sang service khác.</p>
     </div>
     <div class="problem-card danger">
-      <div class="problem-icon"><div class="badge badge-danger">Security</div></div>
-      <h3>Rủi ro từ Symmetric Key (Key Leak)</h3>
-      <p>Với HS256, cả Auth Service (cấp token) và Resource API (verify token) dùng chung Secret Key. Nếu một microservice bị xâm nhập và lộ Secret Key, attacker có thể tự ký (forge) token với quyền ADMIN.</p>
+      <div class="problem-icon"><div class="badge badge-danger">Shared secret</div></div>
+      <h3>Một khóa bí mật cho mọi service</h3>
+      <p>Với JWT ký bằng HS256, service nào xác minh được token thì cũng ký được token. Chỉ cần một service bị xâm nhập, kẻ tấn công tạo được JWT giả mạo cho <strong>bất kỳ người dùng nào</strong> trên toàn hệ thống — không giới hạn ở service bị tấn công.</p>
     </div>
   </div>
 
@@ -242,30 +80,30 @@
 
   <div class="pattern-definition">
     <p class="definition-text">
-      Sử dụng Asymmetric Key **RS256**: Auth Service giữ **Private Key** để ký Token, các downstream services dùng **Public Key** để verify. Cấp phát theo cặp: **Access Token** (short-lived, VD: 15p) để gọi API và **Refresh Token** (long-lived, VD: 7d) dùng để xin cấp lại Access Token mà không cần user login lại.
+      Đóng gói thông tin định danh vào chính token kèm chữ ký số: service nhận request tự xác minh chữ ký và các claim, không cần tra kho phiên. Chỉ Auth Service giữ khóa ký (RS256: private key); các service khác xác minh bằng public key lấy qua JWKS. Access token ngắn hạn, refresh token dài hạn và được luân phiên sau mỗi lần dùng.
     </p>
-    <div class="definition-attribution">— Token-based Authentication · OAuth 2.0 & RFC 7519 (JWT)</div>
+    <div class="definition-attribution">— RFC 7519 (JWT) · RFC 6749 (OAuth 2.0) · Sam Newman, Building Microservices, Ch.9</div>
   </div>
 
-  <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 720px;">
-    Cơ chế Decentralized Authentication qua chữ ký số (Digital Signature) giúp hệ thống hoàn toàn stateless: API tự verify token thông qua phép toán mã hóa thay vì gọi network về DB.
+  <p class="section-intro">
+    Base64URL chỉ là encoding, không phải mã hóa: ai cầm token cũng đọc được payload, nên không đặt dữ liệu nhạy cảm trong claims. Giải mã được token cũng chưa có nghĩa token hợp lệ — resource server phải chạy đủ hợp đồng xác minh (§9.2).
   </p>
 
   <div class="pattern-anatomy">
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
-      <h3>Authorization Server</h3>
-      <p>Xác thực credentials và phát hành Access/Refresh Token bằng Private Key. Hỗ trợ Key Rotation định kỳ để đảm bảo an ninh.</p>
+      <h3>Auth Service (issuer)</h3>
+      <p>Xác thực người dùng rồi phát hành cặp access token + refresh token. Với RS256 đây là nơi duy nhất giữ private key; public keys được công bố qua endpoint JWKS, nên luân phiên khóa không cần phân phát secret mới cho từng service.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
-      <h3>Resource Server</h3>
-      <p>API Gateway và microservices. Chúng fetch Public Key từ Auth và tự verify JWT chữ ký mà không cần network call (Zero-network Validation).</p>
+      <h3>Resource server</h3>
+      <p>Gateway và service đích. Hợp đồng xác minh tối thiểu: khóa thuật toán được phép, kiểm tra chữ ký, đối chiếu <code>iss</code> và <code>aud</code>, kiểm tra <code>exp</code>, <code>nbf</code>. Gateway kiểm tra ở ingress; service đích vẫn xác minh signed proof và tự authorize (§9.3).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
-      <h3>Refresh Token Flow</h3>
-      <p>Khi Access Token hết hạn (Expired), Client gửi Refresh Token cho Auth Service. Auth Service validate Refresh Token trong DB và issue Access Token mới (Automatic refresh).</p>
+      <h3>Refresh token rotation</h3>
+      <p>Access token sống 15–60 phút, refresh token 7–30 ngày. Mỗi lần làm mới, Auth Service cấp cặp token mới cùng family và vô hiệu hóa refresh token cũ. Refresh token cũ bị dùng lại → thu hồi toàn bộ family, buộc đăng nhập lại (§9.2).</p>
     </div>
   </div>
 </section>
@@ -280,68 +118,55 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    Chọn thuật toán (**HS256** / **RS256**), và chạy luồng Login, API Call, Refresh Token để quan sát dòng chảy (flow).
-  </p>
+  <p class="section-intro">Luồng token của KBM (§9.2–9.3): Client gọi qua Gateway tới Core Service; Auth Service phát hành token và lưu refresh token. Chạy các kịch bản theo thứ tự, rồi so sánh kịch bản "Token giả" (Judge Service bị chiếm quyền) giữa HS256 (hiện trạng) và RS256 + JWKS (Giai đoạn 2).</p>
 
-  <div class="simulator-container">
-    <!-- Left panel: interactive canvas and controls -->
-    <div class="canvas-card">
-      <div class="algo-switch">
-        <button class="algo-btn active" id="btn-hs256" onclick="setAlgo('HS256')">HS256 (Symmetric Key)</button>
-        <button class="algo-btn" id="btn-rs256" onclick="setAlgo('RS256')">RS256 (Asymmetric Key)</button>
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Thuật toán</span><div class="sim-chips" id="jw-algos"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Kịch bản</span><div class="sim-chips" id="jw-scenarios"></div></div>
+    <button class="sim-btn primary-action" id="jw-run" type="button">▶ Chạy</button>
+    <button class="sim-btn" id="jw-reset" type="button">Làm lại</button>
+  </div>
+
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="jw-title">HS256</span> <span class="sim-hint" id="jw-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="jw-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="jw-client"><div class="sim-node-name">Client</div><div class="sim-node-sub">sinh viên · STUDENT</div></div>
+        <div class="sim-node is-core" id="jw-gw"><div class="sim-node-name">Gateway</div><div class="sim-node-sub" id="jw-gw-sub"></div></div>
+        <div class="sim-node" id="jw-core"><div class="sim-node-name">Core Service</div><div class="sim-node-sub" id="jw-core-sub"></div></div>
+        <div class="sim-node" id="jw-judge"><div class="sim-node-name">Judge Service</div><div class="sim-node-sub" id="jw-judge-sub"></div></div>
+        <div class="sim-node" id="jw-auth"><div class="sim-node-name">Auth Service</div><div class="sim-node-sub" id="jw-auth-sub"></div></div>
+        <div class="sim-node" id="jw-db"><div class="sim-node-name">Auth DB</div><div class="sim-node-sub">refresh_tokens</div></div>
       </div>
-
-      <div class="flow-canvas" id="canvas">
-        <div class="node node-client">Client App</div>
-        
-        <div class="node node-auth">
-          <span>kbm-auth</span><br>
-          <span style="font-size:8.5px; font-weight:normal; color:var(--text-dim)" id="lbl-auth-key">Secret Key: 'kbm-secret'</span>
-        </div>
-        
-        <div class="node node-api">
-          <span>kbm-gateway</span><br>
-          <span style="font-size:8.5px; font-weight:normal; color:var(--text-dim)" id="lbl-api-key">Secret Key: 'kbm-secret'</span>
-        </div>
-
-        <!-- Animated Messages -->
-        <div class="msg-bubble" id="msg-anim"></div>
-      </div>
-
-      <div class="sim-controls-btn">
-        <button class="btn btn-primary" onclick="runFlow('login')" style="background:var(--success); border-color:var(--success); color:var(--on-primary); font-size:12px;">1. Đăng nhập (Login)</button>
-        <button class="btn btn-primary" onclick="runFlow('api-ok')" style="background:var(--primary); border-color:var(--primary); color:var(--on-primary); font-size:12px;">2. Gọi API (Hợp lệ)</button>
-        <button class="btn" onclick="runFlow('api-exp')" style="border-color:rgba(244,63,94,0.3); color:var(--danger); font-size:12px;">3. Gọi API (Hết hạn)</button>
-        <button class="btn" onclick="runFlow('refresh')" style="border-color:var(--warning); color:var(--warning); font-size:12px;">4. Đổi Token mới</button>
-        <button class="btn btn-ghost" onclick="resetSim()" style="font-size:12px;">Reset</button>
-      </div>
+      <svg class="d-links">
+        <path id="jw-l-cg" data-from="jw-client" data-to="jw-gw"></path>
+        <path id="jw-l-gc" data-from="jw-gw" data-to="jw-core"></path>
+        <path id="jw-l-ga" data-from="jw-gw" data-to="jw-auth"></path>
+        <path id="jw-l-ad" data-from="jw-auth" data-to="jw-db"></path>
+        <path id="jw-l-jg" data-from="jw-judge" data-to="jw-gw" data-from-side="top" data-to-side="bottom" data-to-at="0.2" class="is-dashed"></path>
+      </svg>
     </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="jw-ok">0</div><div class="sim-stat-lbl">Yêu cầu hợp lệ</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="jw-denied">0</div><div class="sim-stat-lbl">Bị từ chối</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="jw-forged">0</div><div class="sim-stat-lbl">Token giả lọt qua</div></div>
+    </div>
+  </div>
 
-    <!-- Right panel: Token State & logs -->
-    <div class="dashboard-panel">
-      <div>
-        <div class="dashboard-title" style="margin-bottom:12px;">Token State (JWT)</div>
-        <div class="token-status">
-          <span>Access Token (15m):</span>
-          <span class="badge badge-success" id="acc-status">Chưa cấp</span>
-        </div>
-        <div class="token-viz">
-          <span class="t-header" id="jwt-header">Header</span>.<span class="t-payload" id="jwt-payload">Payload</span>.<span class="t-sign" id="jwt-signature">Signature</span>
-        </div>
-        
-        <div class="token-status" style="margin-top: 14px;">
-          <span>Refresh Token (7d):</span>
-          <span class="badge" id="ref-status" style="background:rgba(255,255,255,0.05); color:var(--text-dim);">Chưa cấp</span>
-        </div>
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Token <span class="sim-hint">mới nhất ở trên</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="jw-table">
+          <thead><tr><th>Token</th><th>Loại</th><th>Family</th><th>Trạng thái</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
-
-      <div>
-        <div class="dashboard-title" style="margin-bottom:8px;">Logs</div>
-        <div class="sim-log" id="sys-log">
-          <div class="log-sys">Hệ thống sẵn sàng...</div>
-        </div>
-      </div>
+      <p class="sim-note" id="jw-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">Client · Gateway · Auth · Core</span></div>
+      <div class="sim-log" id="jw-log" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -356,75 +181,85 @@
     </div>
   </div>
 
-  <p style="margin-bottom: 24px; line-height: 1.7; color: var(--text-secondary);">
-    KBM chuyển từ HS256 sang RS256 để chống leo thang đặc quyền (Privilege Escalation) từ môi trường Judge Sandbox.
+  <p class="section-intro">
+    KBM hiện dùng HS256: các service chia sẻ cùng <code>jwt.secretKey</code>. Sách ghi rõ đây là rủi ro được chấp nhận (accepted risk) của một hệ thống học thuật, không phải mô hình mục tiêu cho production. Chuyển sang RS256 + JWKS nằm ở Giai đoạn 2 của lộ trình vì cần hạ tầng quản lý khóa (§9.2, §9.6).
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Đánh giá rủi ro và các giải pháp mã hóa chữ ký</h3>
+  <h3 class="sub-heading">Gap Analysis — xác thực và token</h3>
+  <div class="sub-label">Trích từ bảng phân tích bảo mật KBM (§9.6)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
         <tr>
-          <th>Tiêu chí</th>
-          <th>Cấu hình HS256 ban đầu</th>
-          <th>Cấu hình RS256 đề xuất</th>
-          <th>Mục đích an ninh</th>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="gap-label">Thuật toán ký</td>
-          <td>Symmetric (Mã hóa đối xứng)</td>
-          <td>Asymmetric (Mã hóa bất đối xứng)</td>
-          <td>Ngăn downstream services tự forge token.</td>
+          <td class="gap-label">Thuật toán JWT</td>
+          <td>HS256, mọi service dùng chung <code>jwt.secretKey</code>.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>RS256 + JWKS; chỉ Auth Service giữ private key.</td>
         </tr>
         <tr>
-          <td class="gap-label">Phân phối khóa</td>
-          <td>Dùng chung Shared Secret.</td>
-          <td>Auth giữ Private Key, Gateway & Services fetch Public Key.</td>
-          <td>Kể cả khi bị leak Public Key, attacker không thể ký token.</td>
+          <td class="gap-label">Identity propagation</td>
+          <td>Gateway chèn lại <code>X-User-Id</code>/<code>X-User-Roles</code>; Core, Judge và Assignment lẫn lộn giữa tin header và tự parse JWT.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Signed proof đúng audience + local authorization tại service đích (§9.3).</td>
         </tr>
         <tr>
-          <td class="gap-label">Key Rotation</td>
-          <td><span class="b-high">Phức tạp</span> (Requires restart).</td>
-          <td><span class="b-low">Dễ dàng</span> (Auto-fetch qua JWKS).</td>
-          <td>Automated key rotation (VD: 30 ngày) không gây downtime.</td>
+          <td class="gap-label">Secret Management</td>
+          <td>Một phần hardcoded trong <code>application.yml</code>, một phần qua biến môi trường.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Biến môi trường ngay; secret manager (Vault) ở giai đoạn sau.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Lưu trữ token</td>
+          <td>Phía client, trong <code>localStorage</code>.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>HttpOnly cookie kèm <code>Secure</code>, <code>SameSite</code> và CSRF token hoặc kiểm tra Origin.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Service-to-service</td>
+          <td>Chưa có workload identity thống nhất.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Workload token và/hoặc mTLS; delegation khi gọi thay mặt người dùng.</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Timeline -->
-  <h3 class="sub-heading">Lộ trình nâng cấp an ninh KBM</h3>
-  <div class="sub-label">Các bước di chuyển luồng Auth sang RS256</div>
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo đề xuất migration ở §9.6 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
   <div class="kbm-timeline">
     <div class="timeline-item" data-delay="0">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 1</div>
-      <h4>Generate RSA Key Pair</h4>
-      <p>Dùng OpenSSL tạo cặp RSA 2048-bit. Cấu hình <code>kbm-auth</code> load Private Key từ Secret Manager (Vault/KMS). Expose Public Key qua JWKS endpoint (<code>/.well-known/jwks.json</code>).</p>
+      <div class="timeline-phase">Giai đoạn 1 · Quick wins</div>
+      <h4>Chuẩn hóa hợp đồng xác minh, dọn secret</h4>
+      <p>Mọi service kiểm tra cùng allowed algorithm, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>. Gỡ mọi <code>X-User-*</code> từ ingress. Đưa secret ra khỏi <code>application.yml</code> sang biến môi trường. Lưu token trong HttpOnly cookie.</p>
+      <span class="t-badge orange">Nỗ lực thấp</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 2</div>
-      <h4>Configure Resource Server (Gateway)</h4>
-      <p>Cấu hình Spring Security OAuth2 tại <code>kbm-gateway</code> để auto-fetch Public Key từ JWKS. Bật local token validation tại Gateway.</p>
+      <div class="timeline-phase">Giai đoạn 2 · Authentication Hardening</div>
+      <h4>RS256 + JWKS, refresh token rotation</h4>
+      <p>Auth Service ký bằng private key và công bố public keys qua JWKS. Gateway và resource service dùng Spring Security OAuth2 Resource Server. Làm mới token kèm luân phiên; chuẩn hóa SSO theo token exchange với issuer/audience rõ ràng.</p>
+      <span class="t-badge orange">Nỗ lực trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 3</div>
-      <h4>Implement Refresh Token Flow (Frontend)</h4>
-      <p>Thêm Axios Interceptor: Khi nhận 401 Unauthorized, tự động gọi <code>/oauth2/token</code> bằng Refresh Token (HttpOnly Cookie) để lấy Access Token mới rồi retry request.</p>
-    </div>
-    <div class="timeline-item" data-delay="750">
-      <div class="timeline-dot"></div>
-      <div class="timeline-phase">Phase 4</div>
-      <h4>Token Blacklisting với Redis</h4>
-      <p>JWT stateless khó thu hồi, nên KBM áp dụng Redis Blacklist. Khi Logout/Đổi mật khẩu, JWT ID (JTI) được push vào Redis với TTL bằng thời hạn còn lại của token.</p>
+      <div class="timeline-phase">Giai đoạn 3 · Workload Identity</div>
+      <h4>Workload identity và delegation</h4>
+      <p>Service-to-service bằng workload token và/hoặc mTLS; tách user subject khỏi actor, chỉ cho on-behalf-of khi có delegation đúng audience và thời hạn ngắn. Quản lý secret tập trung bằng HashiCorp Vault.</p>
+      <span class="t-badge orange">Khi mở rộng quy mô</span>
     </div>
   </div>
 
@@ -434,25 +269,25 @@
     <div class="decision-card yes">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-success">✓</div></div>
-        <div class="decision-title">Nên dùng RS256 & OAuth2 khi</div>
+        <div class="decision-title">Nên dùng RS256 + JWKS khi</div>
       </div>
       <ul class="decision-list">
-        <li>Hệ thống Microservices lớn có nhiều team phát triển độc lập.</li>
-        <li>Yêu cầu bảo mật cao, cần phân tách quyền cấp phát và xác thực token.</li>
-        <li>Cần hỗ trợ SSO (Single Sign-On) hoặc Identity Federation.</li>
-        <li>High throughput read requests, cần stateless validation phi tập trung.</li>
+        <li>Nhiều resource server cùng xác minh token — mỗi service chỉ cần public key.</li>
+        <li>Một service bị xâm nhập không được phép ký token thay cho cả hệ thống.</li>
+        <li>Cần luân phiên khóa mà không phân phát secret mới cho từng service: công bố key mới qua JWKS.</li>
+        <li>Nhiều phương thức đăng nhập (mật khẩu, Microsoft/Google OIDC) hội tụ về một token nội bộ (§9.4).</li>
       </ul>
     </div>
     <div class="decision-card no">
       <div class="decision-header">
         <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
-        <div class="decision-title">Không nên dùng khi</div>
+        <div class="decision-title">Chưa cần hoặc chưa đủ khi</div>
       </div>
       <ul class="decision-list">
-        <li>Monolith đơn giản (HS256 là đủ).</li>
-        <li>Hệ thống cần thu hồi quyền (Revoke) ngay lập tức mà không muốn maintain blacklist.</li>
-        <li>Payload quá lớn khiến JWT phình to, tăng network overhead.</li>
-        <li>Chưa có hạ tầng Secret Management (KMS, Vault).</li>
+        <li>Phạm vi hẹp, ít verifier và secret được kiểm soát chặt — HS256 vẫn đủ.</li>
+        <li>Chưa có chỗ giữ private key an toàn: lộ private key thì token giả vẫn được xác minh "hợp lệ".</li>
+        <li>Payload phải giữ bí mật — JWT ký chỉ encode; cần JWE hoặc opaque token.</li>
+        <li>Mọi request đều phải kiểm tra trạng thái tài khoản — lợi thế stateless mất; §9.3 chỉ đặt state check ở login, refresh và thao tác nhạy cảm.</li>
       </ul>
     </div>
   </div>
@@ -460,7 +295,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về OAuth2 Flow, Token JWT, thuật toán đối xứng/bất đối xứng, JWKS, và Secret Management trong sách.</p>
+  <p>Đọc chi tiết về cấu trúc JWT, HS256/RS256 và refresh token rotation (§9.2), Tiered Trust (§9.3), OAuth2/OIDC (§9.4) và lộ trình bảo mật KBM (§9.6).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-09')"><div class="badge badge-info">Read</div> Chương 9 — Bảo mật Microservices →</a>
 </div>
 
@@ -476,184 +311,252 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
+// ── Act 3: phát hành, xác minh, làm mới token (Chương 9 §9.2–9.3) ─────────────────────────────
+// Theo sách: KBM hiện dùng HS256, mọi service chia sẻ jwt.secretKey (accepted risk, §9.2);
+// Gateway xác minh rồi chèn lại X-User-Id/X-User-Roles, Core tin header (§9.3). Mục tiêu Giai đoạn 2
+// (§9.6): RS256 + JWKS, Auth Service là nơi duy nhất giữ private key; Gateway chuyển signed proof
+// đúng audience, Core tự xác minh + local authorization (Tier 1, §9.3).
+// Refresh rotation: markAsUsedAtomic = 0 dòng → invalidateFamily → TokenReuseException (lst:token_refresh).
+const ALGOS = {
+  hs256: { label: 'HS256 · hiện trạng', hint: 'mọi service giữ cùng jwt.secretKey — accepted risk (§9.2)',
+           gw: 'xác minh: jwt.secretKey', core: 'tin X-User-* (§9.3)', judge: 'giữ jwt.secretKey', auth: 'ký: jwt.secretKey' },
+  rs256: { label: 'RS256 + JWKS · Giai đoạn 2', hint: 'chỉ Auth Service giữ private key; service khác lấy public key qua JWKS',
+           gw: 'xác minh: public key', core: 'xác minh proof (aud: core)', judge: 'chỉ có public key', auth: 'ký: private key' },
+};
+const SCENARIOS = {
+  login: 'Đăng nhập', api: 'Gọi API', expired: 'Hết hạn',
+  refresh: 'Làm mới', reuse: 'Dùng lại refresh cũ', forge: 'Token giả',
+};
+const NOTES = {
+  login:   'Auth Service kiểm tra mật khẩu, lưu refresh token vào Auth DB rồi phát hành cặp token. Access token ngắn hạn, refresh token dài hạn (§9.2).',
+  api:     'Gateway chạy hợp đồng xác minh (alg, chữ ký, iss, aud, exp, nbf) mà không tra cơ sở dữ liệu. Khác biệt nằm ở bước sau: hiện trạng chuyển header X-User-*, mục tiêu chuyển signed proof để Core tự xác minh (§9.3).',
+  expired: 'Chữ ký vẫn đúng nhưng exp < now → 401. Client không cần đăng nhập lại: chạy "Làm mới".',
+  refresh: 'Refresh token cũ bị đánh dấu đã dùng trong cùng transaction với việc cấp cặp mới — cùng family (§9.2, lst:token_refresh).',
+  reuse:   'Refresh token đã dùng xuất hiện lại → Auth Service coi là bị đánh cắp và thu hồi cả family. Access token đã phát vẫn dùng được tới khi hết hạn — lý do access token phải ngắn hạn. Hai lần làm mới hợp lệ chạy song song cũng có thể kích hoạt nhầm; cần khoảng ân hạn ngắn (§9.2).',
+  'forge.hs256': 'HS256: service nào xác minh được token thì cũng ký được token. Judge bị chiếm quyền → token ADMIN giả qua được Gateway (§9.2).',
+  'forge.rs256': 'RS256: Judge chỉ có public key nên không ký được token hợp lệ; Gateway còn khóa thuật toán nên mẹo đổi alg cũng bị chặn. Nếu chính private key của Auth Service bị lộ thì vẫn phải thu hồi và xoay khóa khẩn cấp (§9.2).',
+};
+const state = { algo: 'hs256', scenario: 'login', running: false, rows: [], family: 0, seq: 0,
+                access: null, refresh: null, used: null, ok: 0, denied: 0, forged: 0 };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 420;
 
-// ── Simulator Logic ──────────────────────────────────────
-let algo = 'HS256';
-let isExpired = false;
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = label; b.dataset.v = v;
+    b.addEventListener('click', () => {
+      if (state.running || state[key] === v) return;
+      state[key] = v;
+      if (key === 'algo') endSession('Đổi thuật toán → token cũ không còn xác minh được với khóa mới; phiên kết thúc.');
+      render();
+    });
+    el.appendChild(b);
+  });
+}
+chips($('jw-algos'), Object.fromEntries(Object.entries(ALGOS).map(([k, a]) => [k, a.label])), 'algo');
+chips($('jw-scenarios'), SCENARIOS, 'scenario');
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function logSys(msg, type = 'sys') {
-  const log = document.getElementById('sys-log');
-  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-line';
-  entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-${type}">${msg}</span>`;
-  log.appendChild(entry);
-  log.scrollTop = log.scrollHeight;
+function log(msg, cls) {
+  const t = new Date().toTimeString().slice(0, 8);
+  $('jw-log').insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('jw-log').scrollTop = $('jw-log').scrollHeight;
+}
+function link(id, cls) {
+  const base = id === 'jw-l-jg' ? 'is-dashed' : '';
+  $(id).setAttribute('class', [base, cls ? 'is-' + cls : ''].join(' ').trim());
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
+async function hop(id, text, cls, linkCls) {
+  link(id, linkCls || 'primary'); log(text, cls); await sleep(STEP); link(id, '');
 }
 
-function setAlgo(a) {
-  algo = a;
-  document.querySelectorAll('.algo-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`btn-${a.toLowerCase()}`).classList.add('active');
-  
-  if (a === 'HS256') {
-    document.getElementById('lbl-auth-key').textContent = "Secret Key: 'kbm-secret'";
-    document.getElementById('lbl-api-key').textContent = "Secret Key: 'kbm-secret'";
-    logSys('Hệ thống: Chuyển sang HS256 (Đối xứng). Cả hai dịch vụ dùng chung secret key.', 'warn');
+// ── Token ────────────────────────────────────────────────────────────────────────────────
+function issuePair() {
+  state.seq++;
+  const a = { name: 'A' + state.seq, kind: 'Access · 15 phút', fam: '—', status: 'Còn hạn', cls: 'good' };
+  const r = { name: 'R' + state.seq, kind: 'Refresh · 7 ngày', fam: 'F' + state.family, status: 'Hiệu lực', cls: 'good' };
+  if (state.access) Object.assign(state.access, { status: 'Đã thay', cls: '' });
+  state.rows.unshift(r, a); state.access = a; state.refresh = r;
+}
+function endSession(msg) {
+  if (!state.refresh && !state.access) return;
+  if (msg) {
+    log(msg, 'log-warn');
+    state.rows.filter(r => r.cls === 'good').forEach(r => Object.assign(r, { status: 'Vô hiệu (đổi khóa)', cls: '' }));
+  }
+  state.access = null; state.refresh = null; state.used = null;
+}
+const verifyText = () => state.algo === 'hs256'
+  ? 'alg = HS256 · chữ ký khớp jwt.secretKey · iss, aud, exp, nbf đạt'
+  : 'alg = RS256 · chữ ký khớp public key trong JWKS cache · iss, aud, exp, nbf đạt';
+
+async function login() {
+  state.family++;
+  await hop('jw-l-cg', 'POST /login (username, password)');
+  node('jw-gw', 'is-active', true);
+  await hop('jw-l-ga', 'Gateway chuyển tới Auth Service');
+  node('jw-gw', 'is-active', false); node('jw-auth', 'is-active', true);
+  log('Auth Service: mật khẩu khớp (BCrypt)', 'log-ok');
+  await hop('jw-l-ad', `INSERT refresh_tokens (R${state.seq + 1}, family F${state.family}, used = false)`);
+  log(state.algo === 'hs256' ? 'Ký access token bằng jwt.secretKey (HMAC-SHA256)' : 'Ký access token bằng private key — chỉ Auth Service có', 'log-ok');
+  issuePair();
+  log(`200 OK → Client nhận ${state.access.name} (15 phút) + ${state.refresh.name} (7 ngày)`, 'log-ok');
+  node('jw-auth', 'is-active', false);
+  state.ok++; render();
+}
+async function ensureLogin() {
+  if (state.refresh) return;
+  log('Chưa có phiên đăng nhập → đăng nhập trước', 'log-warn');
+  await login();
+}
+async function callApi() {
+  const a = state.access;
+  await hop('jw-l-cg', `GET /api/data — Bearer ${a.name}`);
+  node('jw-gw', 'is-active', true);
+  if (a.status === 'Hết hạn') {
+    log(`Gateway: chữ ký hợp lệ nhưng exp < now → 401 Unauthorized`, 'log-err');
+    node('jw-gw', 'is-active', false); state.denied++; render(); return;
+  }
+  log('Gateway: ' + verifyText(), 'log-ok');
+  if (state.algo === 'hs256') {
+    log('Gateway loại X-User-* của client, chèn lại X-User-Id / X-User-Roles', 'log-info');
+    await hop('jw-l-gc', 'Chuyển tiếp kèm X-User-Roles: STUDENT');
+    log('Core Service đọc header → cho phép (tin header: accepted risk, §9.3)', 'log-warn');
   } else {
-    document.getElementById('lbl-auth-key').textContent = "Private Key (Bảo mật tuyệt đối)";
-    document.getElementById('lbl-api-key').textContent = "Public Key (Chia sẻ công khai)";
-    logSys('Hệ thống: Chuyển sang RS256 (Bất đối xứng). Auth ký bằng Private Key, API verify bằng Public Key.', 'ok');
+    await hop('jw-l-gc', 'Chuyển tiếp signed proof (aud: core)');
+    log('Core Service xác minh proof bằng public key → local authorization: STUDENT xem dữ liệu của mình', 'log-ok');
   }
-  resetTokensVisuals();
+  node('jw-gw', 'is-active', false);
+  log('200 OK', 'log-ok'); state.ok++; render();
+}
+async function refresh() {
+  const old = state.refresh;
+  await hop('jw-l-cg', `POST /auth/refresh — ${old.name}`);
+  await hop('jw-l-ga', 'Gateway chuyển tới Auth Service');
+  node('jw-auth', 'is-active', true);
+  await hop('jw-l-ad', `UPDATE refresh_tokens SET used = true WHERE id = ${old.name} AND used = false → 1 dòng`, 'log-ok');
+  Object.assign(old, { status: 'Đã dùng', cls: '' }); state.used = old;
+  issuePair();
+  log(`Cấp cặp mới cùng family ${old.fam}: ${state.access.name} + ${state.refresh.name}`, 'log-ok');
+  node('jw-auth', 'is-active', false);
+  state.ok++; render();
 }
 
-function resetTokensVisuals() {
-  document.getElementById('jwt-header').textContent = "Header";
-  document.getElementById('jwt-payload').textContent = "Payload";
-  document.getElementById('jwt-signature').textContent = "Signature";
-  document.getElementById('acc-status').className = 'badge';
-  document.getElementById('acc-status').textContent = 'Chưa cấp';
-  document.getElementById('acc-status').style.background = 'rgba(255,255,255,0.05)';
-  document.getElementById('acc-status').style.color = 'var(--text-dim)';
-  
-  document.getElementById('ref-status').className = 'badge';
-  document.getElementById('ref-status').textContent = 'Chưa cấp';
-  document.getElementById('ref-status').style.background = 'rgba(255,255,255,0.05)';
-  document.getElementById('ref-status').style.color = 'var(--text-dim)';
-}
-
-async function animMsg(text, cls, animName) {
-  const msg = document.getElementById('msg-anim');
-  msg.textContent = text;
-  msg.className = `msg-bubble ${cls}`;
-  msg.style.animation = 'none';
-  void msg.offsetWidth;
-  msg.style.animation = `${animName} 0.8s ease-in-out forwards`;
-  await sleep(800);
-  msg.style.opacity = 0;
-}
-
-async function runFlow(scenario) {
-  const accBadge = document.getElementById('acc-status');
-  const refBadge = document.getElementById('ref-status');
-  
-  if (scenario === 'login') {
-    logSys('--- BẮT ĐẦU ĐĂNG NHẬP (LOGIN FLOW) ---', 'sys');
-    await animMsg('POST /login {username, password}', 'msg-req', 'loginReq');
-    logSys('kbm-auth: Kiểm tra thông tin đăng nhập trong database...', 'sys');
-    await sleep(400);
-    logSys(`kbm-auth: Ký số token sử dụng thuật toán ${algo === 'HS256' ? 'khóa đối xứng HS256' : 'khóa bất đối xứng RS256 Private Key'}`, 'ok');
-    
-    // Render token visualization
-    document.getElementById('jwt-header').innerHTML = algo === 'HS256' ? "eyJhbGciOiJIUzI1NiJ9" : "eyJhbGciOiJSUzI1NiJ9";
-    document.getElementById('jwt-payload').innerHTML = "eyJ1c2VySWQiOiJTVjAwMSIsInJvbGUiOiJTVFVERU5UIn0";
-    document.getElementById('jwt-signature').innerHTML = algo === 'HS256' ? "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" : "uR9v8D1fH8yK3x9B0m2c5...[RSA_SIGN]";
-    
-    await animMsg('200 OK + Cấp Access & Refresh Token', 'msg-token', 'tokenRes');
-    
-    isExpired = false;
-    accBadge.className = 'badge badge-success';
-    accBadge.textContent = 'Active (Còn hạn)';
-    accBadge.style.background = ''; accBadge.style.color = '';
-    
-    refBadge.className = 'badge badge-success';
-    refBadge.textContent = 'Active (Còn hạn)';
-    refBadge.style.background = ''; refBadge.style.color = '';
-    
-    logSys('Client App: Đã lưu Access Token (15 phút) và Refresh Token (7 ngày).', 'ok');
-
-  } else if (scenario === 'api-ok') {
-    if (accBadge.textContent === 'Chưa cấp') {
-      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước để lấy Access Token!', 'warn');
-      return;
+// ── Kịch bản ─────────────────────────────────────────────────────────────────────────────
+const RUN = {
+  async login() { endSession(); await login(); },
+  async api() { await ensureLogin(); await callApi(); },
+  async expired() {
+    await ensureLogin();
+    log(`… 15 phút trôi qua: ${state.access.name} hết hạn`, 'log-warn');
+    Object.assign(state.access, { status: 'Hết hạn', cls: 'bad' }); render();
+    await callApi();
+  },
+  async refresh() { await ensureLogin(); await refresh(); },
+  async reuse() {
+    await ensureLogin();
+    if (!state.used) { log('Chưa có refresh token đã dùng → làm mới một lần trước', 'log-warn'); await refresh(); }
+    const stolen = state.used, fam = stolen.fam;
+    log(`Kẻ gian giữ bản sao ${stolen.name} (lấy được trước khi luân phiên) và gửi lại`, 'log-warn');
+    await hop('jw-l-cg', `POST /auth/refresh — ${stolen.name}`, 'log-warn', 'warning');
+    await hop('jw-l-ga', 'Gateway chuyển tới Auth Service', 'log-info', 'warning');
+    node('jw-auth', 'is-active', true);
+    await hop('jw-l-ad', `UPDATE refresh_tokens SET used = true WHERE id = ${stolen.name} AND used = false → 0 dòng`, 'log-err', 'danger');
+    log(`Phát hiện dùng lại → invalidateFamily(${fam}): thu hồi mọi refresh token của family`, 'log-err');
+    state.rows.filter(r => r.fam === fam).forEach(r => Object.assign(r, { status: 'Thu hồi', cls: 'bad' }));
+    log('401 — TokenReuseException: người dùng phải đăng nhập lại', 'log-err');
+    log(`${state.access.name} đã phát vẫn dùng được tới khi hết hạn (JWT tự chứa)`, 'log-warn');
+    node('jw-auth', 'is-active', false);
+    state.refresh = null; state.used = null; state.denied++; render();
+  },
+  async forge() {
+    node('jw-judge', 'is-danger', true);
+    log('Giả định: Judge Service bị chiếm quyền (chạy mã sinh viên, §9.7)', 'log-warn');
+    if (state.algo === 'hs256') {
+      log('Judge đọc jwt.secretKey trong cấu hình của chính nó', 'log-err');
+      log('Tự ký token: roles = "ADMIN|LECTURER|STUDENT", exp hợp lệ', 'log-err');
+      await hop('jw-l-jg', 'GET /api/users (chỉ ADMIN) — Bearer token giả', 'log-err', 'danger');
+      node('jw-gw', 'is-active', true);
+      log('Gateway: ' + verifyText() + ' → CHẤP NHẬN', 'log-err');
+      await hop('jw-l-gc', 'Chuyển tiếp kèm X-User-Roles: ADMIN', 'log-err', 'danger');
+      log('Core Service thực thi với quyền ADMIN — token giả lọt qua', 'log-err');
+      state.forged++;
+    } else {
+      log('Judge chỉ có public key — không tạo được chữ ký mà public key xác minh được', 'log-ok');
+      log('Thử 1: ký bằng khóa RSA tự tạo', 'log-warn');
+      await hop('jw-l-jg', 'GET /api/users (chỉ ADMIN) — Bearer token giả', 'log-warn', 'warning');
+      node('jw-gw', 'is-active', true);
+      log('Gateway: chữ ký không khớp public key nào trong JWKS → 401', 'log-ok');
+      log('Thử 2: đổi alg = HS256, dùng public key làm secret', 'log-warn');
+      await hop('jw-l-jg', 'GET /api/users — Bearer token alg = HS256', 'log-warn', 'warning');
+      log('Gateway: chỉ chấp nhận RS256 (khóa thuật toán được phép, §9.2) → 401', 'log-ok');
+      state.denied += 2;
     }
-    if (isExpired) {
-      logSys('Lỗi: Token hiện tại đã HẾT HẠN. Hãy dùng Refresh Token để lấy token mới.', 'err');
-      return;
-    }
-    
-    logSys('--- THỰC HIỆN GỌI API (VALID TOKEN) ---', 'sys');
-    await animMsg('GET /api/core/courses + Bearer Token', 'msg-req', 'apiReq');
-    logSys(`kbm-gateway: Xác thực chữ ký token bằng ${algo === 'HS256' ? 'Secret Key' : 'Public Key'}`, 'sys');
-    await sleep(400);
-    logSys('kbm-gateway: Chữ ký hợp lệ. Kiểm tra exp > now: Passed. Chuyển tiếp request.', 'ok');
-    await animMsg('200 OK + Trả dữ liệu lớp học', 'msg-token', 'apiRes');
+    node('jw-gw', 'is-active', false); node('jw-judge', 'is-danger', false); render();
+  },
+};
 
-  } else if (scenario === 'api-exp') {
-    if (accBadge.textContent === 'Chưa cấp') {
-      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước!', 'warn');
-      return;
-    }
-    logSys('--- THỰC HIỆN GỌI API (EXPIRED TOKEN) ---', 'sys');
-    isExpired = true;
-    accBadge.className = 'badge badge-danger';
-    accBadge.textContent = 'Expired (Hết hạn)';
-    accBadge.style.background = ''; accBadge.style.color = '';
-    
-    await animMsg('GET /api/core/courses + Bearer Token', 'msg-req', 'apiReq');
-    logSys(`kbm-gateway: Kiểm tra thời gian sống của token...`, 'sys');
-    await sleep(400);
-    logSys('kbm-gateway: Lỗi xác thực: Token đã hết hạn (exp < now)! Từ chối.', 'err');
-    await animMsg('401 Unauthorized (Token Expired)', 'msg-err', 'apiRes');
-
-  } else if (scenario === 'refresh') {
-    if (refBadge.textContent === 'Chưa cấp') {
-      logSys('Cảnh báo: Bạn cần thực hiện Đăng nhập trước để được cấp Refresh Token!', 'warn');
-      return;
-    }
-    logSys('--- THỰC HIỆN REFRESH TOKEN FLOW ---', 'sys');
-    await animMsg('POST /oauth2/token {refresh_token}', 'msg-req', 'loginReq');
-    logSys('kbm-auth: Kiểm tra tính hợp lệ của Refresh Token dài hạn trong Database...', 'sys');
-    await sleep(400);
-    logSys(`kbm-auth: Cấp Access Token mới (Ký bằng ${algo === 'HS256' ? 'Secret Key' : 'Private Key'})`, 'ok');
-    
-    // Refresh visual token signature
-    document.getElementById('jwt-signature').innerHTML = algo === 'HS256' ? "NewSignatureHS256..." : "NewRSA_SIGNATURE...";
-    
-    await animMsg('200 OK + Cấp Access Token mới', 'msg-token', 'tokenRes');
-    
-    isExpired = false;
-    accBadge.className = 'badge badge-success';
-    accBadge.textContent = 'Active (Đã đổi mới)';
-    accBadge.style.background = ''; accBadge.style.color = '';
-    logSys('Client App: Đã thay thế Access Token mới thành công. Có thể tiếp tục gọi API.', 'ok');
-  }
+// ── Render ───────────────────────────────────────────────────────────────────────────────
+function renderTable() {
+  $('jw-table').querySelector('tbody').innerHTML = state.rows.length
+    ? state.rows.map(r => `<tr><td class="num">${r.name}</td><td>${r.kind}</td><td>${r.fam}</td><td class="${r.cls}">${r.status}</td></tr>`).join('')
+    : '<tr><td colspan="4">Chưa có token.</td></tr>';
+}
+function render() {
+  const a = ALGOS[state.algo];
+  [['jw-algos', 'algo'], ['jw-scenarios', 'scenario']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('jw-title').textContent = a.label; $('jw-hint').textContent = a.hint;
+  $('jw-gw-sub').textContent = a.gw; $('jw-core-sub').textContent = a.core;
+  $('jw-judge-sub').textContent = a.judge; $('jw-auth-sub').textContent = a.auth;
+  // Đường Judge → Gateway chỉ có trong kịch bản token giả; Judge mờ ở các kịch bản khác.
+  $('jw-l-jg').toggleAttribute('data-hidden', state.scenario !== 'forge');
+  node('jw-judge', 'is-off', state.scenario !== 'forge');
+  $('jw-note').textContent = NOTES[state.scenario] || NOTES[state.scenario + '.' + state.algo];
+  $('jw-ok').textContent = state.ok; $('jw-denied').textContent = state.denied; $('jw-forged').textContent = state.forged;
+  renderTable();
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
 }
 
-function resetSim() {
-  setAlgo('HS256');
-  isExpired = false;
-  resetTokensVisuals();
-  document.getElementById('sys-log').innerHTML = '<div class="log-sys">Hệ thống sẵn sàng...</div>';
-  document.getElementById('msg-anim').style.opacity = 0;
+async function run() {
+  if (state.running) return;
+  state.running = true; $('jw-run').disabled = true; $('jw-reset').disabled = true;
+  log(`— ${SCENARIOS[state.scenario]} · ${ALGOS[state.algo].label} —`, 'log-warn');
+  await RUN[state.scenario]();
+  state.running = false; $('jw-run').disabled = false; $('jw-reset').disabled = false;
+  render();
 }
+function reset() {
+  if (state.running) return;
+  Object.assign(state, { rows: [], family: 0, seq: 0, access: null, refresh: null, used: null, ok: 0, denied: 0, forged: 0 });
+  $('jw-log').textContent = '';
+  log('Chọn thuật toán và kịch bản rồi bấm Chạy. Gợi ý: Đăng nhập → Gọi API → Hết hạn → Làm mới → Dùng lại refresh cũ.', 'log-info');
+  render();
+}
+$('jw-run').addEventListener('click', run);
+$('jw-reset').addEventListener('click', reset);
+reset();
 
 // ── Timeline Animation ────────────────────────────────────
 function playTimeline() {
   const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
   btn.disabled = true; btn.textContent = '⏳ Animating...';
-  document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('visible'));
-  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
     setTimeout(() => {
       el.classList.add('visible');
-      if (i === 3) {
+      if (i === items.length - 1) {
         setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
       }
     }, parseInt(el.dataset.delay) + 200);
   });
 }
-
-// ── Init ──────────────────────────────────────────────────
-resetSim();
-
 </script>
 </body>
 </html>
-
-
-
-

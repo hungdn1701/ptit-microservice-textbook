@@ -2,62 +2,47 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 10.11 — Decision Matrix — Ưu tiên Migration | Ch.10</title>
+  <!--
+    Fig 10.11 — Ma trận quyết định: ưu tiên theo tác động × nỗ lực
+    2026-09-28 (WP-B Ch.10): tiêu đề ô tiếng Anh ("High Impact, Low Effort"…) → tiếng Việt theo §17; thêm nhãn trục. Hạng mục
+    cũ chung chung (code formatting, framework migration, over-engineering) → hai ô trên lấy từ bảng giai đoạn của KBM (Hình
+    10.10); ô "bỏ qua" nối với lập luận của chương (viết lại Big Bang §10.1; Full Split khi chưa cần scale riêng, Ch.07).
+    Ô "khi rảnh" là minh hoạ.
+  -->
+  <title>Fig 10.11 — Ma trận tác động × nỗ lực | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.11">
+  <div class="diagram-canvas" data-fig-id="FIG-10.11" data-ref="CH10-SEC">
+    <div style="display: grid; grid-template-columns: 90px 1fr 1fr; grid-template-rows: auto auto auto; gap: 16px;">
+      <div></div>
+      <div class="d-label text-center">nỗ lực thấp</div>
+      <div class="d-label text-center">nỗ lực cao</div>
 
-    <div class="d-grid-2 d-gap-2" style="align-items:stretch;">
-      <!-- Quadrant 1: High Impact, Low Effort = DO FIRST -->
-      <div class="d-box d-success" style="padding:14px;">
-        <div class="d-title d-mb-1 text-center">High Impact, Low Effort</div>
-        <div class="d-sub d-mb-1 text-center fw-bold">LÀM NGAY</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• CORS restrict</div>
-          <div class="d-sub">• JWT unify</div>
-          <div class="d-sub">• Structured logging</div>
-        </div>
+      <div class="d-label" style="align-self: center;">tác động cao</div>
+      <div class="d-box d-success">
+        <div class="d-title">Làm ngay</div>
+        <div class="d-sub d-mt-1">giới hạn CORS · thống nhất JJWT · JSON logging · Correlation ID · secret vào biến môi trường</div>
+      </div>
+      <div class="d-box d-event">
+        <div class="d-title">Lập kế hoạch</div>
+        <div class="d-sub d-mt-1">tách database theo thứ tự view → API → schema · outbox · Circuit Breaker, CI/CD</div>
       </div>
 
-      <!-- Quadrant 2: High Impact, High Effort = PLAN -->
-      <div class="d-box d-event" style="padding:14px;">
-        <div class="d-title d-mb-1 text-center">High Impact, High Effort</div>
-        <div class="d-sub d-mb-1 text-center fw-bold">LẬP KẾ HOẠCH</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• Database separation</div>
-          <div class="d-sub">• Saga pattern</div>
-          <div class="d-sub">• Event-driven migration</div>
-        </div>
+      <div class="d-label" style="align-self: center;">tác động thấp</div>
+      <div class="d-box d-note">
+        <div class="d-title">Khi rảnh</div>
+        <div class="d-sub d-mt-1">làm gọn code, cập nhật tài liệu (minh hoạ)</div>
       </div>
-
-      <!-- Quadrant 3: Low Impact, Low Effort = NICE TO HAVE -->
-      <div class="d-box d-note" style="padding:14px;">
-        <div class="d-title d-mb-1 text-center">Low Impact, Low Effort</div>
-        <div class="d-sub d-mb-1 text-center fw-bold">KHI RẢNH</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• Code formatting</div>
-          <div class="d-sub">• Doc updates</div>
-          <div class="d-sub">• Minor refactors</div>
-        </div>
-      </div>
-
-      <!-- Quadrant 4: Low Impact, High Effort = SKIP -->
-      <div class="d-box d-legacy" style="padding:14px;">
-        <div class="d-title d-mb-1 text-center">Low Impact, High Effort</div>
-        <div class="d-sub d-mb-1 text-center fw-bold">BỎ QUA</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">• Full rewrite</div>
-          <div class="d-sub">• Framework migration</div>
-          <div class="d-sub">• Over-engineering</div>
-        </div>
+      <div class="d-box d-legacy">
+        <div class="d-title">Bỏ qua</div>
+        <div class="d-sub d-mt-1">viết lại kiểu Big Bang · thêm hạ tầng chưa có nhu cầu (vd. tách hẳn DB server khi chưa cần scale riêng)</div>
       </div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Mỗi sprint chỉ lấy 1–2 hạng mục ở ô "làm ngay"; hết quick win mới sang ô "lập kế hoạch" — và có observability trước khi đụng vào database.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

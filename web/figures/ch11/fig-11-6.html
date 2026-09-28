@@ -2,60 +2,63 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.6 — Trace Waterfall — Timing visualization | Ch.11</title>
+  <!--
+    Fig 11.6 — Biểu đồ Gantt của một trace: thời gian của từng span
+    2026-09-28 (WP-B Ch.11): thanh màu cam/xanh neon + chữ trắng hex #ffffff (roadmap; Rule 16) → nền/viền token, chữ đặt ở
+    cột nhãn. Số liệu cũ (gateway 580ms, judge 200ms, query 50ms) trái với văn bản ngay sau hình: "Execute SQL on sandbox mất
+    570ms — chiếm 70% tổng thời gian", và bảng khái niệm (span Judge chứa "Execute SQL" và "Compare"). Nay dựng trace minh hoạ
+    khớp hai chỗ đó; Core trả 202 sớm, Judge chạy sau qua Kafka (Ch.05) nên là đoạn bất đồng bộ. Chữ theo §17.
+  -->
+  <title>Fig 11.6 — Gantt của một trace | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <style>
+    .g6 { display: grid; grid-template-columns: 300px 1fr; row-gap: 10px; align-items: center; }
+    .g6-track { position: relative; height: 22px; }
+    .g6-bar { position: absolute; top: 3px; height: 16px; border-radius: 4px; border: 1.5px solid var(--diagram-color-info-border); background: var(--diagram-color-info-bg); }
+    .g6-bar.is-hot { border-color: var(--diagram-color-danger-border); background: var(--diagram-color-danger-bg); }
+    .g6-bar.is-async { border-style: dashed; }
+    .g6-axis { position: relative; height: 18px; border-bottom: 1px solid var(--diagram-color-line-muted); }
+    .g6-axis span { position: absolute; transform: translateX(-50%); }
+    .g6-indent-1 { padding-left: 16px; }
+    .g6-indent-2 { padding-left: 32px; }
+  </style>
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.6">
-
-    <!-- Time axis -->
-    <div class="d-row d-mb-1">
-      <div style="width:140px;" class="d-label">Service</div>
-      <div style="flex:1;" class="d-row">
-        <div class="d-sub text-left" style="flex:1;">0ms</div>
-        <div class="d-sub text-center" style="flex:1;">200ms</div>
-        <div class="d-sub text-center" style="flex:1;">400ms</div>
-        <div class="d-sub text-right" style="flex:1;">600ms</div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.6" data-ref="CH11-SEC">
+    <div class="d-label d-mb-1">Một trace nộp bài (minh hoạ) — tổng 810ms</div>
+    <div class="g6">
+      <div></div>
+      <div class="g6-axis d-sub d-text-muted">
+        <span style="left: 0%; transform: none;">0</span>
+        <span style="left: 24.7%;">200ms</span>
+        <span style="left: 49.4%;">400ms</span>
+        <span style="left: 74.1%;">600ms</span>
+        <span style="left: 98.8%; transform: translateX(-100%);">800ms</span>
       </div>
-    </div>
-    <div class="d-sep d-mb-1"></div>
 
-    <!-- Gateway span -->
-    <div class="d-row d-mb-1">
-      <div class="d-title" style="width:140px; font-size:12px;">Gateway</div>
-      <div style="flex:1; position:relative;">
-        <div class="fw-semibold" style="width:100%; height:24px; border-radius:14px; display:flex; align-items:center; padding:0 12px; background:var(--diagram-color-warning-border); color:#ffffff;">gateway-filter (580ms)</div>
-      </div>
-    </div>
+      <div class="d-sub"><strong>Gateway</strong> · 60ms</div>
+      <div class="g6-track"><div class="g6-bar" style="left: 0%; width: 7.4%;"></div></div>
 
-    <!-- Core Service span -->
-    <div class="d-row d-mb-1">
-      <div class="d-title" style="width:140px; font-size:12px;">Core Service</div>
-      <div style="flex:1; position:relative;">
-        <div class="fw-semibold" style="width:70%; margin-left:10%; height:24px; border-radius:14px; display:flex; align-items:center; padding:0 12px; background:var(--diagram-color-success-border); color:#ffffff;">core-process (350ms)</div>
-      </div>
-    </div>
+      <div class="d-sub g6-indent-1"><strong>Core</strong> · lưu bài, trả 202 · 47ms</div>
+      <div class="g6-track"><div class="g6-bar" style="left: 1%; width: 5.8%;"></div></div>
 
-    <!-- Judge Service span -->
-    <div class="d-row d-mb-1">
-      <div class="d-title" style="width:140px; font-size:12px;">Judge Service</div>
-      <div style="flex:1; position:relative;">
-        <div class="fw-semibold" style="width:40%; margin-left:25%; height:24px; border-radius:14px; display:flex; align-items:center; padding:0 12px; background:var(--diagram-color-success-border); color:#ffffff;">judge-execute (200ms)</div>
-      </div>
+      <div class="d-sub g6-indent-2">Kafka publish · 12ms</div>
+      <div class="g6-track"><div class="g6-bar" style="left: 4.9%; width: 1.5%;"></div></div>
+
+      <div class="d-sub g6-indent-1"><strong>Judge</strong> · consume, bất đồng bộ · 700ms</div>
+      <div class="g6-track"><div class="g6-bar is-async" style="left: 13.6%; width: 86.4%;"></div></div>
+
+      <div class="d-sub g6-indent-2 d-text-danger fw-semibold">Execute SQL on sandbox · 570ms</div>
+      <div class="g6-track"><div class="g6-bar is-hot" style="left: 19.8%; width: 70.4%;"></div></div>
+
+      <div class="d-sub g6-indent-2">Compare · 65ms</div>
+      <div class="g6-track"><div class="g6-bar" style="left: 90.7%; width: 8%;"></div></div>
     </div>
 
-    <!-- Database span -->
-    <div class="d-row d-mb-2">
-      <div class="d-title" style="width:140px; font-size:12px;">Database</div>
-      <div style="flex:1; position:relative;">
-        <div class="fw-semibold" style="width:15%; margin-left:30%; height:24px; border-radius:14px; display:flex; align-items:center; padding:0 12px; background:var(--diagram-color-info-border); color:#ffffff;">query (50ms)</div>
-      </div>
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Nhìn một lần là thấy: Execute SQL chiếm khoảng 70% thời gian cả trace — đó là chỗ cần tối ưu, không phải Gateway hay Core. Span lùi vào là span con; nét đứt là đoạn nối qua Kafka.</div>
     </div>
-
-    <div class="d-box d-note" style="padding:10px 18px;">
-      <div class="d-sub text-center">Waterfall view giúp phát hiện bottleneck: service nào chậm nhất? Database query có nhanh không?</div>
-    </div>
-  </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

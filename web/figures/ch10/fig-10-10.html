@@ -2,66 +2,65 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 10.10 — KBM Migration Roadmap — 3 Phases | Ch.10</title>
+  <!--
+    Fig 10.10 — Lộ trình chuyển đổi 4 giai đoạn: Quick Wins → Observability → Resilience → Decomposition
+    2026-09-28 (WP-B Ch.10): hạng mục trong hình lệch với bốn bảng giai đoạn ngay sau (tbl:phase-*): bản cũ có "Health check
+    endpoints", "API Gateway Centralize", "Auto-scaling", "Database per service", "CDC setup", "Saga orchestration" — không có
+    trong bảng — và thiếu Correlation ID, secret vào biến môi trường, DLQ, rate limit kỳ thi, view/API/schema, outbox. Thời
+    lượng "(1–2 tuần)… (6–12 tuần)" không có nguồn → bỏ. Nay chép theo bảng; nối giai đoạn bằng d-links. Chữ theo §17.
+  -->
+  <title>Fig 10.10 — Lộ trình chuyển đổi 4 giai đoạn | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-10.10">
-
-    <div class="d-row d-gap-2" style="align-items:stretch;">
-      <!-- Phase 1 -->
-      <div class="d-box d-success" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center"><span class="d-step">1</span> Quick Wins</div>
-        <div class="d-sub d-mb-1 text-center">(1–2 tuần)</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">- CORS restrict</div>
-          <div class="d-sub">- JWT version unify</div>
-          <div class="d-sub">- Structured logging</div>
-          <div class="d-sub">- Health check endpoints</div>
-        </div>
+  <div class="diagram-canvas" data-fig-id="FIG-10.10" data-ref="CH10-SEC">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px; align-items: stretch;">
+      <div class="d-box d-success" id="rm-1">
+        <div class="d-title d-mb-1"><span class="d-step">1</span> Quick Wins</div>
+        <div class="d-sub">· giới hạn CORS origins</div>
+        <div class="d-sub">· thống nhất phiên bản JJWT</div>
+        <div class="d-sub">· JSON logging</div>
+        <div class="d-sub">· Correlation ID GlobalFilter</div>
+        <div class="d-sub">· secret vào biến môi trường</div>
       </div>
-
-      <!-- Phase 2 -->
-      <div class="d-box d-note" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center"><span class="d-step">2</span> Observability Foundation</div>
-        <div class="d-sub d-mb-1 text-center">(2–4 tuần)</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">- Centralized Logging</div>
-          <div class="d-sub">- Distributed Tracing</div>
-          <div class="d-sub">- Metrics Collection</div>
-          <div class="d-sub">- Dashboards Setup</div>
-        </div>
+      <div class="d-box d-note" id="rm-2">
+        <div class="d-title d-mb-1"><span class="d-step">2</span> Observability</div>
+        <div class="d-sub">· Loki + Grafana</div>
+        <div class="d-sub">· Micrometer Tracing</div>
+        <div class="d-sub">· metrics tuỳ biến: tần suất nộp bài, thời gian chấm</div>
       </div>
-
-      <!-- Phase 3 -->
-      <div class="d-box d-event" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center"><span class="d-step">3</span> Resilience & CI/CD</div>
-        <div class="d-sub d-mb-1 text-center">(4–6 tuần)</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">- API Gateway Centralize</div>
-          <div class="d-sub">- Circuit Breaker</div>
-          <div class="d-sub">- Auto-scaling</div>
-          <div class="d-sub">- Automated Deployments</div>
-        </div>
+      <div class="d-box d-event" id="rm-3">
+        <div class="d-title d-mb-1"><span class="d-step">3</span> Resilience &amp; CI/CD</div>
+        <div class="d-sub">· Circuit Breaker cho Feign</div>
+        <div class="d-sub">· Kafka DLQ + retry</div>
+        <div class="d-sub">· rate limiting theo route cho kỳ thi</div>
+        <div class="d-sub">· CI/CD tự động (GitLab CI)</div>
       </div>
-
-      <!-- Phase 4 -->
-      <div class="d-box d-highlight" style="flex:1; padding:14px;">
-        <div class="d-title d-mb-1 text-center"><span class="d-step">4</span> Database Decomposition</div>
-        <div class="d-sub d-mb-1 text-center">(6–12 tuần)</div>
-        <div class="d-sep"></div>
-        <div class="d-stack d-gap-1">
-          <div class="d-sub">- Database per service</div>
-          <div class="d-sub">- CDC setup</div>
-          <div class="d-sub">- Saga orchestration</div>
-          <div class="d-sub">- Event-driven patterns</div>
-        </div>
+      <div class="d-box d-highlight" id="rm-4">
+        <div class="d-title d-mb-1"><span class="d-step">4</span> Tách database</div>
+        <div class="d-sub">· view abstraction</div>
+        <div class="d-sub">· Assignment gọi Core API</div>
+        <div class="d-sub">· schema separation</div>
+        <div class="d-sub">· gọn thư viện dùng chung</div>
+        <div class="d-sub">· outbox cho luồng bài nộp</div>
       </div>
     </div>
-  </div>
+    <div class="d-mt-2">
+      <div style="height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--diagram-color-success-border) 0%, var(--diagram-color-warning-border) 60%, var(--diagram-color-danger-border) 100%);"></div>
+      <div class="d-mt-1 d-text-muted" style="display: flex; justify-content: space-between;">
+        <span>nỗ lực thấp, giá trị ngay</span>
+        <span>rủi ro cao nhất — cần observability và resilience đi trước</span>
+      </div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="rm-1" data-to="rm-2"></path>
+      <path data-from="rm-2" data-to="rm-3"></path>
+      <path data-from="rm-3" data-to="rm-4"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

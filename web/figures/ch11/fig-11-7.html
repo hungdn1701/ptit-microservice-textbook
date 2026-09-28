@@ -2,31 +2,34 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 11.7 — SLI / SLO / SLA | Ch.11</title>
+  <!--
+    Fig 11.7 — Mối quan hệ giữa SLI, SLO và SLA
+    2026-09-28 (WP-B Ch.11): SLA cũ ghi "cam kết với sinh viên … vi phạm → xử lý bù" trong khi đoạn ngay sau hình nói KBM
+    không cần SLA chính thức (không có hợp đồng thương mại); SLO "uptime ≥ 99.9%" không có trong văn bản. Nay dùng đúng ba ví
+    dụ của văn bản (SLI độ trễ P99 luồng nộp bài; SLO 99% bài nộp có kết quả dưới 5 giây; SLA availability 99.5% mỗi học kỳ
+    — ví dụ chung) và ghi rõ vị trí của KBM. Tên đầy đủ tiếng Anh giữ, mô tả tiếng Việt (§17).
+  -->
+  <title>Fig 11.7 — SLI, SLO và SLA | Ch.11</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-11.7">
-    <div class="d-box d-danger text-center" style="padding: 24px;">
-      <div class="d-title d-title-lg d-mb-1">SLA (Service Level Agreement)</div>
-      <div class="d-sub d-mb-1">Cam kết với sinh viên (VD: uptime ≥ 99.5%, vi phạm → xử lý bù)</div>
-
-      <div class="d-box d-event text-center" style="padding: 24px; margin-top: 16px;">
-        <div class="d-title d-title-lg d-mb-1">SLO (Service Level Objective)</div>
-        <div class="d-sub d-mb-1">Mục tiêu nội bộ, nghiêm ngặt hơn SLA (VD: uptime ≥ 99.9%)</div>
-
-        <div class="d-box d-service text-center" style="padding: 24px; margin-top: 16px;">
-          <div class="d-title d-title-lg d-mb-1">SLI (Service Level Indicator)</div>
-          <div class="d-sub d-mb-2">Chỉ số thực tế đo đạc được</div>
-          <div class="d-row d-gap-1 d-center">
-            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">latency p99</div>
-            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">error_rate</div>
-            <div class="d-mono" style="padding: 8px 16px; background: var(--diagram-color-note-bg); border-radius: 4px;">availability</div>
-          </div>
+  <div class="diagram-canvas" data-fig-id="FIG-11.7" data-ref="CH11-SEC">
+    <div class="d-box d-danger" style="padding: 20px;">
+      <div class="d-title">SLA — Service Level Agreement</div>
+      <div class="d-sub">cam kết với bên ngoài, có ràng buộc hợp đồng. Vd.: availability 99.5% trong một học kỳ</div>
+      <div class="d-box d-event" style="padding: 20px; margin-top: 14px;">
+        <div class="d-title">SLO — Service Level Objective</div>
+        <div class="d-sub">mục tiêu nội bộ nhóm tự đặt. Vd.: 99% bài nộp có kết quả trong dưới 5 giây</div>
+        <div class="d-box d-service" style="padding: 20px; margin-top: 14px;">
+          <div class="d-title">SLI — Service Level Indicator</div>
+          <div class="d-sub">con số đo được. Vd.: độ trễ P99 của luồng nộp bài</div>
         </div>
       </div>
     </div>
-  </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub"><strong>KBM</strong>: hệ thống nội bộ của trường, không có hợp đồng thương mại nên không cần SLA chính thức — nhưng vẫn cần SLO để biết khi nào phải ưu tiên sửa lỗi, khi nào chấp nhận được.</div>
+    </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

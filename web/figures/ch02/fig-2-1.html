@@ -4,112 +4,109 @@
   <meta charset="UTF-8">
   <!--
     Fig 2.1 — Conway's Law vs Inverse Conway Maneuver
+    2026-09-28 (WP-B Ch.02): mũi tên sang d-links (bỏ marker + <line>), chữ theo DIAGRAM_DESIGN.md §17.
     =========================================================
     Tier 1 HTML migration từ fig-2-1.svg
     Layout: 2-column comparison: passive (Conway) vs proactive (Inverse)
     Capture: gen-diagrams.ps1 → fig-2-1.png → Typst image()
   -->
-  <title>Fig 2.1 — Conway's Law vs Inverse Conway Maneuver | Ch.2</title>
+  <title>Fig 2.1 — Conway's Law và Inverse Conway Maneuver | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.1" data-ref="CH02-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
 
 
     <div class="d-grid-2 d-gap-3">
 
       <!-- LEFT: Conway's Law (passive) -->
       <div class="d-cluster d-col">
-        <span class="d-label">Conway's Law (Passive)</span>
+        <span class="d-label">Conway's Law (thụ động)</span>
 
-        <div class="d-mt-1 d-mb-1 d-text-muted text-center">Current Team Structure</div>
+        <div class="d-mt-1 d-mb-1 d-text-muted text-center">cấu trúc team hiện có</div>
 
         <div class="d-grid-2 d-gap-2 d-mb-1">
-          <div class="d-box d-note text-center">
+          <div class="d-box d-note text-center" id="c-ta">
             <div class="d-title">Team A</div>
             <div class="d-sub">Frontend + DB</div>
           </div>
-          <div class="d-box d-note text-center">
+          <div class="d-box d-note text-center" id="c-tb">
             <div class="d-title">Team B</div>
             <div class="d-sub">Backend + API</div>
           </div>
         </div>
 
-        <div class="d-center d-mb-1 d-col">
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <span class="d-mt-1 d-text-muted">dictates</span>
-        </div>
+        <div style="height: 56px;"></div>
 
         <div class="d-grid-2 d-gap-2 d-mb-2">
-          <div class="d-box d-legacy text-center">
+          <div class="d-box d-legacy text-center" id="c-ma">
             <div class="d-title">Module A</div>
-            <div class="d-sub">UI + Data</div>
+            <div class="d-sub">UI + dữ liệu</div>
           </div>
-          <div class="d-box d-legacy text-center">
+          <div class="d-box d-legacy text-center" id="c-mb">
             <div class="d-title">Module B</div>
-            <div class="d-sub">Logic + API</div>
+            <div class="d-sub">logic + API</div>
           </div>
         </div>
 
         <div class="d-mb-2 text-center d-text-muted" style="padding: 0 10px;">
-          Architecture reflects team structure.<br>
-          <span class="d-text-danger fw-semibold">Cross-module coupling</span>
+          kiến trúc phản chiếu cấu trúc team<br>
+          <span class="d-text-danger fw-semibold">coupling chéo giữa các module</span>
         </div>
 
         <div class="d-box d-danger text-center" style="margin-top: auto;">
-          <div class="d-title">Architecture mirrors org chart</div>
+          <div class="d-title">Kiến trúc sao chép sơ đồ tổ chức</div>
         </div>
       </div>
 
       <!-- RIGHT: Inverse Conway Maneuver (proactive) -->
       <div class="d-cluster d-col">
-        <span class="d-label">Inverse Conway Maneuver (Proactive)</span>
+        <span class="d-label">Inverse Conway Maneuver (chủ động)</span>
 
-        <div class="d-mt-1 d-mb-1 d-text-muted text-center">Desired Architecture</div>
+        <div class="d-mt-1 d-mb-1 d-text-muted text-center">kiến trúc mong muốn</div>
 
         <div class="d-grid-2 d-gap-2 d-mb-1">
-          <div class="d-box d-service d-center text-center">
+          <div class="d-box d-service d-center text-center" id="c-sx">
             <div class="d-title">Service X</div>
           </div>
-          <div class="d-box d-service d-center text-center">
+          <div class="d-box d-service d-center text-center" id="c-sy">
             <div class="d-title">Service Y</div>
           </div>
         </div>
 
-        <div class="d-center d-mb-1 d-col">
-          <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-          <span class="d-mt-1 d-text-muted">shapes</span>
-        </div>
+        <div style="height: 56px;"></div>
 
         <div class="d-grid-2 d-gap-2 d-mb-2">
-          <div class="d-box d-success text-center">
+          <div class="d-box d-success text-center" id="c-tx">
             <div class="d-title">Team X</div>
-            <div class="d-sub">Own Service X</div>
+            <div class="d-sub">sở hữu Service X</div>
           </div>
-          <div class="d-box d-success text-center">
+          <div class="d-box d-success text-center" id="c-ty">
             <div class="d-title">Team Y</div>
-            <div class="d-sub">Own Service Y</div>
+            <div class="d-sub">sở hữu Service Y</div>
           </div>
         </div>
 
         <div class="d-mb-2 text-center d-text-muted" style="padding: 0 10px;">
-          Teams structured to support architecture.<br>
-          <span class="d-text-success fw-semibold">Independent deployment</span>
+          team được tổ chức theo kiến trúc<br>
+          <span class="d-text-success fw-semibold">triển khai độc lập</span>
         </div>
 
         <div class="d-box d-success text-center" style="margin-top: auto;">
-          <div class="d-title">Design teams to achieve architecture</div>
+          <div class="d-title">Thiết kế team để đạt kiến trúc</div>
         </div>
       </div>
 
     </div><!-- /.d-grid-2 -->
 
+    <svg class="d-links">
+      <path data-from="c-ta" data-to="c-ma" data-label="quyết định"></path>
+      <path data-from="c-tb" data-to="c-mb" data-label="quyết định"></path>
+      <path data-from="c-sx" data-to="c-tx" data-label="định hình"></path>
+      <path data-from="c-sy" data-to="c-ty" data-label="định hình"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

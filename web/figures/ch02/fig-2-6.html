@@ -3,115 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 2.6 — Event Storming Flow
-    =========================================================
-    Tier 1 HTML migration từ fig-2-6.svg
-    Layout: Horizontal pipeline Command → Aggregate → Domain Event → Policy → Domain Event
-    Capture: gen-diagrams.ps1 → fig-2-6.png → Typst image()
+    Fig 2.6 — Event Storming: luồng từ Command đến Domain Event
+    2026-09-28 (WP-B Ch.02): 4 <line> → d-links; hộp cùng chiều cao, tiêu đề 1 dòng (tên event viết liền như trong code);
+    mô tả và các bước quy trình tiếng Việt, khớp đoạn "Quy trình cơ bản" ngay sau hình (DIAGRAM_DESIGN.md §17).
   -->
-  <title>Fig 2.6 — Event Storming Flow | Ch.2</title>
+  <title>Fig 2.6 — Event Storming: từ Command đến Domain Event | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.6" data-ref="CH02-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 190px); gap: 44px 56px; align-items: stretch; margin: 0 auto; width: fit-content;">
+      <div class="d-box d-service text-center" id="es-cmd" style="grid-column: 1; grid-row: 1;">
+        <div class="d-label">Command</div>
+        <div class="d-title">Submit Answer</div>
+        <div class="d-sub d-mt-1">hành động</div>
+      </div>
+      <div class="d-box d-event text-center" id="es-agg" style="grid-column: 2; grid-row: 1;">
+        <div class="d-label">Aggregate</div>
+        <div class="d-title">Submission</div>
+        <div class="d-sub d-mt-1">giữ trạng thái</div>
+      </div>
+      <div class="d-box d-warning text-center" id="es-ev1" style="grid-column: 3; grid-row: 1;">
+        <div class="d-label">Domain Event</div>
+        <div class="d-title">SubmissionCreated</div>
+        <div class="d-sub d-mt-1">sự việc đã xảy ra</div>
+      </div>
+      <div class="d-box d-zone d-zone-info text-center" id="es-pol" style="grid-column: 4; grid-row: 1;">
+        <div class="d-label">Policy</div>
+        <div class="d-title">Auto-judge</div>
+        <div class="d-sub d-mt-1">có bài nộp thì chấm</div>
+      </div>
+      <div class="d-box d-warning text-center" id="es-ev2" style="grid-column: 4; grid-row: 2;">
+        <div class="d-label">Domain Event</div>
+        <div class="d-title">SubmissionJudged</div>
+        <div class="d-sub d-mt-1">kết quả</div>
+      </div>
+    </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-title d-mb-1">Quy trình Event Storming</div>
+      <div class="d-row d-gap-2">
+        <div class="d-box d-zone d-zone-info text-center" style="flex: 1 1 0; min-width: 0; padding: 12px;">
+          <div class="d-title"><span class="d-step">1</span> Domain Events</div>
+          <div class="d-sub">chuyện gì đã xảy ra?</div>
+        </div>
+        <div class="d-box d-zone d-zone-info text-center" style="flex: 1 1 0; min-width: 0; padding: 12px;">
+          <div class="d-title"><span class="d-step">2</span> Commands</div>
+          <div class="d-sub">điều gì kích hoạt nó?</div>
+        </div>
+        <div class="d-box d-zone d-zone-info text-center" style="flex: 1 1 0; min-width: 0; padding: 12px;">
+          <div class="d-title"><span class="d-step">3</span> Aggregates</div>
+          <div class="d-sub">gom event theo aggregate</div>
+        </div>
+        <div class="d-box d-zone d-zone-info text-center" style="flex: 1 1 0; min-width: 0; padding: 12px;">
+          <div class="d-title"><span class="d-step">4</span> Ranh giới</div>
+          <div class="d-sub">vẽ bounded context</div>
+        </div>
+      </div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="es-cmd" data-to="es-agg"></path>
+      <path data-from="es-agg" data-to="es-ev1"></path>
+      <path data-from="es-ev1" data-to="es-pol"></path>
+      <path data-from="es-pol" data-to="es-ev2"></path>
     </svg>
-
-
-    <!-- Main horizontal pipeline -->
-    <div class="d-row d-gap-2 d-mb-3 d-center" style="align-items: flex-start; flex-wrap: wrap;">
-
-      <!-- Command -->
-      <div class="d-col d-center">
-        <div class="d-box d-service text-center" style="min-width: 130px;">
-          <div class="d-label">Command</div>
-          <div class="d-title">Submit Answer</div>
-          <div class="d-mono d-mt-1" >(Action)</div>
-        </div>
-      </div>
-
-      <div class="d-col d-center" style="height: 70px;">
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-
-      <!-- Aggregate -->
-      <div class="d-col d-center">
-        <div class="d-box d-event text-center" style="min-width: 130px;">
-          <div class="d-label">Aggregate</div>
-          <div class="d-title">Submission</div>
-          <div class="d-mono d-mt-1" >(State Holder)</div>
-        </div>
-      </div>
-
-      <div class="d-col d-center" style="height: 70px;">
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-
-      <!-- Domain Event 1 -->
-      <div class="d-col d-center">
-        <div class="d-box d-warning text-center" style="min-width: 130px;">
-          <div class="d-label">Domain Event</div>
-          <div class="d-title">Submission</div>
-          <div class="d-title">Created</div>
-          <div class="d-mono d-mt-1" >(Fact)</div>
-        </div>
-      </div>
-
-      <div class="d-col d-center" style="height: 70px;">
-        <svg width="24" height="2" style="overflow:visible; margin:auto 0;"><line x1="0" y1="1" x2="22" y2="1" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-      </div>
-
-      <!-- Policy Column with Event 2 -->
-      <div class="d-col d-center">
-        <!-- Policy -->
-        <div class="d-box d-zone d-zone-info text-center" style="min-width: 130px; padding: 12px 10px;">
-          <div class="d-label">Policy</div>
-          <div class="d-title">Auto-judge</div>
-          <div class="d-title">on submit</div>
-          <div class="d-mono d-mt-1" >(Rule)</div>
-        </div>
-        
-        <svg width="2" height="24" style="overflow:visible; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-        <!-- Domain Event 2 -->
-        <div class="d-box d-warning text-center" style="min-width: 130px;">
-          <div class="d-label">Domain Event</div>
-          <div class="d-title">Submission</div>
-          <div class="d-title">Judged</div>
-          <div class="d-mono d-mt-1" >(Outcome)</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Process summary -->
-    <div class="d-box d-note">
-      <div class="d-title d-mb-1" >Event Storming Flow:</div>
-      <div class="d-row d-gap-2" style="flex-wrap: wrap;">
-        <div class="d-box d-zone d-zone-info text-center" style="flex: 1; min-width: 160px; padding: 12px;">
-          <div class="d-title" ><span class="d-step">1</span> Domain Events</div>
-          <div class="d-sub">What happened?</div>
-        </div>
-        <div class="d-box d-zone d-zone-info text-center" style="flex: 1; min-width: 160px; padding: 12px;">
-          <div class="d-title" ><span class="d-step">2</span> Commands</div>
-          <div class="d-sub">What triggered it?</div>
-        </div>
-        <div class="d-box d-zone d-zone-info text-center" style="flex: 1; min-width: 160px; padding: 12px;">
-          <div class="d-title" ><span class="d-step">3</span> Aggregates</div>
-          <div class="d-sub">Group by aggregate</div>
-        </div>
-        <div class="d-box d-zone d-zone-info text-center" style="flex: 1; min-width: 160px; padding: 12px;">
-          <div class="d-title" ><span class="d-step">4</span> Boundaries</div>
-          <div class="d-sub">Draw Bounded Contexts</div>
-        </div>
-      </div>
-    </div>
-
   </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

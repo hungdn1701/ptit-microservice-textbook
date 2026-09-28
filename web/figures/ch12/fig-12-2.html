@@ -2,64 +2,53 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 12.2 — Containers vs Virtual Machines | Ch.12</title>
+  <!--
+    Fig 12.2 — So sánh kiến trúc máy ảo và container
+    2026-09-28 (WP-B Ch.12): thứ tự theo chú thích (máy ảo trước); vùng kết luận chỉ nói ưu điểm của container → thêm đánh
+    đổi về mức cách ly theo văn bản ngay sau hình (máy ảo cách ly mức phần cứng, container chỉ mức hệ điều hành). Chữ theo
+    DIAGRAM_DESIGN.md §17.
+  -->
+  <title>Fig 12.2 — Máy ảo và container | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-12.2">
-    <div class="d-grid-2 d-gap-3" style="align-items:start;">
-      <!-- Containers -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Container</div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;">
-            <div class="d-title" >App A</div>
-            <div class="d-sub">app + thư viện</div>
+  <div class="diagram-canvas" data-fig-id="FIG-12.2" data-ref="CH12-SEC">
+    <div class="d-grid-2 d-gap-3" style="align-items: stretch;">
+      <div class="d-cluster d-col">
+        <span class="d-label">Máy ảo</span>
+        <div class="d-grid-3 d-gap-1 d-mt-1">
+          <div class="d-col d-gap-1">
+            <div class="d-box d-note text-center"><div class="d-title">App A</div></div>
+            <div class="d-box d-legacy text-center"><div class="d-sub">hệ điều hành khách</div></div>
           </div>
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;">
-            <div class="d-title" >App B</div>
-            <div class="d-sub">app + thư viện</div>
+          <div class="d-col d-gap-1">
+            <div class="d-box d-note text-center"><div class="d-title">App B</div></div>
+            <div class="d-box d-legacy text-center"><div class="d-sub">hệ điều hành khách</div></div>
           </div>
-          <div class="d-box d-service text-center" style="flex:1; padding:10px;">
-            <div class="d-title" >App C</div>
-            <div class="d-sub">app + thư viện</div>
+          <div class="d-col d-gap-1">
+            <div class="d-box d-note text-center"><div class="d-title">App C</div></div>
+            <div class="d-box d-legacy text-center"><div class="d-sub">hệ điều hành khách</div></div>
           </div>
         </div>
-        <div class="d-box d-highlight d-mb-1 text-center" style="padding:8px;">
-          <div class="d-title">Container Runtime (Docker)</div>
-        </div>
-        <div class="d-box d-legacy text-center" style="padding:8px;">
-          <div class="d-title">Hệ điều hành chủ + phần cứng</div>
-        </div>
-        <div class="d-zone d-zone-success d-mt-1" >Nhẹ · Khởi động nhanh · Chia sẻ kernel</div>
+        <div class="d-box d-event text-center d-mt-1"><div class="d-title">Hypervisor</div></div>
+        <div class="d-box d-legacy text-center d-mt-1"><div class="d-title">Hệ điều hành chủ + phần cứng</div></div>
+        <div class="d-sub d-mt-2" style="margin-top: auto;"><strong>Được</strong>: cách ly mức phần cứng — hợp môi trường nhiều bên dùng chung.</div>
+        <div class="d-sub"><strong>Trả giá</strong>: mỗi máy một hệ điều hành — nặng hàng GB, khởi động hàng phút.</div>
       </div>
-      <!-- VMs -->
-      <div class="d-cluster" style="padding:14px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Máy ảo</div>
-        <div class="d-row d-gap-1 d-mb-1">
-          <div class="d-col d-gap-1" style="flex:1;">
-            <div class="d-box d-note text-center" style="padding:8px;"><div class="d-title" >App A</div></div>
-            <div class="d-box d-legacy text-center" style="padding:6px;"><div class="d-sub">Hệ điều hành khách</div></div>
-          </div>
-          <div class="d-col d-gap-1" style="flex:1;">
-            <div class="d-box d-note text-center" style="padding:8px;"><div class="d-title" >App B</div></div>
-            <div class="d-box d-legacy text-center" style="padding:6px;"><div class="d-sub">Hệ điều hành khách</div></div>
-          </div>
-          <div class="d-col d-gap-1" style="flex:1;">
-            <div class="d-box d-note text-center" style="padding:8px;"><div class="d-title" >App C</div></div>
-            <div class="d-box d-legacy text-center" style="padding:6px;"><div class="d-sub">Hệ điều hành khách</div></div>
-          </div>
+      <div class="d-cluster d-col">
+        <span class="d-label">Container</span>
+        <div class="d-grid-3 d-gap-1 d-mt-1">
+          <div class="d-box d-service text-center"><div class="d-title">App A</div><div class="d-sub">app + thư viện</div></div>
+          <div class="d-box d-service text-center"><div class="d-title">App B</div><div class="d-sub">app + thư viện</div></div>
+          <div class="d-box d-service text-center"><div class="d-title">App C</div><div class="d-sub">app + thư viện</div></div>
         </div>
-        <div class="d-box d-event d-mb-1 text-center" style="padding:8px;">
-          <div class="d-title">Hypervisor</div>
-        </div>
-        <div class="d-box d-legacy text-center" style="padding:8px;">
-          <div class="d-title">Hệ điều hành chủ + phần cứng</div>
-        </div>
-        <div class="d-zone d-zone-warning d-mt-1" >Nặng · Khởi động chậm · Mỗi VM có OS riêng</div>
+        <div class="d-box d-highlight text-center d-mt-1"><div class="d-title">Container runtime (Docker)</div></div>
+        <div class="d-box d-legacy text-center d-mt-1"><div class="d-title">Hệ điều hành chủ + phần cứng</div></div>
+        <div class="d-sub d-mt-2" style="margin-top: auto;"><strong>Được</strong>: dùng chung kernel — nhẹ, khởi động vài giây, chạy giống nhau mọi môi trường.</div>
+        <div class="d-sub"><strong>Trả giá</strong>: chỉ cách ly mức hệ điều hành.</div>
       </div>
     </div>
-  </div>
+  </div><!-- /.diagram-canvas -->
 </body>
 </html>

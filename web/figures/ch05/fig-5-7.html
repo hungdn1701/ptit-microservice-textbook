@@ -1,111 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 5.7 — KBM Contest Mode — Full Async Architecture
-    =========================================================
-    Tier 1 HTML migration from fig-5-7.svg
-    Layout: Vertical fan-out — Core → Kafka → Judge + Leaderboard + Notification
-    Capture: gen-diagrams.ps1 → fig-5-7.png → Typst image()
+    Fig 5.7 — Kiến trúc pipeline 2 Kafka topic chấm bài trong chế độ thi
+    2026-09-28 (WP-B Ch.05): vẽ lại theo bảng tbl:kbm_pipeline_topics ngay sau hình — bản cũ vẽ 3 topic
+    (submission/result/notification-topic) và 3 consumer (Judge, Leaderboard, Notification), trái với chú thích
+    "pipeline 2 Kafka topic" và bảng: submissions (Core → Judge, key userId), judge-results (Judge → Core, key submissionId),
+    Core báo kết quả cho Frontend qua WebSocket. Mũi tên d-links (bỏ <line>, d-tree-*), chữ theo DIAGRAM_DESIGN.md §17.
   -->
-  <title>Fig 5.7 — KBM Contest Mode — Full Async Architecture | Ch.5</title>
+  <title>Fig 5.7 — Pipeline 2 Kafka topic trong chế độ thi | Ch.5</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
-
 </head>
 <body class="diagram-mode">
-
   <div class="diagram-canvas" data-fig-id="FIG-5.7" data-ref="CH05-SEC">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-col d-mt-1 d-mb-2 d-gap-2" style="align-items: center;">
-
-      <!-- Frontend -->
-      <div class="d-box d-infra text-center" style="width:240px;">
-        <div class="d-title">User Interface</div>
-        <div class="d-sub">sends submissions, receives results via WebSocket</div>
+    <div style="display: grid; grid-template-columns: 160px 40px 200px 220px 170px; gap: 44px 56px; align-items: center; margin: 16px auto; width: fit-content;">
+      <div class="d-box d-infra text-center" id="kp-fe" style="grid-column: 1; grid-row: 1 / 3; height: 120px; display: flex; flex-direction: column; justify-content: center;">
+        <div class="d-title">Frontend</div>
+        <div class="d-sub">sinh viên nộp bài, xem kết quả</div>
       </div>
-
-      <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Core Service -->
-      <div class="d-box d-domain text-center" style="width:300px;">
+      <div class="d-box d-domain text-center" id="kp-core" style="grid-column: 3; grid-row: 1 / 3; height: 120px; display: flex; flex-direction: column; justify-content: center;">
         <div class="d-title">Core Service</div>
-        <div class="d-sub">Produce + Consume — single entry point</div>
+        <div class="d-sub">produce bài nộp, consume kết quả, cập nhật điểm</div>
       </div>
-
-      <svg width="2" height="24"  style="overflow:visible; display:block; margin:0 auto;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Kafka -->
-      <div class="d-box d-event text-center" style="width:640px; max-width:100%; position: relative; z-index: 2;">
-        <div class="d-title">Apache Kafka</div>
-        <div class="d-sub">submission-topic · result-topic · notification-topic</div>
-        <!-- Center stem down -->
-        <div class="d-tree-stem-down" style="--stem-len: 16px;"></div>
+      <div class="d-box d-event text-center" id="kp-t1" style="grid-column: 4; grid-row: 1;">
+        <div class="d-title">submissions</div>
+        <div class="d-sub">SQL + metadata · key userId</div>
       </div>
-
-      <!-- Orthogonal Fan-out for Downstream Services -->
-      <div class="d-row d-center" style="position: relative; width: 640px; gap: 16px;">
-        
-        <!-- Horizontal branch bar (432px width = distance between centers of the two outer 200px boxes) -->
-        <div class="d-tree-bus" style="width: 432px; left: 50%; transform: translateX(-50%);"></div>
-
-        <div class="d-col d-center" style="position: relative;">
-           <!-- Arrow down to Consumer 1 -->
-           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
-           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
-             <span class="d-label">Consumer 1</span>
-             <div class="d-box d-domain d-mt-1">
-               <div class="d-title">Judge Service</div>
-               <div class="d-sub">Execute SQL on sandbox</div>
-             </div>
-           </div>
-        </div>
-
-        <div class="d-col d-center" style="position: relative;">
-           <!-- Arrow down to Consumer 2 -->
-           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
-           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
-             <span class="d-label">Consumer 2</span>
-             <div class="d-box d-domain d-mt-1">
-               <div class="d-title">Leaderboard Service</div>
-               <div class="d-sub">Aggregates scores, ranks</div>
-             </div>
-           </div>
-        </div>
-
-        <div class="d-col d-center" style="position: relative;">
-           <!-- Arrow down to Consumer 3 -->
-           <div class="d-tree-stem-down arrow" style="top: 0; bottom: auto; --stem-len: 16px;"></div>
-           <div class="d-cluster d-mt-2 text-center" style="width:200px; z-index: 2;">
-             <span class="d-label">Consumer 3</span>
-             <div class="d-box d-infra d-mt-1">
-               <div class="d-title">Notification Service</div>
-               <div class="d-sub">WebSocket pushes to students</div>
-             </div>
-           </div>
-        </div>
-
-      </div><!-- /.d-row -->
-
-    </div><!-- /.d-col -->
-
-    <!-- Benefits note -->
-    <div class="d-box d-note">
-      <div class="d-label d-mb-1">Benefits of asynchronous architecture</div>
-      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">1</span> <strong>Non-blocking:</strong> Core Service is not blocked by slow judging</div>
-      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">2</span> <strong>Extensibility:</strong> Adding new consumers (Analytics, Replay) without modifying core code</div>
-      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">3</span> <strong>Fault Tolerance:</strong> Judge down → messages wait in Kafka, no loss, reprocessed upon recovery</div>
-      <div class="d-mb-1" style="font-size: 12px;  line-height: 1.5;"><span class="d-step d-step-success">4</span> <strong>Independent Scaling:</strong> Scale Judge pods according to contest load</div>
+      <div class="d-box d-event text-center" id="kp-t2" style="grid-column: 4; grid-row: 2;">
+        <div class="d-title">judge-results</div>
+        <div class="d-sub">kết quả + thời gian · key submissionId</div>
+      </div>
+      <div class="d-box d-service text-center" id="kp-judge" style="grid-column: 5; grid-row: 1 / 3;">
+        <div class="d-title">Judge Service</div>
+        <div class="d-sub">chạy SQL trong sandbox</div>
+      </div>
     </div>
 
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Core trả <code>202 Accepted</code> ngay sau khi ghi vào <code>submissions</code>; Judge chậm hay ngừng thì bài nằm chờ trong Kafka, không mất. Partition theo <code>userId</code> giữ thứ tự từng sinh viên — đổi lại, bài chạy lâu của một người có thể chặn người chung partition (head-of-line blocking).</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="kp-fe" data-to="kp-core" data-label="POST" data-label-side="above"></path>
+      <path data-from="kp-core" data-to="kp-fe" class="is-dashed" data-label="WebSocket"></path>
+      <path data-from="kp-core" data-to="kp-t1" data-from-side="right" data-from-at="0.25" data-to-side="left"></path>
+      <path data-from="kp-t1" data-to="kp-judge" data-from-side="right" data-to-side="left" data-to-at="0.25"></path>
+      <path data-from="kp-judge" data-to="kp-t2" data-from-side="left" data-from-at="0.75" data-to-side="right"></path>
+      <path data-from="kp-t2" data-to="kp-core" data-from-side="left" data-to-side="right" data-to-at="0.75"></path>
+    </svg>
   </div><!-- /.diagram-canvas -->
 
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

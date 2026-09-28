@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=3d0e275e">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
   <style>
     .rel-badge {
       display: inline-flex; align-items: center; gap: 6px;
@@ -20,10 +20,12 @@
       font-size: 10.5px; font-family: var(--font-mono); font-weight: 600;
       border: 1px solid; margin: 4px;
     }
-    .rel-upstream   { border-color: rgba(255,122,0,.3);  background: var(--primary-dim); color: var(--primary); }
-    .rel-downstream { border-color: rgba(96,165,250,.3); background: rgba(96,165,250,.08); color: var(--info); }
-    .rel-shared     { border-color: rgba(244,63,94,.3);  background: rgba(244,63,94,.08); color: var(--danger); }
-    .rel-conformist { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.08); color: var(--warning); }
+    .rel-upstream   { border-color: color-mix(in srgb, var(--primary) 45%, transparent); background: var(--primary-dim); color: var(--primary-fg); }
+    .rel-downstream { border: 1px dashed color-mix(in srgb, var(--info) 55%, transparent); background: transparent;       color: var(--info-fg); } /* cùng họ xanh với U (bảng IDE) → phân biệt bằng nền đặc/viền đứt */
+    .rel-acl        { border-color: color-mix(in srgb, var(--success) 30%, transparent); background: var(--success-dim); color: var(--success-fg); }
+    .rel-ohs        { border-color: var(--border); background: var(--bg-surface); color: var(--text-secondary); }
+    .rel-shared     { border-color: color-mix(in srgb, var(--danger) 30%, transparent);  background: var(--danger-dim);  color: var(--danger-fg); }
+    .rel-conformist { border-color: color-mix(in srgb, var(--warning) 30%, transparent); background: var(--warning-dim); color: var(--warning-fg); }
 
   </style>
 </head>
@@ -98,8 +100,8 @@
     <span class="rel-badge rel-downstream">D — Downstream (phụ thuộc)</span>
     <span class="rel-badge rel-shared">SK — Shared Kernel</span>
     <span class="rel-badge rel-conformist">CF — Conformist</span>
-    <span class="rel-badge" style="border-color:rgba(34,211,160,.3);background:var(--success-dim);color:var(--success);">ACL — Anti-Corruption Layer</span>
-    <span class="rel-badge" style="border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text-dim);">OHS — Open Host Service</span>
+    <span class="rel-badge rel-acl">ACL — Anti-Corruption Layer</span>
+    <span class="rel-badge rel-ohs">OHS — Open Host Service</span>
   </div>
   <div class="pattern-anatomy">
     <div class="anatomy-card">
@@ -276,7 +278,7 @@
 </div>
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
-<script src="../../js/diagram-links.js?v=8998bdd1"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
 
 // ── Act 3: Context Map KBM ─────────────────────────────────────────────

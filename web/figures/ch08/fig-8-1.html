@@ -1,74 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 8.1 — No Gateway — Direct Client Calls
-    =========================================================
-    Tier 1 HTML migration
-    Layout: 1 Client -> 5 Services fan-out
-    Capture: gen-diagrams.ps1 -> fig-8-1.png -> Typst image()
+    Fig 8.1 — Không có Gateway: client phải biết địa chỉ của từng service
+    2026-09-28 (WP-B Ch.08): commit 68fe690 (06/2026) dịch hình sang tiếng Anh; DIAGRAM_DESIGN.md §17 chốt sau đó: tên thành
+    phần tiếng Anh, mô tả tiếng Việt → Việt hoá lại. Mũi tên <svg><line> duy nhất (không tới service nào) → fan-out d-links
+    tới từng service. Tên service theo cấu hình route lst:lms_gateway_route_config (kbm-core, kbm-academic, kbm-auth,
+    kbm-notification); bỏ Judge — không có route ra ngoài, nhận việc qua Kafka (Ch.05). Cổng giữ như bản trước.
   -->
-  <title>Fig 8.1 — No Gateway — Direct Client Calls | Ch.8</title>
+  <title>Fig 8.1 — Không có Gateway | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-8.1">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
-
-
-    <div class="d-col d-center">
-      <!-- Client -->
-      <div class="d-box d-note text-center" style="min-width:220px; padding:12px 24px;">
+  <div class="diagram-canvas" data-fig-id="FIG-8.1" data-ref="CH08-SEC">
+    <div style="display: grid; grid-template-columns: repeat(4, 190px); gap: 72px 48px; margin: 0 auto; width: fit-content;">
+      <div class="d-box d-note text-center" id="ng-fe" style="grid-column: 1 / 5;">
         <div class="d-title">Frontend (React)</div>
+        <div class="d-sub">giữ địa chỉ của từng service</div>
       </div>
-
-      <!-- Arrow down -->
-      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Services Cluster -->
-      <div class="d-cluster">
-        <div class="d-label d-mb-2 text-center" style="position:static;">Microservices</div>
-        <div class="d-row d-center d-gap-2" style="flex-wrap:wrap;">
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">Core Service</div>
-            <div class="d-sub">:8080</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">Assignment</div>
-            <div class="d-sub">:8088</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">Auth Service</div>
-            <div class="d-sub">:9005</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">Judge Service</div>
-            <div class="d-sub">:8082</div>
-          </div>
-          <div class="d-box d-service text-center" style="flex:1; min-width:140px; max-width:160px; padding:12px 8px;">
-            <div class="d-title">Notification</div>
-            <div class="d-sub">:8084</div>
-          </div>
-        </div>
+      <div class="d-box d-service text-center" id="ng-core">
+        <div class="d-title">kbm-core</div>
+        <div class="d-sub">:8080</div>
+      </div>
+      <div class="d-box d-service text-center" id="ng-acad">
+        <div class="d-title">kbm-academic</div>
+        <div class="d-sub">:8088</div>
+      </div>
+      <div class="d-box d-service text-center" id="ng-auth">
+        <div class="d-title">kbm-auth</div>
+        <div class="d-sub">:9005</div>
+      </div>
+      <div class="d-box d-service text-center" id="ng-noti">
+        <div class="d-title">kbm-notification</div>
+        <div class="d-sub">:8084</div>
       </div>
     </div>
 
-    <!-- Problem callout -->
-    <div class="d-box d-danger d-mt-3" style="padding:14px 18px;">
-      <div class="d-title d-mb-1">Problems</div>
-      <div class="d-stack d-gap-1">
-        <div class="d-sub"><span class="d-step">1</span> Frontend must know URL + port of EVERY service (tight coupling)</div>
-        <div class="d-sub"><span class="d-step">2</span> External credential handling, CORS, and rate limiting are duplicated in EVERY service</div>
-        <div class="d-sub"><span class="d-step">3</span> Port/URL changes require Frontend updates</div>
-      </div>
+    <div class="d-box d-danger d-mt-3">
+      <div class="d-title d-mb-1">Vấn đề khi client gọi thẳng</div>
+      <div class="d-sub"><span class="d-step">1</span> Frontend gắn chặt với địa chỉ từng service — đổi port/URL là phải sửa và phát hành lại frontend.</div>
+      <div class="d-sub d-mt-1"><span class="d-step">2</span> Xác thực, CORS, rate limiting lặp lại ở mọi service, dễ lệch chính sách.</div>
+      <div class="d-sub d-mt-1"><span class="d-step">3</span> Mọi endpoint nội bộ lộ ra Internet — bề mặt tấn công lớn.</div>
+    </div>
+    <div class="d-box d-note d-mt-2">
+      <div class="d-sub">Vài service và một client thì gọi thẳng vẫn chạy được; chi phí lớn dần theo số service và số loại client.</div>
     </div>
 
-  </div>
+    <svg class="d-links">
+      <path data-from="ng-fe" data-to="ng-core" data-from-side="bottom" data-from-at="0.1" data-to-side="top" data-to-align></path>
+      <path data-from="ng-fe" data-to="ng-acad" data-from-side="bottom" data-from-at="0.37" data-to-side="top" data-to-align></path>
+      <path data-from="ng-fe" data-to="ng-auth" data-from-side="bottom" data-from-at="0.63" data-to-side="top" data-to-align></path>
+      <path data-from="ng-fe" data-to="ng-noti" data-from-side="bottom" data-from-at="0.9" data-to-side="top" data-to-align></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

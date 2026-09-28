@@ -2,70 +2,59 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Fig 9.8 — Security Flow | Ch.9</title>
+  <!--
+    Fig 9.8 — Kiến trúc bảo mật tổng thể của KBM
+    2026-09-28 (WP-B Ch.09): hai mũi tên <svg><line> giữa các tầng bị dạt sang mép trái (roadmap) → d-links tới từng thành
+    phần. Tên frontend thống nhất với Hình 8.7; mô tả tiếng Anh → tiếng Việt theo §17. Judge không có route từ Gateway
+    (Ch.08) — nhận job qua Kafka; workload identity cho Judge là mục tiêu (bảng tbl:kbm_security_analysis: "chưa có workload
+    identity thống nhất"). Thêm cột khoảng trống rủi ro cao lấy nguyên từ bảng đó.
+  -->
+  <title>Fig 9.8 — Kiến trúc bảo mật KBM | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 </head>
 <body class="diagram-mode">
-  <div class="diagram-canvas" data-fig-id="FIG-9.8">
-    <svg width="0" height="0" style="position:absolute;">
-      <defs>
-        <marker id="arr-gray" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="var(--diagram-color-line-muted)"/></marker>
-      </defs>
-    </svg>
+  <div class="diagram-canvas" data-fig-id="FIG-9.8" data-ref="CH09-SEC">
+    <div style="display: grid; grid-template-columns: auto 250px; gap: 40px; align-items: start;">
+      <div style="display: grid; grid-template-columns: repeat(4, 140px); gap: 60px 48px;">
+        <div class="d-box d-note text-center" id="s8-stu" style="grid-column: 1 / 3; width: 200px; justify-self: center;"><div class="d-title">Student Frontend</div></div>
+        <div class="d-box d-note text-center" id="s8-adm" style="grid-column: 3 / 5; width: 200px; justify-self: center;"><div class="d-title">Admin Frontend</div></div>
 
-    <div class="d-col">
-      <!-- Internet layer -->
-      <div class="d-cluster" style="padding:14px 18px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Internet</div>
-        <div class="d-row d-center d-gap-2">
-          <div class="d-box d-note text-center" style="flex:1; max-width:180px;">
-            <div class="d-title">Student App</div>
-          </div>
-          <div class="d-box d-note text-center" style="flex:1; max-width:180px;">
-            <div class="d-title">Admin CMS</div>
-          </div>
+        <div class="d-box d-gateway text-center" id="s8-gw" style="grid-column: 1 / 4; grid-row: 2; border-width: 2px;">
+          <div class="d-title">Gateway · :9001</div>
+          <div class="d-sub">xác minh JWT ở biên · CORS · rate limiting (Redis)</div>
         </div>
+
+        <div class="d-box d-note text-center" id="s8-auth" style="grid-column: 1; grid-row: 3;"><div class="d-title">Auth</div><div class="d-sub">phát JWT, BCrypt</div></div>
+        <div class="d-box d-service text-center" id="s8-acad" style="grid-column: 2; grid-row: 3;"><div class="d-title">Assignment</div><div class="d-sub">@PreAuthorize</div></div>
+        <div class="d-box d-service text-center" id="s8-core" style="grid-column: 3; grid-row: 3;"><div class="d-title">Core</div><div class="d-sub">@PreAuthorize</div></div>
+        <div class="d-box d-event text-center" id="s8-judge" style="grid-column: 4; grid-row: 3;"><div class="d-title">Judge</div><div class="d-sub">nhận job qua Kafka</div></div>
       </div>
 
-      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Edge layer -->
-      <div class="d-cluster" style="padding:14px 18px;">
-        <div class="d-label d-mb-1 text-center" style="position:static;">Edge Layer</div>
-        <div class="d-row d-center">
-          <div class="d-box d-gateway text-center" style="padding:12px 20px;">
-            <div class="d-title">Gateway :9001</div>
-            <div class="d-sub">Ingress JWT validation · CORS · Rate limiting</div>
-          </div>
-        </div>
-      </div>
-
-      <svg width="2" height="24" style="overflow:visible;"><line x1="1" y1="0" x2="1" y2="22" stroke="var(--diagram-color-line-muted)" stroke-width="2" marker-end="url(#arr-gray)"/></svg>
-
-      <!-- Service layer -->
-      <div class="d-cluster" style="padding:14px 18px;">
-        <div class="d-label d-mb-2 text-center" style="position:static;">Service Layer (Internal Network)</div>
-        <div class="d-grid-4 d-gap-2">
-          <div class="d-box d-note text-center" style="padding:10px 6px;">
-            <div class="d-title" style="font-size:12px;">Auth Service</div>
-            <div class="d-sub">JWT issuer, RBAC</div>
-          </div>
-          <div class="d-box d-service text-center" style="padding:10px 6px;">
-            <div class="d-title" style="font-size:12px;">Core Service</div>
-            <div class="d-sub">Verify proof · @PreAuthorize</div>
-          </div>
-          <div class="d-box d-service text-center" style="padding:10px 6px;">
-            <div class="d-title" style="font-size:12px;">Assignment</div>
-            <div class="d-sub">Verify proof · @PreAuthorize</div>
-          </div>
-          <div class="d-box d-service text-center" style="padding:10px 6px;">
-            <div class="d-title" style="font-size:12px;">Judge Service</div>
-            <div class="d-sub">Verify workload · job scope</div>
-          </div>
-        </div>
+      <div class="d-box d-danger">
+        <div class="d-title d-mb-1">Khoảng trống rủi ro cao</div>
+        <div class="d-sub">· JWT HS256, secret dùng chung</div>
+        <div class="d-sub">· secret một phần hardcoded trong application.yml</div>
+        <div class="d-sub">· CORS <code>allowedOrigins: "*"</code></div>
+        <div class="d-sub">· lẫn header-trust và tự parse JWT</div>
+        <div class="d-sub d-mt-1 d-text-muted">trung bình: token ở localStorage; chưa có workload identity cho service-to-service</div>
       </div>
     </div>
-  </div>
+
+    <div class="d-box d-note d-mt-3">
+      <div class="d-sub">Đã ổn: rate limiting, HTTPS ở Gateway, BCrypt. Lộ trình khắc phục theo giai đoạn ở mục tiếp theo.</div>
+    </div>
+
+    <svg class="d-links">
+      <path data-from="s8-stu" data-to="s8-gw" data-from-side="bottom" data-from-at="0.8" data-to-side="top" data-to-align></path>
+      <path data-from="s8-adm" data-to="s8-gw" data-from-side="bottom" data-from-at="0.2" data-to-side="top" data-to-align></path>
+      <path data-from="s8-gw" data-to="s8-auth" data-from-side="bottom" data-from-at="0.136" data-to-side="top" data-to-align></path>
+      <path data-from="s8-gw" data-to="s8-acad" data-from-side="bottom" data-from-at="0.5" data-to-side="top" data-to-align></path>
+      <path data-from="s8-gw" data-to="s8-core" data-from-side="bottom" data-from-at="0.864" data-to-side="top" data-to-align></path>
+      <path data-from="s8-core" data-to="s8-judge" class="is-dashed"></path>
+    </svg>
+  </div><!-- /.diagram-canvas -->
+
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>
