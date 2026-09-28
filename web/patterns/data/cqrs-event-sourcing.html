@@ -264,14 +264,14 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 1</div>
       <h4>Tách schema</h4>
-      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>assignment_schema</code>; database role riêng, <code>REVOKE</code> để chặn cross-schema JOIN.</p>
+      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>assignment_schema</code>, database role riêng; truy vấn chéo còn lại tạm đọc qua view.</p>
       <span class="t-badge orange">Chi phí thấp</span>
     </div>
     <div class="timeline-item" data-delay="200">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Truy cập dữ liệu qua API</h4>
-      <p>Assignment gọi Core <code>GET /api/questions/batch</code> thay vì query thẳng <code>core_schema.questions</code>.</p>
+      <p>Assignment gọi Core <code>GET /api/questions/batch</code> thay vì query thẳng <code>core_schema.questions</code>; hết truy vấn chéo thì <code>REVOKE</code> để chặn cross-schema JOIN.</p>
       <span class="t-badge orange">Chi phí trung bình</span>
     </div>
     <div class="timeline-item" data-delay="400">

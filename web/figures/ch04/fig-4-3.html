@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <!--
     2026-09-28 (WP-B Ch.04): nhãn mũi tên theo DIAGRAM_DESIGN.md §17 (tiếng Việt; tên API/code giữ nguyên).
+    2026-09-28 (WP-C): tên service và cổng theo chuẩn .agents/workflows/reference-source.md (kbm-judge-sql :8082; hai
+    instance khác host cùng cổng, như @FeignClient(name = "kbm-judge-sql") ở Ch.04) — bản cũ "judge-service" :8081/:8082.
     Fig 4.3 — Client-side Discovery
     =========================================================
     Tier 1 HTML migration từ fig-4-3.svg
@@ -30,10 +32,10 @@
           <div class="d-seq-actor-box d-infra">Eureka Registry</div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-domain">Judge #1<br><span class="fw-normal">:8081</span></div>
+          <div class="d-seq-actor-box d-domain">Judge #1<br><span class="fw-normal">10.0.1.21:8082</span></div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-domain">Judge #2<br><span class="fw-normal">:8082</span></div>
+          <div class="d-seq-actor-box d-domain">Judge #2<br><span class="fw-normal">10.0.1.22:8082</span></div>
         </div>
       </div>
 
@@ -43,7 +45,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line" style="flex:1;">
-            <span class="d-seq-msg-text"><span class="d-step">1</span> hỏi danh sách instance của judge-service</span>
+            <span class="d-seq-msg-text"><span class="d-step">1</span> instance của kbm-judge-sql?</span>
           </div>
           <div style="flex:2.5;"></div>
         </div>
@@ -52,7 +54,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line dashed reverse" style="flex:1;">
-            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">2</span> [judge:8081, judge:8082]</span>
+            <span class="d-seq-msg-text"><span class="d-step d-step-ghost">2</span> [10.0.1.21:8082, 10.0.1.22:8082]</span>
           </div>
           <div style="flex:2.5;"></div>
         </div>

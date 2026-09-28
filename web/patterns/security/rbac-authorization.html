@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RBAC — Pattern Story | SOA & Microservices</title>
+  <meta name="description" content="Role-Based Access Control trong microservices — vai trò, phân cấp vai trò và kiểm tra quan hệ sở hữu tại service đích.">
+  <meta name="author" content="Đặng Ngọc Hùng">
+  <meta property="og:title" content="RBAC — Pattern Story">
+  <meta property="og:description" content="Role-Based Access Control trong microservices — vai trò, phân cấp vai trò và kiểm tra quan hệ sở hữu tại service đích.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SOA & Microservices Textbook">
+  <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
+  <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+</head>
+<body>
+<!--
+  2026-09-28 (WP-C): trang mới. Ch.09 §9.5 đã trỏ tới trang này từ trước nhưng trang chưa tồn tại (404) — tác giả duyệt
+  viết thêm. Nội dung bám §9.5: listing @PreAuthorize (isAuthenticated / hasAnyRole('LECTURER','ADMIN') / hasRole('ADMIN')),
+  RoleHierarchy ADMIN > LECTURER > STUDENT, "kiểm tra vai trò chỉ là lớp đầu" (quan hệ sở hữu: lớp, giảng viên phụ trách,
+  ghi danh), hiện trạng roles pipe-delimited và analysis "RBAC trong KBM". Endpoint theo lớp là minh hoạ, ghi rõ trong dữ liệu.
+-->
+
+<!-- ── Scroll Progress Bar ── -->
+<div id="progress-bar" class="progress-bar-top"></div>
+
+<!-- ── Sticky Act Nav ── -->
+<nav class="act-nav" id="act-nav">
+  <button class="act-btn active" id="nav-act1" onclick="scrollToAct('act1')"><span class="act-num">1</span> <span class="act-btn-label">Problem</span></button>
+  <button class="act-btn" id="nav-act2" onclick="scrollToAct('act2')"><span class="act-num">2</span> <span class="act-btn-label">Pattern</span></button>
+  <button class="act-btn" id="nav-act3" onclick="scrollToAct('act3')"><span class="act-num">3</span> <span class="act-btn-label">How It Works</span></button>
+  <button class="act-btn" id="nav-act4" onclick="scrollToAct('act4')"><span class="act-num">4</span> <span class="act-btn-label">KBM</span></button>
+</nav>
+
+<!-- ── Pattern Header ── -->
+<header class="pattern-header">
+  <h1 class="pattern-title">Role-Based Access Control</h1>
+  <p class="pattern-subtitle">Ai được làm gì — vai trò, phân cấp vai trò và quan hệ sở hữu</p>
+  <div class="pattern-meta">
+    <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Security Patterns</span></div>
+    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Ferraiolo &amp; Kuhn (NIST)</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">1992</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.9 §9.3, §9.5, §9.6</span></div>
+  </div>
+</header>
+
+<!-- ── ACT 1: The Problem ── -->
+<section class="act-section" id="act1" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">1</div>
+    <div>
+      <div class="act-tag">Act 01</div>
+      <h2 class="act-title">The Problem</h2>
+    </div>
+  </div>
+
+  <p class="section-intro">
+    Xác thực (authentication) trả lời "người dùng là ai"; phân quyền (authorization) trả lời "người dùng được làm gì". Trong KBM có ba nhóm người dùng với quyền khác nhau: sinh viên nộp bài và xem kết quả, giảng viên tạo bài tập và kỳ thi, quản trị viên quản lý tài khoản và cấu hình (§9.5). Khi quyền được viết rải rác trong mã, hai loại lỗi xuất hiện.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card danger">
+      <div class="problem-icon"><div class="badge badge-danger">Rải rác</div></div>
+      <h3>Quyền nằm ở từng endpoint</h3>
+      <p>Mỗi controller tự ghi vai trò được phép. Muốn biết "giảng viên làm được những gì" phải đọc hết mọi endpoint; thêm một vai trò hay đổi phân cấp là sửa hàng loạt chỗ — dễ sót, khó kiểm toán.</p>
+    </div>
+    <div class="problem-card warning">
+      <div class="problem-icon"><div class="badge badge-warning">Sở hữu</div></div>
+      <h3>Đúng vai trò chưa phải đúng quyền</h3>
+      <p>Giảng viên được xem bài nộp — nhưng chỉ của lớp mình phụ trách. Sinh viên được nộp bài — nhưng chỉ ở lớp đã ghi danh. Vai trò trong token không chứa những quan hệ đó; Gateway cũng không có dữ liệu để quyết định.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 2: The Pattern ── -->
+<section class="act-section" id="act2" data-collapsible>
+  <div class="act-label">
+    <div class="act-number">2</div>
+    <div>
+      <div class="act-tag">Act 02</div>
+      <h2 class="act-title">The Pattern</h2>
+    </div>
+  </div>
+
+  <div class="pattern-definition">
+    <p class="definition-text">
+      Gán quyền cho vai trò, gán vai trò cho người dùng — không gán quyền trực tiếp cho từng người. Vai trò có thể xếp thành phân cấp để vai trò cao kế thừa quyền của vai trò thấp. Với tài nguyên có chủ sở hữu, kiểm tra vai trò chỉ là lớp đầu: service đích còn phải kiểm tra quan hệ giữa người dùng và chính tài nguyên đó.
+    </p>
+    <div class="definition-attribution">— Ferraiolo &amp; Kuhn, "Role-Based Access Controls", NIST (1992) · Chương 9 §9.5</div>
+  </div>
+
+  <div class="pattern-anatomy">
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 01</div>
+      <h3>Vai trò trong token</h3>
+      <p>Auth Service ghi vai trò vào JWT; Gateway và service đích đọc chúng sau khi xác minh chữ ký (§9.2–9.3). Vai trò nên là mảng JSON, không phải chuỗi tự ghép rồi tự tách.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 02</div>
+      <h3>Phân cấp vai trò</h3>
+      <p>Khai báo một lần <code>ROLE_ADMIN &gt; ROLE_LECTURER &gt; ROLE_STUDENT</code> bằng <code>RoleHierarchy</code> của Spring Security: endpoint chỉ cần ghi vai trò thấp nhất được phép, ADMIN tự có quyền của LECTURER và STUDENT.</p>
+    </div>
+    <div class="anatomy-card">
+      <div class="anatomy-num">Thành phần 03</div>
+      <h3>Kiểm tra quan hệ sở hữu</h3>
+      <p>Đề thi thuộc lớp nào, giảng viên có phụ trách lớp đó không, sinh viên có ghi danh không — service sở hữu dữ liệu kiểm tra sau khi đã xác minh token. Gateway không làm thay được vì không có dữ liệu này (§9.5).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 3: How It Works ── -->
+<section class="act-section" id="act3">
+  <div class="act-label">
+    <div class="act-number">3</div>
+    <div>
+      <div class="act-tag">Act 03</div>
+      <h2 class="act-title">How It Works</h2>
+    </div>
+  </div>
+
+  <p class="section-intro">Cùng sáu yêu cầu, hai cách phân quyền. "Chỉ kiểm vai trò" dừng ở <code>@PreAuthorize</code> và dùng token mang chuỗi vai trò như hiện trạng KBM; "Vai trò + sở hữu" thêm <code>RoleHierarchy</code> và bước kiểm tra quan hệ tại Core Service. Endpoint theo lớp là minh hoạ; ba endpoint câu hỏi lấy từ listing §9.5.</p>
+
+  <div class="sim-controls">
+    <div class="sim-control"><span class="sim-controls-label">Cách phân quyền</span><div class="sim-chips" id="rb-modes"></div></div>
+    <div class="sim-control"><span class="sim-controls-label">Yêu cầu</span><div class="sim-chips" id="rb-cases"></div></div>
+    <button class="sim-btn primary-action" id="rb-run" type="button">▶ Chạy</button>
+    <button class="sim-btn" id="rb-reset" type="button">Làm lại</button>
+  </div>
+
+  <div class="sim-panel is-primary">
+    <div class="sim-panel-title"><span id="rb-title"></span> <span class="sim-hint" id="rb-hint"></span></div>
+    <div class="sim-canvas d-links-root" id="rb-canvas">
+      <div class="sim-nodes sim-nodes--flow">
+        <div class="sim-node is-external" id="rb-user"><div class="sim-node-name" id="rb-user-name">Người dùng</div><div class="sim-node-sub" id="rb-user-sub"></div></div>
+        <div class="sim-node is-core" id="rb-gw"><div class="sim-node-name">Gateway</div><div class="sim-node-sub">xác minh JWT</div></div>
+        <div class="sim-node" id="rb-role"><div class="sim-node-name">@PreAuthorize</div><div class="sim-node-sub" id="rb-role-sub"></div></div>
+        <div class="sim-node" id="rb-auth"><div class="sim-node-name">Auth Service</div><div class="sim-node-sub" id="rb-auth-sub"></div></div>
+        <div class="sim-node" id="rb-db"><div class="sim-node-name">Dữ liệu lớp</div><div class="sim-node-sub">phụ trách · ghi danh</div></div>
+        <div class="sim-node" id="rb-own"><div class="sim-node-name">Kiểm quan hệ</div><div class="sim-node-sub" id="rb-own-sub"></div></div>
+      </div>
+      <svg class="d-links">
+        <path id="rb-l-ug" data-from="rb-user" data-to="rb-gw"></path>
+        <path id="rb-l-gr" data-from="rb-gw" data-to="rb-role"></path>
+        <path id="rb-l-ro" data-from="rb-role" data-to="rb-own"></path>
+        <path id="rb-l-od" data-from="rb-own" data-to="rb-db"></path>
+        <path id="rb-l-ag" data-from="rb-auth" data-to="rb-user" data-from-side="top" data-to-side="bottom" class="is-dashed"></path>
+      </svg>
+    </div>
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-val" id="rb-allow">0</div><div class="sim-stat-lbl">Cho phép</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="rb-deny">0</div><div class="sim-stat-lbl">Từ chối (403)</div></div>
+      <div class="sim-stat"><div class="sim-stat-val" id="rb-leak">0</div><div class="sim-stat-lbl">Lọt quyền</div></div>
+    </div>
+  </div>
+
+  <div class="sim-grid">
+    <div class="sim-panel is-info">
+      <div class="sim-panel-title">Quyết định <span class="sim-hint">mới nhất ở trên</span></div>
+      <div class="sim-scroll">
+        <table class="sim-table" id="rb-table">
+          <thead><tr><th>Yêu cầu</th><th>Vai trò</th><th>Sở hữu</th><th>Kết quả</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sim-note" id="rb-note"></p>
+    </div>
+    <div class="sim-panel is-warning">
+      <div class="sim-panel-title">Log <span class="sim-hint">Gateway · Core Service</span></div>
+      <div class="sim-log" id="rb-log" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ACT 4: KBM Apply It ── -->
+<section class="act-section" id="act4">
+  <div class="act-label">
+    <div class="act-number">4</div>
+    <div>
+      <div class="act-tag">Act 04 — Case Study</div>
+      <h2 class="act-title">KBM: Apply It</h2>
+    </div>
+  </div>
+
+  <p class="section-intro">
+    KBM phân quyền bằng <code>@PreAuthorize</code> của Spring Security với vai trò lưu trong JWT. Frontend không gắn cứng route mà lấy quyền từ <code>GET /api/auth/me/permissions</code>, nên đổi quyền ở backend thì giao diện tự cập nhật, không cần deploy lại (§9.5). Những hạn chế dưới đây lấy từ phần phân tích "RBAC trong KBM".
+  </p>
+
+  <h3 class="sub-heading">Gap Analysis — phân quyền</h3>
+  <div class="sub-label">Trích từ §9.5 và bảng phân tích bảo mật KBM (§9.6)</div>
+  <div style="overflow-x:auto;">
+    <table class="gap-table">
+      <thead>
+        <tr>
+          <th>Khía cạnh</th>
+          <th>Hiện trạng KBM</th>
+          <th>Mức độ</th>
+          <th>Hướng xử lý</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gap-label">Định dạng vai trò</td>
+          <td>Chuỗi phân tách bằng dấu gạch đứng, vd. <code>"ADMIN|LECTURER|STUDENT"</code>; Core tự tách chuỗi, Gateway còn dẫn xuất <code>X-User-Roles</code>.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Mảng JSON trong JWT; service lấy vai trò từ token đã xác minh, header chỉ là context.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Phân cấp vai trò</td>
+          <td>Chưa có <code>RoleHierarchy</code> — ADMIN phải liệt kê lại mọi quyền của LECTURER và STUDENT.</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Một <code>@Bean RoleHierarchy</code> dùng chung: <code>ADMIN &gt; LECTURER &gt; STUDENT</code>.</td>
+        </tr>
+        <tr>
+          <td class="gap-label">Kiểm toán quyền</td>
+          <td><code>@PreAuthorize</code> rải ở từng controller — khó trả lời "vai trò X làm được gì".</td>
+          <td><span class="b-med">MED</span></td>
+          <td>Quy tụ chính sách về một chỗ (method security tập trung hoặc Open Policy Agent).</td>
+        </tr>
+        <tr>
+          <td class="gap-label">DevOps Lab</td>
+          <td>Cần chính sách ở tầng thực thi: ai được tạo workspace, vùng mạng cách ly, container, job đặc quyền.</td>
+          <td><span class="b-high">HIGH</span></td>
+          <td>Kubernetes RBAC, NetworkPolicy, resource quotas, Sysbox isolation (§9.6).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
+  <div class="sub-label">Theo lộ trình trong §9.5 — chưa phải việc KBM đã làm</div>
+
+  <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
+
+  <div class="kbm-timeline">
+    <div class="timeline-item" data-delay="0">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Bước 1</div>
+      <h4>Vai trò thành mảng JSON</h4>
+      <p>Auth Service ghi <code>roles</code> dạng mảng trong JWT; bỏ bước tự tách chuỗi ở Core và Gateway.</p>
+      <span class="t-badge orange">Nỗ lực thấp</span>
+    </div>
+    <div class="timeline-item" data-delay="250">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Bước 2</div>
+      <h4>RoleHierarchy thống nhất</h4>
+      <p>Mọi service Spring dùng chung một cấu hình phân cấp; endpoint chỉ ghi vai trò thấp nhất được phép.</p>
+      <span class="t-badge orange">Nỗ lực thấp</span>
+    </div>
+    <div class="timeline-item" data-delay="500">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Bước 3</div>
+      <h4>Chính sách tập trung</h4>
+      <p>Cân nhắc quy tụ chính sách về method security tập trung hoặc Open Policy Agent; DevOps Lab thêm rào chắn ở runtime.</p>
+      <span class="t-badge orange">Khi số chính sách tăng</span>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="margin-top:40px;">Khi nào dùng — Khi nào không</h3>
+  <div class="decision-grid">
+    <div class="decision-card yes">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-success">✓</div></div>
+        <div class="decision-title">RBAC hợp khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Số vai trò ít và ổn định, như STUDENT / LECTURER / ADMIN của KBM.</li>
+        <li>Quyền chủ yếu theo chức năng: "giảng viên được tạo câu hỏi", "chỉ quản trị viên được xoá".</li>
+        <li>Cần giải thích được với người không lập trình: vai trò nào làm được gì.</li>
+        <li>Vai trò có thứ bậc tự nhiên để khai báo phân cấp một lần.</li>
+      </ul>
+    </div>
+    <div class="decision-card no">
+      <div class="decision-header">
+        <div class="decision-icon"><div class="badge badge-danger">✗</div></div>
+        <div class="decision-title">Chưa đủ khi</div>
+      </div>
+      <ul class="decision-list">
+        <li>Quyền phụ thuộc quan hệ với tài nguyên (lớp phụ trách, lớp ghi danh) — phải thêm kiểm tra tại service sở hữu dữ liệu.</li>
+        <li>Vai trò nở ra theo từng tổ hợp ("giảng viên lớp A", "trợ giảng môn B") — dấu hiệu nên chuyển sang chính sách theo thuộc tính.</li>
+        <li>Chính sách thay đổi thường xuyên và cần kiểm toán tập trung — cân nhắc policy engine (OPA).</li>
+        <li>Quyền ở tầng hạ tầng (container, mạng) — cần Kubernetes RBAC, không phải annotation trong ứng dụng.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chapter Link Bar ── -->
+<div class="chapter-bar">
+  <p>Đọc chi tiết về RBAC và <code>@PreAuthorize</code> trong KBM (§9.5), Tiered Trust và vì sao service đích vẫn phải tự phân quyền (§9.3), cùng lộ trình bảo mật KBM (§9.6).</p>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-09')"><div class="badge badge-info">Read</div> Chương 9 — Bảo mật Microservices →</a>
+</div>
+
+<div class="book-identity">
+  <img src="../../favicon.png?v=9fd867f7" alt="">
+  <span>Kiến trúc SOA &amp; Microservices — Từ lý thuyết đến thực tiễn</span>
+  <span class="book-identity-sep">·</span>
+  <a href="../../index.html" target="_top">Về trang chủ Companion Web</a>
+  <span class="book-identity-sep">·</span>
+  <span class="book-identity-legal">© 2026 Đặng Ngọc Hùng. All rights reserved.</span>
+</div>
+
+<script src="../../js/pattern-story.js?v=33320506"></script>
+<script src="../../js/diagram-links.js?v=e9d442aa"></script>
+<script>
+// ── Act 3: phân quyền theo vai trò và quan hệ sở hữu (Chương 9 §9.5) ─────────────────────────
+// Theo sách: listing @PreAuthorize — GET /questions isAuthenticated(), POST /questions
+// hasAnyRole('LECTURER','ADMIN'), DELETE /questions/{id} hasRole('ADMIN'); RoleHierarchy
+// ADMIN > LECTURER > STUDENT; "kiểm tra vai trò chỉ là lớp đầu" — quan hệ sở hữu kiểm tại service.
+// Hiện trạng: roles là chuỗi "ADMIN|LECTURER|STUDENT" (token của ADMIN liệt kê lại mọi vai trò vì
+// chưa có RoleHierarchy). Endpoint /classes/... là minh hoạ.
+const MODES = {
+  role:  { label: 'Chỉ kiểm vai trò', hint: '@PreAuthorize ở từng endpoint; token mang chuỗi vai trò như hiện trạng (§9.5)',
+           role: 'vai trò trong token', own: 'không kiểm', auth: 'roles: "A|B|C"' },
+  owner: { label: 'Vai trò + sở hữu', hint: 'RoleHierarchy ADMIN > LECTURER > STUDENT; Core kiểm quan hệ với tài nguyên (§9.5)',
+           role: 'vai trò + phân cấp', own: 'lớp phụ trách · ghi danh', auth: 'roles: ["…"]' },
+};
+const USERS = {
+  sv:    { name: 'Sinh viên', sub: 'ghi danh lớp A', roles: ['STUDENT'], str: 'STUDENT' },
+  gv:    { name: 'Giảng viên', sub: 'phụ trách lớp A', roles: ['LECTURER'], str: 'LECTURER|STUDENT' },
+  admin: { name: 'Quản trị viên', sub: 'ADMIN', roles: ['ADMIN'], str: 'ADMIN|LECTURER|STUDENT' },
+};
+const HIER = { ADMIN: ['ADMIN', 'LECTURER', 'STUDENT'], LECTURER: ['LECTURER', 'STUDENT'], STUDENT: ['STUDENT'] };
+// need: null = isAuthenticated(); owner: null = không có quan hệ sở hữu; ok = quan hệ có thật không.
+const CASES = {
+  view:   { label: 'SV xem câu hỏi',  user: 'sv', req: 'GET /questions', rule: 'isAuthenticated()', need: null, owner: null },
+  create: { label: 'SV tạo câu hỏi',  user: 'sv', req: 'POST /questions', rule: "hasAnyRole('LECTURER','ADMIN')", need: ['LECTURER', 'ADMIN'], owner: null },
+  mine:   { label: 'GV xem lớp mình', user: 'gv', req: 'GET /classes/A/submissions', rule: "hasRole('LECTURER')", need: ['LECTURER'], owner: { ok: true, why: 'giảng viên phụ trách lớp A' } },
+  other:  { label: 'GV xem lớp khác', user: 'gv', req: 'GET /classes/B/submissions', rule: "hasRole('LECTURER')", need: ['LECTURER'], owner: { ok: false, why: 'lớp B do giảng viên khác phụ trách' } },
+  submit: { label: 'SV nộp lớp khác', user: 'sv', req: 'POST /classes/B/submissions', rule: "hasRole('STUDENT')", need: ['STUDENT'], owner: { ok: false, why: 'sinh viên chưa ghi danh lớp B' } },
+  del:    { label: 'Admin xoá câu hỏi', user: 'admin', req: 'DELETE /questions/42', rule: "hasRole('ADMIN')", need: ['ADMIN'], owner: null },
+};
+const NOTES = {
+  view:   'isAuthenticated(): mọi người dùng đã đăng nhập đều xem được. Hai cách cho cùng kết quả.',
+  create: 'Tạo câu hỏi chỉ dành cho LECTURER và ADMIN → 403 ở cả hai cách. Kiểm tra vai trò làm tốt đúng việc này.',
+  mine:   'Vai trò đạt và quan hệ có thật → cho phép ở cả hai cách.',
+  'other.role':  'Vai trò LECTURER đạt nên yêu cầu lọt qua: token không chứa "phụ trách lớp nào". Đây là lý do sách gọi kiểm tra vai trò là "lớp đầu" (§9.5).',
+  'other.owner': 'Vai trò đạt nhưng Core tra dữ liệu lớp: lớp B không do người này phụ trách → 403. Gateway không làm được bước này vì không có dữ liệu lớp.',
+  'submit.role':  'STUDENT đạt nên bài nộp vào lớp chưa ghi danh vẫn được nhận.',
+  'submit.owner': 'Core kiểm tra ghi danh trước khi nhận bài → 403.',
+  'del.role':  'Được vì token của quản trị viên liệt kê lại mọi vai trò ("ADMIN|LECTURER|STUDENT"). Không có phân cấp thì mỗi lần đổi thứ bậc vai trò phải sửa dữ liệu vai trò của người dùng.',
+  'del.owner': 'Token chỉ ghi ["ADMIN"]; RoleHierarchy tự suy ra quyền của LECTURER và STUDENT khi cần. Đổi thứ bậc chỉ sửa một cấu hình.',
+};
+const state = { mode: 'role', kase: 'view', running: false, rows: [], allow: 0, deny: 0, leak: 0 };
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const STEP = 420;
+
+function chips(el, map, key) {
+  Object.entries(map).forEach(([v, label]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sim-chip'; b.textContent = label; b.dataset.v = v;
+    b.addEventListener('click', () => { if (state.running || state[key] === v) return; state[key] = v; render(); });
+    el.appendChild(b);
+  });
+}
+chips($('rb-modes'), Object.fromEntries(Object.entries(MODES).map(([k, m]) => [k, m.label])), 'mode');
+chips($('rb-cases'), Object.fromEntries(Object.entries(CASES).map(([k, c]) => [k, c.label])), 'kase');
+
+function log(msg, cls) {
+  const t = new Date().toTimeString().slice(0, 8);
+  $('rb-log').insertAdjacentHTML('beforeend', `<div><span class="log-time">[${t}]</span><span class="${cls || 'log-info'}">${msg}</span></div>`);
+  $('rb-log').scrollTop = $('rb-log').scrollHeight;
+}
+function link(id, cls) {
+  const base = id === 'rb-l-ag' ? 'is-dashed' : '';
+  $(id).setAttribute('class', [base, cls ? 'is-' + cls : ''].join(' ').trim());
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+function node(id, cls, on) { $(id).classList.toggle(cls, on); }
+async function hop(id, text, cls, linkCls) { link(id, linkCls || 'primary'); log(text, cls); await sleep(STEP); link(id, ''); }
+
+async function evaluate() {
+  const c = CASES[state.kase], u = USERS[c.user], owner = state.mode === 'owner';
+  const tokenRoles = owner ? JSON.stringify(u.roles) : `"${u.str}"`;
+  await hop('rb-l-ag', `Auth Service đã phát token cho ${u.name}: roles = ${tokenRoles}`, 'log-info');
+  await hop('rb-l-ug', `${c.req} — Bearer token`);
+  node('rb-gw', 'is-active', true);
+  log('Gateway: chữ ký, iss, aud, exp đạt → chuyển tiếp (Gateway không quyết định quyền nghiệp vụ, §9.3)', 'log-ok');
+  await hop('rb-l-gr', `Core Service: @PreAuthorize("${c.rule}")`);
+  node('rb-gw', 'is-active', false); node('rb-role', 'is-active', true);
+  const have = owner ? [...new Set(u.roles.flatMap(r => HIER[r]))] : u.str.split('|');
+  if (!owner) log(`Tách chuỗi vai trò: ${u.str} → [${have.join(', ')}]`, 'log-info');
+  else log(`RoleHierarchy: [${u.roles.join(', ')}] → [${have.join(', ')}]`, 'log-info');
+  const roleOk = !c.need || c.need.some(r => have.includes(r));
+  let result, ownCell = '—', leak = false;
+  if (!roleOk) {
+    log(`Vai trò không đạt (${c.need.join(' / ')}) → 403 Forbidden`, 'log-err');
+    result = 'deny';
+  } else {
+    log('Vai trò đạt', 'log-ok');
+    if (!c.owner) { result = 'allow'; }
+    else if (!owner) {
+      log('Không kiểm quan hệ với tài nguyên → thực thi', c.owner.ok ? 'log-info' : 'log-warn');
+      ownCell = 'không kiểm'; result = 'allow'; leak = !c.owner.ok;
+    } else {
+      await hop('rb-l-ro', 'Kiểm quan hệ với tài nguyên');
+      node('rb-role', 'is-active', false); node('rb-own', 'is-active', true);
+      await hop('rb-l-od', `Tra dữ liệu lớp: ${c.owner.why}`, c.owner.ok ? 'log-ok' : 'log-err', c.owner.ok ? 'primary' : 'danger');
+      ownCell = c.owner.ok ? 'đạt' : 'không đạt';
+      result = c.owner.ok ? 'allow' : 'deny';
+      if (!c.owner.ok) log('403 Forbidden', 'log-err');
+      node('rb-own', 'is-active', false);
+    }
+  }
+  node('rb-role', 'is-active', false);
+  if (result === 'allow') { log(leak ? '200 OK — lẽ ra phải bị từ chối' : '200 OK', leak ? 'log-err' : 'log-ok'); state.allow++; if (leak) state.leak++; }
+  else state.deny++;
+  state.rows.unshift({ req: c.req, role: roleOk ? 'đạt' : 'không đạt', own: ownCell,
+                       res: result === 'allow' ? (leak ? 'Lọt quyền' : 'Cho phép') : '403', cls: leak ? 'bad' : (result === 'allow' ? 'good' : '') });
+}
+
+function render() {
+  const m = MODES[state.mode], c = CASES[state.kase], u = USERS[c.user];
+  [['rb-modes', 'mode'], ['rb-cases', 'kase']].forEach(([el, k]) =>
+    document.querySelectorAll('#' + el + ' .sim-chip').forEach(b => b.classList.toggle('is-active', b.dataset.v === state[k])));
+  $('rb-title').textContent = m.label; $('rb-hint').textContent = m.hint;
+  $('rb-user-name').textContent = u.name; $('rb-user-sub').textContent = u.sub;
+  $('rb-role-sub').textContent = m.role; $('rb-own-sub').textContent = m.own; $('rb-auth-sub').textContent = m.auth;
+  const off = state.mode === 'role';
+  node('rb-own', 'is-off', off); node('rb-db', 'is-off', off);
+  $('rb-l-ro').toggleAttribute('data-hidden', off); $('rb-l-od').toggleAttribute('data-hidden', off);
+  $('rb-note').textContent = NOTES[state.kase] || NOTES[state.kase + '.' + state.mode];
+  $('rb-allow').textContent = state.allow; $('rb-deny').textContent = state.deny; $('rb-leak').textContent = state.leak;
+  $('rb-table').querySelector('tbody').innerHTML = state.rows.length
+    ? state.rows.map(r => `<tr><td class="num">${r.req}</td><td>${r.role}</td><td>${r.own}</td><td class="${r.cls}">${r.res}</td></tr>`).join('')
+    : '<tr><td colspan="4">Chưa có yêu cầu.</td></tr>';
+  if (window.__diagramLinks) window.__diagramLinks.redraw();
+}
+
+async function run() {
+  if (state.running) return;
+  state.running = true; $('rb-run').disabled = true; $('rb-reset').disabled = true;
+  log(`— ${CASES[state.kase].label} · ${MODES[state.mode].label} —`, 'log-warn');
+  await evaluate();
+  state.running = false; $('rb-run').disabled = false; $('rb-reset').disabled = false;
+  render();
+}
+function reset() {
+  if (state.running) return;
+  Object.assign(state, { rows: [], allow: 0, deny: 0, leak: 0 });
+  $('rb-log').textContent = '';
+  log('Chọn cách phân quyền và yêu cầu rồi bấm Chạy. Gợi ý: chạy "GV xem lớp khác" ở cả hai cách để so sánh.', 'log-info');
+  render();
+}
+$('rb-run').addEventListener('click', run);
+$('rb-reset').addEventListener('click', reset);
+reset();
+
+// ── Timeline Animation ────────────────────────────────────
+function playTimeline() {
+  const btn = document.getElementById('play-btn');
+  const items = document.querySelectorAll('.timeline-item');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  items.forEach(el => el.classList.remove('visible'));
+  items.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add('visible');
+      if (i === items.length - 1) {
+        setTimeout(() => { btn.disabled = false; btn.textContent = '↺ Replay'; }, 400);
+      }
+    }, parseInt(el.dataset.delay) + 200);
+  });
+}
+</script>
+</body>
+</html>

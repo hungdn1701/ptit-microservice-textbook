@@ -202,7 +202,7 @@
           <td class="gap-label">Join xuyên schema</td>
           <td>Assignment truy vấn thẳng bảng câu hỏi của Core — ranh giới dữ liệu chỉ có trên giấy.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Tách <code>core_schema</code>/<code>assignment_schema</code>, role riêng và <code>REVOKE</code> quyền đọc chéo (Giai đoạn 1).</td>
+          <td>Tách <code>core_schema</code>/<code>assignment_schema</code> với role riêng (Giai đoạn 1); thay truy vấn chéo bằng API rồi <code>REVOKE</code> quyền đọc chéo (Giai đoạn 2).</td>
         </tr>
         <tr>
           <td class="gap-label">Tên câu hỏi</td>

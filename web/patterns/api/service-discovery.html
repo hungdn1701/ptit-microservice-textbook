@@ -377,7 +377,7 @@ async function applyEvent() {
   } else if (ev === 'dupname') {
     if (!eu) return;
     state.inst.forEach(i => { if (i.id !== 'i3') i.reg = 'app'; });
-    Object.assign(byId('i3'), { present: true, alive: true, up: true, svc: 'kbm-academic', addr: '10.0.2.21:8080', reg: 'app' });
+    Object.assign(byId('i3'), { present: true, alive: true, up: true, svc: 'kbm-academic', addr: '10.0.2.21:8088', reg: 'app' });
     log('kbm-core #1, #2 và kbm-academic cùng đăng ký spring.application.name = "app"', 'log-warn');
     log('Gateway route: uri: lb://app → Eureka trả 3 instance', 'log-warn');
   }

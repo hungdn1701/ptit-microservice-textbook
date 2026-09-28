@@ -24,31 +24,32 @@
       { ch: 5, icon: SVG_ICONS.code, name: 'Idempotency & Retry', file: 'patterns/data/idempotency-retry.html', cat: 'data' },
       { ch: 6, icon: SVG_ICONS.code, name: 'Saga Orchestration', file: 'patterns/data/saga-orchestration.html', cat: 'data' },
       { ch: 7, icon: SVG_ICONS.code, name: 'CQRS & Event Sourcing', file: 'patterns/data/cqrs-event-sourcing.html', cat: 'data' },
+      { ch: 7, icon: SVG_ICONS.code, name: 'Event-Carried State Transfer', file: 'patterns/data/event-carried-state-transfer.html', cat: 'data' },
       { ch: 8, icon: SVG_ICONS.code, name: 'API Gateway Routing', file: 'patterns/api/api-gateway-routing.html', cat: 'api' },
       { ch: 8, icon: SVG_ICONS.code, name: 'Rate Limiting', file: 'patterns/api/rate-limiting.html', cat: 'api' },
-      { ch: 8, icon: SVG_ICONS.code, name: 'Config Server', file: 'patterns/api/config-server.html', cat: 'api' },
       { ch: 9, icon: SVG_ICONS.code, name: 'OAuth2 / JWT Flow', file: 'patterns/security/oauth2-jwt-flow.html', cat: 'security' },
+      { ch: 9, icon: SVG_ICONS.code, name: 'RBAC Authorization', file: 'patterns/security/rbac-authorization.html', cat: 'security' },
       { ch: 10, icon: SVG_ICONS.code, name: 'Strangler Fig Migration', file: 'patterns/architecture/strangler-fig-migration.html', cat: 'architecture' },
       { ch: 10, icon: SVG_ICONS.code, name: 'Outbox Pattern', file: 'patterns/data/outbox-pattern.html', cat: 'data' },
       { ch: 10, icon: SVG_ICONS.code, name: 'CDC & Outbox (Debezium)', file: 'patterns/data/cdc-outbox.html', cat: 'data' },
-      { ch: 10, icon: SVG_ICONS.code, name: 'Event-Carried State Transfer', file: 'patterns/data/event-carried-state-transfer.html', cat: 'data' },
       { ch: 11, icon: SVG_ICONS.code, name: 'Distributed Tracing', file: 'patterns/ops/distributed-tracing.html', cat: 'ops' },
+      { ch: 12, icon: SVG_ICONS.code, name: 'Config Server', file: 'patterns/api/config-server.html', cat: 'api' },
       { ch: 12, icon: SVG_ICONS.code, name: 'Deployment Strategies', file: 'patterns/ops/deployment-strategies.html', cat: 'ops' },
     ];
 
     const CHAPTERS = [
       { num: '01', title: 'Tổng quan SOA & Microservices', icon: SVG_ICONS.folder },
-      { num: '02', title: 'Phân tích Hướng dịch vụ & DDD', icon: SVG_ICONS.folder },
+      { num: '02', title: 'Phân tích hướng Domain & DDD', icon: SVG_ICONS.folder },
       { num: '03', title: 'Thiết kế Dịch vụ & API', icon: SVG_ICONS.folder },
       { num: '04', title: 'Giao tiếp Đồng bộ', icon: SVG_ICONS.folder },
       { num: '05', title: 'Giao tiếp Bất đồng bộ', icon: SVG_ICONS.folder },
-      { num: '06', title: 'Giao dịch Phân tán (Saga)', icon: SVG_ICONS.folder },
-      { num: '07', title: 'Quản lý Dữ liệu (CQRS)', icon: SVG_ICONS.folder },
+      { num: '06', title: 'Giao dịch Phân tán', icon: SVG_ICONS.folder },
+      { num: '07', title: 'Quản lý Dữ liệu', icon: SVG_ICONS.folder },
       { num: '08', title: 'API Gateway', icon: SVG_ICONS.folder },
-      { num: '09', title: 'Bảo mật', icon: SVG_ICONS.folder },
+      { num: '09', title: 'Bảo mật Microservices', icon: SVG_ICONS.folder },
       { num: '10', title: 'Chuyển đổi Thực tế', icon: SVG_ICONS.folder },
       { num: '11', title: 'Observability', icon: SVG_ICONS.folder },
-      { num: '12', title: 'Triển khai & Tự động hóa', icon: SVG_ICONS.folder }
+      { num: '12', title: 'Triển khai & DevOps', icon: SVG_ICONS.folder }
     ];
 
     const BOOK_SECTIONS = [
@@ -57,17 +58,17 @@
       { file: 'introduction.html', title: 'Giới thiệu', icon: SVG_ICONS.doc },
       
       { file: 'chapter-01.html', title: 'Chương 01: Tổng quan SOA & Microservices', icon: SVG_ICONS.code },
-      { file: 'chapter-02.html', title: 'Chương 02: Phân tích Hướng dịch vụ & DDD', icon: SVG_ICONS.code },
+      { file: 'chapter-02.html', title: 'Chương 02: Phân tích hướng Domain & DDD', icon: SVG_ICONS.code },
       { file: 'chapter-03.html', title: 'Chương 03: Thiết kế Dịch vụ & API', icon: SVG_ICONS.code },
       { file: 'chapter-04.html', title: 'Chương 04: Giao tiếp Đồng bộ', icon: SVG_ICONS.code },
       { file: 'chapter-05.html', title: 'Chương 05: Giao tiếp Bất đồng bộ', icon: SVG_ICONS.code },
-      { file: 'chapter-06.html', title: 'Chương 06: Giao dịch Phân tán (Saga)', icon: SVG_ICONS.code },
-      { file: 'chapter-07.html', title: 'Chương 07: Quản lý Dữ liệu (CQRS)', icon: SVG_ICONS.code },
+      { file: 'chapter-06.html', title: 'Chương 06: Giao dịch Phân tán', icon: SVG_ICONS.code },
+      { file: 'chapter-07.html', title: 'Chương 07: Quản lý Dữ liệu', icon: SVG_ICONS.code },
       { file: 'chapter-08.html', title: 'Chương 08: API Gateway', icon: SVG_ICONS.code },
-      { file: 'chapter-09.html', title: 'Chương 09: Bảo mật', icon: SVG_ICONS.code },
+      { file: 'chapter-09.html', title: 'Chương 09: Bảo mật Microservices', icon: SVG_ICONS.code },
       { file: 'chapter-10.html', title: 'Chương 10: Chuyển đổi Thực tế', icon: SVG_ICONS.code },
       { file: 'chapter-11.html', title: 'Chương 11: Observability', icon: SVG_ICONS.code },
-      { file: 'chapter-12.html', title: 'Chương 12: Triển khai & Tự động hóa', icon: SVG_ICONS.code },
+      { file: 'chapter-12.html', title: 'Chương 12: Triển khai & DevOps', icon: SVG_ICONS.code },
       
       { file: 'conclusion.html', title: 'Kết luận', icon: SVG_ICONS.doc },
       { file: 'appendix-a-glossary.html', title: 'Phụ lục A: Bảng thuật ngữ', icon: SVG_ICONS.doc },

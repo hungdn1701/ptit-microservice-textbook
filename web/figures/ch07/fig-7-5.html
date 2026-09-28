@@ -8,6 +8,8 @@
     (VIEW → API → schema → Kafka CDC → tách instance), trái với chú thích hình và bảng tbl:kbm-db-migration: KBM chỉ chọn
     3 giai đoạn Separate Schema → API Wrapping → Full Split (nếu cần). Nay vẽ đúng 3 giai đoạn đó, kèm lúc nào dừng
     (tip "Khi nào đủ?"). Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-09-28 (WP-C): Ch.07 nay trình bày hai hướng (schema trước / API trước) và nói KBM chọn schema trước → nhãn cụm và
+    mô tả giai đoạn theo tbl:kbm-db-migration mới (view cho đọc chéo tạm thời; thu hồi quyền sau Giai đoạn 2).
   -->
   <title>Fig 7.5 — Năm chiến lược tách database | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -48,16 +50,16 @@
     </div>
 
     <div class="d-cluster d-mt-3">
-      <span class="d-label">KBM chọn 3 giai đoạn (bảng Lộ trình tách database)</span>
+      <span class="d-label">KBM chọn hướng schema trước — 3 giai đoạn</span>
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 72px; margin-top: 12px;">
         <div class="d-box d-event text-center" id="kg-1">
           <div class="d-title">Giai đoạn 1 · Separate Schema</div>
-          <div class="d-sub d-mt-1"><code>app_db</code> → schema <code>core</code> + <code>assignment</code></div>
+          <div class="d-sub d-mt-1"><code>core_schema</code> + <code>assignment_schema</code>; đọc chéo tạm qua view</div>
           <div class="d-sub d-text-muted">effort thấp</div>
         </div>
         <div class="d-box d-note text-center" id="kg-2">
           <div class="d-title">Giai đoạn 2 · API Wrapping</div>
-          <div class="d-sub d-mt-1">thay truy vấn chéo schema bằng Feign call</div>
+          <div class="d-sub d-mt-1">thay dần truy vấn chéo bằng Feign call, xong thì thu hồi quyền đọc chéo</div>
           <div class="d-sub d-text-muted">effort trung bình</div>
         </div>
         <div class="d-box d-service text-center" id="kg-3" style="border-style: dashed;">
@@ -66,7 +68,7 @@
           <div class="d-sub d-text-muted">effort cao</div>
         </div>
       </div>
-      <div class="d-sub d-mt-2">Mỗi giai đoạn là một điểm dừng được: Giai đoạn 1 đã chặn schema coupling ngầm; Giai đoạn 2 cần khi team lớn lên và muốn deploy độc lập thật sự; Giai đoạn 3 chỉ đáng làm khi các service cần scale khác nhau hoặc cần polyglot persistence.</div>
+      <div class="d-sub d-mt-2">Mỗi giai đoạn là một điểm dừng được: Giai đoạn 1 đã làm lộ truy vấn chéo và chặn schema coupling ngầm phát sinh thêm; Giai đoạn 2 cần khi team lớn lên và muốn deploy độc lập thật sự; Giai đoạn 3 chỉ đáng làm khi các service cần scale khác nhau hoặc cần polyglot persistence.</div>
     </div>
 
     <svg class="d-links">
