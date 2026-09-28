@@ -8,6 +8,9 @@
     cứng → lưới hai hàng nối bằng d-links. Theo "Quan sát chính" ngay sau hình: Judge không có database riêng (dữ liệu
     transient, stateless) — bản cũ vẽ "Sandbox DBs MySQL, PG… (Độc lập)"; thêm Feign call xuyên service (runtime
     dependency). Khối kết luận cũ ("đặc trưng monolithic… làm chết Assignment") → cái giá + lộ trình. Chữ theo §17.
+    2026-09-30 (WP-C): SỬA LẠI — Judge CÓ database riêng (`judge_db`, xác minh: case-study/source-registry.md #4 và
+    dblab-judge application-prod.yml; entity cp_submit, cp_test_case_data, cp_database, cp_table_created, partner).
+    Nhận định "không có database riêng" ở trên là sai, văn bản Ch.07 sửa cùng đợt.
   -->
   <title>Fig 7.14 — Kiến trúc dữ liệu hiện tại của KBM | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -30,7 +33,7 @@
       </div>
       <div class="d-box d-event text-center" id="kc-judge">
         <div class="d-title">Judge Service</div>
-        <div class="d-sub">chạy SQL bài nộp trong sandbox</div>
+        <div class="d-sub">điều phối chấm, chạy SQL trên sandbox</div>
       </div>
 
       <div class="d-box d-danger text-center" id="kc-appdb" style="grid-column: 1 / 3; border-width: 2px;">
@@ -41,8 +44,9 @@
         <div class="d-title">PostgreSQL · auth_db</div>
         <div class="d-sub">DB riêng — đúng database-per-service</div>
       </div>
-      <div class="d-zone d-zone-success text-center" style="display: flex; align-items: center; justify-content: center;">
-        không có database riêng — dữ liệu transient, stateless
+      <div class="d-box d-storage text-center" id="kc-judgedb">
+        <div class="d-title">PostgreSQL · judge_db</div>
+        <div class="d-sub">DB riêng — đúng database-per-service</div>
       </div>
     </div>
 
@@ -56,6 +60,7 @@
       <path data-from="kc-core" data-to="kc-appdb" data-from-side="bottom" data-to-side="top" data-to-align class="is-danger" data-arrow="both"></path>
       <path data-from="kc-asg" data-to="kc-appdb" data-from-side="bottom" data-to-side="top" data-to-align class="is-danger" data-arrow="both"></path>
       <path data-from="kc-auth" data-to="kc-authdb" class="is-success" data-arrow="both"></path>
+      <path data-from="kc-judge" data-to="kc-judgedb" class="is-success" data-arrow="both"></path>
       <path data-from="kc-asg" data-to="kc-auth" class="is-dashed" data-label="Feign" data-label-side="above"></path>
     </svg>
   </div><!-- /.diagram-canvas -->
