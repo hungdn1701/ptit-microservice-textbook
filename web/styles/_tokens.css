@@ -79,6 +79,9 @@
   --book-code-inline-bg: #F1F5F9;
   --book-code-inline-text: #C7253E;
   --book-table-row-alt: #F8FAFC;
+  --book-status-good: #10B981;
+  --book-status-warn: #F59E0B;
+  --book-status-bad: #DC2626;
 
   /* Book fonts (HTML book chapters) */
   --book-font-body: "Source Serif 4", "Libertinus Serif", "Georgia", "Times New Roman";
