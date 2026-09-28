@@ -50,14 +50,14 @@
   </div>
 
   <p class="section-intro">
-    Tách database xong, vấn đề tiếp theo xuất hiện ngay: service A cần dữ liệu mà service B sở hữu. Trong KBM, Assignment cần hiện tên câu hỏi (của Core) và tên sinh viên (của Auth). Gọi API mỗi lần cần, hay giữ một bản sao tại chỗ? (§7.3)
+    Tách database xong, vấn đề tiếp theo xuất hiện ngay: service A cần dữ liệu mà service B sở hữu. Trong KBM, Academic cần hiện tên câu hỏi (của Core) và tên sinh viên (của Auth). Gọi API mỗi lần cần, hay giữ một bản sao tại chỗ? (§7.3)
   </p>
 
   <div class="problem-grid">
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Phụ thuộc runtime</div></div>
       <h3>Owner ngừng thì người đọc ngừng theo</h3>
-      <p>Gọi API luôn đọc được dữ liệu mới nhất, nhưng gắn hai service về thời gian: Core ngừng thì trang danh sách bài tập của Assignment cũng không hiện được, dù Assignment vẫn chạy bình thường.</p>
+      <p>Gọi API luôn đọc được dữ liệu mới nhất, nhưng gắn hai service về thời gian: Core ngừng thì trang danh sách bài tập của Academic cũng không hiện được, dù Academic vẫn chạy bình thường.</p>
     </div>
     <div class="problem-card warning">
       <div class="problem-icon"><div class="badge badge-warning">N+1</div></div>
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Giảng viên mở danh sách bài tập của lớp trên Assignment mỗi 5 giây: 20 dòng, 8 câu hỏi khác nhau, tên câu hỏi do Core sở hữu. So sánh ba cách lấy tên câu hỏi trong bốn tình huống. Độ trễ và thời điểm là minh họa; thời gian là thời gian mô phỏng.</p>
+  <p class="section-intro">Giảng viên mở danh sách bài tập của lớp trên Academic mỗi 5 giây: 20 dòng, 8 câu hỏi khác nhau, tên câu hỏi do Core sở hữu. So sánh ba cách lấy tên câu hỏi trong bốn tình huống. Độ trễ và thời điểm là minh họa; thời gian là thời gian mô phỏng.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Tình huống</span><div class="sim-chips" id="ec-scens"></div></div>
@@ -131,7 +131,7 @@
     <div class="sim-canvas d-links-root" id="ec-canvas">
       <div class="sim-nodes sim-nodes--flow">
         <div class="sim-node is-external" id="ec-gv"><div class="sim-node-name">Giảng viên</div><div class="sim-node-sub">mở danh sách lớp</div></div>
-        <div class="sim-node is-core" id="ec-asg"><div class="sim-node-name">Assignment</div><div class="sim-node-sub" id="ec-asg-sub"></div></div>
+        <div class="sim-node is-core" id="ec-asg"><div class="sim-node-name">Academic</div><div class="sim-node-sub" id="ec-asg-sub"></div></div>
         <div class="sim-node" id="ec-core"><div class="sim-node-name">Core</div><div class="sim-node-sub" id="ec-core-sub"></div></div>
         <div class="sim-node" id="ec-copy" style="grid-column:2;grid-row:2"><div class="sim-node-name">Bản sao</div><div class="sim-node-sub" id="ec-copy-sub"></div></div>
         <div class="sim-node" id="ec-kafka" style="grid-column:3;grid-row:2"><div class="sim-node-name">Kafka</div><div class="sim-node-sub">QuestionUpdated</div></div>
@@ -163,7 +163,7 @@
       <p class="sim-note" id="ec-note"></p>
     </div>
     <div class="sim-panel is-warning">
-      <div class="sim-panel-title">Assignment lấy dữ liệu bằng <span class="sim-hint" id="ec-code-hint"></span></div>
+      <div class="sim-panel-title">Academic lấy dữ liệu bằng <span class="sim-hint" id="ec-code-hint"></span></div>
       <pre class="sim-code" id="ec-code"></pre>
       <div class="sim-log" id="ec-log" aria-live="polite" style="margin-top:12px"></div>
     </div>
@@ -181,11 +181,11 @@
   </div>
 
   <p class="section-intro">
-    Core và Assignment của KBM đang dùng chung <code>app_db</code>, và Assignment đọc thẳng bảng câu hỏi của Core. Lộ trình trong Ch.7 đi ba bước: tách schema, chuyển sang gọi API, rồi mới nhân bản dữ liệu tham chiếu qua event — mỗi bước giảm một kiểu phụ thuộc và thêm một kiểu chi phí.
+    Core và Academic của KBM đang dùng chung <code>app_db</code>, và Academic đọc thẳng bảng câu hỏi của Core. Lộ trình trong Ch.7 đi ba bước: tách schema, chuyển sang gọi API, rồi mới nhân bản dữ liệu tham chiếu qua event — mỗi bước giảm một kiểu phụ thuộc và thêm một kiểu chi phí.
   </p>
 
   <!-- Gap Table -->
-  <h3 class="sub-heading">Gap Analysis — Assignment đọc dữ liệu của Core và Auth</h3>
+  <h3 class="sub-heading">Gap Analysis — Academic đọc dữ liệu của Core và Auth</h3>
   <div class="sub-label">Theo §7.3, case study KBM (§7.6) và phụ lục anti-pattern</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
@@ -200,13 +200,13 @@
       <tbody>
         <tr>
           <td class="gap-label">Join xuyên schema</td>
-          <td>Assignment truy vấn thẳng bảng câu hỏi của Core — ranh giới dữ liệu chỉ có trên giấy.</td>
+          <td>Academic truy vấn thẳng bảng câu hỏi của Core — ranh giới dữ liệu chỉ có trên giấy.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Tách <code>core_schema</code>/<code>assignment_schema</code> với role riêng (Giai đoạn 1); thay truy vấn chéo bằng API rồi <code>REVOKE</code> quyền đọc chéo (Giai đoạn 2).</td>
+          <td>Tách <code>core_schema</code>/<code>academic_schema</code> với role riêng (Giai đoạn 1); thay truy vấn chéo bằng API rồi <code>REVOKE</code> quyền đọc chéo (Giai đoạn 2).</td>
         </tr>
         <tr>
           <td class="gap-label">Tên câu hỏi</td>
-          <td>Sau khi chặn join, Assignment vẫn cần tên và độ khó để hiển thị.</td>
+          <td>Sau khi chặn join, Academic vẫn cần tên và độ khó để hiển thị.</td>
           <td><span class="b-med">MED</span></td>
           <td>Trước: <code>GET /api/questions/batch</code> (Giai đoạn 2). Sau: bản sao cục bộ cập nhật bằng <code>QuestionUpdated</code> (Giai đoạn 3).</td>
         </tr>
@@ -244,14 +244,14 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Truy cập qua API</h4>
-      <p>Thay truy vấn chéo schema bằng Feign <code>GET /api/questions/batch</code>. Luôn mới nhất, nhưng Assignment phụ thuộc Core lúc runtime.</p>
+      <p>Thay truy vấn chéo schema bằng Feign <code>GET /api/questions/batch</code>. Luôn mới nhất, nhưng Academic phụ thuộc Core lúc runtime.</p>
       <span class="t-badge orange">§7.6</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Nhân bản qua event</h4>
-      <p>Core phát <code>QuestionUpdated</code>; Assignment giữ bản sao chỉ phần tham chiếu (tên, độ khó). Cần bulk sync ban đầu và outbox.</p>
+      <p>Core phát <code>QuestionUpdated</code>; Academic giữ bản sao chỉ phần tham chiếu (tên, độ khó). Cần bulk sync ban đầu và outbox.</p>
       <span class="t-badge orange">§7.6 · Ch.10</span>
     </div>
   </div>
@@ -315,7 +315,7 @@ const SCENS = {
   normal:    { label: 'Bình thường', hint: 'Core chạy, không ai sửa gì' },
   down:      { label: 'Core ngừng', hint: 'Core ngừng từ t=13 s tới t=37 s' },
   rename:    { label: 'Đổi tên câu hỏi', hint: 't=18 s đổi tên Q7; consumer chậm 12 s' },
-  bootstrap: { label: 'Dựng instance mới', hint: 't=18 s dựng lại Assignment; t=38 s đối soát' },
+  bootstrap: { label: 'Dựng instance mới', hint: 't=18 s dựng lại Academic; t=38 s đối soát' },
 };
 const WAYS = {
   n1:    { label: 'API từng dòng' },
@@ -351,7 +351,7 @@ const NOTES = {
   'normal.n1': 'Luôn mới nhất và dễ viết, nhưng mỗi lần tải là 20 lượt đi về sang Core. Tốn thời gian và tải Core — bài toán N+1 (§7.3).',
   'normal.batch': 'Gom 8 id vào một lời gọi: nhanh hơn nhiều, vẫn luôn mới nhất. Đây là Giai đoạn 2 trong lộ trình của KBM — đủ tốt nếu Core luôn sẵn sàng.',
   'normal.ecst': 'Không lời gọi nào sang Core, truy vấn tại chỗ vài mili-giây. Lúc bình thường khác biệt chủ yếu là tốc độ; cái giá nằm ở luồng event phía sau.',
-  'down.n1': 'Core ngừng thì mọi cách gọi API đều ngừng theo: trang lỗi sau khi chờ hết timeout. Assignment vẫn chạy, chỉ thiếu dữ liệu của service khác — đúng nghĩa temporal coupling.',
+  'down.n1': 'Core ngừng thì mọi cách gọi API đều ngừng theo: trang lỗi sau khi chờ hết timeout. Academic vẫn chạy, chỉ thiếu dữ liệu của service khác — đúng nghĩa temporal coupling.',
   'down.batch': 'Gom lô không giúp gì khi Core ngừng: một lời gọi hay hai mươi lời gọi thì cũng phụ thuộc runtime như nhau.',
   'down.ecst': 'Bản sao vẫn đọc được khi Core ngừng — lý do chính để chọn cách này. Trong lúc đó không có thay đổi mới nào tới được, nên bản sao đứng yên ở trạng thái cuối cùng đã biết.',
   'rename.n1': 'Gọi API thấy tên mới ngay lần tải kế tiếp.',
@@ -381,10 +381,10 @@ function events(scen, way) {
   if (scen === 'down') { L.push([13, 'Core ngừng', 'log-err']); L.push([37, 'Core chạy lại', 'log-ok']); }
   if (scen === 'rename') {
     L.push([18, 'Giảng viên đổi tên Q7 trên Core', 'log-warn']);
-    if (way === 'ecst') { L.push([18.2, 'Core phát QuestionUpdated{id: Q7, version: 4} qua outbox', 'log-info']); L.push([30, 'Consumer của Assignment xử lý xong event → bản sao Q7 version 4', 'log-ok']); }
+    if (way === 'ecst') { L.push([18.2, 'Core phát QuestionUpdated{id: Q7, version: 4} qua outbox', 'log-info']); L.push([30, 'Consumer của Academic xử lý xong event → bản sao Q7 version 4', 'log-ok']); }
   }
   if (scen === 'bootstrap') {
-    L.push([18, 'Dựng lại Assignment trên máy mới', 'log-warn']);
+    L.push([18, 'Dựng lại Academic trên máy mới', 'log-warn']);
     if (way === 'ecst') { L.push([18.5, 'question_copy rỗng — consumer chỉ nhận thay đổi từ bây giờ', 'log-err']); L.push([38, 'Chạy đối soát: bulk sync 8 câu hỏi từ Core', 'log-ok']); }
   }
   return L;

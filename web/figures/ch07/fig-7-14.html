@@ -21,7 +21,7 @@
         <div class="d-sub">questions, submissions, contests</div>
       </div>
       <div class="d-box d-domain text-center" id="kc-asg">
-        <div class="d-title">Assignment Service</div>
+        <div class="d-title">Academic Service</div>
         <div class="d-sub">courses, assignments, grades</div>
       </div>
       <div class="d-box d-note text-center" id="kc-auth">
@@ -35,7 +35,7 @@
 
       <div class="d-box d-danger text-center" id="kc-appdb" style="grid-column: 1 / 3; border-width: 2px;">
         <div class="d-title">PostgreSQL · app_db</div>
-        <div class="d-sub">Core và Assignment dùng chung — vi phạm database-per-service</div>
+        <div class="d-sub">Core và Academic dùng chung — vi phạm database-per-service</div>
       </div>
       <div class="d-box d-storage text-center" id="kc-authdb">
         <div class="d-title">PostgreSQL · auth_db</div>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="d-box d-note d-mt-3">
-      <div class="d-sub"><strong>Đánh đổi</strong>: dùng chung DB giúp tách service nhanh mà chưa phải tách dữ liệu; cái giá là schema coupling và deploy coupling giữa Core với Assignment (Hình 7.1).</div>
+      <div class="d-sub"><strong>Đánh đổi</strong>: dùng chung DB giúp tách service nhanh mà chưa phải tách dữ liệu; cái giá là schema coupling và deploy coupling giữa Core với Academic (Hình 7.1).</div>
       <div class="d-sub"><strong>Feign call</strong> lấy dữ liệu xuyên service vẫn là runtime dependency — Auth ngừng thì bên gọi bị ảnh hưởng (Hình 7.6).</div>
       <div class="d-sub"><strong>Bước tiếp</strong>: Giai đoạn 1 tách <code>app_db</code> thành hai schema (Hình 7.5).</div>
     </div>

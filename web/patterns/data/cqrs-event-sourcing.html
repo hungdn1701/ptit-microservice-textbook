@@ -208,7 +208,7 @@
   </div>
 
   <p class="section-intro">
-    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Assignment chung <code>app_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
+    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Academic chung <code>app_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
   </p>
 
   <!-- Gap Table -->
@@ -233,7 +233,7 @@
         </tr>
         <tr>
           <td class="gap-label">Shared database</td>
-          <td>Core và Assignment cùng <code>app_db</code>.</td>
+          <td>Core và Academic cùng <code>app_db</code>.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Schema riêng có database role chặn cross-schema → truy cập qua API → full split khi cần scale độc lập.</td>
         </tr>
@@ -264,21 +264,21 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 1</div>
       <h4>Tách schema</h4>
-      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>assignment_schema</code>, database role riêng; truy vấn chéo còn lại tạm đọc qua view.</p>
+      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>academic_schema</code>, database role riêng; truy vấn chéo còn lại tạm đọc qua view.</p>
       <span class="t-badge orange">Chi phí thấp</span>
     </div>
     <div class="timeline-item" data-delay="200">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Truy cập dữ liệu qua API</h4>
-      <p>Assignment gọi Core <code>GET /api/questions/batch</code> thay vì query thẳng <code>core_schema.questions</code>; hết truy vấn chéo thì <code>REVOKE</code> để chặn cross-schema JOIN.</p>
+      <p>Academic gọi Core <code>GET /api/questions/batch</code> thay vì query thẳng <code>core_schema.questions</code>; hết truy vấn chéo thì <code>REVOKE</code> để chặn cross-schema JOIN.</p>
       <span class="t-badge orange">Chi phí trung bình</span>
     </div>
     <div class="timeline-item" data-delay="400">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Nhân bản dữ liệu qua sự kiện</h4>
-      <p>Core publish <code>QuestionUpdated</code>; Assignment giữ bản sao reference data. Cần cơ chế bulk sync/đối soát để khởi tạo, và outbox để publish nguyên tử.</p>
+      <p>Core publish <code>QuestionUpdated</code>; Academic giữ bản sao reference data. Cần cơ chế bulk sync/đối soát để khởi tạo, và outbox để publish nguyên tử.</p>
       <span class="t-badge orange">Chi phí trung bình</span>
     </div>
     <div class="timeline-item" data-delay="600">

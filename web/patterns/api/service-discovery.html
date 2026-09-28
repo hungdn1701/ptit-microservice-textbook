@@ -201,7 +201,7 @@
       <tbody>
         <tr>
           <td class="gap-label">Tên service</td>
-          <td>Trong snapshot cũ, <code>kbm-core</code> và <code>kbm-academic</code> cùng dùng <code>spring.application.name = "app"</code>: Eureka coi chúng là instance của cùng một service → định tuyến sai. Hệ quả của việc tách Assignment khỏi Core mà không đổi tên.</td>
+          <td>Trong snapshot cũ, <code>kbm-core</code> và <code>kbm-academic</code> cùng dùng <code>spring.application.name = "app"</code>: Eureka coi chúng là instance của cùng một service → định tuyến sai. Hệ quả của việc tách Academic khỏi Core mà không đổi tên.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Đổi thành <code>kbm-core</code>, <code>kbm-academic</code>; cập nhật cấu hình Eureka và route của Gateway.</td>
         </tr>
