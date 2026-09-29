@@ -39,16 +39,16 @@
 
     const CHAPTERS = [
       { num: '01', title: 'Tổng quan SOA & Microservices', icon: SVG_ICONS.folder },
-      { num: '02', title: 'Phân tích hướng Domain & DDD', icon: SVG_ICONS.folder },
+      { num: '02', title: 'Phân tích hướng Domain', icon: SVG_ICONS.folder },
       { num: '03', title: 'Thiết kế Dịch vụ & API', icon: SVG_ICONS.folder },
       { num: '04', title: 'Giao tiếp Đồng bộ', icon: SVG_ICONS.folder },
       { num: '05', title: 'Giao tiếp Bất đồng bộ', icon: SVG_ICONS.folder },
       { num: '06', title: 'Giao dịch Phân tán', icon: SVG_ICONS.folder },
       { num: '07', title: 'Quản lý Dữ liệu', icon: SVG_ICONS.folder },
-      { num: '08', title: 'API Gateway', icon: SVG_ICONS.folder },
+      { num: '08', title: 'Cổng API', icon: SVG_ICONS.folder },
       { num: '09', title: 'Bảo mật Microservices', icon: SVG_ICONS.folder },
       { num: '10', title: 'Chuyển đổi Thực tế', icon: SVG_ICONS.folder },
-      { num: '11', title: 'Observability', icon: SVG_ICONS.folder },
+      { num: '11', title: 'Quan sát Hệ thống', icon: SVG_ICONS.folder },
       { num: '12', title: 'Triển khai & DevOps', icon: SVG_ICONS.folder }
     ];
 
@@ -57,17 +57,17 @@
       { file: 'acknowledgments.html', title: 'Lời cảm ơn', icon: SVG_ICONS.doc },
       { file: 'introduction.html', title: 'Giới thiệu', icon: SVG_ICONS.doc },
       
-      { file: 'chapter-01.html', title: 'Chương 01: Tổng quan SOA & Microservices', icon: SVG_ICONS.code },
-      { file: 'chapter-02.html', title: 'Chương 02: Phân tích hướng Domain & DDD', icon: SVG_ICONS.code },
-      { file: 'chapter-03.html', title: 'Chương 03: Thiết kế Dịch vụ & API', icon: SVG_ICONS.code },
-      { file: 'chapter-04.html', title: 'Chương 04: Giao tiếp Đồng bộ', icon: SVG_ICONS.code },
-      { file: 'chapter-05.html', title: 'Chương 05: Giao tiếp Bất đồng bộ', icon: SVG_ICONS.code },
-      { file: 'chapter-06.html', title: 'Chương 06: Giao dịch Phân tán', icon: SVG_ICONS.code },
-      { file: 'chapter-07.html', title: 'Chương 07: Quản lý Dữ liệu', icon: SVG_ICONS.code },
-      { file: 'chapter-08.html', title: 'Chương 08: API Gateway', icon: SVG_ICONS.code },
-      { file: 'chapter-09.html', title: 'Chương 09: Bảo mật Microservices', icon: SVG_ICONS.code },
+      { file: 'chapter-01.html', title: 'Chương 1: Tổng quan SOA & Microservices', icon: SVG_ICONS.code },
+      { file: 'chapter-02.html', title: 'Chương 2: Phân tích hướng Domain', icon: SVG_ICONS.code },
+      { file: 'chapter-03.html', title: 'Chương 3: Thiết kế Dịch vụ & API', icon: SVG_ICONS.code },
+      { file: 'chapter-04.html', title: 'Chương 4: Giao tiếp Đồng bộ', icon: SVG_ICONS.code },
+      { file: 'chapter-05.html', title: 'Chương 5: Giao tiếp Bất đồng bộ', icon: SVG_ICONS.code },
+      { file: 'chapter-06.html', title: 'Chương 6: Giao dịch Phân tán', icon: SVG_ICONS.code },
+      { file: 'chapter-07.html', title: 'Chương 7: Quản lý Dữ liệu', icon: SVG_ICONS.code },
+      { file: 'chapter-08.html', title: 'Chương 8: Cổng API', icon: SVG_ICONS.code },
+      { file: 'chapter-09.html', title: 'Chương 9: Bảo mật Microservices', icon: SVG_ICONS.code },
       { file: 'chapter-10.html', title: 'Chương 10: Chuyển đổi Thực tế', icon: SVG_ICONS.code },
-      { file: 'chapter-11.html', title: 'Chương 11: Observability', icon: SVG_ICONS.code },
+      { file: 'chapter-11.html', title: 'Chương 11: Quan sát Hệ thống', icon: SVG_ICONS.code },
       { file: 'chapter-12.html', title: 'Chương 12: Triển khai & DevOps', icon: SVG_ICONS.code },
       
       { file: 'conclusion.html', title: 'Kết luận', icon: SVG_ICONS.doc },
@@ -75,10 +75,11 @@
       { file: 'appendix-b-tools.html', title: 'Phụ lục B: Công cụ & Tài nguyên', icon: SVG_ICONS.config },
       { file: 'appendix-c-pattern-catalog.html', title: 'Phụ lục C: Pattern Catalog', icon: SVG_ICONS.config },
       { file: 'appendix-d-antipatterns.html', title: 'Phụ lục D: Anti-pattern Catalog', icon: SVG_ICONS.config },
-      { file: 'appendix-e-kbm.html', title: 'Phụ lục E: Danh mục Dịch vụ KBM', icon: SVG_ICONS.config },
+      { file: 'appendix-e-kbm.html', title: 'Phụ lục E: Case Study KBM', icon: SVG_ICONS.config },
       { file: 'exercises.html', title: 'Bài tập & Case Studies', icon: SVG_ICONS.code },
       { file: 'appendix-f-hints.html', title: 'Phụ lục F: Gợi ý hướng giải', icon: SVG_ICONS.config },
-      { file: 'appendix-g-testing.html', title: 'Phụ lục G: Chiến lược Kiểm thử & Testcontainers', icon: SVG_ICONS.config }
+      { file: 'appendix-g-testing.html', title: 'Phụ lục G: Chiến lược Kiểm thử & Testcontainers', icon: SVG_ICONS.config },
+      { file: 'bibliography.html', title: 'Tài liệu tham khảo', icon: SVG_ICONS.doc }
     ];
 
 

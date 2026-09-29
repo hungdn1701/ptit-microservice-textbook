@@ -10,7 +10,7 @@
     "audit:diagrams": "node scripts/audit-diagram-geometry.js",
     "audit:terms": "node scripts/py.js scripts/check-retired-forms.py",
     "audit:regressions": "node scripts/py.js scripts/audit-regressions.py --range origin/master..HEAD",
-    "gates": "node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && node scripts/py.js scripts/check-retired-forms.py && node scripts/py.js scripts/sync-agent-config.py --check",
+    "gates": "node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && node scripts/audit-chapter-styles.js && node scripts/py.js scripts/check-retired-forms.py && node scripts/py.js scripts/sync-agent-config.py --check",
     "audit:agents": "node scripts/py.js scripts/sync-agent-config.py --check",
     "shots": "node scripts/review-shots.js"
   },
