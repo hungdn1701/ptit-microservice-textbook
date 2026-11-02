@@ -47,10 +47,10 @@
     </div>
 
     <div class="d-code d-mt-3" style="overflow-x: auto;">
-      <div><span class="ann">@FeignClient</span>(<span class="str">name = "judge-service"</span>)</div>
+      <div><span class="ann">@FeignClient</span>(<span class="str">name = "kbm-judge-sql"</span>)</div>
       <div><span class="kw">public interface</span> JudgeClient {</div>
-      <div>    <span class="ann">@PostMapping</span>(<span class="str">"/api/judge/execute"</span>)</div>
-      <div>    JudgeResult <span class="kw">execute</span>(<span class="ann">@RequestBody</span> SubmitRequest req);</div>
+      <div>&nbsp;&nbsp;<span class="ann">@PostMapping</span>(<span class="str">"/api/judge/sql"</span>)</div>
+      <div>&nbsp;&nbsp;JudgeResult <span class="kw">submitSql</span>(<span class="ann">@RequestBody</span> JudgeRequest req);</div>
       <div>}</div>
     </div>
 

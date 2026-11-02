@@ -20,7 +20,7 @@
         <div class="d-title"><span class="d-step">1</span> Ownership</div>
         <div class="d-sub">ưu tiên cao · chi phí thấp</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;">+ Core chỉ gọi <code>judge</code></div>
+          <div class="d-sub" style="padding: 3px 0;">+ Core chỉ gọi<br>&nbsp;&nbsp;<code>kbm-judge-sql</code></div>
           <div class="d-sub" style="padding: 3px 0;">+ routing DBMS nằm ở coordinator</div>
         </div>
       </div>
@@ -28,7 +28,7 @@
         <div class="d-title"><span class="d-step">2</span> Resilience</div>
         <div class="d-sub">ưu tiên cao</div>
         <div class="d-box d-mt-1 text-left" style="padding: 8px; flex: 1;">
-          <div class="d-sub" style="padding: 3px 0;">+ CB, Retry, TimeLimiter riêng cho từng <code>judge-*</code></div>
+          <div class="d-sub" style="padding: 3px 0;">+ CB, Retry, TimeLimiter riêng cho từng<br>&nbsp;&nbsp;<code>kbm-sandbox-*</code></div>
           <div class="d-sub" style="padding: 3px 0;">+ fallback "sẽ chấm khi sẵn sàng"</div>
         </div>
       </div>
@@ -52,7 +52,7 @@
 
     <div class="d-box d-note d-mt-3">
       <div class="d-sub"><strong>Bắt đầu từ Giai đoạn 1</strong>: chi phí thấp, không đổi kiến trúc — chỉ gom trách nhiệm về đúng chỗ.</div>
-      <div class="d-sub d-mt-1"><strong>Giai đoạn 4</strong>: nộp bài SQL Contest đã chạy trên Kafka theo đúng mô hình này; đây là mở rộng cho các luồng chấm còn đồng bộ.</div>
+      <div class="d-sub d-mt-1"><strong>Giai đoạn 4</strong>: nộp bài ở chế độ thi đã chạy trên Kafka theo đúng mô hình này; đây là mở rộng cho các luồng chấm còn đồng bộ.</div>
     </div>
 
     <svg class="d-links">

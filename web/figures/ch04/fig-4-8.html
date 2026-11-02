@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 4.8 — SQL Judge coordinator: dispatch SQL đến các worker judge-* theo DBMS
-    2026-09-28 (WP-B Ch.04): đường dispatch vẽ bằng <path d="M 50% …"> (SVG không nhận % trong path → không hiện) và
-    nhãn position:absolute → d-links có nhãn. Nội dung khớp §4.5: sách nêu judge-mysql, judge-sqlserver, … nên worker
-    thứ ba là "judge-* khác" (thêm theo cấu hình), không bịa judge-postgres/judge-oracle; ghi chú giai đoạn sửa theo
-    lộ trình §4.5 (resilience theo worker = Giai đoạn 2, bất đồng bộ = Giai đoạn 4). Chữ theo DIAGRAM_DESIGN.md §17.
+    Fig 4.8 — SQL Judge coordinator: dispatch SQL đến các worker kbm-sandbox-* theo DBMS
+    2026-09-28 (WP-B Ch.04) / cập nhật tên chuẩn 2026-11-02: đường dispatch dùng d-links có nhãn. Nội dung khớp §4.5:
+    coordinator kbm-judge-sql điều phối tới kbm-sandbox-mysql, kbm-sandbox-sqlserver, và "kbm-sandbox-* khác" (thêm theo
+    cấu hình DBMS); ghi chú giai đoạn sửa theo lộ trình §4.5 (resilience theo worker = Giai đoạn 2, bất đồng bộ = Giai đoạn 4).
+    Chữ theo DIAGRAM_DESIGN.md §17.
   -->
   <title>Fig 4.8 — SQL Judge: dispatch tới các worker theo DBMS | Ch.4</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -15,25 +15,25 @@
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-4.8" data-ref="CH04-SEC">
-    <div style="display: grid; grid-template-columns: repeat(3, 230px); gap: 36px 48px; justify-items: stretch; margin: 0 auto; width: fit-content;">
+    <div style="display: grid; grid-template-columns: repeat(3, 270px); gap: 36px 48px; justify-items: stretch; margin: 0 auto; width: fit-content;">
       <div class="d-box d-domain text-center" id="sj-core" style="grid-column: 2; grid-row: 1;">
         <div class="d-title">Core Service</div>
         <div class="d-sub d-mt-1">gửi yêu cầu chấm SQL</div>
       </div>
-      <div class="d-box d-service text-center" id="sj-coord" style="grid-column: 1 / 4; grid-row: 2; justify-self: center; width: 360px; margin-top: 24px;">
-        <div class="d-title">judge — coordinator</div>
+      <div class="d-box d-service text-center" id="sj-coord" style="grid-column: 1 / 4; grid-row: 2; justify-self: center; width: 380px; margin-top: 24px;">
+        <div class="d-title">kbm-judge-sql — coordinator</div>
         <div class="d-sub d-mt-1">nhận request, chọn worker theo loại DBMS, chuẩn hoá kết quả</div>
       </div>
       <div class="d-box d-note text-center" id="sj-w1" style="grid-column: 1; grid-row: 3; margin-top: 40px;">
-        <div class="d-title">judge-mysql</div>
+        <div class="d-title">kbm-sandbox-mysql</div>
         <div class="d-sub d-mt-1">worker MySQL</div>
       </div>
       <div class="d-box d-event text-center" id="sj-w2" style="grid-column: 2; grid-row: 3; margin-top: 40px;">
-        <div class="d-title">judge-sqlserver</div>
+        <div class="d-title">kbm-sandbox-sqlserver</div>
         <div class="d-sub d-mt-1">worker SQL Server</div>
       </div>
       <div class="d-box d-legacy text-center" id="sj-w3" style="grid-column: 3; grid-row: 3; margin-top: 40px; border-style: dashed;">
-        <div class="d-title">judge-* khác</div>
+        <div class="d-title">kbm-sandbox-* khác</div>
         <div class="d-sub d-mt-1">thêm DBMS = thêm worker</div>
       </div>
       <div class="d-box d-storage text-center" id="sj-d1" style="grid-column: 1; grid-row: 4;">
@@ -49,9 +49,9 @@
 
     <div class="d-box d-note d-mt-3">
       <div class="d-grid-2 d-gap-1">
-        <div class="d-sub"><strong>Ownership</strong>: Core chỉ gọi <code>judge</code>; routing DBMS và contract của worker thuộc về coordinator (Giai đoạn 1).</div>
+        <div class="d-sub"><strong>Ownership</strong>: Core chỉ gọi <code>kbm-judge-sql</code>; routing DBMS và contract của worker thuộc về coordinator (Giai đoạn 1).</div>
         <div class="d-sub"><strong>Mở rộng</strong>: mọi worker nhận cùng <code>JudgeRequest</code>, trả cùng <code>JudgeResult</code>; định tuyến theo cấu hình (Giai đoạn 3).</div>
-        <div class="d-sub"><strong>Resilience</strong>: Circuit Breaker riêng cho từng worker — <code>judge-mysql</code> ngừng không kéo theo <code>judge-sqlserver</code> (Giai đoạn 2).</div>
+        <div class="d-sub"><strong>Resilience</strong>: Circuit Breaker riêng cho từng worker — <code>kbm-sandbox-mysql</code> ngừng không kéo theo <code>kbm-sandbox-sqlserver</code> (Giai đoạn 2).</div>
         <div class="d-sub"><strong>Bất đồng bộ</strong>: luồng chấm kéo dài chuyển sang queue, Core không phải chờ (Giai đoạn 4).</div>
       </div>
     </div>

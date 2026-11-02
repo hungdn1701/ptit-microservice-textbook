@@ -33,7 +33,7 @@
       </div>
       <div class="d-box d-warning text-center" id="ds-4">
         <div class="d-title"><span class="d-step">4</span> Data Transfer</div>
-        <div class="d-sub d-mt-1">copy sang DB mới, sync bằng event hoặc CDC</div>
+        <div class="d-sub d-mt-1">sao chép sang DB mới, đồng bộ bằng sự kiện hoặc CDC</div>
       </div>
       <div class="d-box d-service text-center" id="ds-5">
         <div class="d-title"><span class="d-step">5</span> Full Split</div>
@@ -55,20 +55,20 @@
         <div class="d-box d-event text-center" id="kg-1">
           <div class="d-title">Giai đoạn 1 · Separate Schema</div>
           <div class="d-sub d-mt-1"><code>core_schema</code> + <code>academic_schema</code>; đọc chéo tạm qua view</div>
-          <div class="d-sub d-text-muted">effort thấp</div>
+          <div class="d-sub d-text-muted">chi phí thấp</div>
         </div>
         <div class="d-box d-note text-center" id="kg-2">
-          <div class="d-title">Giai đoạn 2 · API Wrapping</div>
-          <div class="d-sub d-mt-1">thay dần truy vấn chéo bằng Feign call, xong thì thu hồi quyền đọc chéo</div>
-          <div class="d-sub d-text-muted">effort trung bình</div>
+          <div class="d-title">Giai đoạn 2 · API / Event</div>
+          <div class="d-sub d-mt-1">thay dần truy vấn chéo bằng API hoặc sự kiện, xong thì thu hồi quyền đọc view</div>
+          <div class="d-sub d-text-muted">chi phí trung bình</div>
         </div>
         <div class="d-box d-service text-center" id="kg-3" style="border-style: dashed;">
           <div class="d-title">Giai đoạn 3 · Full Split</div>
           <div class="d-sub d-mt-1">tách PostgreSQL server — chỉ khi cần</div>
-          <div class="d-sub d-text-muted">effort cao</div>
+          <div class="d-sub d-text-muted">chi phí cao</div>
         </div>
       </div>
-      <div class="d-sub d-mt-2">Mỗi giai đoạn là một điểm dừng được: Giai đoạn 1 đã làm lộ truy vấn chéo và chặn schema coupling ngầm phát sinh thêm; Giai đoạn 2 cần khi team lớn lên và muốn deploy độc lập thật sự; Giai đoạn 3 chỉ đáng làm khi các service cần scale khác nhau hoặc cần polyglot persistence.</div>
+      <div class="d-sub d-mt-2">Mỗi giai đoạn là một điểm dừng được: Giai đoạn 1 đã làm lộ truy vấn chéo và chặn schema coupling ngầm phát sinh thêm; Giai đoạn 2 cần khi nhóm mở rộng và muốn deploy độc lập thật sự; Giai đoạn 3 chỉ đáng làm khi các service cần mở rộng khác nhau hoặc cần polyglot persistence.</div>
     </div>
 
     <svg class="d-links">

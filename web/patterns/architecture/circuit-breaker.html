@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">SQL Judge của KBM (§4.5): Core gửi bài tới <code>judge</code> coordinator, coordinator gọi worker theo DBMS. Lời gọi tới worker dùng cấu hình của sách: Timeout 5 s, Retry 3 lần (chờ 1 s, 2 s), Bulkhead 10 lời gọi đồng thời, Circuit Breaker cửa sổ 10 · ngưỡng 50% · chờ 30 s · 3 lời gọi thử (lst:4_3). Bài nộp xen kẽ MySQL / SQL Server; thời gian là thời gian mô phỏng.</p>
+  <p class="section-intro">SQL Judge của KBM (§4.5): Core gửi bài tới <code>kbm-judge-sql</code> (coordinator), coordinator gọi các worker <code>kbm-sandbox-*</code> theo DBMS. Lời gọi tới worker dùng cấu hình của sách: Timeout 5 s, Retry 3 lần (chờ 1 s, 2 s), Bulkhead 10 lời gọi đồng thời, Circuit Breaker cửa sổ 10 · ngưỡng 50% · chờ 30 s · 3 lời gọi thử (lst:4_3). Bài nộp xen kẽ MySQL / SQL Server; thời gian là thời gian mô phỏng.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Kịch bản</span><div class="sim-chips" id="cb-scens"></div></div>
@@ -132,10 +132,10 @@
       <div class="sim-canvas d-links-root" id="cb-canvas">
         <div class="sim-nodes sim-nodes--flow">
           <div class="sim-node is-external" id="cb-core"><div class="sim-node-name">Core</div><div class="sim-node-sub">nộp bài SQL</div></div>
-          <div class="sim-node is-core" id="cb-judge"><div class="sim-node-name">judge</div><div class="sim-node-sub" id="cb-judge-sub"></div></div>
-          <div class="sim-node" id="cb-mysql"><div class="sim-node-name">judge-mysql</div><div class="sim-node-sub" id="cb-mysql-sub"></div></div>
+          <div class="sim-node is-core" id="cb-judge"><div class="sim-node-name">kbm-judge-sql</div><div class="sim-node-sub" id="cb-judge-sub"></div></div>
+          <div class="sim-node" id="cb-mysql"><div class="sim-node-name">MySQL</div><div class="sim-node-sub" id="cb-mysql-sub"></div></div>
           <div class="sim-node" id="cb-queue" style="grid-column:2;grid-row:2"><div class="sim-node-name">Hàng đợi</div><div class="sim-node-sub" id="cb-queue-sub"></div></div>
-          <div class="sim-node" id="cb-mssql" style="grid-column:3;grid-row:2"><div class="sim-node-name">judge-sqlserver</div><div class="sim-node-sub" id="cb-mssql-sub"></div></div>
+          <div class="sim-node" id="cb-mssql" style="grid-column:3;grid-row:2"><div class="sim-node-name">SQL Server</div><div class="sim-node-sub" id="cb-mssql-sub"></div></div>
         </div>
         <svg class="d-links">
           <path id="cb-l-in" data-from="cb-core" data-to="cb-judge"></path>
@@ -198,7 +198,7 @@
   </div>
 
   <p class="section-intro">
-    SQL Judge là coordinator/worker: Core chỉ gọi <code>judge</code>, <code>judge</code> dispatch tới <code>judge-mysql</code>, <code>judge-sqlserver</code>… theo DBMS (§4.5). Circuit Breaker có hai tầng bổ trợ nhau: instance <code>judge</code> ở Core bảo vệ Core khỏi cụm Judge như một tổng thể; Circuit Breaker theo từng worker thuộc về coordinator, để <code>judge-mysql</code> quá tải không kéo sập đường chấm của <code>judge-sqlserver</code>.
+    SQL Judge là coordinator/worker: Core chỉ gọi <code>kbm-judge-sql</code>, coordinator dispatch tới <code>kbm-sandbox-mysql</code>, <code>kbm-sandbox-sqlserver</code>… theo DBMS (§4.5). Circuit Breaker có hai tầng bổ trợ nhau: instance ở Core bảo vệ Core khỏi cụm Judge như một tổng thể; Circuit Breaker theo từng worker thuộc về coordinator, để <code>kbm-sandbox-mysql</code> quá tải không kéo sập đường chấm của <code>kbm-sandbox-sqlserver</code>.
   </p>
 
   <!-- Gap Table -->
@@ -217,9 +217,9 @@
       <tbody>
         <tr>
           <td class="gap-label">Resilience theo worker</td>
-          <td><code>judge-mysql</code> ngừng hoạt động không được phép làm gián đoạn cả <code>judge</code> hay các worker khác.</td>
+          <td><code>kbm-sandbox-mysql</code> ngừng hoạt động không được phép làm gián đoạn cả <code>kbm-judge-sql</code> hay các worker khác.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Circuit Breaker, Timeout, Retry riêng cho từng <code>judge-*</code> (Giai đoạn 2).</td>
+          <td>Circuit Breaker, Timeout, Retry riêng cho từng <code>kbm-sandbox-*</code> (Giai đoạn 2).</td>
         </tr>
         <tr>
           <td class="gap-label">Fallback</td>
@@ -254,14 +254,14 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 1</div>
       <h4>Làm rõ ownership</h4>
-      <p>Core chỉ gọi <code>judge</code>; mọi logic chọn DBMS nằm ở coordinator, không rò sang Core. Ưu tiên cao, chi phí thấp.</p>
+      <p>Core chỉ gọi <code>kbm-judge-sql</code>; mọi logic chọn DBMS nằm ở coordinator, không rò sang Core. Ưu tiên cao, chi phí thấp.</p>
       <span class="t-badge orange">§4.5</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Resilience theo worker</h4>
-      <p><code>@CircuitBreaker</code>, <code>@Retry</code>, <code>@TimeLimiter</code> riêng cho từng <code>judge-*</code>. <code>judge-mysql</code> ngừng thì fallback "Sandbox MySQL đang bận, bài sẽ được chấm khi sẵn sàng", <code>judge-sqlserver</code> không bị ảnh hưởng.</p>
+      <p><code>@CircuitBreaker</code>, <code>@Retry</code>, <code>@TimeLimiter</code> riêng cho từng <code>kbm-sandbox-*</code>. <code>kbm-sandbox-mysql</code> ngừng thì fallback "Sandbox MySQL đang bận, bài sẽ được chấm khi sẵn sàng", <code>kbm-sandbox-sqlserver</code> không bị ảnh hưởng.</p>
       <span class="t-badge orange">§4.5 · lst:4_2</span>
     </div>
     <div class="timeline-item" data-delay="500">
@@ -338,7 +338,7 @@
 // kết quả của lời gọi bắt đầu ở trạng thái trước đó không được tính.
 // Minh họa, sách không nêu: Bulkhead tách 5 + 5 theo worker; mức lỗi 35% ở kịch bản chập chờn.
 const SCENS = {
-  hang:    { label: 'judge-mysql treo', gap: 0.2, dur: 16, win: 2,
+  hang:    { label: 'MySQL worker treo', gap: 0.2, dur: 16, win: 2,
              cfgs: { none: 'Không CB', shared: 'CB chung', worker: 'CB theo worker', bulk: '+ Bulkhead riêng' } },
   recover: { label: 'Phục hồi', gap: 1, dur: 30, win: 5, openedAt: -20,
              cfgs: { healthy: 'Worker đã khỏe', still: 'Worker vẫn treo' } },
@@ -359,24 +359,24 @@ const CFG = {
 const HINTS = {
   'hang.none': 'không Circuit Breaker',
   'hang.shared': 'một Circuit Breaker cho mọi worker',
-  'hang.worker': 'Giai đoạn 2: mỗi judge-* một Circuit Breaker',
+  'hang.worker': 'Giai đoạn 2: mỗi kbm-sandbox-* một Circuit Breaker',
   'hang.bulk': 'CB theo worker + Bulkhead 5 + 5 (minh họa)',
-  'recover.healthy': 'CB judge-mysql đã OPEN từ 20 s trước',
-  'recover.still': 'CB judge-mysql đã OPEN từ 20 s trước',
+  'recover.healthy': 'CB kbm-sandbox-mysql đã OPEN từ 20 s trước',
+  'recover.still': 'CB kbm-sandbox-mysql đã OPEN từ 20 s trước',
   'flaky.ops': 'cửa sổ 10 · ngưỡng 50% · chờ 30 s',
   'flaky.high': 'cửa sổ 20 · ngưỡng 30% · chờ 60 s',
 };
 const NOTES = {
   'hang.none':       'Không có Circuit Breaker: mỗi bài MySQL giữ một luồng tới hết timeout 5 s, Retry nhân lên ba lần — có bài chờ 5 + 1 + 5 + 2 + 5 = 18 s mới nhận fallback. Mười luồng chung đầy dần bằng lời gọi treo, nên bài SQL Server — worker vẫn khỏe — cũng bị từ chối vì Bulkhead đầy: lỗi dây chuyền (§4.4).',
   'hang.shared':     'Một Circuit Breaker chung: đơn giản, một bộ cấu hình, đủ dùng khi chỉ có một worker. Nhưng nó đếm lỗi chung, nên khi đủ ngưỡng nó chặn cả SQL Server — worker khỏe cũng bị ngắt theo. Nhiều worker thì cần tách (§4.5, vấn đề #3).',
-  'hang.worker':     'Circuit Breaker theo worker (Giai đoạn 2): judge-mysql ngắt riêng, bài MySQL nhận fallback ngay, SQL Server chấm tiếp. Còn một khoảng hở: trước khi cửa sổ 10 lời gọi đủ lỗi, các lời gọi treo vẫn chiếm luồng chung — Circuit Breaker phản ứng sau, không ngăn trước.',
+  'hang.worker':     'Circuit Breaker theo worker (Giai đoạn 2): kbm-sandbox-mysql ngắt riêng, bài MySQL nhận fallback ngay, SQL Server chấm tiếp. Còn một khoảng hở: trước khi cửa sổ 10 lời gọi đủ lỗi, các lời gọi treo vẫn chiếm luồng chung — Circuit Breaker phản ứng sau, không ngăn trước.',
   'hang.bulk':       'Thêm Bulkhead riêng cho từng worker: lời gọi treo chỉ làm đầy phần của MySQL, SQL Server không phải chờ ngay từ đầu. Đổi lại là thêm cấu hình và luồng dự trữ có lúc nằm không. Circuit Breaker và Bulkhead bổ trợ nhau (§4.4, Kết hợp các patterns).',
   'recover.healthy': 'Trong lúc OPEN, bài MySQL nhận fallback ngay, không ai giữ luồng. Hết 30 s mạch sang HALF-OPEN; 3 lời gọi thử thành công nên mạch đóng lại và bài MySQL được chấm bình thường.',
   'recover.still':   'Lời gọi thử vẫn timeout nên mạch quay lại OPEN và chờ thêm 30 s. Chỉ 3 lời gọi thử được đi qua, nên một worker đang hồi phục không bị dồn tải (§4.4).',
   'flaky.ops':       'Worker lỗi khoảng 35% lượt gọi (lỗi nhanh, như mất kết nối). Retry che phần lớn — chỉ vài bài lỗi cả 3 lần phải chấm sau; ngưỡng 50% không bị chạm nên mạch không ngắt, đúng với lỗi tạm thời.',
   'flaky.high':      'Ngưỡng 30% trên cửa sổ 20 nhạy hơn: 35% lỗi là đủ ngắt, bài MySQL chuyển hết sang chấm sau trong 60 s dù worker vẫn chạy được phần lớn. Đổi lại, khi lỗi thật thì hệ thống được bảo vệ sớm hơn — chọn điểm cân bằng theo tải (bảng giá trị khuyến nghị, §4.4).',
 };
-const WNAME = { mysql: 'judge-mysql', mssql: 'judge-sqlserver' };
+const WNAME = { mysql: 'kbm-sandbox-mysql', mssql: 'kbm-sandbox-sqlserver' };
 
 // Hành vi worker cho một lượt gọi. n = số thứ tự lượt gọi MySQL (để lỗi chập chờn có quy luật cố định).
 function behavior(scen, cfg, w, n) {
@@ -512,7 +512,7 @@ function log(t, msg, cls) {
 function link(id, cls, base) { $(id).setAttribute('class', [base || '', cls ? 'is-' + cls : ''].join(' ').trim()); }
 function nodeCls(id, cls) { const n = $(id); ['is-active', 'is-danger', 'is-warn', 'is-off'].forEach(c => n.classList.remove(c)); if (cls) n.classList.add(cls); }
 
-// Trạng thái CB "đáng xem": CB của judge-mysql (hoặc CB chung).
+// Trạng thái CB "đáng xem": CB của kbm-sandbox-mysql (hoặc CB chung).
 function smKey(sim) { return sim.cbKeys.includes('all') ? 'all' : sim.cbKeys.includes('mysql') ? 'mysql' : null; }
 function snapshot(sim, t) {
   let last = null; for (const s of sim.samples) { if (s.t <= t + 1e-9) last = s; else break; }
@@ -532,7 +532,7 @@ function showState(sim, snap, lastLog) {
   const C = sim.C;
   $('cb-s-closed-sub').textContent = `cửa sổ ${C.size} · ngưỡng ${C.thr * 100}%`;
   $('cb-s-open-sub').textContent = `chặn ngay · chờ ${C.wait} s`;
-  $('cb-sm-hint').textContent = k ? (k === 'all' ? 'CB chung' : 'CB judge-mysql') : 'không có Circuit Breaker';
+  $('cb-sm-hint').textContent = k ? (k === 'all' ? 'CB chung' : 'CB MySQL') : 'không có Circuit Breaker';
 }
 function showTopology(sim, snap, rows) {
   const busy = snap.busy, C = sim.C;

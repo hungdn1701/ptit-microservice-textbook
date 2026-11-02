@@ -216,10 +216,10 @@
           <td>Danh từ số nhiều + kebab-case thống nhất; đổi sớm khi mới có một consumer.</td>
         </tr>
         <tr>
-          <td class="gap-label">Hợp đồng judge-*</td>
-          <td><code>JudgeRequest</code>/<code>JudgeResult</code> giữa <code>judge</code> và các worker chưa có hợp đồng rõ.</td>
+          <td class="gap-label">Hợp đồng kbm-sandbox-*</td>
+          <td><code>JudgeRequest</code>/<code>JudgeResult</code> giữa <code>kbm-judge-sql</code> và các worker chưa có hợp đồng rõ.</td>
           <td><span class="b-med">MED</span></td>
-          <td>DTO + OpenAPI dùng chung cho mọi <code>judge-*</code>, có versioning và idempotency key.</td>
+          <td>DTO + OpenAPI dùng chung cho mọi <code>kbm-sandbox-*</code>, có versioning và idempotency key.</td>
         </tr>
         <tr>
           <td class="gap-label">Xóa dữ liệu</td>
@@ -255,7 +255,7 @@
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Cùng đợt chuẩn hóa SQL Judge</div>
-      <h4>Hợp đồng chung cho judge-*</h4>
+      <h4>Hợp đồng chung cho kbm-sandbox-*</h4>
       <p><code>JudgeRequest</code>/<code>JudgeResult</code> có OpenAPI, version và idempotency key; kiểm bằng contract test (§3.6).</p>
       <span class="t-badge orange">Liên quan Ch.4 §4.5</span>
     </div>

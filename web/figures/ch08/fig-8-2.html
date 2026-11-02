@@ -41,7 +41,7 @@
     <div class="d-box d-success d-mt-3">
       <div class="d-title d-mb-1">Được</div>
       <div class="d-sub"><span class="d-step">1</span> Frontend chỉ gọi một địa chỉ; đổi địa chỉ backend chỉ sửa cấu hình gateway.</div>
-      <div class="d-sub d-mt-1"><span class="d-step">2</span> CORS, rate limiting, xác thực ở biên làm một chỗ — service vẫn tự xác minh danh tính và phân quyền.</div>
+      <div class="d-sub d-mt-1"><span class="d-step">2</span> CORS, rate limiting, xác minh token ở biên làm một chỗ — service vẫn tự xác minh danh tính và phân quyền.</div>
       <div class="d-sub d-mt-1"><span class="d-step">3</span> Service nội bộ (như Judge) không cần mở ra ngoài.</div>
     </div>
     <div class="d-box d-warning d-mt-2">
@@ -51,7 +51,7 @@
     <svg class="d-links">
       <path data-from="gw-fe" data-to="gw-gw"></path>
       <path data-from="gw-gw" data-to="gw-core" data-from-side="bottom" data-from-at="0.1" data-to-side="top" data-to-align data-label="/api/core/**"></path>
-      <path data-from="gw-gw" data-to="gw-acad" data-from-side="bottom" data-from-at="0.37" data-to-side="top" data-to-align data-label="/api/assignment/**"></path>
+      <path data-from="gw-gw" data-to="gw-acad" data-from-side="bottom" data-from-at="0.37" data-to-side="top" data-to-align data-label="/api/academic/**"></path>
       <path data-from="gw-gw" data-to="gw-auth" data-from-side="bottom" data-from-at="0.63" data-to-side="top" data-to-align data-label="/api/auth/**"></path>
       <path data-from="gw-gw" data-to="gw-noti" data-from-side="bottom" data-from-at="0.9" data-to-side="top" data-to-align data-label="/ws/**"></path>
     </svg>

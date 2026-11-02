@@ -388,7 +388,7 @@ function render() {
   $('mm-title').textContent = a.label; $('mm-hint').textContent = a.hint;
   $('mm-case-hint').textContent = c.label; $('mm-arch-hint').textContent = a.label;
   const mono = state.arch === 'patch' || state.arch === 'mod', sharedDb = state.arch !== 'micro';
-  const sub = { auth: 'kbm-auth', core: 'kbm-core', judge: 'judge + judge-*', acad: 'kbm-academic', net: 'kbm-judge-network' };
+  const sub = { auth: 'kbm-auth', core: 'kbm-core', judge: 'kbm-judge-sql', acad: 'kbm-academic', net: 'kbm-judge-network' };
   NODES.forEach(n => $(`mm-${n}-sub`).textContent = mono ? (state.arch === 'mod' ? 'module · app.jar' : 'package · app.jar') : sub[n] + (state.arch === 'micro' ? ' · db riêng' : ''));
   $('mm-db-sub').textContent = sharedDb ? (state.arch === 'mod' ? '1 database, schema theo module' : '1 database dùng chung') : 'mỗi service một database';
   NODES.forEach(n => $('mm-l-' + n).toggleAttribute('data-hidden', !sharedDb));

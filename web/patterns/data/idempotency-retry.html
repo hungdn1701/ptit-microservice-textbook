@@ -157,7 +157,7 @@
   </div>
 
   <p class="section-intro">
-    Pipeline nộp bài của KBM chạy trên Kafka và đã hoạt động, nhưng phân tích ở Chương 5 xếp "không idempotent" vào nhóm vấn đề phải xử lý ở giai đoạn đầu. Trong SQL Judge, cùng một bài có thể tới nhiều lần — qua retry của Kafka/queue, hoặc khi <code>judge</code> gọi lại một worker sau timeout — nên mọi chặng đều cần nhận ra "bài này đã xử lý rồi" (§5.5).
+    Pipeline nộp bài của KBM chạy trên Kafka và đã hoạt động, nhưng phân tích ở Chương 5 xếp "không idempotent" vào nhóm vấn đề phải xử lý ở giai đoạn đầu. Trong SQL Judge, cùng một bài có thể tới nhiều lần — qua retry của Kafka/queue, hoặc khi <code>kbm-judge-sql</code> gọi lại một worker sau timeout — nên mọi chặng đều cần nhận ra "bài này đã xử lý rồi" (§5.5).
   </p>
 
   <!-- Gap Table -->
@@ -187,7 +187,7 @@
           <td>Kiểm tra <code>submissionId</code> trước khi chấm, dựa trên <code>UNIQUE</code>/<code>ON CONFLICT</code> ở database (Giai đoạn 1).</td>
         </tr>
         <tr>
-          <td class="gap-label"><code>judge</code> → worker</td>
+          <td class="gap-label"><code>kbm-judge-sql</code> → worker</td>
           <td>Coordinator retry sau timeout, trong khi worker có thể đã chấm xong.</td>
           <td><span class="b-med">MED</span></td>
           <td><code>JudgeRequest</code> mang <code>submissionId</code>/<code>judgeRunId</code>; worker trả kết quả hiện có thay vì chấm lại (lst:4_2).</td>
