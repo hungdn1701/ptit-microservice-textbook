@@ -327,7 +327,7 @@ kubectl apply -f deployment-green.yaml
 kubectl patch service kbm-academic-svc \\
   -p '{"spec":{"selector":{"version":"green"}}}'
 # lùi: đổi selector về "blue"`,
-  canary: `# Listing 12.7 — Nginx Ingress
+  canary: `# Listing 12.7 — Ingress NGINX
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/canary: "true"
