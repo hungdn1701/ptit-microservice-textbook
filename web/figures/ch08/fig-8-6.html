@@ -5,8 +5,9 @@
   <!--
     Fig 8.6 — Luồng JWT tại Gateway: bằng chứng có chữ ký và context định danh dẫn xuất
     2026-09-28 (WP-B Ch.08): tiêu đề kịch bản (d-sep-title) nằm dưới đường đời nên bị cắt chữ "Scenario" (roadmap) → nhãn
-    kịch bản đặt trong vùng giữa hai đường đời. Việt hoá nhãn theo DIAGRAM_DESIGN.md §17. Ghi rõ đây là luồng mục tiêu
+    kịch bản đặt trong vùng giữa hai đường đời. Việt hóa nhãn theo DIAGRAM_DESIGN.md §17. Ghi rõ đây là luồng mục tiêu
     Tier 1 và hiện trạng KBM khác (X-User-* header, rủi ro được chấp nhận có điều kiện) — theo hai đoạn ngay sau hình.
+    2026-11-05 (hội đồng 2026-11, Q11): "Hiện trạng KBM" → "KBM tại thời điểm khảo sát", khớp chương 8.
   -->
   <title>Fig 8.6 — Luồng JWT tại Gateway | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -84,7 +85,7 @@
       </div>
     </div>
     <div class="d-box d-note d-mt-2">
-      <div class="d-sub"><strong>Đây là luồng mục tiêu (Tier 1).</strong> Hiện trạng KBM: Gateway chèn <code>X-User-Id</code>, <code>X-User-Roles</code>; một số service tin header này, số khác tự parse JWT — rủi ro được chấp nhận có điều kiện, không phải phòng thủ chiều sâu.</div>
+      <div class="d-sub"><strong>Đây là luồng mục tiêu (Tier 1).</strong> KBM tại thời điểm khảo sát: Gateway chèn <code>X-User-Id</code>, <code>X-User-Roles</code>; một số service tin header này, số khác tự parse JWT — rủi ro được chấp nhận có điều kiện, không phải phòng thủ chiều sâu.</div>
     </div>
   </div><!-- /.diagram-canvas -->
 </body>

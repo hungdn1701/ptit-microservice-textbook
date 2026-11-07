@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -98,12 +98,12 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
       <h3>Choreography</h3>
-      <p>Không có coordinator: mỗi service tự phản ứng theo sự kiện. Đơn giản, lỏng lẻo lúc đầu; luồng khó theo dõi và dễ phụ thuộc vòng khi lớn dần. Hợp với saga 2–3 bước.</p>
+      <p>Không có coordinator: mỗi service tự phản ứng theo sự kiện. Đơn giản, lỏng lẻo lúc đầu; luồng khó theo dõi và dễ phụ thuộc vòng khi lớn dần. Hợp với saga ít bước, không phân nhánh.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
       <h3>Orchestration</h3>
-      <p>Một orchestrator gửi lệnh và chờ phản hồi. Luồng rõ, dễ test; đổi lại orchestrator là điểm lỗi duy nhất và dễ thành "smart orchestrator" ôm hết nghiệp vụ. Hợp khi từ 4 bước trở lên hoặc có phân nhánh.</p>
+      <p>Một orchestrator gửi lệnh và chờ phản hồi. Luồng rõ, dễ test; đổi lại orchestrator là điểm lỗi duy nhất và dễ thành "smart orchestrator" ôm hết nghiệp vụ. Hợp khi nhiều bước hoặc có phân nhánh.</p>
     </div>
   </div>
 </section>
@@ -156,7 +156,7 @@
   </div>
 
   <p class="section-intro">
-    KBM đang có một implicit saga: choreography qua Kafka nhưng không được định nghĩa như saga — thiếu state, timeout và compensation tường minh, và đã từng gây lỗi trên production. Với luồng nộp bài 2–3 bước, choreography vẫn đủ; orchestrator là quyết định để mở, xem lại khi luồng thêm bước (§6.3, §6.5).
+    KBM đang có một implicit saga: choreography qua Kafka nhưng không được định nghĩa như saga — thiếu state, timeout và compensation tường minh, và đã từng gây lỗi trên production. Với luồng nộp bài 4 bước tuần tự, choreography vẫn đủ; orchestrator là quyết định để mở, xem lại khi luồng thêm bước (§6.3, §6.5).
   </p>
 
   <!-- Gap Table -->
@@ -189,7 +189,7 @@
           <td class="gap-label">Implicit saga</td>
           <td>Luồng rải rác trong mã nguồn, không có state machine tập trung.</td>
           <td><span class="b-med">MED</span></td>
-          <td><code>SubmitSaga</code> với PENDING → JUDGING → JUDGED / ERROR / TIMEOUT, mỗi transition kèm compensation.</td>
+          <td><code>SubmitSaga</code> với PENDING → JUDGING → CANCELLING → JUDGED / ERROR / TIMEOUT; bước compensatable có compensation, các bước sau pivot thì retry.</td>
         </tr>
         <tr>
           <td class="gap-label">Theo dõi saga</td>
@@ -240,8 +240,8 @@
         <div class="decision-title">Chọn cách điều phối</div>
       </div>
       <ul class="decision-list">
-        <li>Saga 2–3 bước, giữa các bounded context → choreography.</li>
-        <li>Saga từ 4 bước, có phân nhánh → orchestration.</li>
+        <li>Saga ít bước, tuần tự, không phân nhánh → choreography.</li>
+        <li>Saga nhiều bước, có phân nhánh → orchestration.</li>
         <li>Đội chưa quen event-driven → orchestration dễ nắm và debug hơn.</li>
         <li>Workflow học vụ (duyệt bài tập, đồ án, công bố điểm) → bắt đầu bằng state machine tường minh.</li>
       </ul>
@@ -373,7 +373,7 @@ async function run() {
     if (!ex) { log('… 5 phút, 10 phút: không service nào cập nhật trạng thái', 'log-err'); state.seen = 'chấm mãi'; return finish(); }
     log('… quá 5 phút: job quét bài quá hạn', 'log-warn');
     setStatus('CANCELLING'); log('markAsCancelling → gửi lệnh hủy/probe tới Judge (không gửi lặp ở chu kỳ sau)', 'log-info'); await sleep(STEP);
-    log('Judge phục hồi, xác nhận hủy lần chạy judgeRunId=r1 → judge.cancel.ack', 'log-ok'); await sleep(STEP);
+    log('Judge phục hồi, xác nhận hủy lần chạy judgeRunId=r1 → judge-cancel-ack', 'log-ok'); await sleep(STEP);
     setStatus('TIMEOUT'); await step('C1', 'done', 'C1 · TIMEOUT + bù trừ: hoàn lượt nộp, gửi lại bản clone (retryCount < MAX)', 'log-ok');
     state.comp++; log('Kết quả muộn của r1 đến sau → judgeRunId không còn hiệu lực → bỏ qua, ghi log', 'log-warn');
     state.seen = 'hết giờ, thử lại';

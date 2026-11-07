@@ -12,14 +12,14 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 <!--
   2026-09-28 (WP-C): trang mới. Ch.09 §9.5 đã trỏ tới trang này từ trước nhưng trang chưa tồn tại (404) — tác giả duyệt
   viết thêm. Nội dung bám §9.5: listing @PreAuthorize (isAuthenticated / hasAnyRole('LECTURER','ADMIN') / hasRole('ADMIN')),
   RoleHierarchy ADMIN > LECTURER > STUDENT, "kiểm tra vai trò chỉ là lớp đầu" (quan hệ sở hữu: lớp, giảng viên phụ trách,
-  ghi danh), hiện trạng roles pipe-delimited và analysis "RBAC trong KBM". Endpoint theo lớp là minh hoạ, ghi rõ trong dữ liệu.
+  ghi danh), hiện trạng roles pipe-delimited và analysis "RBAC trong KBM". Endpoint theo lớp là minh họa, ghi rõ trong dữ liệu.
 -->
 
 <!-- ── Scroll Progress Bar ── -->
@@ -119,7 +119,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Cùng sáu yêu cầu, hai cách phân quyền. "Chỉ kiểm vai trò" dừng ở <code>@PreAuthorize</code> và dùng token mang chuỗi vai trò như hiện trạng KBM; "Vai trò + sở hữu" thêm <code>RoleHierarchy</code> và bước kiểm tra quan hệ tại Core Service. Endpoint theo lớp là minh hoạ; ba endpoint câu hỏi lấy từ listing §9.5.</p>
+  <p class="section-intro">Cùng sáu yêu cầu, hai cách phân quyền. "Chỉ kiểm vai trò" dừng ở <code>@PreAuthorize</code> và dùng token mang chuỗi vai trò như KBM tại thời điểm khảo sát; "Vai trò + sở hữu" thêm <code>RoleHierarchy</code> và bước kiểm tra quan hệ tại Core Service. Endpoint theo lớp là minh họa; ba endpoint câu hỏi lấy từ listing §9.5.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Cách phân quyền</span><div class="sim-chips" id="rb-modes"></div></div>
@@ -193,7 +193,7 @@
       <thead>
         <tr>
           <th>Khía cạnh</th>
-          <th>Hiện trạng KBM</th>
+          <th>KBM khi khảo sát</th>
           <th>Mức độ</th>
           <th>Hướng xử lý</th>
         </tr>
@@ -215,7 +215,7 @@
           <td class="gap-label">Kiểm toán quyền</td>
           <td><code>@PreAuthorize</code> rải ở từng controller — khó trả lời "vai trò X làm được gì".</td>
           <td><span class="b-med">MED</span></td>
-          <td>Quy tụ chính sách về một chỗ (method security tập trung hoặc Open Policy Agent).</td>
+          <td>Gom quy tắc phân quyền cấp endpoint về một chỗ (<code>authorizeHttpRequests</code> hoặc một <code>AuthorizationManager</code> dùng chung), hoặc tách sang công cụ chính sách như Open Policy Agent khi số quy tắc lớn (§9.5).</td>
         </tr>
         <tr>
           <td class="gap-label">DevOps Lab</td>
@@ -251,7 +251,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Bước 3</div>
       <h4>Chính sách tập trung</h4>
-      <p>Cân nhắc quy tụ chính sách về method security tập trung hoặc Open Policy Agent; DevOps Lab thêm rào chắn ở runtime.</p>
+      <p>Cân nhắc gom quy tắc phân quyền cấp endpoint về một chỗ, hoặc tách sang công cụ chính sách như Open Policy Agent; DevOps Lab thêm rào chắn ở runtime.</p>
       <span class="t-badge orange">Khi số chính sách tăng</span>
     </div>
   </div>
@@ -265,7 +265,7 @@
       </div>
       <ul class="decision-list">
         <li>Số vai trò ít và ổn định, như STUDENT / LECTURER / ADMIN của KBM.</li>
-        <li>Quyền chủ yếu theo chức năng: "giảng viên được tạo câu hỏi", "chỉ quản trị viên được xoá".</li>
+        <li>Quyền chủ yếu theo chức năng: "giảng viên được tạo câu hỏi", "chỉ quản trị viên được xóa".</li>
         <li>Cần giải thích được với người không lập trình: vai trò nào làm được gì.</li>
         <li>Vai trò có thứ bậc tự nhiên để khai báo phân cấp một lần.</li>
       </ul>
@@ -307,10 +307,10 @@
 // Theo sách: listing @PreAuthorize — GET /questions isAuthenticated(), POST /questions
 // hasAnyRole('LECTURER','ADMIN'), DELETE /questions/{id} hasRole('ADMIN'); RoleHierarchy
 // ADMIN > LECTURER > STUDENT; "kiểm tra vai trò chỉ là lớp đầu" — quan hệ sở hữu kiểm tại service.
-// Hiện trạng: roles là chuỗi "ADMIN|LECTURER|STUDENT" (token của ADMIN liệt kê lại mọi vai trò vì
+// Khi khảo sát: roles là chuỗi "ADMIN|LECTURER|STUDENT" (token của ADMIN liệt kê lại mọi vai trò vì
 // chưa có RoleHierarchy). Endpoint /classes/... là minh hoạ.
 const MODES = {
-  role:  { label: 'Chỉ kiểm vai trò', hint: '@PreAuthorize ở từng endpoint; token mang chuỗi vai trò như hiện trạng (§9.5)',
+  role:  { label: 'Chỉ kiểm vai trò', hint: '@PreAuthorize ở từng endpoint; token mang chuỗi vai trò như KBM khi khảo sát (§9.5)',
            role: 'vai trò trong token', own: 'không kiểm', auth: 'roles: "A|B|C"' },
   owner: { label: 'Vai trò + sở hữu', hint: 'RoleHierarchy ADMIN > LECTURER > STUDENT; Core kiểm quan hệ với tài nguyên (§9.5)',
            role: 'vai trò + phân cấp', own: 'lớp phụ trách · ghi danh', auth: 'roles: ["…"]' },
@@ -328,7 +328,7 @@ const CASES = {
   mine:   { label: 'GV xem lớp mình', user: 'gv', req: 'GET /classes/A/submissions', rule: "hasRole('LECTURER')", need: ['LECTURER'], owner: { ok: true, why: 'giảng viên phụ trách lớp A' } },
   other:  { label: 'GV xem lớp khác', user: 'gv', req: 'GET /classes/B/submissions', rule: "hasRole('LECTURER')", need: ['LECTURER'], owner: { ok: false, why: 'lớp B do giảng viên khác phụ trách' } },
   submit: { label: 'SV nộp lớp khác', user: 'sv', req: 'POST /classes/B/submissions', rule: "hasRole('STUDENT')", need: ['STUDENT'], owner: { ok: false, why: 'sinh viên chưa ghi danh lớp B' } },
-  del:    { label: 'Admin xoá câu hỏi', user: 'admin', req: 'DELETE /questions/42', rule: "hasRole('ADMIN')", need: ['ADMIN'], owner: null },
+  del:    { label: 'Admin xóa câu hỏi', user: 'admin', req: 'DELETE /questions/42', rule: "hasRole('ADMIN')", need: ['ADMIN'], owner: null },
 };
 const NOTES = {
   view:   'isAuthenticated(): mọi người dùng đã đăng nhập đều xem được. Hai cách cho cùng kết quả.',

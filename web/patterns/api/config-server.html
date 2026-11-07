@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Secret lộ</div></div>
       <h3>Secret nằm trong file cấu hình</h3>
-      <p><code>jwt.secretKey=mySecretKey123</code> trong <code>application.yml</code>, commit vào Git: ai đọc được repo — hay pull được image — đều có thể tạo JWT giả mạo (§9.6).</p>
+      <p>Khóa ký JWT nằm trong <code>application.yml</code> rồi commit vào Git: ai đọc được repo — hay pull được image — đều có thể tạo JWT giả mạo (§9.6).</p>
     </div>
   </div>
 
@@ -103,7 +103,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
       <h3>Secret đi đường riêng</h3>
-      <p>Ba cấp trong §9.6: biến môi trường (tối thiểu) → cấu hình mã hóa (Spring Cloud Config + Jasypt, vẫn phải giữ khóa giải mã) → secret manager như Vault (xoay vòng tự động, nhật ký kiểm toán).</p>
+      <p>Ba cấp trong §9.6: biến môi trường (tối thiểu) → cấu hình mã hóa (Spring Cloud Config + Jasypt, vẫn phải giữ khóa giải mã) → secret manager như Vault (luân phiên tự động, nhật ký kiểm toán).</p>
     </div>
   </div>
 </section>
@@ -185,7 +185,7 @@
   </div>
 
   <p class="section-intro">
-    LMS chính của KBM chạy trên Docker Compose: <code>application.yml</code> vẫn nằm trong container và cấu hình mới được tách một phần; secret được inject qua file <code>.env</code> thuần văn bản, còn <code>jwt.secretKey</code> có lúc gắn cứng trong <code>application.yml</code>. DevOps Lab chạy trên k3s. Với quy mô này, biến môi trường là bước đầu hợp lý; Config Server hay ConfigMap chỉ đáng thêm khi nhu cầu đổi giá trị lúc chạy và số service đủ lớn (§9.6, §12.7).
+    Tại thời điểm khảo sát (đầu năm 2026), LMS chính của KBM chạy trên Docker Compose, cấu hình mới được tách một phần và secret còn nằm trong các tệp đi cùng triển khai. DevOps Lab chạy trên k3s. Với quy mô này, biến môi trường là bước đầu hợp lý; Config Server hay ConfigMap chỉ đáng thêm khi nhu cầu đổi giá trị lúc chạy và số service đủ lớn (§9.6, §12.7).
   </p>
 
   <!-- Gap Table -->
@@ -196,7 +196,7 @@
       <thead>
         <tr>
           <th>Khía cạnh</th>
-          <th>Hiện trạng KBM</th>
+          <th>KBM khi khảo sát</th>
           <th>Mức độ</th>
           <th>Hướng xử lý</th>
         </tr>
@@ -204,7 +204,7 @@
       <tbody>
         <tr>
           <td class="gap-label">Secret</td>
-          <td>Một phần gắn cứng trong <code>application.yml</code> (commit vào Git), một phần qua biến môi trường; Compose dùng <code>.env</code> thuần văn bản.</td>
+          <td>Một phần gắn cố định trong tệp cấu hình, một phần qua biến môi trường.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Đưa secret ra biến môi trường ngay, <code>.env</code> vào <code>.gitignore</code> kèm <code>.env.example</code>; về sau Compose <code>secrets</code> hoặc Vault.</td>
         </tr>
@@ -235,8 +235,8 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Ngắn hạn · §9.6 Giai đoạn 1</div>
       <h4>Secret ra biến môi trường</h4>
-      <p>Thay <code>secretKey: "…"</code> bằng <code>${JWT_SECRET_KEY}</code>; <code>.env</code> vào <code>.gitignore</code>, thêm <code>.env.example</code> không chứa giá trị thật — cải tiến bảo mật gần như không tốn chi phí.</p>
-      <span class="t-badge green">✓ Không còn secret trong Git</span>
+      <p>Thay các giá trị viết trực tiếp bằng biến môi trường; <code>.env</code> vào <code>.gitignore</code>, thêm <code>.env.example</code> không chứa giá trị thật — cải tiến bảo mật gần như không tốn chi phí.</p>
+      <span class="t-badge green">✓ Secret tách khỏi tệp cấu hình</span>
     </div>
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
@@ -304,8 +304,7 @@
 <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
 // ── Act 3: bốn cách cấp cấu hình cho cùng một thay đổi (Ch.12 §12.4, §12.6; Ch.9 §9.6) ─────
-// Theo sách: externalized config qua biến môi trường, image bất biến (§12.4); KBM Compose dùng .env
-// plaintext, application.yml trong container (§12.6–12.7); ba cấp secret: env → Spring Cloud Config +
+// Theo sách: externalized config qua biến môi trường, image bất biến (§12.4); ba cấp secret: env → Spring Cloud Config +
 // Jasypt → Vault (§9.6); feature flag bật/tắt lúc chạy qua Spring Cloud Config/Togglz/Unleash (§10.4).
 // Lưu ý: không phải giá trị nào cũng nạp lại được lúc chạy (vd. URL datasource) — mô phỏng ghi rõ.
 const MODES = {

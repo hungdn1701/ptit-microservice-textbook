@@ -39,7 +39,7 @@
           <div class="d-seq-actor-box d-service">Judge Service</div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-note">Notification Svc</div>
+          <div class="d-seq-actor-box d-note">Notification worker</div>
         </div>
       </div>
 
@@ -103,25 +103,16 @@
         <div class="d-seq-msg" style="min-height:28px;">
           <div style="flex:0"></div>
           <div class="d-zone d-zone-success text-center" style="flex:1; padding:3px 6px; white-space:nowrap;">
-            Update score (JUDGED)
+            Update score, ghi outbox
           </div>
           <div style="flex:3"></div>
         </div>
 
-        <!-- Core(0) → Kafka(1): publish ScoreUpdated  [left=0.5, line=1, right=2.5] -->
+        <!-- Core(0) → Notification worker(3): đọc outbox  [left=0.5, line=3, right=0.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
-          <div class="d-seq-msg-line" style="flex:1">
-            <span class="d-seq-msg-text">publish ScoreUpdated</span>
-          </div>
-          <div style="flex:2.5"></div>
-        </div>
-
-        <!-- Kafka(1) → Notification(3): Consume  [left=1.5, line=2, right=0.5] -->
-        <div class="d-seq-msg">
-          <div style="flex:1.5"></div>
-          <div class="d-seq-msg-line" style="flex:2">
-            <span class="d-seq-msg-text">nhận</span>
+          <div class="d-seq-msg-line dashed" style="flex:3">
+            <span class="d-seq-msg-text">đọc outbox, ngoài saga</span>
           </div>
           <div style="flex:0.5"></div>
         </div>

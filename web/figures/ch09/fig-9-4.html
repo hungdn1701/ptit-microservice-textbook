@@ -5,7 +5,7 @@
   <!--
     Fig 9.4 — Luồng JWT mục tiêu: ingress validation, signed proof và local authorization
     2026-09-28 (WP-B Ch.09): các vùng ghi chú căn giữa hình nên nằm nhầm dưới đường đời khác (vd. "Core verifies…" nằm dưới
-    Gateway) → đặt dưới đúng actor thực hiện. Việt hoá nhãn theo DIAGRAM_DESIGN.md §17; path theo route của Gateway (Ch.08:
+    Gateway) → đặt dưới đúng actor thực hiện. Việt hóa nhãn theo DIAGRAM_DESIGN.md §17; path theo route của Gateway (Ch.08:
     /api/auth/**, StripPrefix=2). Ghi rõ đây là luồng mục tiêu, hiện trạng KBM dùng HS256 shared secret (analysis ngay sau).
   -->
   <title>Fig 9.4 — Luồng JWT mục tiêu | Ch.9</title>
@@ -81,7 +81,7 @@
       </div>
     </div>
     <div class="d-box d-note d-mt-2">
-      <div class="d-sub"><strong>Luồng mục tiêu.</strong> Hiện trạng KBM: HS256 với một <code>jwt.secretKey</code> chung cho các service — một service bị lộ là giả được token cho mọi người dùng; đang là rủi ro được chấp nhận, lộ trình chuyển RS256 ở Giai đoạn 2.</div>
+      <div class="d-sub"><strong>Luồng mục tiêu.</strong> Tại thời điểm khảo sát, KBM dùng HS256 với một khóa chung cho các service — một service bị lộ là giả được token cho mọi người dùng; đây là rủi ro được chấp nhận ở mốc đó, lộ trình chuyển RS256 ở Giai đoạn 2.</div>
     </div>
   </div><!-- /.diagram-canvas -->
 </body>

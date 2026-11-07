@@ -35,10 +35,10 @@
         <div class="d-col" style="align-items: center; gap: 36px; margin: 20px 0;">
           <div class="d-box d-service text-center" id="ep-p" style="width: 150px;"><div class="d-title">Producer</div><div class="d-sub">service gửi job</div></div>
           <div class="d-box d-event text-center" id="ep-q" style="width: 220px;"><div class="d-title">Queue</div><div class="d-sub">durable queue vẫn sống qua restart</div></div>
-          <div class="d-box d-note text-center" id="ep-c" style="width: 150px;"><div class="d-title">Worker</div><div class="d-sub">ACK xong là message bị xoá</div></div>
+          <div class="d-box d-note text-center" id="ep-c" style="width: 150px;"><div class="d-title">Worker</div><div class="d-sub">ACK xong là message bị xóa</div></div>
         </div>
         <div class="d-sep"></div>
-        <div class="d-text-danger" style="line-height: 1.6; margin-top: auto;">message <strong>bị xoá</strong> sau ACK — không đọc lại được; mạnh ở routing và point-to-point.</div>
+        <div class="d-text-danger" style="line-height: 1.6; margin-top: auto;">message <strong>bị xóa</strong> sau ACK — không đọc lại được; mạnh ở routing và point-to-point.</div>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
       <path data-from="du-log" data-to="du-c1" data-label="offset riêng" data-label-at="0.8"></path>
       <path data-from="du-log" data-to="du-c2"></path>
       <path data-from="ep-p" data-to="ep-q"></path>
-      <path data-from="ep-q" data-to="ep-c" data-label="giao rồi xoá"></path>
+      <path data-from="ep-q" data-to="ep-c" data-label="giao rồi xóa"></path>
     </svg>
   </div><!-- /.diagram-canvas -->
 

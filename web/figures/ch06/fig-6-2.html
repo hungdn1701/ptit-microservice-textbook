@@ -51,14 +51,14 @@
 
     <div class="d-box d-note d-mt-3">
       <div class="d-label d-mb-1">Choreography: mỗi service phản ứng với event của bước trước</div>
-      <div class="d-sub">Core phát <code>SubmissionCreated</code> → Judge chấm, phát <code>SubmissionJudged</code> → Core cập nhật điểm, phát <code>ScoreUpdated</code> → Notification ghi lệnh vào outbox (worker gửi push ngoài saga).</div>
+      <div class="d-sub">Core phát <code>SubmissionCreated</code> → Judge chấm, phát <code>SubmissionJudged</code> → Core cập nhật điểm và ghi lệnh thông báo vào outbox trong cùng transaction (worker gửi push ngoài saga).</div>
       <div class="d-sub d-mt-1"><strong>Ưu</strong>: đơn giản, không cần orchestrator trung tâm · <strong>Nhược</strong>: khó theo dõi cả luồng, khó debug khi có lỗi.</div>
     </div>
 
     <svg class="d-links">
       <path data-from="sg-t1" data-to="sg-t2" class="is-dashed" data-label="SubmissionCreated"></path>
       <path data-from="sg-t2" data-to="sg-t3" class="is-dashed" data-label="SubmissionJudged"></path>
-      <path data-from="sg-t3" data-to="sg-t4" class="is-dashed" data-label="ScoreUpdated"></path>
+      <path data-from="sg-t3" data-to="sg-t4" class="is-dashed" data-label="cùng transaction"></path>
       <path data-from="sg-t2" data-to="sg-c1" class="is-danger is-dashed" data-label="thất bại" data-label-side="above"></path>
       <path data-from="sg-c1" data-to="sg-cn" class="is-danger is-dashed" data-label="SubmissionFailed" data-label-side="above"></path>
     </svg>

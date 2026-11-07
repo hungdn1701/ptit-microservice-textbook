@@ -71,7 +71,7 @@
         <div class="d-seq-msg">
           <div style="flex:0.5;"></div>
           <div class="d-seq-msg-line" style="flex:2;">
-            <span class="d-seq-msg-text"><span class="d-step">4</span> POST /judge/execute</span>
+            <span class="d-seq-msg-text"><span class="d-step">4</span> POST /api/judge/sql</span>
           </div>
           <div style="flex:1.5;"></div>
         </div>
@@ -92,7 +92,7 @@
     <!-- Note -->
     <div class="d-box d-note d-mt-2">
       <span class="d-title">Client-side LB: </span>
-      <span class="d-sub">Core Service chọn instance (Round-Robin). Spring Cloud LoadBalancer / Ribbon thực hiện điều này.
+      <span class="d-sub">Core Service chọn instance (Round-Robin). Spring Cloud LoadBalancer thực hiện điều này.
       Ưu điểm: Không có hop trung gian. Nhược điểm: Client cần tích hợp thư viện LB.</span>
     </div>
 

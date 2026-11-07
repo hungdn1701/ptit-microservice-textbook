@@ -10,7 +10,7 @@
     Layout: Sequence diagram — 5 participants (Student, Core, Kafka, Judge, WebSocket)
     Capture: gen-diagrams.ps1 → fig-6-6.png → Typst image()
   -->
-  <title>Fig 6.6 — Transactional Outbox Pattern | Ch.6</title>
+  <title>Fig 6.6 — Implicit Saga trong KBM | Ch.6</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
   <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
 
@@ -59,10 +59,9 @@
           <div style="flex:1"></div>
           <div style="flex:1">
             <div class="d-box" style="border-color: var(--diagram-color-success-border); padding: 8px 10px;  line-height: 1.7;">
-              <div class="d-label" style="margin-bottom: 4px;">Atomic Transaction</div>
+              <div class="d-label" style="margin-bottom: 4px;">Transaction cục bộ</div>
               <div>BEGIN TX</div>
-              <div>1. INSERT submission</div>
-              <div>2. INSERT outbox_event</div>
+              <div>INSERT submission (PENDING)</div>
               <div>COMMIT</div>
             </div>
           </div>
@@ -82,7 +81,7 @@
         <div class="d-seq-msg" style="min-height:28px;">
           <div style="flex:1"></div>
           <div class="d-zone d-zone-warning text-center" style="flex:1; padding:3px 6px; white-space:nowrap;">
-            Poller / CDC reads outbox
+            send() sau COMMIT
           </div>
           <div style="flex:2"></div>
         </div>
@@ -140,12 +139,9 @@
 
     <!-- Key insight note -->
     <div class="d-box d-note d-mt-2">
-      <div class="d-label d-mb-1">Tại sao Outbox Pattern giải quyết vấn đề?</div>
+      <div class="d-label d-mb-1">Lỗ hổng: dual write</div>
       <div class="d-sub">
-        INSERT submission và INSERT outbox_event nằm trong <strong>cùng một transaction</strong> DB.
-        Nếu transaction thất bại → cả hai đều không tồn tại (atomicity).<br>
-        Outbox Poller (hoặc Debezium CDC) đọc và publish event <em>sau khi</em> transaction commit thành công —
-        đã commit thì event chắc chắn được gửi — ít nhất một lần (relay có thể gửi lại), nên consumer phải idempotent (§5.5).
+        Kafka không khả dụng sau COMMIT thì bài nằm ở PENDING mà Judge không nhận được. Cách khắc phục ở §10.3.
       </div>
     </div>
 

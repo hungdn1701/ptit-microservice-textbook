@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    Fig 9.9 — Vault Dynamic Secrets: thông tin xác thực tạm thời, tự động xoay vòng
+    Fig 9.9 — Vault Dynamic Secrets: thông tin xác thực tạm thời, tự động luân phiên
     2026-09-28 (WP-B Ch.09): bản cũ thiếu bước Vault tạo user tạm trong database (credential "động" nghĩa là vậy) và bước thu
-    hồi khi hết TTL; vùng ghi chú căn giữa → dưới đúng actor. Việt hoá nhãn theo §17. Ghi rõ đây là Cấp 3 (khi production
+    hồi khi hết TTL; vùng ghi chú căn giữa → dưới đúng actor. Việt hóa nhãn theo §17. Ghi rõ đây là Cấp 3 (khi production
     hoàn chỉnh) — hiện trạng theo bảng tbl:kbm_security_analysis; thêm cái giá của Vault.
   -->
   <title>Fig 9.9 — Vault Dynamic Secrets | Ch.9</title>
@@ -48,14 +48,14 @@
         </div>
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">xoá user</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">xóa user</span></div>
           <div style="flex:0.5;"></div>
         </div>
       </div>
     </div>
     <div class="d-box d-note d-mt-2">
-      <div class="d-sub"><strong>Được</strong>: không ai biết mật khẩu database thật; credential tự hết hạn và xoay vòng; mọi lần cấp đều có audit.</div>
-      <div class="d-sub"><strong>Trả giá</strong>: thêm một hệ thống phải vận hành và giữ sẵn sàng. Đây là Cấp 3, khi production hoàn chỉnh — hiện KBM để secret một phần hardcoded, một phần qua biến môi trường.</div>
+      <div class="d-sub"><strong>Được</strong>: ứng dụng được cấp credential riêng, lập trình viên không cần giữ mật khẩu database dài hạn; credential tự hết hạn và luân phiên; mọi lần cấp đều có audit.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: thêm một hệ thống phải vận hành và giữ sẵn sàng. Đây là Cấp 3, khi production hoàn chỉnh — khi khảo sát, KBM để secret một phần trong tệp cấu hình, một phần qua biến môi trường.</div>
     </div>
   </div><!-- /.diagram-canvas -->
 </body>

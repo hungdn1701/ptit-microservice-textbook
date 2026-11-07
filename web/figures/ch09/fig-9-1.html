@@ -7,7 +7,7 @@
     2026-09-28 (WP-B Ch.09): 5 mũi tên <svg><line>/d-tree lơ lửng (gate dangling 5) → d-links; bỏ rgba()/#fff trong style
     riêng (Rule 16). Firewall của monolith đặt ở biên, ngoài vùng "mặc nhiên tin cậy" (bản cũ nằm trong). Thêm lời gọi
     service-to-service mà khối ghi chú nhắc tới. Điểm bảo vệ đánh dấu bằng viền đỏ 2px. Ghi chú đổi sang được–mất (Zero
-    Trust có giá: mỗi service xác minh token, quản lý khoá). Chữ theo DIAGRAM_DESIGN.md §17.
+    Trust có giá: mỗi service xác minh token, quản lý khóa). Chữ theo DIAGRAM_DESIGN.md §17.
   -->
   <title>Fig 9.1 — Monolith và Microservices: điểm bảo vệ | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -71,7 +71,7 @@
 
     <div class="d-box d-note d-mt-3">
       <div class="d-sub"><strong>Được</strong>: mỗi service là một ranh giới bảo vệ — lọt qua Gateway hay chiếm được một service chưa mở được phần còn lại; lời gọi nội bộ cũng phải xác thực và phân quyền.</div>
-      <div class="d-sub"><strong>Trả giá</strong>: service nào cũng phải xác minh token, quản lý khoá và chứng chỉ — thêm độ trễ và việc vận hành so với một vành đai duy nhất.</div>
+      <div class="d-sub"><strong>Trả giá</strong>: service nào cũng phải xác minh token, quản lý khóa và chứng chỉ — thêm độ trễ và việc vận hành so với một vành đai duy nhất.</div>
     </div>
 
     <svg class="d-links">

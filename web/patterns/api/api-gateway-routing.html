@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -139,7 +139,7 @@
         <div class="sim-node is-core" id="gw-f5" style="grid-column:2;grid-row:5"><div class="sim-node-name">5 · Route</div><div class="sim-node-sub">Path → lb:// + StripPrefix</div></div>
         <div class="sim-node" id="gw-s-auth" style="grid-column:3;grid-row:2"><div class="sim-node-name">kbm-auth</div><div class="sim-node-sub">/api/auth/**</div></div>
         <div class="sim-node" id="gw-s-core" style="grid-column:3;grid-row:3"><div class="sim-node-name">kbm-core</div><div class="sim-node-sub">/api/core/**</div></div>
-        <div class="sim-node" id="gw-s-ac" style="grid-column:3;grid-row:4"><div class="sim-node-name">kbm-academic</div><div class="sim-node-sub">/api/assignment/**</div></div>
+        <div class="sim-node" id="gw-s-ac" style="grid-column:3;grid-row:4"><div class="sim-node-name">kbm-academic</div><div class="sim-node-sub">/api/academic/**</div></div>
       </div>
       <svg class="d-links">
         <path id="gw-l-in" data-from="gw-client" data-to="gw-f1" data-to-side="left"></path>
@@ -199,7 +199,7 @@
       <thead>
         <tr>
           <th>Khía cạnh</th>
-          <th>Hiện trạng KBM</th>
+          <th>KBM khi khảo sát</th>
           <th>Mức độ</th>
           <th>Hướng xử lý</th>
         </tr>
@@ -213,15 +213,15 @@
         </tr>
         <tr>
           <td class="gap-label">Identity validation</td>
-          <td>Gateway kiểm tra JWT; downstream lẫn giữa tin header và tự parse token, với JJWT 0.11.5 ở Gateway và 0.9.1 ở service.</td>
+          <td>Gateway kiểm tra JWT; downstream lẫn giữa tin header và tự parse token, với hai phiên bản JJWT khác nhau.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Đồng bộ thư viện và hợp đồng xác minh; Spring Security OAuth2 Resource Server; RS256/JWKS; token exchange thay cho plain header.</td>
         </tr>
         <tr>
           <td class="gap-label">Correlation ID</td>
-          <td>Không có.</td>
+          <td>Có nền tảng (<code>X-Request-ID</code>), chưa chuẩn hóa đầu cuối.</td>
           <td><span class="b-med">MED</span></td>
-          <td>GlobalFilter gắn <code>X-Correlation-Id</code> (UUID) cho mọi request.</td>
+          <td>GlobalFilter chuẩn hóa <code>X-Request-ID</code> (UUID) cho mọi request.</td>
         </tr>
         <tr>
           <td class="gap-label">Rate limiting</td>
@@ -251,7 +251,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2 · Observability</div>
       <h4>Correlation ID và request logging</h4>
-      <p>GlobalFilter gắn <code>X-Correlation-Id</code>; ghi log request/response tại Gateway để truy vết xuyên service.</p>
+      <p>GlobalFilter chuẩn hóa <code>X-Request-ID</code>; ghi log request/response tại Gateway để truy vết xuyên service.</p>
       <span class="t-badge orange">Ưu tiên trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">
@@ -295,7 +295,7 @@
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
   <p>Đọc chi tiết về API Gateway và BFF (§8.1), Spring Cloud Gateway (§8.2), route với Eureka (§8.3), cross-cutting concerns (§8.4) và cấu hình Gateway của KBM (§8.5).</p>
-  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-08')"><div class="badge badge-info">Read</div> Chương 8 — Cổng API →</a>
+  <a class="chapter-btn" href="#" onclick="return openChapter('chapter-08')"><div class="badge badge-info">Read</div> Chương 8 — API Gateway & BFF Pattern →</a>
 </div>
 
 <!-- ── Book Identity Strip (Phase 6 — F-05) ──
@@ -313,24 +313,24 @@
 <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
 // ── Act 3: chuỗi filter của Spring Cloud Gateway (Chương 8 §8.3–8.5) ────────────────────────
-// Route theo lst:lms_gateway_route_config: /api/core/** → lb://kbm-core, /api/assignment/** →
+// Route theo Listing 8.1: /api/core/** → lb://kbm-core, /api/academic/** →
 // lb://kbm-academic, /api/auth/** → lb://kbm-auth, tất cả StripPrefix=2. JwtAuthGlobalFilter (order −1)
 // gỡ X-User-* do client gửi, bỏ qua route công khai, kiểm tra token, chèn lại X-User-Id/Roles, GIỮ
-// Authorization. Hiện trạng: CORS "*", chưa có Correlation ID; Giai đoạn 1–2: allowlist + X-Correlation-Id.
+// Authorization. Khi khảo sát: CORS "*", X-Request-ID chưa chuẩn hóa đầu cuối; Giai đoạn 1–2: allowlist + X-Request-ID.
 // Tham số rate limit (3 request mỗi giây) chỉ là ví dụ để thấy 429.
 const CONFIGS = {
-  now:   { label: 'Hiện trạng KBM', hint: 'CORS allowedOrigins "*", chưa có correlation ID' },
-  after: { label: 'Sau Giai đoạn 1–2', hint: 'CORS allowlist, gắn X-Correlation-Id' },
+  now:   { label: 'KBM khi khảo sát', hint: 'CORS allowedOrigins "*", X-Request-ID chưa chuẩn hóa đầu cuối' },
+  after: { label: 'Sau Giai đoạn 1–2', hint: 'CORS allowlist, chuẩn hóa X-Request-ID' },
 };
 const REQS = {
   ok:     { label: 'Câu hỏi', method: 'GET', path: '/api/core/questions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: false },
   login:  { label: 'Đăng nhập', method: 'POST', path: '/api/auth/login', origin: 'https://kbm.example.edu', token: null, spoof: false },
-  none:   { label: 'Thiếu token', method: 'GET', path: '/api/assignment/courses', origin: 'https://kbm.example.edu', token: null, spoof: false },
+  none:   { label: 'Thiếu token', method: 'GET', path: '/api/academic/courses', origin: 'https://kbm.example.edu', token: null, spoof: false },
   spoof:  { label: 'Header giả', method: 'GET', path: '/api/core/questions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: true },
   evil:   { label: 'Origin lạ', method: 'GET', path: '/api/core/questions', origin: 'https://evil.example', token: 'hợp lệ', spoof: false },
   burst:  { label: 'Dồn 5 lần', method: 'POST', path: '/api/core/submissions', origin: 'https://kbm.example.edu', token: 'hợp lệ', spoof: false, burst: 5 },
 };
-const ROUTES = [['/api/core/', 'kbm-core', 'gw-s-core', 'gw-l-core'], ['/api/assignment/', 'kbm-academic', 'gw-s-ac', 'gw-l-ac'], ['/api/auth/', 'kbm-auth', 'gw-s-auth', 'gw-l-auth']];
+const ROUTES = [['/api/core/', 'kbm-core', 'gw-s-core', 'gw-l-core'], ['/api/academic/', 'kbm-academic', 'gw-s-ac', 'gw-l-ac'], ['/api/auth/', 'kbm-auth', 'gw-s-auth', 'gw-l-auth']];
 const PUBLIC = ['/api/auth/login', '/api/auth/register'];
 const BUCKET = 3;
 const NOTES = {
@@ -338,7 +338,7 @@ const NOTES = {
   login: 'Route công khai: JwtAuthGlobalFilter bỏ qua bước kiểm tra token, nhưng vẫn gỡ X-User-* trước khi chuyển tiếp.',
   none:  'Thiếu token ở route cần xác thực → 401 ngay tại biên; service phía sau không phải làm gì.',
   spoof: 'Client tự gửi X-User-Roles: ADMIN. Gateway gỡ header này trước, rồi chèn lại giá trị lấy từ token đã kiểm tra — service không bao giờ thấy header giả (§8.4).',
-  'evil.now':   'Hiện trạng CORS "*": trình duyệt cho trang của origin lạ đọc phản hồi. Với API không chủ đích phục vụ công khai, đó là chính sách quá rộng (§8.5).',
+  'evil.now':   'CORS "*" khi khảo sát: trình duyệt cho trang của origin lạ đọc phản hồi. Với API không chủ đích phục vụ công khai, đó là chính sách quá rộng (§8.5).',
   'evil.after': 'Allowlist: request mang Authorization phải qua preflight OPTIONS; origin lạ bị từ chối nên trình duyệt không gửi request thật. CORS là chính sách của trình duyệt, không chặn được công cụ ngoài trình duyệt; CSRF vẫn cần biện pháp riêng (Ch.9).',
   burst: 'Redis token bucket (ví dụ: 3 request mỗi giây) — vượt ngưỡng nhận 429 Too Many Requests; client nên lùi dần (exponential backoff) thay vì bấm lại liên tục (§8.4).',
 };
@@ -386,7 +386,7 @@ async function one(r, n, tokens) {
   // 3 · JWT
   const isPublic = PUBLIC.includes(r.path);
   if (!isPublic && !r.token) { await stop(2, `${r.path}: thiếu token ở route cần xác thực → 401 Unauthorized`); return '401'; }
-  await step(2, isPublic ? 'Route công khai → bỏ qua kiểm tra token' : 'Token: alg, chữ ký, iss, aud=kbm-gateway, exp, nbf đạt → chèn X-User-Id, X-User-Roles từ claims; giữ Authorization', 'log-ok');
+  await step(2, isPublic ? 'Route công khai → bỏ qua kiểm tra token' : 'Token: alg, chữ ký, iss, aud=kbm-gateway, exp, nbf đạt → chèn X-User-Id, X-User-Roles từ claim; giữ Authorization', 'log-ok');
   // 4 · rate limit
   if (tokens.left <= 0) { await stop(3, `RequestRateLimiter: bucket rỗng → 429 Too Many Requests${tag}`); return '429'; }
   tokens.left--;
@@ -396,7 +396,7 @@ async function one(r, n, tokens) {
   const out = r.path.split('/').slice(3).join('/');
   await step(4, `Path=${rt[0]}** → lb://${rt[1]} (Eureka + round-robin), StripPrefix=2 → /${out}`, 'log-info');
   link(rt[3], 'primary'); node(rt[2], 'is-active', true);
-  log(`${rt[1]} nhận ${r.method} /${out}${after ? ' · X-Correlation-Id: ' + cid() : ''}`, 'log-ok');
+  log(`${rt[1]} nhận ${r.method} /${out}${after ? ' · X-Request-ID: ' + cid() : ''}`, 'log-ok');
   state.pass++; await sleep(STEP);
   return 'ok';
 }
@@ -421,7 +421,7 @@ async function run() {
     ['Dòng request', `${r.method} ${r.path}`, blocked ? '—' : `${r.method} /${r.path.split('/').slice(3).join('/')} → ${rt[1]}`],
     ['Authorization', r.token ? 'Bearer …' : '(không có)', blocked ? '—' : (r.token ? 'Bearer … (giữ nguyên)' : '(không có)')],
     ['X-User-Roles', r.spoof ? 'ADMIN (tự gắn)' : '(không có)', blocked ? '—' : (r.token ? 'STUDENT (từ token)' : '(không có)')],
-    ['X-Correlation-Id', '(không có)', blocked ? '—' : (after ? 'UUID do Gateway gắn' : '(không có)')],
+    ['X-Request-ID', '(không có)', blocked ? '—' : (after ? 'UUID do Gateway chuẩn hóa' : 'chưa chuẩn hóa đầu cuối')],
     ['Kết quả', '', first === 'ok' ? (r.burst ? `${outcomes.filter(o => o === 'ok').length}/${n} qua, ${outcomes.filter(o => o === '429').length} × 429` : 'tới service') : ({ cors: 'preflight bị từ chối (CORS)', '401': '401 tại Gateway', '429': '429 tại Gateway' })[first]],
   ];
   state.running = false; $('gw-run').disabled = false; $('gw-reset').disabled = false;

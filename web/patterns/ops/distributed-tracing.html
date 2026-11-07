@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -139,7 +139,7 @@
     <div class="sim-panel is-warning">
       <div class="sim-panel-title">Cấu hình <span class="sim-hint" id="tr-code-hint"></span></div>
       <pre class="sim-code" id="tr-code"></pre>
-      <p class="sim-note" id="tr-note"></p>
+      <p class="sim-note" id="tr-note" aria-live="polite"></p>
     </div>
   </div>
 </section>
@@ -182,7 +182,7 @@
           <td class="gap-label">Logging</td>
           <td>MDC ở một số service Java, zerolog ở Go, chưa gom tập trung.</td>
           <td><span class="b-med">MED</span></td>
-          <td>JSON log thống nhất tên trường; Promtail/Loki/Grafana cho cả LMS core (Giai đoạn 1–2).</td>
+          <td>JSON log thống nhất tên trường; Grafana Alloy, Loki, Grafana cho cả LMS core (Giai đoạn 1–2).</td>
         </tr>
         <tr>
           <td class="gap-label">Tracing</td>
@@ -192,9 +192,9 @@
         </tr>
         <tr>
           <td class="gap-label">Lấy mẫu</td>
-          <td>Chế độ thi hơn 100 người dùng đồng thời; ngoài kỳ thi tải thấp, chạy trên một máy chủ.</td>
+          <td>Chế độ thi khoảng 200 sinh viên một ca, hàng trăm lượt nộp mỗi phút; ngoài kỳ thi tải thấp, chạy trên một máy chủ.</td>
           <td><span class="b-low">LOW</span></td>
-          <td>Rate-based 10–20% trong kỳ thi; 100% ngoài kỳ thi để tiện gỡ lỗi (§11.3).</td>
+          <td>Giữ 100% trace cả trong và ngoài kỳ thi; chuyển sang tail-based khi chi phí lưu trữ thành vấn đề (§11.3).</td>
         </tr>
       </tbody>
     </table>
@@ -218,7 +218,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Gom log tập trung</h4>
-      <p>Promtail, Loki, Grafana cho cả LMS core lẫn DevOps Lab — thôi SSH vào từng container để đọc log.</p>
+      <p>Grafana Alloy, Loki, Grafana cho cả LMS core lẫn DevOps Lab — thôi SSH vào từng container để đọc log.</p>
       <span class="t-badge orange">§11.9</span>
     </div>
     <div class="timeline-item" data-delay="500">
@@ -226,12 +226,12 @@
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Distributed Tracing</h4>
       <p>Micrometer Tracing + OpenTelemetry, backend Jaeger: nhìn ra độ trễ đến từ Judge, Kafka hay database.</p>
-      <span class="t-badge orange">§11.9 · lst:11_4–11_5</span>
+      <span class="t-badge orange">§11.9 · Listing 11.4–11.5</span>
     </div>
     <div class="timeline-item" data-delay="750">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 4</div>
-      <h4>Metrics nghiệp vụ + cảnh báo theo SLO</h4>
+      <h4>Metric nghiệp vụ + cảnh báo theo SLO</h4>
       <p>Cảnh báo tức thời khi Judge ngừng; độ trễ bất thường chỉ là cảnh báo nhẹ — tránh alert fatigue.</p>
       <span class="t-badge orange">§11.9</span>
     </div>
@@ -247,7 +247,7 @@
       </div>
       <ul class="decision-list">
         <li>Request đi qua nhiều service, có cả chặng bất đồng bộ qua Kafka/queue.</li>
-        <li>Cần trả lời "chậm ở đâu" nhanh, như trong chế độ thi với SLO độ trễ &lt; 5 s.</li>
+        <li>Cần trả lời "chậm ở đâu" nhanh, như trong chế độ thi với SLO p99 &lt; 45 s.</li>
         <li>Đã có log có cấu trúc và correlation ID — tracing xây trên nền đó.</li>
         <li>Có chỗ lưu và người xem trace; có chiến lược lấy mẫu.</li>
       </ul>
@@ -306,15 +306,15 @@ log.info("Saved submission");
 
 // 12:00:00.050 [kbm-core]
 //   Saved submission`,
-  corr: `// Gateway (lst:11_3): sinh ID nếu chưa có
+  corr: `// Gateway (Listing 11.3): sinh ID nếu chưa có
 String id = headers
-    .getFirst("X-Correlation-Id");
+    .getFirst("X-Request-ID");
 if (id == null)
     id = UUID.randomUUID().toString();
-// service đọc header → MDC;
-// Kafka: correlationId trong header
-// logback: %X{correlationId}`,
-  trace: `# application.yml (lst:11_5)
+// service đọc header → MDC requestId;
+// Kafka: correlationId trong envelope
+// logback: %X{requestId} %X{correlationId}`,
+  trace: `# application.yml (Listing 11.5)
 management:
   tracing:
     sampling:

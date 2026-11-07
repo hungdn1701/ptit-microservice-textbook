@@ -15,21 +15,28 @@
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-11.7" data-ref="CH11-SEC">
-    <div class="d-box d-danger" style="padding: 20px;">
-      <div class="d-title">SLA — Service Level Agreement</div>
-      <div class="d-sub">cam kết với bên ngoài, có ràng buộc hợp đồng. Vd.: availability 99.5% trong một học kỳ</div>
-      <div class="d-box d-event" style="padding: 20px; margin-top: 14px;">
+    <div class="d-row" style="gap: 72px; align-items: stretch;">
+      <div class="d-box d-service" id="sl-sli" style="flex: 1 1 0; min-width: 0; padding: 20px;">
+        <div class="d-title">SLI — Service Level Indicator</div>
+        <div class="d-sub">con số đo được. Vd.: độ trễ P99 của luồng nộp bài</div>
+      </div>
+      <div class="d-box d-event" id="sl-slo" style="flex: 1 1 0; min-width: 0; padding: 20px;">
         <div class="d-title">SLO — Service Level Objective</div>
-        <div class="d-sub">mục tiêu nội bộ nhóm tự đặt. Vd.: 99% bài nộp có kết quả trong dưới 5 giây</div>
-        <div class="d-box d-service" style="padding: 20px; margin-top: 14px;">
-          <div class="d-title">SLI — Service Level Indicator</div>
-          <div class="d-sub">con số đo được. Vd.: độ trễ P99 của luồng nộp bài</div>
-        </div>
+        <div class="d-sub">mục tiêu nội bộ nhóm tự đặt cho số đo đó. Vd.: 99% bài nộp có kết quả trong dưới 45 giây</div>
+      </div>
+      <div class="d-box d-danger" id="sl-sla" style="flex: 1 1 0; min-width: 0; padding: 20px;">
+        <div class="d-title">SLA — Service Level Agreement</div>
+        <div class="d-sub">cam kết với bên ngoài, nêu hậu quả khi vi phạm. Vd.: hợp đồng chọn một mục tiêu để cam kết</div>
       </div>
     </div>
+    <svg class="d-links">
+      <path data-from="sl-sli" data-to="sl-slo"></path>
+      <path data-from="sl-slo" data-to="sl-sla"></path>
+    </svg>
     <div class="d-box d-note d-mt-2">
       <div class="d-sub"><strong>KBM</strong>: hệ thống nội bộ của trường, không có hợp đồng thương mại nên không cần SLA chính thức — nhưng vẫn cần SLO để biết khi nào phải ưu tiên sửa lỗi, khi nào chấp nhận được.</div>
     </div>
   </div><!-- /.diagram-canvas -->
+  <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 </body>
 </html>

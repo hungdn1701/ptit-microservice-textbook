@@ -39,7 +39,7 @@
           <div class="d-seq-actor-box d-service">Judge Service</div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-note">Notification Svc</div>
+          <div class="d-seq-actor-box d-note">Notification worker</div>
         </div>
       </div>
 
@@ -108,11 +108,20 @@
           <div style="flex:2.5"></div>
         </div>
 
-        <!-- Orchestrator(0) → Notification(3): 4. notifyStudent()  [left=0.5, line=3, right=0.5] -->
+        <!-- Orchestrator(0) → Core(1): 4. enqueueNotification()  [left=0.5, line=1, right=2.5] -->
         <div class="d-seq-msg">
           <div style="flex:0.5"></div>
-          <div class="d-seq-msg-line" style="flex:3">
-            <span class="d-seq-msg-text"><span class="d-step">4</span> notifyStudent()</span>
+          <div class="d-seq-msg-line" style="flex:1">
+            <span class="d-seq-msg-text"><span class="d-step">4</span> enqueueNotification()</span>
+          </div>
+          <div style="flex:2.5"></div>
+        </div>
+
+        <!-- Core(1) → Notification worker(3): đọc outbox  [left=1.5, line=2, right=0.5] -->
+        <div class="d-seq-msg">
+          <div style="flex:1.5"></div>
+          <div class="d-seq-msg-line dashed" style="flex:2">
+            <span class="d-seq-msg-text">đọc outbox, ngoài saga</span>
           </div>
           <div style="flex:0.5"></div>
         </div>

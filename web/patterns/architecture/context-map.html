@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
   <style>
     .rel-badge {
       display: inline-flex; align-items: center; gap: 6px;
@@ -72,7 +72,7 @@
     <div class="problem-card warn">
       <div class="problem-icon"><div class="badge badge-warning">Database</div></div>
       <h3>Shared Database Anti-pattern</h3>
-      <p>SQL Practice (<code>kbm-core</code>) và Academic Management (<code>kbm-academic</code>) dùng chung <code>app_db</code>. Đổi schema phía này làm hỏng truy vấn phía kia, cản trở refactor.</p>
+      <p>SQL Practice (<code>kbm-core</code>) và Academic Management (<code>kbm-academic</code>) dùng chung <code>core_db</code>. Đổi schema phía này làm hỏng truy vấn phía kia, cản trở refactor.</p>
     </div>
     <div class="problem-card">
       <div class="problem-icon"><div class="badge badge-info">Document</div></div>
@@ -145,7 +145,7 @@
   <div class="sim-grid">
     <div class="sim-panel is-info">
       <div class="sim-panel-title"><span id="ctx-title">Quan hệ</span> <span class="sim-hint" id="ctx-service"></span></div>
-      <div class="rel-list sim-scroll" id="ctx-rel-list"></div>
+      <div class="rel-list sim-scroll" id="ctx-rel-list" tabindex="0"></div>
     </div>
     <div class="sim-panel is-warning">
       <div class="sim-panel-title">Tổng quan <span class="sim-hint">rủi ro = Shared Database, chung codebase</span></div>
@@ -200,7 +200,7 @@
     <tr>
       <td class="gap-label">SQL Practice ↔ Academic Management</td>
       <td>—</td>
-      <td><span class="b-high">Shared Database (app_db)</span></td>
+      <td><span class="b-high">Shared Database (core_db)</span></td>
       <td>Đổi schema làm hỏng truy vấn chéo; chặn việc tách dữ liệu (Chương 7)</td>
     </tr>
   </table>
@@ -233,7 +233,7 @@
     <div class="timeline-item" data-delay="750">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Tháng 2+ · Giai đoạn 3</div>
-      <h4>Tách app_db giữa SQL Practice và Academic Management</h4>
+      <h4>Tách core_db giữa SQL Practice và Academic Management</h4>
       <p>Theo lộ trình Chương 7: tách schema, thay truy vấn chéo bằng API, rồi nhân bản dữ liệu qua sự kiện. SQL Practice refactor được mà không làm hỏng Academic Management.</p>
       <span class="t-badge green">✓ Hai team tự chủ</span>
     </div>
@@ -312,7 +312,7 @@ const KIND = {
 };
 const REL = [ // u = upstream, d = downstream
   { u: 'auth', d: 'sql',  k: 'cs',  t: 'SQL Practice cần thông tin người dùng và vai trò; Identity & Access ưu tiên phát triển theo yêu cầu đó.', ref: '§2.3' },
-  { u: 'auth', d: 'net',  k: 'pl',  t: 'Mọi context dựa vào kết quả xác thực; định dạng JWT/claims là ngôn ngữ trao đổi chung — đổi format là vỡ mọi downstream.', ref: '§2.4' },
+  { u: 'auth', d: 'net',  k: 'pl',  t: 'Mọi context dựa vào kết quả xác thực; định dạng JWT/claim là ngôn ngữ trao đổi chung — đổi format là vỡ mọi downstream.', ref: '§2.4' },
   { u: 'auth', d: 'code', k: 'pl',  t: 'Dùng chung danh tính và JWT với phần còn lại của hệ thống.', ref: '§2.4' },
   { u: 'auth', d: 'acad', k: 'pl', ch: 'left',  t: 'Dùng chung danh tính và JWT với phần còn lại của hệ thống.', ref: '§2.4' },
   { u: 'auth', d: 'devops', k: 'pl', ch: 'left', t: 'Stack Go/k3s khác hẳn, nhưng vẫn chia sẻ danh tính (JWT) với KBM.', ref: '§2.4' },
@@ -322,7 +322,7 @@ const REL = [ // u = upstream, d = downstream
   { u: 'sql',  d: 'net',  k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Network Practice.', ref: '§2.3' },
   { u: 'sql',  d: 'acad', k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Academic Management.', ref: '§2.3' },
   { u: 'gh',   d: 'acad', k: 'cf',  t: 'Academic Management dùng nguyên mô hình lớp/bài tập của GitHub Classroom — không thể yêu cầu bên ngoài đổi contract.', ref: '§2.3' },
-  { u: 'sql',  d: 'acad', k: 'sdb', t: 'Academic Management đã tách service khỏi Core nhưng vẫn dùng chung cơ sở dữ liệu app_db — trade-off phân tích ở §2.4, lộ trình tách ở Chương 7.', ref: '§2.4, Ch.7' },
+  { u: 'sql',  d: 'acad', k: 'sdb', t: 'Academic Management đã tách service khỏi Core nhưng vẫn dùng chung cơ sở dữ liệu core_db — trade-off phân tích ở §2.4, lộ trình tách ở Chương 7.', ref: '§2.4, Ch.7' },
   { u: 'sql',  d: 'exam', k: 'code', t: 'Logic Contest/Anti-cheat hiện nằm trong kbm-core; mục tiêu tách thành kbm-exam.', ref: '§2.4' },
   { u: 'sql',  d: 'comm', k: 'pl', fa: 0.8,  t: 'Kafka message với schema chuẩn; Communication tiêu thụ event để đẩy thông báo qua WebSocket.', ref: '§2.3, Ch.5' },
   { u: 'platform', d: 'sql',  k: 'lib', ch: 'right', t: 'kbm-shared chỉ nên giữ mã hạ tầng dùng chung (JWT, CORS, base response) — là Shared Library, không phải Shared Kernel.', ref: '§2.5' },

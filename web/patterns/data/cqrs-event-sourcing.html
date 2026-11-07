@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -208,7 +208,7 @@
   </div>
 
   <p class="section-intro">
-    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Academic chung <code>app_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
+    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Academic chung <code>core_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
   </p>
 
   <!-- Gap Table -->
@@ -233,7 +233,7 @@
         </tr>
         <tr>
           <td class="gap-label">Shared database</td>
-          <td>Core và Academic cùng <code>app_db</code>.</td>
+          <td>Core và Academic cùng <code>core_db</code>.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Schema riêng có database role chặn cross-schema → truy cập qua API → full split khi cần scale độc lập.</td>
         </tr>
@@ -264,7 +264,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 1</div>
       <h4>Tách schema</h4>
-      <p>Tách <code>app_db</code> thành <code>core_schema</code> và <code>academic_schema</code>, database role riêng; truy vấn chéo còn lại tạm đọc qua view.</p>
+      <p>Tách <code>core_db</code> thành <code>core_schema</code> và <code>academic_schema</code>, database role riêng; truy vấn chéo còn lại tạm đọc qua view.</p>
       <span class="t-badge orange">Chi phí thấp</span>
     </div>
     <div class="timeline-item" data-delay="200">

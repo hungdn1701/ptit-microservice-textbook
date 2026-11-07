@@ -825,7 +825,7 @@ hr.act-divider {
 .book-identity a:hover { color: var(--primary); text-decoration: underline; }
 .book-identity .book-identity-sep { opacity: .4; }
 /* Phát biểu bản quyền — phải đọc được, nhưng không tranh chỗ với tên sách. */
-.book-identity .book-identity-legal { opacity: .75; white-space: nowrap; }
+.book-identity .book-identity-legal { white-space: nowrap; }
 @media (max-width: 768px) {
   /* .book-identity is the last element on the page, and .act-nav becomes a
      floating fixed pill at bottom:24px (~62px tall) in this same breakpoint —
@@ -1020,7 +1020,7 @@ hr.act-divider {
 .sim-step.is-fail .sim-step-dot { border-color: var(--danger); color: var(--danger-fg, var(--danger)); }
 .sim-step.is-warn { border-color: var(--warning); }
 .sim-step.is-warn .sim-step-dot { border-color: var(--warning); color: var(--warning-fg, var(--warning)); }
-.sim-step.is-off { opacity: .4; }
+.sim-step.is-off { opacity: .8; border-style: dashed; }
 @media (max-width: 640px) { .sim-step { grid-template-columns: 24px minmax(0, 1fr); } .sim-step-tag { grid-column: 2; } }
 
 /* Kit v2 — .sim-wf (2026-09-28, distributed-tracing): biểu đồ waterfall/Gantt của một trace.

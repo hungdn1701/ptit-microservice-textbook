@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -33,7 +33,7 @@
   <p class="pattern-subtitle">Quá sức chứa thì chủ động bỏ bớt việc ít quan trọng, để việc quan trọng vẫn kịp</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Resilience Patterns</span></div>
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Michael Nygard</span></div>
+    <div class="meta-item"><span class="meta-label">described in</span><span class="meta-value">Release It! 2nd ed. (Nygard)</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2018</span></div>
     <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.4 §4.4 · Ch.8 §8.4</span></div>
   </div>
@@ -212,13 +212,13 @@
           <td class="gap-label">Đường chấm đồng bộ</td>
           <td>Lời gọi tới Judge không giới hạn số đồng thời thì luồng chờ chồng chất khi Judge chậm.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Bulkhead 10 lời gọi, chờ tối đa 500 ms; fallback ghi hàng đợi hoặc 503 + <code>Retry-After</code> (lst:4_2, lst:4_3).</td>
+          <td>Bulkhead 10 lời gọi, chờ tối đa 500 ms; fallback ghi hàng đợi hoặc 503 + <code>Retry-After</code> (Listing 4.2, 4.3).</td>
         </tr>
         <tr>
           <td class="gap-label">Hàng đợi nộp bài</td>
           <td>Kafka đệm được tải, nhưng không ai biết khi nào hàng đợi tụt lại quá mục tiêu trả kết quả (p99 &lt; 45 s, §1.5).</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Theo dõi consumer lag bằng Kafka Exporter + Prometheus (Ch.5, Giai đoạn 2); chế độ thi bắt buộc có metrics và cảnh báo (Ch.11).</td>
+          <td>Theo dõi consumer lag bằng Kafka Exporter + Prometheus (Ch.5, Giai đoạn 2); chế độ thi bắt buộc có metric và cảnh báo (Ch.11).</td>
         </tr>
       </tbody>
     </table>
@@ -247,7 +247,7 @@
       <ul class="decision-list">
         <li>Request không được phép mất, như bài nộp thi — dùng hàng đợi để san tải, không bỏ.</li>
         <li>Tải ổn định, luôn dưới sức chứa: thêm cơ chế là thêm cấu hình phải giữ.</li>
-        <li>Chưa có metrics để biết đâu là "quá tải" — đặt ngưỡng đoán mò dễ bỏ nhầm.</li>
+        <li>Chưa có metric để biết đâu là "quá tải" — đặt ngưỡng đoán mò dễ bỏ nhầm.</li>
         <li>Client không tôn trọng <code>Retry-After</code> mà bấm dồn — cần thêm backoff phía client.</li>
       </ul>
     </div>

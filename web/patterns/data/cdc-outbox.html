@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -93,7 +93,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
       <h3>Bảng outbox</h3>
-      <p>Lưu bài nộp và <code>OutboxEvent("SubmissionCreated", …)</code> trong cùng một <code>@Transactional</code> (lst:10_2). Hoặc cả hai được ghi, hoặc không cái nào.</p>
+      <p>Lưu bài nộp và <code>OutboxEvent("SubmissionCreated", …)</code> trong cùng một <code>@Transactional</code> (Listing 10.2). Hoặc cả hai được ghi, hoặc không cái nào.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
@@ -160,7 +160,7 @@
           <tbody></tbody>
         </table>
       </div>
-      <p class="sim-note" id="cd-note"></p>
+      <p class="sim-note" id="cd-note" aria-live="polite"></p>
     </div>
     <div class="sim-panel is-warning">
       <div class="sim-panel-title">CDC khi tách database <span class="sim-hint">§10.3</span></div>
@@ -202,7 +202,7 @@
           <td class="gap-label">Luồng nộp bài</td>
           <td>Ghi kép: Kafka không khả dụng lúc gửi thì bài đã lưu mà Judge không nhận được.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Bảng outbox ghi cùng transaction với bài nộp (lst:10_2); Giai đoạn 4, ước lượng 1–2 tuần.</td>
+          <td>Bảng outbox ghi cùng transaction với bài nộp (Listing 10.2); Giai đoạn 4, ước lượng 1–2 tuần.</td>
         </tr>
         <tr>
           <td class="gap-label">Chọn relay</td>

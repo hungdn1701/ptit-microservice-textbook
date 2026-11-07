@@ -8,6 +8,7 @@
     những quyền vốn không kế thừa — vẽ lại thành chuỗi kế thừa bằng d-links, mỗi tầng chỉ ghi quyền thêm vào, ví dụ lấy từ
     listing @PreAuthorize (isAuthenticated / hasAnyRole('LECTURER','ADMIN') / hasRole('ADMIN')) và RoleHierarchy ngay sau
     hình. Claim cũ "role": "STUDENT" → hiện trạng pipe-delimited "ADMIN|LECTURER|STUDENT" theo văn bản; thêm ownership check.
+    2026-11-05 (hội đồng 2026-11, Q11): "Hiện trạng KBM" → "KBM tại thời điểm khảo sát", khớp chương 9.
   -->
   <title>Fig 9.7 — Phân cấp vai trò | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -19,12 +20,12 @@
       <div class="d-col" style="gap: 56px;">
         <div class="d-box d-danger" id="rh-admin">
           <div class="d-title">ADMIN</div>
-          <div class="d-sub">+ xoá câu hỏi — <code>hasRole('ADMIN')</code></div>
+          <div class="d-sub">+ xóa câu hỏi — <code>hasRole('ADMIN')</code></div>
           <div class="d-sub">+ quản lý người dùng, cấu hình hệ thống</div>
         </div>
         <div class="d-box d-event" id="rh-lect">
           <div class="d-title">LECTURER</div>
-          <div class="d-sub">+ tạo câu hỏi — <code>hasAnyRole('LECTURER','ADMIN')</code></div>
+          <div class="d-sub">+ tạo câu hỏi — <code>hasRole('LECTURER')</code></div>
           <div class="d-sub">+ xem bài nộp của lớp mình phụ trách</div>
         </div>
         <div class="d-box d-service" id="rh-stu">
@@ -44,7 +45,7 @@
           <div class="d-sub"><strong>Role chỉ là lớp đầu.</strong> Tài nguyên có quan hệ sở hữu (đề thuộc lớp nào, giảng viên có phụ trách lớp đó không, sinh viên có ghi danh không) service phải tự kiểm tra sau khi xác minh token.</div>
         </div>
         <div class="d-box d-note">
-          <div class="d-sub"><strong>Hiện trạng KBM</strong>: roles lưu trong JWT dạng chuỗi <code>"ADMIN|LECTURER|STUDENT"</code>, phải tự tách; mục tiêu là mảng JSON.</div>
+          <div class="d-sub"><strong>KBM tại thời điểm khảo sát</strong>: roles lưu trong JWT dạng chuỗi <code>"ADMIN|LECTURER|STUDENT"</code>, phải tự tách; mục tiêu là mảng JSON.</div>
         </div>
       </div>
     </div>

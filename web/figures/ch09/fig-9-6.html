@@ -16,11 +16,11 @@
   <div class="diagram-canvas" data-fig-id="FIG-9.6" data-ref="CH09-SEC">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 110px; align-items: stretch;">
       <div class="d-box d-note" id="t6-now">
-        <div class="d-title d-mb-1 text-center">Hiện trạng — rủi ro được chấp nhận</div>
+        <div class="d-title d-mb-1 text-center">Khi khảo sát — rủi ro được chấp nhận</div>
         <div class="d-sub"><span class="d-step">1</span> Gateway xác minh token HS256, secret dùng chung</div>
         <div class="d-sub d-mt-1"><span class="d-step">2</span> gỡ rồi chèn lại context <code>X-User-*</code></div>
         <div class="d-sub d-mt-1"><span class="d-step">3</span> service lẫn lộn: nơi tin header, nơi tự parse JWT</div>
-        <div class="d-zone d-zone-warning d-mt-2 text-center">chưa có bằng chứng network chặn truy cập thẳng vào service</div>
+        <div class="d-zone d-zone-warning d-mt-2 text-center">cần kiểm chứng việc chặn truy cập thẳng vào service</div>
       </div>
       <div class="d-box d-service" id="t6-target">
         <div class="d-title d-mb-1 text-center">Mục tiêu — Tier 1</div>
@@ -32,7 +32,7 @@
     </div>
     <div class="d-box d-note d-mt-3">
       <div class="d-title d-mb-1">Hai loại bằng chứng khác nhau</div>
-      <div class="d-sub">NetworkPolicy / mTLS chứng minh đường đi và workload; token đã ký chứng minh claims của người dùng. Tier 2 tách subject (người dùng) khỏi actor (workload gọi thay).</div>
+      <div class="d-sub">NetworkPolicy / mTLS chứng minh đường đi và workload; token đã ký chứng minh claim của người dùng. Tier 2 tách subject (người dùng) khỏi actor (workload gọi thay).</div>
     </div>
 
     <svg class="d-links">

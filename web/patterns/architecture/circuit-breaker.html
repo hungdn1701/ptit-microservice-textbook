@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">SQL Judge của KBM (§4.5): Core gửi bài tới <code>kbm-judge-sql</code> (coordinator), coordinator gọi các worker <code>kbm-sandbox-*</code> theo DBMS. Lời gọi tới worker dùng cấu hình của sách: Timeout 5 s, Retry 3 lần (chờ 1 s, 2 s), Bulkhead 10 lời gọi đồng thời, Circuit Breaker cửa sổ 10 · ngưỡng 50% · chờ 30 s · 3 lời gọi thử (lst:4_3). Bài nộp xen kẽ MySQL / SQL Server; thời gian là thời gian mô phỏng.</p>
+  <p class="section-intro">SQL Judge của KBM (§4.5): Core gửi bài tới <code>kbm-judge-sql</code> (coordinator), coordinator gọi các worker <code>kbm-sandbox-*</code> theo DBMS. Lời gọi tới worker dùng cấu hình của sách: Timeout 5 s, Retry 3 lần (chờ 1 s, 2 s), Bulkhead 10 lời gọi đồng thời, Circuit Breaker cửa sổ 10 · ngưỡng 50% · chờ 30 s · 3 lời gọi thử (Listing 4.3). Bài nộp xen kẽ MySQL / SQL Server; thời gian là thời gian mô phỏng.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Kịch bản</span><div class="sim-chips" id="cb-scens"></div></div>
@@ -262,7 +262,7 @@
       <div class="timeline-phase">Giai đoạn 2</div>
       <h4>Resilience theo worker</h4>
       <p><code>@CircuitBreaker</code>, <code>@Retry</code>, <code>@TimeLimiter</code> riêng cho từng <code>kbm-sandbox-*</code>. <code>kbm-sandbox-mysql</code> ngừng thì fallback "Sandbox MySQL đang bận, bài sẽ được chấm khi sẵn sàng", <code>kbm-sandbox-sqlserver</code> không bị ảnh hưởng.</p>
-      <span class="t-badge orange">§4.5 · lst:4_2</span>
+      <span class="t-badge orange">§4.5 · Listing 4.2</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
@@ -275,7 +275,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 4</div>
       <h4>Luồng chấm kéo dài sang bất đồng bộ</h4>
-      <p>Submit → Kafka → coordinator → worker → result event. Luồng nộp bài SQL Contest đã chạy theo mô hình này (Chương 5); giai đoạn này mở rộng cho các luồng chấm còn đi đường đồng bộ.</p>
+      <p>Submit → Kafka → coordinator → worker → result event. Luồng nộp bài ở chế độ thi đã chạy theo mô hình này (Chương 5); giai đoạn này mở rộng cho các luồng chấm còn đi đường đồng bộ.</p>
       <span class="t-badge orange">§4.5 · Ch.5</span>
     </div>
   </div>

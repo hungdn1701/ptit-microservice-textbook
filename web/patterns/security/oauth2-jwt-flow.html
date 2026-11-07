@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -86,7 +86,7 @@
   </div>
 
   <p class="section-intro">
-    Base64URL chỉ là encoding, không phải mã hóa: ai cầm token cũng đọc được payload, nên không đặt dữ liệu nhạy cảm trong claims. Giải mã được token cũng chưa có nghĩa token hợp lệ — resource server phải chạy đủ hợp đồng xác minh (§9.2).
+    Base64URL chỉ là encoding, không phải mã hóa: ai cầm token cũng đọc được payload, nên không đặt dữ liệu nhạy cảm trong claim. Giải mã được token cũng chưa có nghĩa token hợp lệ — resource server phải chạy đủ hợp đồng xác minh (§9.2).
   </p>
 
   <div class="pattern-anatomy">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Luồng token của KBM (§9.2–9.3): Client gọi qua Gateway tới Core Service; Auth Service phát hành token và lưu refresh token. Chạy các kịch bản theo thứ tự, rồi so sánh kịch bản "Token giả" (Judge Service bị chiếm quyền) giữa HS256 (hiện trạng) và RS256 + JWKS (Giai đoạn 2).</p>
+  <p class="section-intro">Luồng token của KBM (§9.2–9.3): Client gọi qua Gateway tới Core Service; Auth Service phát hành token và lưu refresh token. Chạy các kịch bản theo thứ tự, rồi so sánh kịch bản "Token giả" (một service nội bộ bị chiếm quyền) giữa HS256 (KBM khi khảo sát) và RS256 + JWKS (Giai đoạn 2).</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Thuật toán</span><div class="sim-chips" id="jw-algos"></div></div>
@@ -134,7 +134,7 @@
         <div class="sim-node is-external" id="jw-client"><div class="sim-node-name">Client</div><div class="sim-node-sub">sinh viên · STUDENT</div></div>
         <div class="sim-node is-core" id="jw-gw"><div class="sim-node-name">Gateway</div><div class="sim-node-sub" id="jw-gw-sub"></div></div>
         <div class="sim-node" id="jw-core"><div class="sim-node-name">Core Service</div><div class="sim-node-sub" id="jw-core-sub"></div></div>
-        <div class="sim-node" id="jw-judge"><div class="sim-node-name">Judge Service</div><div class="sim-node-sub" id="jw-judge-sub"></div></div>
+        <div class="sim-node" id="jw-judge"><div class="sim-node-name">Service nội bộ</div><div class="sim-node-sub" id="jw-judge-sub"></div></div>
         <div class="sim-node" id="jw-auth"><div class="sim-node-name">Auth Service</div><div class="sim-node-sub" id="jw-auth-sub"></div></div>
         <div class="sim-node" id="jw-db"><div class="sim-node-name">Auth DB</div><div class="sim-node-sub">refresh_tokens</div></div>
       </div>
@@ -182,7 +182,7 @@
   </div>
 
   <p class="section-intro">
-    KBM hiện dùng HS256: các service chia sẻ cùng <code>jwt.secretKey</code>. Sách ghi rõ đây là rủi ro được chấp nhận (accepted risk) của một hệ thống học thuật, không phải mô hình mục tiêu cho production. Chuyển sang RS256 + JWKS nằm ở Giai đoạn 2 của lộ trình vì cần hạ tầng quản lý khóa (§9.2, §9.6).
+    Tại thời điểm khảo sát (đầu năm 2026), KBM dùng HS256: các service chia sẻ cùng một khóa bí mật. Sách ghi rõ đây là rủi ro được chấp nhận (accepted risk) của một hệ thống học thuật, không phải mô hình mục tiêu cho production. Chuyển sang RS256 + JWKS nằm ở Giai đoạn 2 của lộ trình vì cần hạ tầng quản lý khóa (§9.2, §9.6).
   </p>
 
   <!-- Gap Table -->
@@ -193,7 +193,7 @@
       <thead>
         <tr>
           <th>Khía cạnh</th>
-          <th>Hiện trạng KBM</th>
+          <th>KBM khi khảo sát</th>
           <th>Mức độ</th>
           <th>Hướng xử lý</th>
         </tr>
@@ -201,19 +201,19 @@
       <tbody>
         <tr>
           <td class="gap-label">Thuật toán JWT</td>
-          <td>HS256, mọi service dùng chung <code>jwt.secretKey</code>.</td>
+          <td>HS256, mọi service dùng chung một khóa.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>RS256 + JWKS; chỉ Auth Service giữ private key.</td>
         </tr>
         <tr>
           <td class="gap-label">Identity propagation</td>
-          <td>Gateway chèn lại <code>X-User-Id</code>/<code>X-User-Roles</code>; Core, Judge và Academic lẫn lộn giữa tin header và tự parse JWT.</td>
+          <td>Gateway chèn lại header định danh; các service lẫn lộn giữa tin header và tự parse JWT.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Signed proof đúng audience + local authorization tại service đích (§9.3).</td>
         </tr>
         <tr>
           <td class="gap-label">Secret Management</td>
-          <td>Một phần hardcoded trong <code>application.yml</code>, một phần qua biến môi trường.</td>
+          <td>Một phần gắn cố định trong tệp cấu hình.</td>
           <td><span class="b-high">HIGH</span></td>
           <td>Biến môi trường ngay; secret manager (Vault) ở giai đoạn sau.</td>
         </tr>
@@ -314,14 +314,14 @@
 <script src="../../js/diagram-links.js?v=e9d442aa"></script>
 <script>
 // ── Act 3: phát hành, xác minh, làm mới token (Chương 9 §9.2–9.3) ─────────────────────────────
-// Theo sách: KBM hiện dùng HS256, mọi service chia sẻ jwt.secretKey (accepted risk, §9.2);
+// Theo sách: KBM khi khảo sát dùng HS256, mọi service chia sẻ một khóa (accepted risk, §9.2);
 // Gateway xác minh rồi chèn lại X-User-Id/X-User-Roles, Core tin header (§9.3). Mục tiêu Giai đoạn 2
 // (§9.6): RS256 + JWKS, Auth Service là nơi duy nhất giữ private key; Gateway chuyển signed proof
 // đúng audience, Core tự xác minh + local authorization (Tier 1, §9.3).
 // Refresh rotation: markAsUsedAtomic = 0 dòng → invalidateFamily → TokenReuseException (lst:token_refresh).
 const ALGOS = {
-  hs256: { label: 'HS256 · hiện trạng', hint: 'mọi service giữ cùng jwt.secretKey — accepted risk (§9.2)',
-           gw: 'xác minh: jwt.secretKey', core: 'tin X-User-* (§9.3)', judge: 'giữ jwt.secretKey', auth: 'ký: jwt.secretKey' },
+  hs256: { label: 'HS256 · khi khảo sát', hint: 'mọi service giữ cùng một khóa — accepted risk (§9.2)',
+           gw: 'xác minh: shared secret', core: 'tin X-User-* (§9.3)', judge: 'giữ shared secret', auth: 'ký: shared secret' },
   rs256: { label: 'RS256 + JWKS · Giai đoạn 2', hint: 'chỉ Auth Service giữ private key; service khác lấy public key qua JWKS',
            gw: 'xác minh: public key', core: 'xác minh proof (aud: core)', judge: 'chỉ có public key', auth: 'ký: private key' },
 };
@@ -333,10 +333,10 @@ const NOTES = {
   login:   'Auth Service kiểm tra mật khẩu, lưu refresh token vào Auth DB rồi phát hành cặp token. Access token ngắn hạn, refresh token dài hạn (§9.2).',
   api:     'Gateway chạy hợp đồng xác minh (alg, chữ ký, iss, aud, exp, nbf) mà không tra cơ sở dữ liệu. Khác biệt nằm ở bước sau: hiện trạng chuyển header X-User-*, mục tiêu chuyển signed proof để Core tự xác minh (§9.3).',
   expired: 'Chữ ký vẫn đúng nhưng exp < now → 401. Client không cần đăng nhập lại: chạy "Làm mới".',
-  refresh: 'Refresh token cũ bị đánh dấu đã dùng trong cùng transaction với việc cấp cặp mới — cùng family (§9.2, lst:token_refresh).',
+  refresh: 'Refresh token cũ bị đánh dấu đã dùng trong cùng transaction với việc cấp cặp mới — cùng family (§9.2, Listing 9.1).',
   reuse:   'Refresh token đã dùng xuất hiện lại → Auth Service coi là bị đánh cắp và thu hồi cả family. Access token đã phát vẫn dùng được tới khi hết hạn — lý do access token phải ngắn hạn. Hai lần làm mới hợp lệ chạy song song cũng có thể kích hoạt nhầm; cần khoảng ân hạn ngắn (§9.2).',
-  'forge.hs256': 'HS256: service nào xác minh được token thì cũng ký được token. Judge bị chiếm quyền → token ADMIN giả qua được Gateway (§9.2).',
-  'forge.rs256': 'RS256: Judge chỉ có public key nên không ký được token hợp lệ; Gateway còn khóa thuật toán nên mẹo đổi alg cũng bị chặn. Nếu chính private key của Auth Service bị lộ thì vẫn phải thu hồi và xoay khóa khẩn cấp (§9.2).',
+  'forge.hs256': 'HS256: service nào xác minh được token thì cũng ký được token. Một service nội bộ bị chiếm quyền → token ADMIN giả qua được Gateway (§9.2).',
+  'forge.rs256': 'RS256: service nội bộ chỉ có public key nên không ký được token hợp lệ; Gateway còn khóa thuật toán nên mẹo đổi alg cũng bị chặn. Nếu chính private key của Auth Service bị lộ thì vẫn phải thu hồi và luân phiên khóa khẩn cấp (§9.2).',
 };
 const state = { algo: 'hs256', scenario: 'login', running: false, rows: [], family: 0, seq: 0,
                 access: null, refresh: null, used: null, ok: 0, denied: 0, forged: 0 };
@@ -392,7 +392,7 @@ function endSession(msg) {
   state.access = null; state.refresh = null; state.used = null;
 }
 const verifyText = () => state.algo === 'hs256'
-  ? 'alg = HS256 · chữ ký khớp jwt.secretKey · iss, aud, exp, nbf đạt'
+  ? 'alg = HS256 · chữ ký khớp shared secret · iss, aud, exp, nbf đạt'
   : 'alg = RS256 · chữ ký khớp public key trong JWKS cache · iss, aud, exp, nbf đạt';
 
 async function login() {
@@ -403,7 +403,7 @@ async function login() {
   node('jw-gw', 'is-active', false); node('jw-auth', 'is-active', true);
   log('Auth Service: mật khẩu khớp (BCrypt)', 'log-ok');
   await hop('jw-l-ad', `INSERT refresh_tokens (R${state.seq + 1}, family F${state.family}, used = false)`);
-  log(state.algo === 'hs256' ? 'Ký access token bằng jwt.secretKey (HMAC-SHA256)' : 'Ký access token bằng private key — chỉ Auth Service có', 'log-ok');
+  log(state.algo === 'hs256' ? 'Ký access token bằng shared secret (HMAC-SHA256)' : 'Ký access token bằng private key — chỉ Auth Service có', 'log-ok');
   issuePair();
   log(`200 OK → Client nhận ${state.access.name} (15 phút) + ${state.refresh.name} (7 ngày)`, 'log-ok');
   node('jw-auth', 'is-active', false);
@@ -476,9 +476,9 @@ const RUN = {
   },
   async forge() {
     node('jw-judge', 'is-danger', true);
-    log('Giả định: Judge Service bị chiếm quyền (chạy mã sinh viên, §9.7)', 'log-warn');
+    log('Giả định: một service nội bộ bị chiếm quyền', 'log-warn');
     if (state.algo === 'hs256') {
-      log('Judge đọc jwt.secretKey trong cấu hình của chính nó', 'log-err');
+      log('Service đó đọc shared secret trong cấu hình của chính nó', 'log-err');
       log('Tự ký token: roles = "ADMIN|LECTURER|STUDENT", exp hợp lệ', 'log-err');
       await hop('jw-l-jg', 'GET /api/users (chỉ ADMIN) — Bearer token giả', 'log-err', 'danger');
       node('jw-gw', 'is-active', true);
@@ -487,7 +487,7 @@ const RUN = {
       log('Core Service thực thi với quyền ADMIN — token giả lọt qua', 'log-err');
       state.forged++;
     } else {
-      log('Judge chỉ có public key — không tạo được chữ ký mà public key xác minh được', 'log-ok');
+      log('Service đó chỉ có public key — không tạo được chữ ký mà public key xác minh được', 'log-ok');
       log('Thử 1: ký bằng khóa RSA tự tạo', 'log-warn');
       await hop('jw-l-jg', 'GET /api/users (chỉ ADMIN) — Bearer token giả', 'log-warn', 'warning');
       node('jw-gw', 'is-active', true);
@@ -514,7 +514,7 @@ function render() {
   $('jw-title').textContent = a.label; $('jw-hint').textContent = a.hint;
   $('jw-gw-sub').textContent = a.gw; $('jw-core-sub').textContent = a.core;
   $('jw-judge-sub').textContent = a.judge; $('jw-auth-sub').textContent = a.auth;
-  // Đường Judge → Gateway chỉ có trong kịch bản token giả; Judge mờ ở các kịch bản khác.
+  // Đường service nội bộ → Gateway chỉ có trong kịch bản token giả; node này mờ ở các kịch bản khác.
   $('jw-l-jg').toggleAttribute('data-hidden', state.scenario !== 'forge');
   node('jw-judge', 'is-off', state.scenario !== 'forge');
   $('jw-note').textContent = NOTES[state.scenario] || NOTES[state.scenario + '.' + state.algo];

@@ -32,12 +32,13 @@
       </div>
 
       <div class="d-box d-danger">
-        <div class="d-title d-mb-1">Khoảng trống rủi ro cao</div>
+        <div class="d-title d-mb-1">Khoảng trống rủi ro cao (khi khảo sát)</div>
         <div class="d-sub">· JWT HS256, secret dùng chung</div>
-        <div class="d-sub">· secret một phần hardcoded trong application.yml</div>
+        <div class="d-sub">· khóa bí mật một phần nằm trong tệp cấu hình</div>
         <div class="d-sub">· CORS <code>allowedOrigins: "*"</code></div>
         <div class="d-sub">· lẫn header-trust và tự parse JWT</div>
-        <div class="d-sub d-mt-1 d-text-muted">trung bình: token ở localStorage; chưa có workload identity cho service-to-service</div>
+        <div class="d-sub">· token ở localStorage</div>
+        <div class="d-sub d-mt-1 d-text-muted">trung bình: chưa có workload identity cho service-to-service</div>
       </div>
     </div>
 

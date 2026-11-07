@@ -8,7 +8,7 @@
     nhãn "protocol", "shared JWT") không khớp bảng quan hệ ngay trên hình và dùng 7 mũi tên position:absolute.
     Nay quan hệ theo bảng tbl:bounded-context-relationships và §2.5: Customer-Supplier từ Identity & Access,
     Open Host Service từ SQL Practice, Conformist với GitHub Classroom, ACL tới Cổng Quản lý Đào tạo,
-    Academic Management còn dùng chung app_db với SQL Practice. Mũi tên d-links, chữ theo DIAGRAM_DESIGN.md §17.
+    Academic Management còn dùng chung core_db với SQL Practice. Mũi tên d-links, chữ theo DIAGRAM_DESIGN.md §17.
   -->
   <title>Fig 2.5 — Context Map của KBM | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
@@ -47,7 +47,7 @@
       </div>
 
       <div class="d-box d-storage text-center" id="cm-db" style="grid-column: 2; grid-row: 3;">
-        <div class="d-title">app_db</div>
+        <div class="d-title">core_db</div>
         <div class="d-sub">database dùng chung</div>
       </div>
       <div class="d-box d-legacy text-center" id="cm-gh" style="grid-column: 3; grid-row: 3; border-style: dashed;">
@@ -58,7 +58,7 @@
 
     <div class="d-box d-note d-mt-3" style="max-width: 960px; margin-left: auto; margin-right: auto;">
       <div class="d-sub"><strong>Customer-Supplier</strong>: Identity &amp; Access (U) phục vụ các context phía sau (D) &nbsp;·&nbsp; <strong>OHS</strong>: SQL Practice mở API dữ liệu câu hỏi &nbsp;·&nbsp; <strong>Conformist</strong>: Academic dùng nguyên mô hình của GitHub Classroom &nbsp;·&nbsp; <strong>ACL</strong>: lớp dịch khi tích hợp hệ thống ngoài</div>
-      <div class="d-sub d-mt-1 d-text-danger">Nét đứt đỏ: Academic Management và SQL Practice còn chung <code>app_db</code> — coupling cần gỡ (Ch.7).</div>
+      <div class="d-sub d-mt-1 d-text-danger">Nét đứt đỏ: Academic Management và SQL Practice còn chung <code>core_db</code> — coupling cần gỡ (Ch.7).</div>
     </div>
 
     <svg class="d-links">

@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -93,17 +93,17 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 01</div>
       <h3>Rolling · Blue/Green</h3>
-      <p>Rolling thay lần lượt từng instance, chỉ cần dư một instance. Blue/Green chạy hai bản hoàn chỉnh, đổi <code>selector</code> của Service để chuyển — và đổi lại để lùi (lst:12_5).</p>
+      <p>Rolling thay lần lượt từng instance, chỉ cần dư một instance. Blue/Green chạy hai bản hoàn chỉnh, đổi <code>selector</code> của Service để chuyển — và đổi lại để lùi (Listing 12.6).</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Chiến lược 02</div>
       <h3>Canary · Shadow</h3>
-      <p>Canary đưa khoảng 10% lưu lượng sang bản mới (<code>canary-weight: "10"</code>, lst:12_6), theo dõi metrics rồi mở rộng. Shadow nhân bản lưu lượng, bỏ phản hồi — không phải cách phát hành mà là cách kiểm chứng trước.</p>
+      <p>Canary đưa khoảng 10% lưu lượng sang bản mới (<code>canary-weight: "10"</code>, Listing 12.7), theo dõi metric rồi mở rộng. Shadow nhân bản lưu lượng, bỏ phản hồi — không phải cách phát hành mà là cách kiểm chứng trước.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Điều kiện chung</div>
       <h3>Expand/Contract</h3>
-      <p>Expand: thêm cột mới, giữ cột cũ. Chuyển dữ liệu bằng job nền. Contract: xóa cột cũ chỉ khi v1 đã dừng hẳn. Migration chạy thành bước riêng, trước khi deploy (lst:12_4).</p>
+      <p>Expand: thêm cột mới, giữ cột cũ. Chuyển dữ liệu bằng job nền. Contract: xóa cột cũ chỉ khi v1 đã dừng hẳn. Migration chạy thành bước riêng, trước khi deploy (Listing 12.4).</p>
     </div>
   </div>
 </section>
@@ -144,7 +144,7 @@
     <div class="sim-panel is-warning">
       <div class="sim-panel-title">Lệnh / cấu hình <span class="sim-hint" id="dp-code-hint"></span></div>
       <pre class="sim-code" id="dp-code"></pre>
-      <p class="sim-note" id="dp-note"></p>
+      <p class="sim-note" id="dp-note" aria-live="polite"></p>
     </div>
   </div>
   <div class="sim-legend"><span><span class="badge badge-info">v1</span> đang phục vụ</span><span><span class="badge badge-success">v2</span> đang phục vụ</span><span><span class="badge badge-warning">…</span> đang khởi động / chờ</span><span><span class="badge badge-danger">v1</span> lỗi với schema mới</span></div>
@@ -266,7 +266,7 @@
       <ul class="decision-list">
         <li>Bảo trì lớn dịp nghỉ hè, không ai đang dùng hệ thống.</li>
         <li>Migration không tương thích ngược mà chưa tách được Expand/Contract.</li>
-        <li>Hạ tầng không đủ chạy hai bản song song, hoặc chưa có metrics để canary có ý nghĩa.</li>
+        <li>Hạ tầng không đủ chạy hai bản song song, hoặc chưa có metric để canary có ý nghĩa.</li>
         <li>Shadow mà bản mới vẫn ghi vào cùng database hay gửi email — hậu quả nhân đôi.</li>
       </ul>
     </div>
@@ -321,13 +321,13 @@ for i in 1 2 3 4; do
   replace kbm-academic-$i --image v2
   wait_healthy kbm-academic-$i
 done`,
-  bg: `# lst:12_5 — Green đứng chờ, chưa có traffic
+  bg: `# Listing 12.6 — Green đứng chờ, chưa có traffic
 kubectl apply -f deployment-green.yaml
 # test xong → chuyển router
 kubectl patch service kbm-academic-svc \\
   -p '{"spec":{"selector":{"version":"green"}}}'
 # lùi: đổi selector về "blue"`,
-  canary: `# lst:12_6 — Nginx Ingress
+  canary: `# Listing 12.7 — Nginx Ingress
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/canary: "true"
@@ -382,7 +382,7 @@ function plan(strat, scen) {
     migrate(); if (rename) add('Migration: đổi tên cột', v1s(N), 0);
     add('1 instance v2, 10% traffic', v1s(N).concat(['v2']), 10);
     if (bug) { add('Cảnh báo kích hoạt', v1s(N).concat(['v2']), 10); add('Gỡ canary', v1s(N), 0); }
-    else { add('Metrics ổn → 50%', v2s(2).concat(v1s(2)), 50); add('100%, gỡ v1', v2s(N), 100); }
+    else { add('Metric ổn → 50%', v2s(2).concat(v1s(2)), 50); add('100%, gỡ v1', v2s(N), 100); }
   } else {
     migrate(); if (rename) add('Migration trên DB dùng chung', v1s(N), 0);
     add('Dựng v2 nhận bản sao traffic', v1s(N).concat(st(N)), 0, { mirror: 1 });
@@ -397,7 +397,7 @@ function note(strat, scen) {
     all: 'All-at-once: đơn giản, không cần hạ tầng thêm, nhưng mỗi lần deploy — và mỗi lần rollback — là một khoảng gián đoạn.',
     rolling: 'Rolling: chỉ cần dư một instance, không gián đoạn. Lùi lại cũng phải thay lần lượt từng instance, nên chậm hơn.',
     bg: 'Blue/Green: lùi lại chỉ là đổi selector — tức thời. Cái giá là hai bộ instance chạy song song trong lúc chuyển.',
-    canary: 'Canary: bản mới chỉ nhận 10% lưu lượng trong lúc theo dõi metrics; chi phí thêm một instance.',
+    canary: 'Canary: bản mới chỉ nhận 10% lưu lượng trong lúc theo dõi metric; chi phí thêm một instance.',
     shadow: 'Shadow: người dùng không bao giờ chạm vào v2 — đây là kiểm chứng, không phải phát hành; tốn gấp đôi và phải cô lập mọi tác dụng phụ.',
   }[strat];
   const add = {

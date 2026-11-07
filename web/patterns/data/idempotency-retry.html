@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/pattern-story.css?v=d979c241">
+  <link rel="stylesheet" href="../../styles/pattern-story.css?v=bd67d8f1">
 </head>
 <body>
 
@@ -33,8 +33,8 @@
   <p class="pattern-subtitle">Gửi lại là chuyện bình thường — nộp một lần thì chỉ được tính một lần</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Resilience Patterns</span></div>
-    <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">HTTP/1.1 (RFC 7231)</span></div>
-    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">2014</span></div>
+    <div class="meta-item"><span class="meta-label">described in</span><span class="meta-value">RFC 2616, RFC 7231</span></div>
+    <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">1999, 2014</span></div>
     <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.3 §3.1 · Ch.5 §5.5</span></div>
   </div>
 </header>
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Một bài nộp SQL đi qua Core → Kafka → Judge consumer, bài đạt được cộng +10 điểm theo kiểu cộng dồn (Ch.6). Chọn chỗ xảy ra sự cố và cách bảo vệ; kết quả đúng là 1 bài nộp, 1 lần chấm, +10 điểm. Mã nguồn theo lst:idempotent_consumer và lst:commutative_updates, rút gọn.</p>
+  <p class="section-intro">Một bài nộp SQL đi qua Core → Kafka → Judge consumer, bài đạt được cộng +10 điểm theo kiểu cộng dồn (Ch.6). Chọn chỗ xảy ra sự cố và cách bảo vệ; kết quả đúng là 1 bài nộp, 1 lần chấm, +10 điểm. Mã nguồn theo Listing 5.3 và Listing 6.3, rút gọn.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Sự cố</span><div class="sim-chips" id="id-scens"></div></div>
@@ -143,7 +143,7 @@
       <pre class="sim-code" id="id-db"></pre>
     </div>
   </div>
-  <p class="sim-note" id="id-note"></p>
+  <p class="sim-note" id="id-note" aria-live="polite"></p>
 </section>
 
 <!-- ── ACT 4: KBM Apply It ── -->
@@ -190,7 +190,7 @@
           <td class="gap-label"><code>kbm-judge-sql</code> → worker</td>
           <td>Coordinator retry sau timeout, trong khi worker có thể đã chấm xong.</td>
           <td><span class="b-med">MED</span></td>
-          <td><code>JudgeRequest</code> mang <code>submissionId</code>/<code>judgeRunId</code>; worker trả kết quả hiện có thay vì chấm lại (lst:4_2).</td>
+          <td><code>JudgeRequest</code> mang <code>submissionId</code>/<code>judgeRunId</code>; worker trả kết quả hiện có thay vì chấm lại (Listing 4.2).</td>
         </tr>
         <tr>
           <td class="gap-label">Điểm và read model</td>
@@ -283,7 +283,7 @@
 <script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
 // ── Act 3: trùng lặp ở ba chặng của luồng nộp bài (Ch.1 ④, §3.1, §5.5, Ch.6) ─────────────────
-// Kịch bản viết tay, xác định. Mã nguồn rút gọn từ lst:idempotent_consumer và lst:commutative_updates;
+// Kịch bản viết tay, xác định. Mã nguồn rút gọn từ Listing 5.3 và Listing 6.3;
 // phần POST /submissions với Idempotency-Key là phác thảo theo §3.1 (sách không có listing).
 const SCENS = {
   resend: { label: 'Mất response khi nộp', hint: 'client gửi lại POST' },
