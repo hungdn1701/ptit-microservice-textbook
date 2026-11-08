@@ -19,40 +19,40 @@
     .g6-bar.is-hot { border-color: var(--diagram-color-danger-border); background: var(--diagram-color-danger-bg); }
     .g6-bar.is-async { border-style: dashed; }
     .g6-axis { position: relative; height: 18px; border-bottom: 1px solid var(--diagram-color-line-muted); }
-    .g6-axis span { position: absolute; transform: translateX(-50%); }
+    .g6-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
     .g6-indent-1 { padding-left: 16px; }
     .g6-indent-2 { padding-left: 32px; }
   </style>
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-11.6" data-ref="CH11-SEC">
-    <div class="d-label d-mb-1">Một trace nộp bài (minh họa) — tổng 810ms</div>
+    <div class="d-label d-mb-1">Một trace nộp bài (minh họa) — tổng 810 <span style="text-transform: none;">ms</span></div>
     <div class="g6">
       <div></div>
       <div class="g6-axis d-sub d-text-muted">
         <span style="left: 0%; transform: none;">0</span>
-        <span style="left: 24.7%;">200ms</span>
-        <span style="left: 49.4%;">400ms</span>
-        <span style="left: 74.1%;">600ms</span>
-        <span style="left: 98.8%; transform: translateX(-100%);">800ms</span>
+        <span style="left: 24.7%;">200 ms</span>
+        <span style="left: 49.4%;">400 ms</span>
+        <span style="left: 74.1%;">600 ms</span>
+        <span style="left: 98.8%; transform: translateX(-100%);">800 ms</span>
       </div>
 
-      <div class="d-sub"><strong>Gateway</strong> · 60ms</div>
+      <div class="d-sub"><strong>Gateway</strong> · 60 ms</div>
       <div class="g6-track"><div class="g6-bar" style="left: 0%; width: 7.4%;"></div></div>
 
-      <div class="d-sub g6-indent-1"><strong>Core</strong> · lưu bài, trả 202 · 47ms</div>
+      <div class="d-sub g6-indent-1"><strong>Core</strong> · lưu bài, trả 202 · 47 ms</div>
       <div class="g6-track"><div class="g6-bar" style="left: 1%; width: 5.8%;"></div></div>
 
-      <div class="d-sub g6-indent-2">Kafka publish · 12ms</div>
+      <div class="d-sub g6-indent-2">Kafka publish · 12 ms</div>
       <div class="g6-track"><div class="g6-bar" style="left: 4.9%; width: 1.5%;"></div></div>
 
-      <div class="d-sub g6-indent-1"><strong>Judge</strong> · consume, bất đồng bộ · 700ms</div>
+      <div class="d-sub g6-indent-1"><strong>Judge</strong> · consume, bất đồng bộ · 700 ms</div>
       <div class="g6-track"><div class="g6-bar is-async" style="left: 13.6%; width: 86.4%;"></div></div>
 
-      <div class="d-sub g6-indent-2 d-text-danger fw-semibold">Execute SQL on sandbox · 570ms</div>
+      <div class="d-sub g6-indent-2 d-text-danger fw-semibold">Execute SQL on sandbox · 570 ms</div>
       <div class="g6-track"><div class="g6-bar is-hot" style="left: 19.8%; width: 70.4%;"></div></div>
 
-      <div class="d-sub g6-indent-2">Compare · 65ms</div>
+      <div class="d-sub g6-indent-2">Compare · 65 ms</div>
       <div class="g6-track"><div class="g6-bar" style="left: 90.7%; width: 8%;"></div></div>
     </div>
 

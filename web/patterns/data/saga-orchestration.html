@@ -35,7 +35,7 @@
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Data Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Hector Garcia-Molina &amp; Kenneth Salem</span></div>
     <div class="meta-item"><span class="meta-label">year</span><span class="meta-value">1987</span></div>
-    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.6 §6.1–6.5</span></div>
+    <div class="meta-item"><span class="meta-label">book ref</span><span class="meta-value">Ch.6 §6.1–6.6</span></div>
   </div>
 </header>
 
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">KBM Submit Saga (§6.2): T1 tạo bài nộp, T2 chạy SQL trong sandbox, T3 cập nhật điểm, T4 ghi lệnh thông báo vào outbox. So sánh luồng hiện tại — choreography ngầm định qua Kafka — với saga tường minh có state machine, timeout và semantic lock (§6.5).</p>
+  <p class="section-intro">KBM Submit Saga (§6.2): T1 tạo bài nộp, T2 chạy SQL trong sandbox, T3 cập nhật điểm, T4 ghi lệnh thông báo vào outbox. So sánh luồng hiện tại — choreography ngầm định qua Kafka — với saga tường minh có state machine, timeout và semantic lock (§6.6).</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Saga</span><div class="sim-chips" id="sg-modes"></div></div>
@@ -156,12 +156,12 @@
   </div>
 
   <p class="section-intro">
-    KBM đang có một implicit saga: choreography qua Kafka nhưng không được định nghĩa như saga — thiếu state, timeout và compensation tường minh, và đã từng gây lỗi trên production. Với luồng nộp bài 4 bước tuần tự, choreography vẫn đủ; orchestrator là quyết định để mở, xem lại khi luồng thêm bước (§6.3, §6.5).
+    KBM đang có một implicit saga: choreography qua Kafka nhưng không được định nghĩa như saga — thiếu state, timeout và compensation tường minh, và đã từng gây lỗi trên production. Với luồng nộp bài 4 bước tuần tự, choreography vẫn đủ; orchestrator là quyết định để mở, xem lại khi luồng thêm bước (§6.3, §6.6).
   </p>
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — Submit Saga</h3>
-  <div class="sub-label">Bốn lỗ hổng trong §6.5</div>
+  <div class="sub-label">Bốn lỗ hổng trong §6.6</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -203,7 +203,7 @@
 
   <!-- Timeline -->
   <h3 class="sub-heading">Lộ trình chuyển đổi</h3>
-  <div class="sub-label">Theo đề xuất ở §6.5 — chưa phải việc KBM đã làm</div>
+  <div class="sub-label">Theo đề xuất ở §6.6 — chưa phải việc KBM đã làm</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
@@ -263,7 +263,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về vì sao 2PC không hợp (§6.1), KBM Submit Saga và ba loại transaction (§6.2), choreography vs orchestration (§6.3), compensation và isolation (§6.4), case study KBM (§6.5).</p>
+  <p>Đọc chi tiết về vì sao 2PC không hợp (§6.1), KBM Submit Saga và ba loại transaction (§6.2), choreography vs orchestration (§6.3), compensation và isolation (§6.4), case study KBM (§6.6).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-06')"><div class="badge badge-info">Read</div> Chương 6 — Giao dịch phân tán →</a>
 </div>
 
@@ -280,10 +280,10 @@
 
 <script src="../../js/pattern-story.js?v=33320506"></script>
 <script>
-// ── Act 3: KBM Submit Saga (Chương 6 §6.2, §6.4–6.5) ─────────────────────────────────────────
+// ── Act 3: KBM Submit Saga (Chương 6 §6.2, §6.4–6.6) ─────────────────────────────────────────
 // T1 Create Submission (compensatable, C1 = Mark ERROR), T2 Execute SQL (pivot), T3 Update Score,
 // T4 Enqueue notification vào outbox (retriable). Hiện trạng: implicit choreography — thiếu timeout,
-// compensation, semantic lock (§6.5). Saga tường minh: CANCELLING → lệnh hủy/probe → ACK → TIMEOUT,
+// compensation, semantic lock (§6.6). Saga tường minh: CANCELLING → lệnh hủy/probe → ACK → TIMEOUT,
 // bù trừ C1, retry có giới hạn (lst:timeout_compensation). Thời gian "5 phút" theo ví dụ của sách.
 const MODES = {
   implicit: { label: 'Choreography ngầm (hiện trạng)', hint: 'Kafka events, không state machine, không timeout' },
@@ -300,9 +300,9 @@ const STEPS = [
 const STATES = ['PENDING', 'JUDGING', 'JUDGED', 'ERROR', 'CANCELLING', 'TIMEOUT'];
 const NOTES = {
   'implicit.ok':     'Khi mọi thứ trơn tru, choreography ngầm chạy đúng — lỗ hổng chỉ lộ ra ở nhánh lỗi.',
-  'implicit.fail':   'Không có compensation tường minh: bước T1 đã làm vẫn nằm lại, bài kẹt ở trạng thái trung gian (sai lầm "chỉ thiết kế happy path", §6.5).',
-  'implicit.silent': 'Đúng sự cố từng xảy ra: Kafka mất kết nối hoặc Judge sập → không ai cập nhật trạng thái → sinh viên thấy "đang chấm" vô thời hạn (§6.5).',
-  'implicit.retry':  'Sách không mô tả hiện trạng xử lý lỗi T3 ra sao; điều chắc chắn là không có state machine tập trung nên không theo dõi được saga đang dở ở bước nào (§6.5). Về nguyên tắc, sau pivot T3 phải được thử lại tới khi thành công.',
+  'implicit.fail':   'Không có compensation tường minh: bước T1 đã làm vẫn nằm lại, bài kẹt ở trạng thái trung gian (sai lầm "chỉ thiết kế happy path", §6.6).',
+  'implicit.silent': 'Đúng sự cố từng xảy ra: Kafka mất kết nối hoặc Judge sập → không ai cập nhật trạng thái → sinh viên thấy "đang chấm" vô thời hạn (§6.6).',
+  'implicit.retry':  'Sách không mô tả hiện trạng xử lý lỗi T3 ra sao; điều chắc chắn là không có state machine tập trung nên không theo dõi được saga đang dở ở bước nào (§6.6). Về nguyên tắc, sau pivot T3 phải được thử lại tới khi thành công.',
   'implicit.dup':    'Không có semantic lock: bài thứ hai được nhận khi bài thứ nhất còn đang chấm — hai saga chạy song song trên cùng dữ liệu (§6.4).',
   'explicit.ok':     'T1 → T2 (pivot) → T3 → T4. Sau pivot, saga cam kết đi tới đích.',
   'explicit.fail':   'Pivot thất bại không phải "bù trừ pivot": nó kích hoạt compensation của bước đứng trước — C1 đánh dấu ERROR, sinh viên được báo thử lại. Judge tự dọn sandbox.',
@@ -353,9 +353,9 @@ async function run() {
     if (!ex) state.seen = '2 bài song song';
     return finish();
   }
-  await step('T1', 'done', 'T1 · Core ghi submission, status PENDING, publish submit.created', 'log-ok'); setStatus('PENDING');
+  await step('T1', 'done', 'T1 · Core ghi submission, status PENDING, publish SubmissionCreated', 'log-ok'); setStatus('PENDING');
   state.seen = 'đang chấm';
-  await step('T2', 'active', ex ? 'T2 · Core gửi lệnh chấm, status JUDGING (semantic lock)' : 'T2 · Judge consume submit.created, bắt đầu chấm', 'log-info');
+  await step('T2', 'active', ex ? 'T2 · Core gửi lệnh chấm, status JUDGING (semantic lock)' : 'T2 · Judge consume SubmissionCreated, bắt đầu chấm', 'log-info');
   if (ex) setStatus('JUDGING');
   if (sc === 'fail') {
     await step('T2', 'fail', 'T2 · Judge không khởi tạo được sandbox → thất bại', 'log-err');

@@ -103,7 +103,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
       <h3>Khởi tạo và đối soát</h3>
-      <p>Bulk export/sync khi dựng service mới, đối soát định kỳ để vá chỗ lệch; event được phát qua Transactional Outbox để không mất (Ch.7, Ch.10).</p>
+      <p>Bulk export/sync khi dựng service mới, đối soát định kỳ để vá chỗ lệch; event được phát qua Transactional Outbox để không mất (Chương 7, Chương 10).</p>
     </div>
   </div>
 </section>
@@ -181,7 +181,7 @@
   </div>
 
   <p class="section-intro">
-    Core và Academic của KBM đang dùng chung <code>core_db</code>, và Academic đọc thẳng bảng câu hỏi của Core. Lộ trình trong Ch.7 đi ba bước: tách schema, chuyển sang gọi API, rồi mới nhân bản dữ liệu tham chiếu qua event — mỗi bước giảm một kiểu phụ thuộc và thêm một kiểu chi phí.
+    Core và Academic của KBM đang dùng chung <code>core_db</code>, và Academic đọc thẳng bảng câu hỏi của Core. Lộ trình trong Chương 7 đi ba bước: tách schema, chuyển sang gọi API, rồi mới nhân bản dữ liệu tham chiếu qua event — mỗi bước giảm một kiểu phụ thuộc và thêm một kiểu chi phí.
   </p>
 
   <!-- Gap Table -->
@@ -252,7 +252,7 @@
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Nhân bản qua event</h4>
       <p>Core phát <code>QuestionUpdated</code>; Academic giữ bản sao chỉ phần tham chiếu (tên, độ khó). Cần bulk sync ban đầu và outbox.</p>
-      <span class="t-badge orange">§7.6 · Ch.10</span>
+      <span class="t-badge orange">§7.6 · Chương 10</span>
     </div>
   </div>
 
@@ -278,7 +278,7 @@
       </div>
       <ul class="decision-list">
         <li>Dữ liệu giao dịch ghi hai chiều (điểm, trạng thái bài nộp) — chỉ được sao một chiều sang read model.</li>
-        <li>Không xác định được ai là nguồn sự thật — dấu hiệu ranh giới context chưa đúng (Ch.2).</li>
+        <li>Không xác định được ai là nguồn sự thật — dấu hiệu ranh giới context chưa đúng (Chương 2).</li>
         <li>Phải luôn đọc bản mới nhất ngay sau khi ghi.</li>
         <li>Chưa có cách khởi tạo và đối soát bản sao — service mới sẽ chạy với dữ liệu rỗng.</li>
       </ul>
@@ -359,7 +359,7 @@ const NOTES = {
   'rename.ecst': 'Tên mới chỉ tới bản sao khi consumer xử lý xong event: trong khoảng đó giảng viên thấy tên cũ. Đó là eventual consistency — chấp nhận được với tên câu hỏi, không chấp nhận được với điểm số.',
   'bootstrap.n1': 'Instance mới gọi API nên có dữ liệu ngay.',
   'bootstrap.batch': 'Instance mới gọi API theo lô nên có dữ liệu ngay.',
-  'bootstrap.ecst': 'Instance mới khởi động với bản sao rỗng và chỉ nhận thay đổi từ lúc bật consumer; câu hỏi ít đổi thì có thể thiếu tên rất lâu. Cần bulk export/sync lúc dựng, hoặc đối soát định kỳ như ở t=38 s (Ch.7).',
+  'bootstrap.ecst': 'Instance mới khởi động với bản sao rỗng và chỉ nhận thay đổi từ lúc bật consumer; câu hỏi ít đổi thì có thể thiếu tên rất lâu. Cần bulk export/sync lúc dựng, hoặc đối soát định kỳ như ở t=38 s (Chương 7).',
 };
 
 // Kết quả của một lần tải trang ở thời điểm t.

@@ -30,7 +30,7 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">GraphQL vs REST</h1>
-  <p class="pattern-subtitle">So sánh giao thức và giải quyết bài toán truy vấn phân cấp N+1 Queries</p>
+  <p class="pattern-subtitle">So sánh giao thức và giải quyết bài toán truy vấn phân cấp N+1 query</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Communication Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Facebook (GraphQL), Roy Fielding (REST)</span></div>
@@ -189,7 +189,7 @@
         <tr><td class="gap-label">Dashboard tổng hợp</td><td><span class="b-med">GraphQL</span></td><td>Một query thay vì 5–10 lời gọi REST</td><td>Dashboard giảng viên (điểm, bài nộp, điểm danh)</td></tr>
         <tr><td class="gap-label">Public API</td><td><span class="b-low">REST</span></td><td>Chuẩn HTTP, cache, hệ sinh thái tài liệu</td><td>Nếu mở API cho bên thứ ba cần chọn trường: cân nhắc GraphQL</td></tr>
         <tr><td class="gap-label">CRUD đơn giản</td><td><span class="b-low">REST</span></td><td>Chi phí GraphQL không tương xứng</td><td>Quản lý câu hỏi, khóa học</td></tr>
-        <tr><td class="gap-label">Real-time</td><td><span class="b-med">GraphQL + WebSocket</span></td><td>Hỗ trợ subscription sẵn</td><td>KBM đẩy thông báo qua Kafka + WebSocket (Ch.5) — chưa cần</td></tr>
+        <tr><td class="gap-label">Real-time</td><td><span class="b-med">GraphQL + WebSocket</span></td><td>Hỗ trợ subscription sẵn</td><td>KBM đẩy thông báo qua Kafka + WebSocket (Chương 5) — chưa cần</td></tr>
       </tbody>
     </table>
   </div>
@@ -225,7 +225,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 4</div>
       <h4>Giới hạn độ sâu và độ phức tạp query</h4>
-      <p>Chặn truy vấn lồng nhau vô hạn trước khi mở cho client ngoài; kết hợp rate limiting ở Gateway (Ch.8).</p>
+      <p>Chặn truy vấn lồng nhau vô hạn trước khi mở cho client ngoài; kết hợp rate limiting ở Gateway (Chương 8).</p>
       <span class="t-badge green">✓ An toàn trước truy vấn độc hại</span>
     </div>
   </div>
@@ -262,7 +262,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về GraphQL, REST API, DataLoader Pattern, N+1 Queries, và thiết kế API Gateway BFF trong sách.</p>
+  <p>Đọc chi tiết về GraphQL, REST API, DataLoader Pattern, N+1 query, và thiết kế API Gateway BFF trong sách.</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-03')"><div class="badge badge-info">Read</div> Chương 3 — Thiết kế dịch vụ & API →</a>
 </div>
 

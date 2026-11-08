@@ -15,20 +15,20 @@
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-12.8" data-ref="CH12-SEC">
-    <div style="display: grid; grid-template-columns: auto 270px; gap: 40px; justify-content: center; align-items: stretch;">
+    <div style="display: grid; grid-template-columns: auto 270px; gap: 32px; justify-content: center; align-items: stretch;">
       <div class="d-cluster">
         <span class="d-label">LMS chính — Docker Compose</span>
-        <div style="display: grid; grid-template-columns: repeat(4, 130px); gap: 56px 20px; margin-top: 16px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 158px); gap: 56px 20px; margin-top: 16px;">
           <div class="d-box d-highlight text-center" id="d8-gw" style="grid-column: 1 / 5;"><div class="d-title">API Gateway</div><div class="d-sub">JWT, CORS, routing</div></div>
 
           <div class="d-box d-note text-center" id="d8-auth"><div class="d-title">kbm-auth</div></div>
           <div class="d-box d-service text-center" id="d8-acad"><div class="d-title">kbm-academic</div></div>
           <div class="d-box d-service text-center" id="d8-core"><div class="d-title">kbm-core</div></div>
-          <div class="d-box d-service text-center" id="d8-noti"><div class="d-title">kbm-notification</div></div>
+          <div class="d-box d-service text-center" id="d8-noti" style="padding-left: 8px; padding-right: 8px;"><div class="d-title">kbm-notification</div></div>
 
           <div class="d-box d-storage text-center" id="d8-pg" style="grid-column: 1 / 3;"><div class="d-title">PostgreSQL</div></div>
           <div class="d-box d-event text-center" id="d8-kafka"><div class="d-title">Kafka</div></div>
-          <div class="d-box d-event text-center" id="d8-judge"><div class="d-title">Judge</div><div class="d-sub">nhận job qua Kafka</div></div>
+          <div class="d-box d-event text-center" id="d8-judge"><div class="d-title">kbm-judge-sql</div><div class="d-sub">nhận job qua Kafka</div></div>
           <div class="d-box d-storage text-center" style="grid-column: 1 / 3;"><div class="d-title">Redis</div><div class="d-sub">rate limiting</div></div>
           <div class="d-box d-infra text-center" style="grid-column: 3 / 5;"><div class="d-title">Eureka</div><div class="d-sub">service discovery</div></div>
         </div>
@@ -38,7 +38,7 @@
         <span class="d-label">DevOps Lab</span>
         <div class="d-col" style="gap: 56px; margin-top: 16px;">
           <div class="d-box d-gateway text-center" id="d8-go"><div class="d-title">Go router</div><div class="d-sub">theo hostname</div></div>
-          <div class="d-box d-infra text-center" id="d8-k3s"><div class="d-title">k3s + Sysbox</div><div class="d-sub">Docker/k8s lồng nhau, không --privileged</div></div>
+          <div class="d-box d-infra text-center" id="d8-k3s"><div class="d-title">k3s + Sysbox</div><div class="d-sub">Docker/K8s lồng nhau, không --privileged</div></div>
           <div class="d-grid-2 d-gap-1">
             <div class="d-box d-service text-center" id="d8-w1"><div class="d-title">workspace</div><div class="d-sub">SV 1</div></div>
             <div class="d-box d-service text-center" id="d8-w2"><div class="d-title">workspace</div><div class="d-sub">SV 2 …</div></div>

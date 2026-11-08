@@ -186,7 +186,7 @@
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — đưa thay đổi ra khỏi database</h3>
-  <div class="sub-label">Theo §10.3, lộ trình chuyển đổi của KBM (§10.5, Giai đoạn 4) và Ch.7</div>
+  <div class="sub-label">Theo §10.3, lộ trình chuyển đổi của KBM (§10.5, Giai đoạn 4) và Chương 7</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -214,7 +214,7 @@
           <td class="gap-label">Điểm → Leaderboard</td>
           <td>"Thử gọi đồng bộ trước, lỗi mới ghi outbox" không đóng được cửa sổ ghi kép.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Outbox là đường mặc định, kèm <code>eventId</code> ổn định và <code>scoreVersion</code>; lời gọi đồng bộ chỉ là fast path (Ch.7).</td>
+          <td>Outbox là đường mặc định, kèm <code>eventId</code> ổn định và <code>scoreVersion</code>; lời gọi đồng bộ chỉ là fast path (Chương 7).</td>
         </tr>
         <tr>
           <td class="gap-label">Tách database</td>
@@ -345,9 +345,9 @@ function summarize(sim, w) {
 function note(load, relay, fault) {
   const R = RELAYS[relay], parts = [];
   if (relay === 'cdc') parts.push('CDC đẩy event gần như ngay sau commit và không gửi truy vấn nào vào database — đổi lại là Kafka Connect, connector Debezium và một replication slot phải được giám sát.');
-  else parts.push(`Polling ${R.I} s: độ trễ trung bình khoảng nửa chu kỳ, và relay vẫn truy vấn database ${Math.round(60 / R.I)} lần mỗi phút cả khi không có bài nộp nào. ${R.I === 1 ? 'Quét dày thì trễ thấp nhưng tốn truy vấn.' : 'Quét thưa thì ít truy vấn nhưng trễ vài giây — vẫn nhỏ so với mục tiêu trả kết quả chấm (p99 < 45 s, §1.5).'}`);
+  else parts.push(`Polling ${R.I} s: độ trễ trung bình khoảng nửa chu kỳ, và relay vẫn truy vấn database ${Math.round(60 / R.I)} lần mỗi phút cả khi không có bài nộp nào. ${R.I === 1 ? 'Quét dày thì trễ thấp nhưng tốn truy vấn.' : 'Quét thưa thì ít truy vấn nhưng trễ vài giây — vẫn nhỏ so với mục tiêu trả kết quả chấm (P99 < 45 s, §1.5).'}`);
   if (load === 'low' && relay !== 'cdc') parts.push('Với lưu lượng thấp như KBM hiện tại, đây là lựa chọn sách đề xuất ở trung hạn.');
-  if (load === 'exam' && relay !== 'cdc') parts.push('Giờ thi: mỗi lần quét gom nhiều dòng hơn, số truy vấn gần như không đổi (vẫn một SELECT mỗi lần quét) — polling chịu tải cao tốt hơn ta thường nghĩ.');
+  if (load === 'exam' && relay !== 'cdc') parts.push('Giờ thi: mỗi lần quét gom nhiều dòng hơn, số truy vấn gần như không đổi (vẫn một SELECT mỗi lần quét) — polling chịu tải cao tốt hơn chúng ta thường nghĩ.');
   if (fault === 'down') parts.push(relay === 'cdc'
     ? 'Connector dừng: không mất event nào vì WAL được replication slot giữ lại; khi chạy lại, Debezium đọc bù. Cái giá: dừng lâu mà không ai biết thì WAL chiếm dần ổ đĩa của database.'
     : 'Polling publisher dừng: các dòng chưa gửi nằm lại trong bảng outbox; khi chạy lại, lần quét đầu gửi bù. Không mất event nào — nhưng event có thể bị gửi lại nếu relay dừng giữa lúc gửi và đánh dấu, nên Judge phải idempotent.');
@@ -356,7 +356,7 @@ function note(load, relay, fault) {
 
 // ── CDC khi tách database (§10.3; khởi tạo dữ liệu ban đầu theo Ch.7) ──
 const CUT = [
-  ['Snapshot ban đầu', 'Chép dữ liệu hiện có sang database của service mới — không có bước này, service mới khởi động với bản sao rỗng (Ch.7).', 'khởi tạo'],
+  ['Snapshot ban đầu', 'Chép dữ liệu hiện có sang database của service mới — không có bước này, service mới khởi động với bản sao rỗng (Chương 7).', 'khởi tạo'],
   ['Stream thay đổi', 'Monolith vẫn ghi database cũ; CDC bắt từng thay đổi và đẩy sang database mới liên tục.', 'đồng bộ'],
   ['Chặn ghi vài giây', 'Tạm dừng thao tác ghi ở monolith để CDC đuổi kịp độ trễ sao chép.', 'cut-over'],
   ['Độ trễ sao chép = 0', 'Database mới đã có đủ mọi thay đổi.', 'kiểm tra'],

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Distributed Tracing — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Distributed Tracing pattern — truy vết yêu cầu xuyên suốt các microservices với correlation ID, W3C Trace Context và OpenTelemetry.">
+  <meta name="description" content="Distributed Tracing pattern — truy vết yêu cầu xuyên suốt các microservice với correlation ID, W3C Trace Context và OpenTelemetry.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="Distributed Tracing — Pattern Story">
-  <meta property="og:description" content="Distributed Tracing pattern — truy vết yêu cầu xuyên suốt các microservices với correlation ID, W3C Trace Context và OpenTelemetry.">
+  <meta property="og:description" content="Distributed Tracing pattern — truy vết yêu cầu xuyên suốt các microservice với correlation ID, W3C Trace Context và OpenTelemetry.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
@@ -155,12 +155,12 @@
   </div>
 
   <p class="section-intro">
-    KBM được đánh giá ở Cấp 2 đang tiến lên Cấp 3: đã có Actuator/Prometheus cho một phần hệ thống, <code>X-Request-ID</code>/MDC ở shared layer, zerolog ở các service Go, và Promtail/Loki/Grafana cho DevOps Lab — nhưng chưa có distributed tracing, và các định danh chưa được giữ nguyên xuyên suốt Gateway → service → Kafka → Judge. Mục tiêu hợp lý cho một LMS quy mô trung bình là Cấp 3, mở rộng lên Cấp 4 khi cần (§11.9).
+    KBM được đánh giá ở Cấp 2 đang tiến lên Cấp 3: đã có Actuator/Prometheus cho một phần hệ thống, <code>X-Request-ID</code>/MDC ở thư viện dùng chung, zerolog ở các service Go, và Promtail/Loki/Grafana cho DevOps Lab — nhưng chưa có distributed tracing, và các định danh chưa được giữ nguyên xuyên suốt Gateway → service → Kafka → Judge. Mục tiêu hợp lý cho một LMS quy mô trung bình là Cấp 3, mở rộng lên Cấp 4 khi cần (§11.9).
   </p>
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — truy vết trong KBM</h3>
-  <div class="sub-label">Theo bảng mức trưởng thành theo thành phần và lộ trình ở case study Ch.11 (§11.9)</div>
+  <div class="sub-label">Theo bảng mức trưởng thành theo thành phần và lộ trình ở case study Chương 11 (§11.9)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -202,7 +202,7 @@
 
   <!-- Timeline -->
   <h3 class="sub-heading">Lộ trình</h3>
-  <div class="sub-label">Lộ trình tăng dần trong case study Ch.11 — mỗi giai đoạn có giá trị ngay; chưa phải việc KBM đã làm xong</div>
+  <div class="sub-label">Lộ trình tăng dần trong case study Chương 11 — mỗi giai đoạn có giá trị ngay; chưa phải việc KBM đã làm xong</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
@@ -232,7 +232,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 4</div>
       <h4>Metric nghiệp vụ + cảnh báo theo SLO</h4>
-      <p>Cảnh báo tức thời khi Judge ngừng; độ trễ bất thường chỉ là cảnh báo nhẹ — tránh alert fatigue.</p>
+      <p>Cảnh báo tức thời khi Judge ngừng; phân mức cảnh báo độ trễ theo ngưỡng SLO và mức ảnh hưởng đến người dùng — tránh alert fatigue.</p>
       <span class="t-badge orange">§11.9</span>
     </div>
   </div>
@@ -247,7 +247,7 @@
       </div>
       <ul class="decision-list">
         <li>Request đi qua nhiều service, có cả chặng bất đồng bộ qua Kafka/queue.</li>
-        <li>Cần trả lời "chậm ở đâu" nhanh, như trong chế độ thi với SLO p99 &lt; 45 s.</li>
+        <li>Cần trả lời "chậm ở đâu" nhanh, như trong chế độ thi với SLO P99 &lt; 45 s.</li>
         <li>Đã có log có cấu trúc và correlation ID — tracing xây trên nền đó.</li>
         <li>Có chỗ lưu và người xem trace; có chiến lược lấy mẫu.</li>
       </ul>
@@ -288,7 +288,7 @@
 <script>
 // ── Act 3: cùng một bài nộp, bốn mức công cụ (Ch.11 §11.1–11.3) ─────────────────────────────
 // Kịch bản xác định. Thời lượng minh họa: bình thường execute SQL 0,57 s (~75% tổng — sách: 570 ms, ~70%);
-// "chờ ở Kafka" = bài nằm hàng đợi 6 s (head-of-line blocking, Ch.5); "SQL sandbox" = câu SQL chạy 6,2 s.
+// "chờ ở Kafka" = bài nằm hàng đợi 6 s (head-of-line blocking, Chương 5); "SQL sandbox" = câu SQL chạy 6,2 s.
 const SCENS = {
   normal: { label: 'Bình thường', hint: 'tổng khoảng 0,75 s' },
   queue:  { label: 'Chậm — chờ ở Kafka', hint: 'tổng khoảng 6,8 s' },
@@ -306,11 +306,10 @@ log.info("Saved submission");
 
 // 12:00:00.050 [kbm-core]
 //   Saved submission`,
-  corr: `// Gateway (Listing 11.3): sinh ID nếu chưa có
-String id = headers
-    .getFirst("X-Request-ID");
-if (id == null)
-    id = UUID.randomUUID().toString();
+  corr: `// Gateway (Listing 11.3): kiểm tra hoặc sinh mới
+String in = headers.getFirst("X-Request-ID");
+String id = (in != null && SAFE_ID.matcher(in).matches())
+    ? in : "req-" + UUID.randomUUID();
 // service đọc header → MDC requestId;
 // Kafka: correlationId trong envelope
 // logback: %X{requestId} %X{correlationId}`,

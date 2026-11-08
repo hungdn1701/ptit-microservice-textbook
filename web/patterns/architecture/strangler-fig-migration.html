@@ -179,7 +179,7 @@
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — những khoảng trống mức cao</h3>
-  <div class="sub-label">Trích bảng tổng hợp khoảng trống Ch.1–12 (§10.5)</div>
+  <div class="sub-label">Trích bảng tổng hợp khoảng trống Chương 2–9 và hai điều kiện tiên quyết Chương 11–12 (§10.5)</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -201,7 +201,7 @@
           <td class="gap-label">Ch.8</td>
           <td>Spring Cloud Gateway + Go router cần thống nhất chính sách ở biên.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Giai đoạn 1 (CORS, JJWT, correlation ID) và 3 (rate limit cho kỳ thi).</td>
+          <td>Giai đoạn 1 (CORS, JJWT, ngữ cảnh truy vết) và 3 (rate limit cho kỳ thi).</td>
         </tr>
         <tr>
           <td class="gap-label">Ch.9</td>
@@ -236,7 +236,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 1 · Quick wins</div>
       <h4>Chuẩn hóa cấu hình, tăng bảo mật</h4>
-      <p>Giới hạn CORS origin, thống nhất JJWT trong parent POM, log JSON, correlation ID GlobalFilter, secret ra biến môi trường — không đổi kiến trúc tổng thể.</p>
+      <p>Giới hạn CORS origin, thống nhất JJWT trong parent POM, log JSON, chuẩn hóa ngữ cảnh truy vết (<code>X-Request-ID</code>, <code>traceparent</code>, <code>correlationId</code>), đưa secret ra biến môi trường — không đổi kiến trúc tổng thể.</p>
       <span class="t-badge orange">Nỗ lực thấp · tác động cao</span>
     </div>
     <div class="timeline-item" data-delay="250">
@@ -250,7 +250,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Resilience và CI/CD</h4>
-      <p>Circuit Breaker cho Feign client, Kafka DLQ + retry, rate limit cho kỳ thi, CI/CD tự động — hệ thống phải bền trước khi bị xẻ nhỏ.</p>
+      <p>Circuit Breaker cho Feign client, Kafka DLT + retry, rate limit cho kỳ thi, CI/CD tự động — hệ thống phải bền trước khi bị xẻ nhỏ.</p>
       <span class="t-badge orange">Chịu lỗi trước khi tách</span>
     </div>
     <div class="timeline-item" data-delay="750">
@@ -273,7 +273,7 @@
       <ul class="decision-list">
         <li>Hệ thống đang chạy production, không thể dừng để viết lại.</li>
         <li>Có một điểm tiếp nối — API Gateway hay reverse proxy — đứng trước hệ thống cũ.</li>
-        <li>Ranh giới bounded context đã rõ, để mỗi bước tách đúng chỗ (Ch.2).</li>
+        <li>Ranh giới Bounded Context đã rõ, để mỗi bước tách đúng chỗ (Chương 2).</li>
         <li>Muốn người dùng nhận giá trị sau từng bước, không chờ ngày chuyển.</li>
       </ul>
     </div>

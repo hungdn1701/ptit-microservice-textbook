@@ -82,7 +82,7 @@
     <p class="definition-text">
       Circuit Breaker quan sát kết quả các lời gọi. Tỷ lệ lỗi vượt ngưỡng thì mạch chuyển sang <code>OPEN</code>: mọi request bị từ chối ngay, không gửi tới downstream — caller không bị chặn luồng, callee không bị dồn tải khi đang phục hồi. Sau một khoảng chờ, <code>HALF-OPEN</code> cho vài request thử đi qua; thành công thì đóng lại, thất bại thì ngắt tiếp.
     </p>
-    <div class="definition-attribution">— Michael Nygard · Release It! (2007) · [5, Ch.7]</div>
+    <div class="definition-attribution">— Michael Nygard · Release It! (2007); tổng hợp trong Hugo Rocha [5, Ch.7]</div>
   </div>
 
   <p class="section-intro">
@@ -290,7 +290,7 @@
       </div>
       <ul class="decision-list">
         <li>Gọi đồng bộ qua mạng (HTTP, gRPC, Feign) tới service có thể chậm hoặc ngừng.</li>
-        <li>Nhiều downstream cần cách ly lỗi với nhau — như các worker theo DBMS.</li>
+        <li>Nhiều downstream cần cô lập lỗi với nhau — như các worker theo DBMS.</li>
         <li>Tích hợp hệ thống bên ngoài (QLĐT, GitHub Classroom) sau Anti-Corruption Layer.</li>
         <li>Có một fallback có nghĩa với người dùng: hàng đợi chấm lại, dữ liệu cache, thông báo rõ ràng.</li>
       </ul>
@@ -370,7 +370,7 @@ const NOTES = {
   'hang.none':       'Không có Circuit Breaker: mỗi bài MySQL giữ một luồng tới hết timeout 5 s, Retry nhân lên ba lần — có bài chờ 5 + 1 + 5 + 2 + 5 = 18 s mới nhận fallback. Mười luồng chung đầy dần bằng lời gọi treo, nên bài SQL Server — worker vẫn khỏe — cũng bị từ chối vì Bulkhead đầy: lỗi dây chuyền (§4.4).',
   'hang.shared':     'Một Circuit Breaker chung: đơn giản, một bộ cấu hình, đủ dùng khi chỉ có một worker. Nhưng nó đếm lỗi chung, nên khi đủ ngưỡng nó chặn cả SQL Server — worker khỏe cũng bị ngắt theo. Nhiều worker thì cần tách (§4.5, vấn đề #3).',
   'hang.worker':     'Circuit Breaker theo worker (Giai đoạn 2): kbm-sandbox-mysql ngắt riêng, bài MySQL nhận fallback ngay, SQL Server chấm tiếp. Còn một khoảng hở: trước khi cửa sổ 10 lời gọi đủ lỗi, các lời gọi treo vẫn chiếm luồng chung — Circuit Breaker phản ứng sau, không ngăn trước.',
-  'hang.bulk':       'Thêm Bulkhead riêng cho từng worker: lời gọi treo chỉ làm đầy phần của MySQL, SQL Server không phải chờ ngay từ đầu. Đổi lại là thêm cấu hình và luồng dự trữ có lúc nằm không. Circuit Breaker và Bulkhead bổ trợ nhau (§4.4, Kết hợp các patterns).',
+  'hang.bulk':       'Thêm Bulkhead riêng cho từng worker: lời gọi treo chỉ làm đầy phần của MySQL, SQL Server không phải chờ ngay từ đầu. Đổi lại là thêm cấu hình và luồng dự trữ có lúc nằm không. Circuit Breaker và Bulkhead bổ trợ nhau (§4.4, Kết hợp các pattern).',
   'recover.healthy': 'Trong lúc OPEN, bài MySQL nhận fallback ngay, không ai giữ luồng. Hết 30 s mạch sang HALF-OPEN; 3 lời gọi thử thành công nên mạch đóng lại và bài MySQL được chấm bình thường.',
   'recover.still':   'Lời gọi thử vẫn timeout nên mạch quay lại OPEN và chờ thêm 30 s. Chỉ 3 lời gọi thử được đi qua, nên một worker đang hồi phục không bị dồn tải (§4.4).',
   'flaky.ops':       'Worker lỗi khoảng 35% lượt gọi (lỗi nhanh, như mất kết nối). Retry che phần lớn — chỉ vài bài lỗi cả 3 lần phải chấm sau; ngưỡng 50% không bị chạm nên mạch không ngắt, đúng với lỗi tạm thời.',

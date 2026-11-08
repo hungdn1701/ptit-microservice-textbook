@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CQRS & Event Sourcing — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ leaderboard contest của KBM.">
+  <meta name="description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ bảng xếp hạng kỳ thi của KBM.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="CQRS & Event Sourcing — Pattern Story">
-  <meta property="og:description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ leaderboard contest của KBM.">
+  <meta property="og:description" content="CQRS & Event Sourcing — tách mô hình đọc/ghi, lưu chuỗi sự kiện thay vì trạng thái; ví dụ bảng xếp hạng kỳ thi của KBM.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
@@ -57,7 +57,7 @@
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Một model</div></div>
       <h3>Đọc và ghi cần hai thứ khác nhau</h3>
-      <p>Ghi cần nhất quán, validation, quy tắc nghiệp vụ — dữ liệu chuẩn hóa. Đọc cần nhanh — dữ liệu phi chuẩn hóa, gộp sẵn. Nghiêm trọng nhất là truy vấn xuyên service: bảng xếp hạng contest cần dữ liệu của Core, Judge và Auth, nhưng không thể JOIN khi chúng nằm ở ba database.</p>
+      <p>Ghi cần nhất quán, validation, quy tắc nghiệp vụ — dữ liệu chuẩn hóa. Đọc cần nhanh — dữ liệu phi chuẩn hóa, gộp sẵn. Nghiêm trọng nhất là truy vấn xuyên service: bảng xếp hạng kỳ thi cần dữ liệu của Core, Judge và Auth, nhưng không thể JOIN khi chúng nằm ở ba database.</p>
     </div>
     <div class="problem-card warning">
       <div class="problem-icon"><div class="badge badge-warning">Mất lịch sử</div></div>
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Ví dụ bảng xếp hạng contest của KBM (§7.4). Cả hai chế độ dưới đây đều là CQRS — phía đọc là một read model riêng; khác nhau ở cách read model được cập nhật, và mỗi cách là một đánh đổi. Sau vài lượt nộp, dựng thêm một view mới từ chuỗi sự kiện để thấy Event Sourcing (§7.5).</p>
+  <p class="section-intro">Ví dụ bảng xếp hạng kỳ thi của KBM (§7.4). Cả hai chế độ dưới đây đều là CQRS — phía đọc là một read model riêng; khác nhau ở cách read model được cập nhật, và mỗi cách là một đánh đổi. Sau vài lượt nộp, dựng thêm một view mới từ chuỗi sự kiện để thấy Event Sourcing (§7.5).</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Read model</span><div class="sim-chips" id="cq-modes"></div></div>
@@ -185,7 +185,7 @@
     </div>
     <div class="sim-panel is-info">
       <div class="sim-panel-title">View mới: learning_progress <span class="sim-hint">dựng bằng replay</span></div>
-      <div class="sim-controls"><button class="sim-btn" id="cq-replay" type="button">↻ Dựng view từ events</button></div>
+      <div class="sim-controls"><button class="sim-btn" id="cq-replay" type="button">↻ Dựng view từ sự kiện</button></div>
       <div class="sim-scroll">
         <table class="sim-table" id="cq-progress">
           <thead><tr><th>Sinh viên</th><th class="num">Số lần nộp</th><th>Điểm các lần</th></tr></thead>
@@ -208,7 +208,7 @@
   </div>
 
   <p class="section-intro">
-    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Academic chung <code>core_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và contest đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
+    Hiện KBM dùng cách đơn giản: bảng xếp hạng là SQL JOIN trực tiếp, lịch sử bài nộp là CRUD, Core và Academic chung <code>core_db</code> — ở quy mô hiện tại vẫn chạy được. KBM ở đây là ví dụ để thấy lý thuyết vận hành: khi database tách theo service và kỳ thi đông người, leaderboard là chỗ CQRS phát huy; chọn cập nhật đồng bộ hay bất đồng bộ là đánh đổi giữa trải nghiệm tức thời và độ tách rời. Event Sourcing cho lịch sử bài nộp có giá trị cho phân tích học tập, nhưng chi phí phức tạp khiến nó chưa ưu tiên với nhóm nhỏ (§7.4–7.6).
   </p>
 
   <!-- Gap Table -->
@@ -229,19 +229,19 @@
           <td class="gap-label">Leaderboard</td>
           <td>SQL JOIN trực tiếp; sẽ không còn khả thi khi database tách theo service.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Read model riêng. Sách chọn Redis Sorted Set cập nhật đồng bộ (Composite Score) + outbox, <code>eventId</code>, <code>scoreVersion</code>, đẩy thay đổi qua WebSocket/SSE — ưu tiên trải nghiệm tức thời của contest.</td>
+          <td>Read model riêng. Sách chọn Redis Sorted Set cập nhật đồng bộ (Composite Score) + outbox, <code>eventId</code>, <code>scoreVersion</code>, đẩy thay đổi qua WebSocket/SSE — ưu tiên trải nghiệm tức thời của kỳ thi.</td>
         </tr>
         <tr>
           <td class="gap-label">Shared database</td>
           <td>Core và Academic cùng <code>core_db</code>.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Schema riêng có database role chặn cross-schema → truy cập qua API → full split khi cần scale độc lập.</td>
+          <td>Schema riêng có database role chặn cross-schema → truy cập qua API → full split khi cần mở rộng độc lập.</td>
         </tr>
         <tr>
           <td class="gap-label">Read model học vụ</td>
           <td>Grade Scheme, Attendance, MCQ Daily, CLO cần tổng hợp dữ liệu khóa học, lớp, bài làm.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Xác định owner rõ ràng; bản sao read-only qua events hoặc materialized views, không thành nguồn sự thật thứ hai.</td>
+          <td>Xác định owner rõ ràng; bản sao read-only qua sự kiện hoặc materialized view, không thành nguồn sự thật thứ hai.</td>
         </tr>
         <tr>
           <td class="gap-label">Submission history</td>
@@ -285,14 +285,14 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 4</div>
       <h4>Leaderboard thời gian thực với Redis</h4>
-      <p>Leaderboard Service giữ Redis Sorted Set; Core gọi đồng bộ (fast path) và ghi outbox trong cùng transaction (đường bền vững). <code>ZREVRANK</code> O(log N) in-memory.</p>
-      <span class="t-badge orange">Chi phí cao · giá trị lớn cho contest</span>
+      <p>Tại KBM, <code>kbm-core</code> (hoặc <code>kbm-exam</code>) cập nhật trực tiếp Redis Sorted Set trên đường ghi chính (fast path) và ghi outbox trong cùng transaction (đường bền vững). <code>ZREVRANK</code> O(log N) in-memory.</p>
+      <span class="t-badge orange">Chi phí cao · giá trị lớn cho chế độ thi</span>
     </div>
     <div class="timeline-item" data-delay="800">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 5</div>
       <h4>Read model cho phân tích học tập</h4>
-      <p>Grade Scheme, Attendance, MCQ Daily, CLO là read model học vụ; owner dữ liệu gốc vẫn ở bounded context tương ứng.</p>
+      <p>Grade Scheme, Attendance, MCQ Daily, CLO là read model học vụ; owner dữ liệu gốc vẫn ở Bounded Context tương ứng.</p>
       <span class="t-badge orange">Khi mở rộng học vụ</span>
     </div>
   </div>
@@ -307,7 +307,7 @@
       </div>
       <ul class="decision-list">
         <li>CQRS: truy vấn phức tạp xuyên service, không JOIN được khi database đã tách.</li>
-        <li>CQRS: lượng đọc lớn hơn nhiều lượng ghi — cần scale phía đọc độc lập.</li>
+        <li>CQRS: lượng đọc lớn hơn nhiều lượng ghi — cần mở rộng phía đọc độc lập.</li>
         <li>Event Sourcing: yêu cầu audit trail, không được xóa lịch sử.</li>
         <li>Event Sourcing: phân tích theo thời gian — "trạng thái tại thời điểm X".</li>
       </ul>
@@ -350,7 +350,7 @@
 // ── Act 3: read model cho leaderboard (Chương 7 §7.4) + projection rebuild (§7.5) ─────────────
 // Theo sách: CQRS bất đồng bộ qua Kafka sinh replication lag → người vừa nộp thấy hạng cũ; không dùng
 // cho live leaderboard. Đề xuất: Core ghi điểm + outbox (eventId, scoreVersion) trong cùng transaction,
-// gọi đồng bộ Leaderboard (fast path) → ZADD Composite Score; relay từ outbox tới sau được bỏ qua nhờ
+// cập nhật đồng bộ vào Redis Sorted Set (fast path, trên sơ đồ tách nút Leaderboard để thấy rõ phía đọc) → ZADD Composite Score; relay từ outbox tới sau được bỏ qua nhờ
 // eventId (idempotent) và scoreVersion (không ghi đè điểm mới). Fast path lỗi → relay vẫn cập nhật.
 const MODES = {
   kafka: { label: 'Cập nhật bất đồng bộ', hint: 'Core publish qua Kafka, Leaderboard consume sau — tách rời, có độ trễ' },
@@ -358,9 +358,9 @@ const MODES = {
 };
 const FAULTS = { none: 'Không', fast: 'Fast path lỗi' };
 const NOTES = {
-  'kafka.none':  'Được: Core không phụ thuộc Leaderboard lúc chạy, phía đọc scale độc lập. Mất: người vừa nộp đọc trước khi event được consume nên thấy hạng cũ — ổn cho báo cáo hay phân tích, nhưng với live leaderboard thì trải nghiệm kém, và optimistic UI không cứu được vì hạng phụ thuộc điểm người khác (§7.4).',
+  'kafka.none':  'Được: Core không phụ thuộc Leaderboard lúc chạy, phía đọc mở rộng độc lập. Mất: người vừa nộp đọc trước khi event được consume nên thấy hạng cũ — ổn cho báo cáo hay phân tích, nhưng với bảng xếp hạng trực tiếp thì trải nghiệm kém, và optimistic UI không cứu được vì hạng phụ thuộc điểm người khác (§7.4).',
   'kafka.fast':  'Chế độ bất đồng bộ không có fast path — chọn "Cập nhật đồng bộ + outbox" để xem sự cố này.',
-  'redis.none':  'Được: người nộp đọc lại thấy ngay điểm của mình (read-after-write). Mất: Core gọi đồng bộ sang Leaderboard, thêm outbox, eventId, scoreVersion — phức tạp hơn. Bản relay đến sau mang cùng eventId nên bị bỏ qua.',
+  'redis.none':  'Được: người nộp đọc lại thấy ngay điểm của mình (read-after-write). Mất: thêm bước cập nhật đồng bộ vào Redis Sorted Set cùng outbox, eventId, scoreVersion — phức tạp hơn. Bản relay đến sau mang cùng eventId nên bị bỏ qua.',
   'redis.fast':  'Lời gọi đồng bộ lỗi: người nộp tạm thấy hạng cũ, nhưng không mất cập nhật — outbox đã ghi trong cùng transaction và relay áp dụng sau (§7.4).',
 };
 // Chuỗi lượt nộp cố định để thứ hạng thay đổi rõ (điểm thang 0–100 theo invariant của Composite Score).
@@ -493,7 +493,7 @@ function renderProgress() {
   const p = state.progress;
   $('cq-progress').querySelector('tbody').innerHTML = p
     ? Object.entries(p).sort().map(([sv, xs]) => `<tr><td>${sv}</td><td class="num">${xs.length}</td><td>${xs.join(' → ')}</td></tr>`).join('')
-    : '<tr><td colspan="3">Chưa dựng — bấm "Dựng view từ events".</td></tr>';
+    : '<tr><td colspan="3">Chưa dựng — bấm "Dựng view từ sự kiện".</td></tr>';
 }
 
 // ── Render ───────────────────────────────────────────────────────────────────────────────

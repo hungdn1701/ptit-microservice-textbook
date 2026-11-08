@@ -182,7 +182,7 @@
           <td class="gap-label">Chiến lược triển khai</td>
           <td>All-at-once (stop → deploy → start): có downtime.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Blue/Green trước và sau kỳ thi; Rolling giữa tuần; all-at-once vẫn chấp nhận được trong bảo trì dịp nghỉ hè.</td>
+          <td>Ngoài cửa sổ đóng băng của kỳ thi dùng Blue/Green khi cần rollback nhanh; Rolling giữa tuần (khi có orchestrator); all-at-once dịp nghỉ hè.</td>
         </tr>
         <tr>
           <td class="gap-label">CI/CD</td>
@@ -208,7 +208,7 @@
 
   <!-- Timeline -->
   <h3 class="sub-heading">Lộ trình</h3>
-  <div class="sub-label">Lộ trình tăng dần trong case study Ch.12 (§12.7) — chưa phải việc KBM đã làm xong</div>
+  <div class="sub-label">Lộ trình tăng dần trong case study Chương 12 (§12.7) — chưa phải việc KBM đã làm xong</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
@@ -231,7 +231,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 3</div>
       <h4>Zero-downtime</h4>
-      <p>Rolling với nhiều instance song song, hoặc Blue/Green cho thời điểm tải cao như kỳ thi — kèm migration Expand/Contract.</p>
+      <p>Blue/Green sau reverse proxy (hai bộ container, chuyển upstream) trên Docker Compose, kèm migration Expand/Contract; Rolling Update khi chuyển sang orchestrator ở Giai đoạn 4.</p>
       <span class="t-badge orange">§12.7 · §12.4</span>
     </div>
     <div class="timeline-item" data-delay="750">
@@ -339,7 +339,7 @@ metadata:
 # CHỈ bản cũ được ghi điểm cho sinh viên
 mirror: kbm-judge-v2   # không ghi DB chung`,
 };
-const EC_SQL = `\n-- Expand/Contract (§12.4)\nALTER TABLE grades ADD COLUMN he_so_10 DECIMAL;\n-- … deploy v2, backfill bằng job nền …\n-- sau khi v1 dừng hẳn:\nALTER TABLE grades DROP COLUMN he_so_4;`;
+const EC_SQL = `\n-- Expand/Contract (§12.4)\nALTER TABLE grades ADD COLUMN score_10 DECIMAL(4,2);\n-- … v1.1 ghi song song cả 2 cột → backfill theo lô → v2 chỉ dùng score_10 …\n-- sau khi v1 dừng hẳn:\nALTER TABLE grades DROP COLUMN score;`;
 
 // Sinh các bước. inst: mảng nhãn 'v1' | 'v2' | 'start' | 'bad' (v1 lỗi với schema mới).
 function plan(strat, scen) {

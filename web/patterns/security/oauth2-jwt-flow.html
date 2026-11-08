@@ -82,7 +82,7 @@
     <p class="definition-text">
       Đóng gói thông tin định danh vào chính token kèm chữ ký số: service nhận request tự xác minh chữ ký và các claim, không cần tra kho phiên. Chỉ Auth Service giữ khóa ký (RS256: private key); các service khác xác minh bằng public key lấy qua JWKS. Access token ngắn hạn, refresh token dài hạn và được luân phiên sau mỗi lần dùng.
     </p>
-    <div class="definition-attribution">— RFC 7519 (JWT) · RFC 6749 (OAuth 2.0) · Sam Newman, Building Microservices, Ch.9</div>
+    <div class="definition-attribution">— RFC 7519 (JWT) · RFC 6749 (OAuth 2.0) · Sam Newman, Building Microservices (2nd ed.) [1, Ch.11] · Chương 9 §9.2–9.4</div>
   </div>
 
   <p class="section-intro">
@@ -93,7 +93,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 01</div>
       <h3>Auth Service (issuer)</h3>
-      <p>Xác thực người dùng rồi phát hành cặp access token + refresh token. Với RS256 đây là nơi duy nhất giữ private key; public keys được công bố qua endpoint JWKS, nên luân phiên khóa không cần phân phát secret mới cho từng service.</p>
+      <p>Xác thực người dùng rồi phát hành cặp access token + refresh token. Với RS256 đây là nơi duy nhất giữ private key; các public key được công bố qua endpoint JWKS, nên luân phiên khóa không cần phân phát secret mới cho từng service.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
@@ -251,7 +251,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2 · Authentication Hardening</div>
       <h4>RS256 + JWKS, refresh token rotation</h4>
-      <p>Auth Service ký bằng private key và công bố public keys qua JWKS. Gateway và resource service dùng Spring Security OAuth2 Resource Server. Làm mới token kèm luân phiên; chuẩn hóa SSO theo token exchange với issuer/audience rõ ràng.</p>
+      <p>Auth Service ký bằng private key và công bố các public key qua JWKS. Gateway và resource service dùng Spring Security OAuth2 Resource Server. Làm mới token kèm luân phiên; chuẩn hóa SSO theo token exchange với issuer/audience rõ ràng.</p>
       <span class="t-badge orange">Nỗ lực trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">

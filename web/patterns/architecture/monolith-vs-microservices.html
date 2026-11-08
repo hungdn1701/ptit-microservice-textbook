@@ -202,19 +202,19 @@
           <td class="gap-label">Shared database</td>
           <td>Nhanh, không cần API giữa SQL Practice và Academic → đổi bảng của bên này làm hỏng bên kia, phải deploy cùng lúc.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Schema riêng → truy cập qua API → database riêng (Ch.7).</td>
+          <td>Schema riêng → truy cập qua API → database riêng (Chương 7).</td>
         </tr>
         <tr>
           <td class="gap-label">Shared library quá lớn</td>
           <td>Tái sử dụng entity, security, SQL parser → mỗi thay đổi nhỏ buộc build và deploy lại mọi service.</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Thu hẹp phần dùng chung; chỉ chia sẻ thứ ổn định (Ch.2).</td>
+          <td>Thu hẹp phần dùng chung; chỉ chia sẻ thứ ổn định (Chương 2).</td>
         </tr>
         <tr>
           <td class="gap-label">Observability</td>
           <td>"Nhóm nhỏ đọc log trực tiếp cho nhanh" → mùa thi Judge chậm mà không biết nghẽn ở đâu.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Log có cấu trúc + correlation ID trước, rồi tracing, metric (Ch.11).</td>
+          <td>Log có cấu trúc + correlation ID trước, rồi tracing, metric (Chương 11).</td>
         </tr>
       </tbody>
     </table>
@@ -238,13 +238,13 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Chuyển đổi tăng dần</div>
       <h4>Tách thành các service kbm-*</h4>
-      <p>Strangler Fig thay từng phần, không viết lại một lần (Ch.10). Bộ chấm code chuyển sang DOMjudge — tích hợp giải pháp đã kiểm chứng thay vì tự duy trì.</p>
+      <p>Strangler Fig thay từng phần, không viết lại một lần (Chương 10). Bộ chấm code chuyển sang DOMjudge — tích hợp giải pháp đã kiểm chứng thay vì tự duy trì.</p>
       <span class="t-badge orange">Ch.10, Ch.4</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Hiện tại</div>
-      <h4>7 bounded context core, polyglot Java + Go</h4>
+      <h4>7 Bounded Context core, polyglot Java + Go</h4>
       <p>Còn shared database giữa SQL Practice và Academic, shared library lớn; LMS chạy Docker Compose, DevOps Lab trên k3s/Sysbox.</p>
       <span class="t-badge orange">Ch.2, Ch.7, Ch.12</span>
     </div>
@@ -341,12 +341,12 @@ const CASES = {
   hang:  { label: 'Bài nộp treo bộ chấm', hint: 'mã sinh viên vòng lặp vô hạn',
            patch: [NODES, 'danger', 'Bài chạy chung tiến trình máy chủ (như bộ chấm đầu tiên của KBM, không sandbox) → cả hệ thống chậm hoặc sập.'],
            mod:   [NODES, 'danger', 'Module khác không gọi Judge vẫn chung tiến trình, chung tài nguyên → bị kéo theo.'],
-           micro: [['judge'], 'danger', 'Chỉ SQL Judge bị ảnh hưởng — với điều kiện bên gọi có timeout và circuit breaker (Ch.4); không có thì lỗi vẫn lan.'],
+           micro: [['judge'], 'danger', 'Chỉ SQL Judge bị ảnh hưởng — với điều kiện bên gọi có timeout và circuit breaker (Chương 4); không có thì lỗi vẫn lan.'],
            dist:  [['judge', 'core'], 'danger', 'SQL Practice gọi đồng bộ và chờ Judge → treo theo; ranh giới service không tự cô lập lỗi.'] },
   cross: { label: 'Tính năng xuyên module', hint: 'nộp bài xong cập nhật điểm học phần',
            patch: [['core', 'acad'], 'active', 'Một transaction ACID, nhưng logic rải khắp nơi, khó biết sửa ở đâu.'],
            mod:   [['core', 'acad'], 'active', 'Gọi qua interface module, vẫn trong một transaction ACID — đơn giản nhất.'],
-           micro: [['core', 'acad'], 'warning', 'Hai service, hai database: cần Saga hoặc sự kiện, chấp nhận eventual consistency (Ch.6).'],
+           micro: [['core', 'acad'], 'warning', 'Hai service, hai database: cần Saga hoặc sự kiện, chấp nhận eventual consistency (Chương 6).'],
            dist:  [['core', 'acad', 'db'], 'warning', 'Sửa hai service, chung một database, deploy cùng lúc — khó cả hai kiểu.'] },
   team:  { label: 'Đội 1–2 dev vận hành', hint: 'như đội core của KBM',
            patch: [['db'], 'active', 'Một pipeline, một máy chủ — vận hành rẻ; khó là ở việc sửa code.'],

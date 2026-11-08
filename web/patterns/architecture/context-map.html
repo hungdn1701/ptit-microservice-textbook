@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Context Map — Pattern Story | SOA & Microservices</title>
-  <meta name="description" content="Context Map pattern — bản đồ ranh giới giữa các Bounded Contexts, cách các domain model giao tiếp và bảo vệ tính toàn vẹn trong hệ thống microservices.">
+  <meta name="description" content="Context Map pattern — bản đồ ranh giới giữa các Bounded Context, cách các domain model giao tiếp và bảo vệ tính toàn vẹn trong hệ thống microservices.">
   <meta name="author" content="Đặng Ngọc Hùng">
   <meta property="og:title" content="Context Map — Pattern Story">
-  <meta property="og:description" content="Context Map pattern — bản đồ ranh giới giữa các Bounded Contexts, cách các domain model giao tiếp và bảo vệ tính toàn vẹn trong hệ thống microservices.">
+  <meta property="og:description" content="Context Map pattern — bản đồ ranh giới giữa các Bounded Context, cách các domain model giao tiếp và bảo vệ tính toàn vẹn trong hệ thống microservices.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="SOA & Microservices Textbook">
   <link rel="icon" type="image/png" href="../../favicon.png?v=9fd867f7">
@@ -42,7 +42,7 @@
 
 <header class="pattern-header">
   <h1 class="pattern-title">Context Map</h1>
-  <p class="pattern-subtitle">Bản đồ ranh giới giữa các Bounded Contexts — cách các domain model giao tiếp, tích hợp, và bảo vệ tính toàn vẹn.</p>
+  <p class="pattern-subtitle">Bản đồ ranh giới giữa các Bounded Context — cách các domain model giao tiếp, tích hợp, và bảo vệ tính toàn vẹn.</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">DDD Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Eric Evans</span></div>
@@ -67,7 +67,7 @@
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Dependency</div></div>
       <h3>Implicit Integration</h3>
-      <p><code>kbm-core</code> đổi field <code>studentId</code> → <code>userId</code> mà không báo trước; <code>kbm-academic</code> vẫn đọc <code>studentId</code>, nhận <code>null</code> → NullPointerException trên production (Ch.3).</p>
+      <p><code>kbm-core</code> đổi field <code>studentId</code> → <code>userId</code> mà không báo trước; <code>kbm-academic</code> vẫn đọc <code>studentId</code>, nhận <code>null</code> → NullPointerException trên production (Chương 3).</p>
     </div>
     <div class="problem-card warn">
       <div class="problem-icon"><div class="badge badge-warning">Database</div></div>
@@ -91,10 +91,10 @@
     <div><div class="act-tag">Act 02</div><h2 class="act-title">The Pattern</h2></div>
   </div>
   <div class="pattern-definition">
-    <p class="definition-text">Context Map là bản đồ toàn cục hệ thống, hiển thị các Bounded Contexts, ranh giới, và mô hình tích hợp (upstream/downstream, shared kernel, anti-corruption layer). Đây là tài liệu sống, không phải sơ đồ tĩnh.</p>
+    <p class="definition-text">Context Map là bản đồ toàn cục hệ thống, hiển thị các Bounded Context, ranh giới, và mô hình tích hợp (upstream/downstream, shared kernel, anti-corruption layer). Đây là tài liệu sống, không phải sơ đồ tĩnh.</p>
     <div class="definition-attribution">— Eric Evans, Domain-Driven Design [6, Ch.14] · 2003</div>
   </div>
-  <p style="font-size:13px;color:var(--text-secondary);line-height:1.65;max-width:600px;margin-bottom:20px;">Các Integration Pattern phổ biến xác định mối quan hệ giữa các Bounded Contexts:</p>
+  <p style="font-size:13px;color:var(--text-secondary);line-height:1.65;max-width:600px;margin-bottom:20px;">Các Integration Pattern phổ biến xác định mối quan hệ giữa các Bounded Context:</p>
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
     <span class="rel-badge rel-upstream">U — Upstream (nhà cung cấp)</span>
     <span class="rel-badge rel-downstream">D — Downstream (phụ thuộc)</span>
@@ -130,12 +130,12 @@
     <div class="act-number">3</div>
     <div><div class="act-tag">Act 03</div><h2 class="act-title">How It Works</h2></div>
   </div>
-  <p class="section-intro">Chọn một bounded context để xem nó là upstream hay downstream của ai, và quan hệ đó thuộc kiểu nào. Có thể lọc theo kiểu quan hệ. Dữ liệu theo Chương 2 (§2.3, §2.4).</p>
+  <p class="section-intro">Chọn một Bounded Context để xem nó là upstream hay downstream của ai, và quan hệ đó thuộc kiểu nào. Có thể lọc theo kiểu quan hệ. Dữ liệu theo Chương 2 (§2.3, §2.4).</p>
 
   <div class="sim-chips" id="ctx-chips" role="group" aria-label="Lọc theo kiểu quan hệ"></div>
 
   <div class="sim-panel is-primary">
-    <div class="sim-panel-title">Context Map — KBM <span class="sim-hint">9 bounded context · 2 hệ thống ngoài · bấm vào một context</span></div>
+    <div class="sim-panel-title">Context Map — KBM <span class="sim-hint">9 Bounded Context · 2 hệ thống ngoài · bấm vào một context</span></div>
     <div class="sim-canvas d-links-root" id="ctx-canvas">
       <div class="sim-nodes" id="ctx-nodes"></div>
       <svg class="d-links" id="ctx-links"></svg>
@@ -173,7 +173,7 @@
     <div class="act-number">4</div>
     <div><div class="act-tag">Act 04 — Case Study</div><h2 class="act-title">KBM: Apply It</h2></div>
   </div>
-  <p class="section-intro">KBM gồm 9 bounded context (7 core + 2 supporting). Một Context Map tường minh cho biết thay đổi ở đâu sẽ ảnh hưởng tới ai trước khi sửa API.</p>
+  <p class="section-intro">KBM gồm 9 Bounded Context (7 core + 2 supporting). Một Context Map tường minh cho biết thay đổi ở đâu sẽ ảnh hưởng tới ai trước khi sửa API.</p>
 
   <h3 class="sub-heading">Bảng quan hệ giữa các context</h3>
   <p class="sub-label">Các quan hệ rủi ro nhất trong KBM (Chương 2)</p>
@@ -213,7 +213,7 @@
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Tuần 1 · Giai đoạn 0</div>
       <h4>Event Storming</h4>
-      <p>Workshop liên team: xác định bounded context, aggregate và domain event. Kết quả: bản nháp Context Map.</p>
+      <p>Workshop liên team: xác định Bounded Context, aggregate và domain event. Kết quả: bản nháp Context Map.</p>
       <span class="t-badge orange">Công sức: toàn team</span>
     </div>
     <div class="timeline-item" data-delay="250">
@@ -282,8 +282,8 @@
 <script>
 
 // ── Act 3: Context Map KBM ─────────────────────────────────────────────
-// Dữ liệu lấy từ Chương 2: Bảng "Các kiểu quan hệ giữa bounded contexts" (§2.3),
-// "Bảy bounded contexts core" + "Ánh xạ bounded context → service" (§2.4), Phụ lục E
+// Dữ liệu lấy từ Chương 2: Bảng "Các kiểu quan hệ giữa các Bounded Context" (§2.3),
+// "Bảy Bounded Context core" + "Ánh xạ Bounded Context → service" (§2.4), Phụ lục E
 // (2 supporting BC). Không thêm quan hệ nào sách không nêu.
 // Vị trí trên lưới 3 cột × 4 hàng được chọn để mọi đường nối đi theo khe, không xuyên qua hộp khác.
 const CTX = [
@@ -323,7 +323,7 @@ const REL = [ // u = upstream, d = downstream
   { u: 'sql',  d: 'acad', k: 'ohs', t: 'SQL Practice API cung cấp dữ liệu câu hỏi cho Academic Management.', ref: '§2.3' },
   { u: 'gh',   d: 'acad', k: 'cf',  t: 'Academic Management dùng nguyên mô hình lớp/bài tập của GitHub Classroom — không thể yêu cầu bên ngoài đổi contract.', ref: '§2.3' },
   { u: 'sql',  d: 'acad', k: 'sdb', t: 'Academic Management đã tách service khỏi Core nhưng vẫn dùng chung cơ sở dữ liệu core_db — trade-off phân tích ở §2.4, lộ trình tách ở Chương 7.', ref: '§2.4, Ch.7' },
-  { u: 'sql',  d: 'exam', k: 'code', t: 'Logic Contest/Anti-cheat hiện nằm trong kbm-core; mục tiêu tách thành kbm-exam.', ref: '§2.4' },
+  { u: 'sql',  d: 'exam', k: 'code', t: 'Logic Examination & Proctoring hiện nằm trong kbm-core; mục tiêu tách thành kbm-exam.', ref: '§2.4' },
   { u: 'sql',  d: 'comm', k: 'pl', fa: 0.8,  t: 'Kafka message với schema chuẩn; Communication tiêu thụ event để đẩy thông báo qua WebSocket.', ref: '§2.3, Ch.5' },
   { u: 'platform', d: 'sql',  k: 'lib', ch: 'right', t: 'kbm-shared chỉ nên giữ mã hạ tầng dùng chung (JWT, CORS, base response) — là Shared Library, không phải Shared Kernel.', ref: '§2.5' },
   { u: 'platform', d: 'acad', k: 'lib', t: 'Cùng thư viện kbm-shared; domain logic phải nằm ở context sở hữu nó.', ref: '§2.5' },

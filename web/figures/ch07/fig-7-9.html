@@ -25,7 +25,7 @@
           <span class="d-label">Write side</span>
           <div class="d-box d-service text-center" id="cq-cmd" style="height: 64px; margin-top: -40px;">
             <div class="d-title">Command Model</div>
-            <div class="d-sub">validation, business rules</div>
+            <div class="d-sub">validation, business rule</div>
           </div>
           <div class="d-box d-storage text-center" id="cq-wdb" style="height: 64px;">
             <div class="d-title">Write DB</div>
@@ -51,9 +51,9 @@
     </div>
 
     <div class="d-box d-note d-mt-3">
-      <div class="d-sub"><strong>Được</strong>: mỗi phía tối ưu riêng; read side scale độc lập và giữ sẵn dữ liệu đã join từ nhiều service.</div>
+      <div class="d-sub"><strong>Được</strong>: mỗi phía tối ưu riêng; read side mở rộng độc lập và giữ sẵn dữ liệu đã join từ nhiều service.</div>
       <div class="d-sub"><strong>Trả giá</strong>: thêm hạ tầng và luồng đồng bộ; read side trễ sau write side (replication lag).</div>
-      <div class="d-sub"><strong>KBM</strong>: live leaderboard không chịu được độ trễ đó nên không đi nhánh Kafka này — xem Hình 7.10 và phương án Redis đồng bộ trong văn bản.</div>
+      <div class="d-sub"><strong>KBM</strong>: bảng xếp hạng trực tiếp không chịu được độ trễ đó nên không đi nhánh Kafka này — xem Hình 7.10 và phương án Redis đồng bộ trong văn bản.</div>
     </div>
 
     <svg class="d-links">

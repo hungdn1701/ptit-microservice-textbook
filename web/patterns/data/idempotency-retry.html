@@ -62,7 +62,7 @@
     <div class="problem-card danger">
       <div class="problem-icon"><div class="badge badge-danger">Giao lại message</div></div>
       <h3>Chấm hai lần, cộng điểm hai lần</h3>
-      <p>Kafka phổ biến nhất ở chế độ at-least-once: consumer dừng trước khi commit offset hay partition bị rebalance thì message được giao lại. Cập nhật điểm kiểu "+10" chạy hai lần là sinh viên được +20 (§5.5, Ch.6).</p>
+      <p>Kafka phổ biến nhất ở chế độ at-least-once: consumer dừng trước khi commit offset hay partition bị rebalance thì message được giao lại. Cập nhật điểm kiểu "+10" chạy hai lần là sinh viên được +20 (§5.5, Chương 6).</p>
     </div>
   </div>
 
@@ -86,7 +86,7 @@
   </div>
 
   <p class="section-intro">
-    Cái giá: một lần ghi thêm cho mỗi thao tác, một bảng khóa phải dọn dần, và một định danh phải đi xuyên suốt từ client tới worker. Kiểm tra trước rồi mới ghi (check-then-write) đơn giản và đủ khi các lần gửi lại tới lần lượt; khi hai bản xử lý chạy song song, chỉ ràng buộc ở database mới chặn được. Còn thao tác vốn idempotent — ghi giá trị tuyệt đối thay vì cộng dồn — thì không cần khóa (§5.5, Ch.6).
+    Cái giá: một lần ghi thêm cho mỗi thao tác, một bảng khóa phải dọn dần, và một định danh phải đi xuyên suốt từ client tới worker. Kiểm tra trước rồi mới ghi (check-then-write) đơn giản và đủ khi các lần gửi lại tới lần lượt; khi hai bản xử lý chạy song song, chỉ ràng buộc ở database mới chặn được. Còn thao tác vốn idempotent — ghi giá trị tuyệt đối thay vì cộng dồn — thì không cần khóa (§5.5, Chương 6).
   </p>
 
   <div class="pattern-anatomy">
@@ -118,7 +118,7 @@
     </div>
   </div>
 
-  <p class="section-intro">Một bài nộp SQL đi qua Core → Kafka → Judge consumer, bài đạt được cộng +10 điểm theo kiểu cộng dồn (Ch.6). Chọn chỗ xảy ra sự cố và cách bảo vệ; kết quả đúng là 1 bài nộp, 1 lần chấm, +10 điểm. Mã nguồn theo Listing 5.3 và Listing 6.3, rút gọn.</p>
+  <p class="section-intro">Một bài nộp SQL đi qua Core → Kafka → Judge consumer, bài đạt được cộng +10 điểm theo kiểu cộng dồn (Chương 6). Chọn chỗ xảy ra sự cố và cách bảo vệ; kết quả đúng là 1 bài nộp, 1 lần chấm, +10 điểm. Mã nguồn theo Listing 5.3 và Listing 6.3, rút gọn.</p>
 
   <div class="sim-controls">
     <div class="sim-control"><span class="sim-controls-label">Sự cố</span><div class="sim-chips" id="id-scens"></div></div>
@@ -162,7 +162,7 @@
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — trùng lặp trong luồng nộp bài</h3>
-  <div class="sub-label">Theo Ch.1 (anti-pattern ④), §3.1, §4.4, bảng vấn đề Kafka pipeline (§5.9), Ch.6 và Ch.7</div>
+  <div class="sub-label">Theo Chương 1 (anti-pattern ④), §3.1, §4.4, bảng vấn đề Kafka pipeline (§5.9), Chương 6 và Chương 7</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -196,7 +196,7 @@
           <td class="gap-label">Điểm và read model</td>
           <td>Cộng điểm kiểu delta và projection bảng xếp hạng đều không tự idempotent.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Bảng processed/inbox với <code>UNIQUE(event_id)</code> ghi cùng transaction với cập nhật (Ch.6, Ch.7).</td>
+          <td>Bảng processed/inbox với <code>UNIQUE(event_id)</code> ghi cùng transaction với cập nhật (Chương 6, Chương 7).</td>
         </tr>
       </tbody>
     </table>
@@ -204,7 +204,7 @@
 
   <!-- Timeline -->
   <h3 class="sub-heading" style="margin-top: 36px;">Lộ trình</h3>
-  <div class="sub-label">Theo đề xuất migration ở Ch.5 và các chương liên quan — chưa phải việc KBM đã làm xong</div>
+  <div class="sub-label">Theo đề xuất migration ở Chương 5 và các chương liên quan — chưa phải việc KBM đã làm xong</div>
 
   <button class="play-btn" id="play-btn" onclick="playTimeline()">▶ Play Timeline</button>
 
@@ -410,7 +410,7 @@ const NOTES = {
   'resend.none': 'Response mất không có nghĩa là request thất bại. Không có khóa, server không phân biệt được "gửi lại" với "nộp bài mới" — hai bài, hai lần chấm, +20 điểm.',
   'resend.check': 'Idempotency-Key đủ cho trường hợp thường gặp: lần gửi lại tới sau khi lần đầu đã xử lý xong. Đổi lại mỗi request có thêm một lần đọc và ghi khóa, và bảng khóa cần được dọn theo thời hạn.',
   'resend.unique': 'Đặt ràng buộc lên chính khóa: hai request cùng khóa tới cùng lúc thì database chỉ cho một bên ghi. Cần ghi khóa và bài nộp trong cùng transaction.',
-  'redeliver.none': 'Commit offset sau khi xử lý là để không mất bài (Giai đoạn 1, Ch.5) — cái giá là message có thể được giao lại. Consumer không idempotent biến "không mất" thành "chấm hai lần".',
+  'redeliver.none': 'Commit offset sau khi xử lý là để không mất bài (Giai đoạn 1, Chương 5) — cái giá là message có thể được giao lại. Consumer không idempotent biến "không mất" thành "chấm hai lần".',
   'redeliver.check': 'Giao lại tới sau khi lần đầu đã ghi xong, nên isAlreadyJudged() nhận ra và bỏ qua — đủ cho trường hợp tuần tự.',
   'redeliver.unique': 'Bảng processed ghi cùng transaction với cộng điểm cũng chặn được bản giao lại; khác biệt với "Kiểm tra trước" chỉ lộ ra khi hai bản chạy song song.',
   'race.none': 'Rebalance có thể giao cùng một message cho consumer mới trong khi consumer cũ vẫn đang chạy — hai bản song song, hai lần cộng điểm.',

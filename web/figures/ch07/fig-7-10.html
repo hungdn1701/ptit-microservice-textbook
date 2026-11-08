@@ -85,9 +85,9 @@
     </div>
 
     <div class="d-box d-note d-mt-2">
-      <div class="d-sub"><strong>Được</strong>: đọc từ view tính sẵn; read side scale độc lập; ghi không chặn đọc.</div>
+      <div class="d-sub"><strong>Được</strong>: đọc từ view tính sẵn; read side mở rộng độc lập; ghi không chặn đọc.</div>
       <div class="d-sub"><strong>Trả giá</strong>: replication lag — giữa publish và consume, người xem nhận thứ hạng cũ; không đoán trước được rank ở UI vì rank phụ thuộc điểm của người khác đang nộp cùng lúc.</div>
-      <div class="d-sub"><strong>KBM</strong>: với live contest, chọn cập nhật đồng bộ vào Redis Sorted Set kèm WebSocket/SSE (văn bản ngay trên); nhánh Kafka vẫn hợp với view chịu được trễ.</div>
+      <div class="d-sub"><strong>KBM</strong>: với chế độ thi trực tiếp, chọn cập nhật đồng bộ vào Redis Sorted Set kèm WebSocket/SSE (văn bản ngay trên); nhánh Kafka vẫn hợp với view chịu được trễ.</div>
     </div>
   </div><!-- /.diagram-canvas -->
 </body>

@@ -50,7 +50,7 @@
   </div>
 
   <p class="section-intro">
-    Kỳ thi tính giờ trên KBM không nặng nếu tính trung bình, nhưng tải dồn cục vào vài phút cuối giờ (Ch.5). Hai trăm sinh viên cùng nộp bài và liên tục tải lại bảng xếp hạng; mỗi lần tải một trang tổng hợp có thể kéo theo cả loạt lời gọi Feign (Ch.7). Khi lượng request vượt sức chứa, câu hỏi không còn là "phục vụ hết" mà là "phục vụ cái gì trước".
+    Kỳ thi tính giờ trên KBM không nặng nếu tính trung bình, nhưng tải dồn cục vào vài phút cuối giờ (Chương 5). Hai trăm sinh viên cùng nộp bài và liên tục tải lại bảng xếp hạng; mỗi lần tải một trang tổng hợp có thể kéo theo cả loạt lời gọi Feign (Chương 7). Khi lượng request vượt sức chứa, câu hỏi không còn là "phục vụ hết" mà là "phục vụ cái gì trước".
   </p>
 
   <div class="problem-grid">
@@ -179,12 +179,12 @@
   </div>
 
   <p class="section-intro">
-    KBM đã có hai mảnh: Gateway giới hạn tần suất bằng Redis token bucket (§8.4–8.5), và luồng nộp bài thi chạy qua Kafka — hàng đợi đệm tải dồn cục thay vì bắt Judge chấm kịp ngay (Ch.5). Phần còn thiếu là phân loại: biết lúc nào đang quá tải, và khi đó bỏ bớt việc gì mà không đụng tới bài nộp.
+    KBM đã có hai mảnh: Gateway giới hạn tần suất bằng Redis token bucket (§8.4–8.5), và luồng nộp bài thi chạy qua Kafka — hàng đợi đệm tải dồn cục thay vì bắt Judge chấm kịp ngay (Chương 5). Phần còn thiếu là phân loại: biết lúc nào đang quá tải, và khi đó bỏ bớt việc gì mà không đụng tới bài nộp.
   </p>
 
   <!-- Gap Table -->
   <h3 class="sub-heading">Gap Analysis — chịu tải giờ thi</h3>
-  <div class="sub-label">Theo §1.5, §4.4, Ch.5 (Giai đoạn 2), Ch.7 (Giai đoạn 4), §8.4 và Ch.11</div>
+  <div class="sub-label">Theo §1.5, §4.4, Chương 5 (Giai đoạn 2), Chương 7 (Giai đoạn 4), §8.4 và Chương 11</div>
   <div style="overflow-x:auto;">
     <table class="gap-table">
       <thead>
@@ -206,7 +206,7 @@
           <td class="gap-label">Bảng xếp hạng</td>
           <td>Mỗi lần tải trang tổng hợp kéo theo nhiều lời gọi Feign; trong giờ thi đây là phần tải lớn nhất và ít quan trọng nhất.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Read model trên Redis (Ch.7, Giai đoạn 4); khi quá tải, trả bản cũ thay vì gọi xuyên các service.</td>
+          <td>Read model trên Redis (Chương 7, Giai đoạn 4); khi quá tải, trả bản cũ thay vì gọi xuyên các service.</td>
         </tr>
         <tr>
           <td class="gap-label">Đường chấm đồng bộ</td>
@@ -216,9 +216,9 @@
         </tr>
         <tr>
           <td class="gap-label">Hàng đợi nộp bài</td>
-          <td>Kafka đệm được tải, nhưng không ai biết khi nào hàng đợi tụt lại quá mục tiêu trả kết quả (p99 &lt; 45 s, §1.5).</td>
+          <td>Kafka đệm được tải, nhưng không ai biết khi nào hàng đợi tụt lại quá mục tiêu trả kết quả (P99 &lt; 45 s, §1.5).</td>
           <td><span class="b-high">HIGH</span></td>
-          <td>Theo dõi consumer lag bằng Kafka Exporter + Prometheus (Ch.5, Giai đoạn 2); chế độ thi bắt buộc có metric và cảnh báo (Ch.11).</td>
+          <td>Theo dõi consumer lag bằng Kafka Exporter + Prometheus (Chương 5, Giai đoạn 2); chế độ thi bắt buộc có metric và cảnh báo (Chương 11).</td>
         </tr>
       </tbody>
     </table>

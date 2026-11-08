@@ -210,7 +210,7 @@
           <td class="gap-label">Redis sự cố</td>
           <td>Rate limit phụ thuộc Redis; Redis ngừng thì Gateway không được làm đình trệ cả hệ thống.</td>
           <td><span class="b-med">MED</span></td>
-          <td>Circuit Breaker cho lưu lượng đi qua khi Redis lỗi; phía client lùi dần khi gặp 429.</td>
+          <td>Cơ chế fail-open mặc định của <code>RedisRateLimiter</code> cho lưu lượng đi qua khi Redis lỗi kèm cảnh báo; phía client lùi dần khi gặp 429.</td>
         </tr>
       </tbody>
     </table>
@@ -240,8 +240,8 @@
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Chống lỗi dây chuyền</div>
-      <h4>Circuit Breaker khi Redis lỗi, backoff phía client</h4>
-      <p>Redis ngừng thì cho lưu lượng đi qua thay vì chặn tất cả; client nhận 429 thì lùi dần theo cấp số nhân.</p>
+      <h4>Fail-open khi Redis lỗi, giám sát cảnh báo và backoff phía client</h4>
+      <p>Khi Redis ngừng, <code>RedisRateLimiter</code> mặc định cho lưu lượng đi qua (fail-open) thay vì chặn tất cả — cần gắn cảnh báo lỗi Redis; client nhận 429 thì lùi dần theo cấp số nhân.</p>
       <span class="t-badge orange">§8.5</span>
     </div>
   </div>
@@ -301,7 +301,7 @@
 // Ngưỡng "contest" (burst 30, 15/s) chỉ là ví dụ minh họa cho per-route limit — sách không nêu số.
 const SCENS = {
   burst: { label: 'Một người bấm dồn', client: ['sv-01', 'bấm Nộp bài 15 lần trong 0,7 s'], n: 15, gap: 0.05,
-           cfgs: { book: 'Theo sách: 5/s, burst 10', contest: 'Per-route contest (ví dụ 15/s, burst 30)' } },
+           cfgs: { book: 'Theo sách: 5/s, burst 10', contest: 'Theo route thi (ví dụ 15/s, burst 30)' } },
   nat:   { label: 'Phòng máy sau NAT', client: ['Phòng máy 30 SV', 'chung IP 203.0.113.7'], n: 30, gap: 0.03,
            cfgs: { ip: 'Key theo IP', user: 'Key theo X-User-Id' } },
   spoof: { label: 'Đổi X-Forwarded-For', client: ['Client ẩn danh', 'mỗi request một XFF giả'], n: 20, gap: 0.04,

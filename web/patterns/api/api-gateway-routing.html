@@ -30,7 +30,7 @@
 <!-- ── Pattern Header ── -->
 <header class="pattern-header">
   <h1 class="pattern-title">API Gateway Routing</h1>
-  <p class="pattern-subtitle">Một điểm vào cho mọi client — route theo path, xử lý cross-cutting concerns ở biên</p>
+  <p class="pattern-subtitle">Một điểm vào cho mọi client — route theo path, xử lý nghiệp vụ cắt ngang (cross-cutting concern) ở biên</p>
   <div class="pattern-meta">
     <div class="meta-item"><span class="meta-label">category</span><span class="meta-value">Infrastructure Patterns</span></div>
     <div class="meta-item"><span class="meta-label">coined by</span><span class="meta-value">Chris Richardson</span></div>
@@ -50,7 +50,7 @@
   </div>
 
   <p class="section-intro">
-    Không có gateway, web và mobile phải biết địa chỉ của từng service và gọi thẳng. Richardson chỉ ra năm hệ quả: nhiều endpoint, giao thức khác nhau, cross-cutting concerns phân tán, bề mặt tấn công rộng, và API nội bộ không hợp với client (§8.1).
+    Không có gateway, web và mobile phải biết địa chỉ của từng service và gọi thẳng. Richardson chỉ ra năm hệ quả: nhiều endpoint, giao thức khác nhau, nghiệp vụ cắt ngang phân tán, bề mặt tấn công rộng, và API nội bộ không hợp với client (§8.1).
   </p>
 
   <div class="problem-grid">
@@ -98,7 +98,7 @@
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 02</div>
       <h3>Filter chain</h3>
-      <p>Filter chạy trước/sau bước định tuyến: gỡ header định danh do client tự gửi, kiểm tra JWT (<code>alg</code>, chữ ký, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>), rate limit, gắn correlation ID.</p>
+      <p>Filter chạy trước/sau bước định tuyến: gỡ header định danh do client tự gửi, kiểm tra JWT (<code>alg</code>, chữ ký, <code>iss</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>), rate limit, gắn <code>X-Request-ID</code> và ngữ cảnh truy vết.</p>
     </div>
     <div class="anatomy-card">
       <div class="anatomy-num">Thành phần 03</div>
@@ -218,10 +218,10 @@
           <td>Đồng bộ thư viện và hợp đồng xác minh; Spring Security OAuth2 Resource Server; RS256/JWKS; token exchange thay cho plain header.</td>
         </tr>
         <tr>
-          <td class="gap-label">Correlation ID</td>
+          <td class="gap-label">Ngữ cảnh truy vết</td>
           <td>Có nền tảng (<code>X-Request-ID</code>), chưa chuẩn hóa đầu cuối.</td>
           <td><span class="b-med">MED</span></td>
-          <td>GlobalFilter chuẩn hóa <code>X-Request-ID</code> (UUID) cho mọi request.</td>
+          <td>GlobalFilter chuẩn hóa <code>X-Request-ID</code> (UUID) và chuyển tiếp ngữ cảnh truy vết cho mọi request.</td>
         </tr>
         <tr>
           <td class="gap-label">Rate limiting</td>
@@ -250,14 +250,14 @@
     <div class="timeline-item" data-delay="250">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 2 · Observability</div>
-      <h4>Correlation ID và request logging</h4>
+      <h4>Ngữ cảnh truy vết và request logging</h4>
       <p>GlobalFilter chuẩn hóa <code>X-Request-ID</code>; ghi log request/response tại Gateway để truy vết xuyên service.</p>
       <span class="t-badge orange">Ưu tiên trung bình</span>
     </div>
     <div class="timeline-item" data-delay="500">
       <div class="timeline-dot"></div>
       <div class="timeline-phase">Giai đoạn 3 · Bảo vệ và phân tầng tin cậy</div>
-      <h4>Rate limit cho contest, giới hạn payload, RS256/JWKS</h4>
+      <h4>Rate limit cho chế độ thi, giới hạn payload, RS256/JWKS</h4>
       <p>Giới hạn riêng cho <code>/submissions/**</code>, giới hạn kích thước tệp tải lên; chuyển sang RS256/JWKS và signed identity propagation đúng audience; workload identity/mTLS cho luồng nhạy cảm.</p>
       <span class="t-badge orange">Ưu tiên trung bình</span>
     </div>
@@ -273,7 +273,7 @@
       </div>
       <ul class="decision-list">
         <li>Các client (web sinh viên, web quản trị) cần dữ liệu tương tự nhau.</li>
-        <li>Muốn một chỗ duy nhất cho CORS, xác thực ở biên, rate limit, correlation ID.</li>
+        <li>Muốn một chỗ duy nhất cho CORS, xác thực ở biên, rate limit, <code>X-Request-ID</code>.</li>
         <li>Đội nhỏ, chưa có mobile hay đối tác bên ngoài với nhu cầu API riêng.</li>
       </ul>
     </div>
@@ -294,7 +294,7 @@
 
 <!-- ── Chapter Link Bar ── -->
 <div class="chapter-bar">
-  <p>Đọc chi tiết về API Gateway và BFF (§8.1), Spring Cloud Gateway (§8.2), route với Eureka (§8.3), cross-cutting concerns (§8.4) và cấu hình Gateway của KBM (§8.5).</p>
+  <p>Đọc chi tiết về API Gateway và BFF (§8.1), Spring Cloud Gateway (§8.2), route với Eureka (§8.3), nghiệp vụ cắt ngang (§8.4) và cấu hình Gateway của KBM (§8.5).</p>
   <a class="chapter-btn" href="#" onclick="return openChapter('chapter-08')"><div class="badge badge-info">Read</div> Chương 8 — API Gateway & BFF Pattern →</a>
 </div>
 
@@ -339,7 +339,7 @@ const NOTES = {
   none:  'Thiếu token ở route cần xác thực → 401 ngay tại biên; service phía sau không phải làm gì.',
   spoof: 'Client tự gửi X-User-Roles: ADMIN. Gateway gỡ header này trước, rồi chèn lại giá trị lấy từ token đã kiểm tra — service không bao giờ thấy header giả (§8.4).',
   'evil.now':   'CORS "*" khi khảo sát: trình duyệt cho trang của origin lạ đọc phản hồi. Với API không chủ đích phục vụ công khai, đó là chính sách quá rộng (§8.5).',
-  'evil.after': 'Allowlist: request mang Authorization phải qua preflight OPTIONS; origin lạ bị từ chối nên trình duyệt không gửi request thật. CORS là chính sách của trình duyệt, không chặn được công cụ ngoài trình duyệt; CSRF vẫn cần biện pháp riêng (Ch.9).',
+  'evil.after': 'Allowlist: request mang Authorization phải qua preflight OPTIONS; origin lạ bị từ chối nên trình duyệt không gửi request thật. CORS là chính sách của trình duyệt, không chặn được công cụ ngoài trình duyệt; CSRF vẫn cần biện pháp riêng (Chương 9).',
   burst: 'Redis token bucket (ví dụ: 3 request mỗi giây) — vượt ngưỡng nhận 429 Too Many Requests; client nên lùi dần (exponential backoff) thay vì bấm lại liên tục (§8.4).',
 };
 const state = { config: 'now', req: 'ok', running: false, pass: 0, block: 0, spoof: 0, rows: [] };
