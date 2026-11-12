@@ -7,10 +7,12 @@
     2026-09-28 (WP-B Ch.08): Việt hoá nhãn theo DIAGRAM_DESIGN.md §17 ("Query", "choose", "Forward request"); hai instance
     đặt tên thống nhất (kbm-core #1 / #2, bản cũ "Core #2"); ba bước đánh số theo văn bản ngay sau hình (Lookup, Load
     balance, Forward) và StripPrefix=2 (/api/core/questions → /questions).
+    2026-11-12: số bước dùng ô d-step như Hình 4.3, 4.4 (trước là "1 · "); cổng ghi trong hộp kbm-core, nhãn trả về còn
+    "[core-1, core-2]" vì nhãn cũ che gần hết đường trả về; ô bước 2 rộng 0.8 → 1.2 để "#1" không rớt dòng.
   -->
   <title>Fig 8.5 — Luồng lb:// qua Eureka | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-8.5" data-ref="CH08-SEC">
@@ -26,10 +28,10 @@
           <div class="d-seq-actor-box d-infra">Eureka Registry</div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-service">kbm-core #1</div>
+          <div class="d-seq-actor-box d-service">kbm-core #1<br><span class="fw-normal">core-1:8080</span></div>
         </div>
         <div class="d-seq-actor">
-          <div class="d-seq-actor-box d-service">kbm-core #2</div>
+          <div class="d-seq-actor-box d-service">kbm-core #2<br><span class="fw-normal">core-2:8080</span></div>
         </div>
       </div>
       <div class="d-seq-messages">
@@ -40,25 +42,25 @@
         </div>
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text">1 · instance của kbm-core?</span></div>
+          <div class="d-seq-msg-line" style="flex:1;"><span class="d-seq-msg-text"><span class="d-step">1</span> instance của kbm-core?</span></div>
           <div style="flex:2.5;"></div>
         </div>
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">[core-1:8080, core-2:8080]</span></div>
+          <div class="d-seq-msg-line dashed reverse" style="flex:1;"><span class="d-seq-msg-text">[core-1, core-2]</span></div>
           <div style="flex:2.5;"></div>
         </div>
         <div class="d-seq-msg" style="min-height: 44px; align-items: flex-start; padding-top: 4px;">
-          <div style="flex:1.1;"></div>
-          <div class="d-zone d-zone-info text-center" style="flex:0.8;">
-            2 · LoadBalancer chọn #1<br>
+          <div style="flex:0.9;"></div>
+          <div class="d-zone d-zone-info text-center" style="flex:1.2;">
+            <span class="d-step">2</span> LoadBalancer chọn #1<br>
             <span>round-robin mặc định</span>
           </div>
-          <div style="flex:3.1;"></div>
+          <div style="flex:2.9;"></div>
         </div>
         <div class="d-seq-msg">
           <div style="flex:1.5;"></div>
-          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text">3 · GET /questions (StripPrefix=2)</span></div>
+          <div class="d-seq-msg-line" style="flex:2;"><span class="d-seq-msg-text"><span class="d-step">3</span> GET /questions (StripPrefix=2)</span></div>
           <div style="flex:1.5;"></div>
         </div>
         <div class="d-seq-msg">

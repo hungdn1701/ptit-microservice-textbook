@@ -105,6 +105,14 @@
   line-height: 1.55;
 }
 
+/* Dòng danh sách bắt đầu bằng "· " trong hộp: dòng xuống hàng thụt vào thẳng chữ đầu tiên
+   (thụt treo). Chữ trong hình là font mono nên "· " rộng đúng 2ch. Thêm 2026-11-12 cho
+   Hình 9.8, 10.10, 11.2. */
+.d-hang {
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
+
 .d-center {
   display: flex;
   align-items: center;

@@ -7,27 +7,29 @@
     2026-09-28 (WP-B Ch.12): 8 mũi tên <svg><line> rời (gate dangling) → d-links, đường chữ U nối CI sang CD. Bổ sung hai bước
     mà mục "Tối ưu hóa Pipeline" và các ràng buộc ngay trước hình yêu cầu: contract test gate và database migration chạy
     riêng, trước khi deploy; ghi "build once, deploy everywhere" (cùng một image qua mọi môi trường). Chữ theo §17.
+    2026-11-12: đánh số bước 1–9 để hàng CD (chạy ngược theo kiểu ziczac) đọc đúng thứ tự; bốn hộp CD căn giữa theo chiều dọc
+    (tâm thẳng hàng, mũi tên không gấp khúc) thay vì kéo cao theo hộp ghi chú; hộp Production ghi các chiến lược triển khai của §12.5 (trước để trống).
   -->
   <title>Fig 12.3 — CI/CD Pipeline cho Microservices | Ch.12</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-12.3" data-ref="CH12-SEC">
     <div style="display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: auto auto auto auto; gap: 0 44px;">
       <div class="d-label" style="grid-column: 1 / 6; margin-bottom: 10px;">Continuous Integration — mỗi service một pipeline riêng</div>
-      <div class="d-box d-service text-center" id="p3-push"><div class="d-title">git push</div></div>
-      <div class="d-box d-note text-center" id="p3-build"><div class="d-title">Build</div><div class="d-sub d-mono">mvn package</div></div>
-      <div class="d-box d-event text-center" id="p3-unit"><div class="d-title">Unit test</div></div>
-      <div class="d-box d-highlight text-center" id="p3-img"><div class="d-title">Docker build</div><div class="d-sub">tag bất biến</div></div>
-      <div class="d-box d-note text-center" id="p3-reg"><div class="d-title">Registry</div></div>
+      <div class="d-box d-service text-center" id="p3-push"><div class="d-title"><span class="d-step">1</span> git push</div></div>
+      <div class="d-box d-note text-center" id="p3-build"><div class="d-title"><span class="d-step">2</span> Build</div><div class="d-sub d-mono">mvn package</div></div>
+      <div class="d-box d-event text-center" id="p3-unit"><div class="d-title"><span class="d-step">3</span> Unit test</div></div>
+      <div class="d-box d-highlight text-center" id="p3-img"><div class="d-title"><span class="d-step">4</span> Docker build</div><div class="d-sub">tag bất biến</div></div>
+      <div class="d-box d-note text-center" id="p3-reg"><div class="d-title"><span class="d-step">5</span> Registry</div></div>
 
       <div class="d-label" style="grid-column: 1 / 6; margin: 56px 0 10px;">Continuous Delivery / Deployment</div>
       <div class="d-box d-note text-center" style="grid-column: 1; align-self: center;"><div class="d-sub">cùng một image đi qua mọi môi trường — cấu hình truyền từ ngoài vào</div></div>
-      <div class="d-box d-success text-center" id="p3-prod" style="grid-column: 2;"><div class="d-title">Production</div></div>
-      <div class="d-box d-warning text-center" id="p3-stg" style="grid-column: 3;"><div class="d-title">Staging</div><div class="d-sub">integration test</div></div>
-      <div class="d-box d-storage text-center" id="p3-mig" style="grid-column: 4;"><div class="d-title">DB migration</div><div class="d-sub">Flyway, bước riêng</div></div>
-      <div class="d-box d-event text-center" id="p3-ct" style="grid-column: 5;"><div class="d-title">Contract test</div><div class="d-sub">cổng chặn deploy</div></div>
+      <div class="d-box d-success text-center" id="p3-prod" style="grid-column: 2; align-self: center;"><div class="d-title"><span class="d-step">9</span> Production</div><div class="d-sub">Rolling, Blue/Green, Canary</div></div>
+      <div class="d-box d-warning text-center" id="p3-stg" style="grid-column: 3; align-self: center;"><div class="d-title"><span class="d-step">8</span> Staging</div><div class="d-sub">integration test</div></div>
+      <div class="d-box d-storage text-center" id="p3-mig" style="grid-column: 4; align-self: center;"><div class="d-title"><span class="d-step">7</span> DB migration</div><div class="d-sub">Flyway, bước riêng</div></div>
+      <div class="d-box d-event text-center" id="p3-ct" style="grid-column: 5; align-self: center; padding: 12px 8px;"><div class="d-title" style="white-space: nowrap;"><span class="d-step">6</span> Contract test</div><div class="d-sub">cổng chặn deploy</div></div>
     </div>
 
     <div class="d-box d-note d-mt-3">

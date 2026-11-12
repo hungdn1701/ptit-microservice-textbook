@@ -7,10 +7,12 @@
     2026-09-28 (WP-B Ch.02): bỏ <style> riêng dựng bằng lớp nền chồng lên nhau (15 hộp chồng, nền rgba ngoài bảng màu).
     Mỗi squad là một hộp chứa thành viên; Chapter = các BE Dev nối dọc bằng d-links nét đứt; thành viên Guild viền cảnh báo,
     danh sách ở khối Guild. Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-12: ô thành viên Guild thêm viền nét đứt (cùng kiểu khối Guild) để vẫn nhận ra khi in đen trắng; trước đó
+    chỉ phân biệt bằng màu.
   -->
   <title>Fig 2.2 — Mô hình Spotify: Tribe, Squad, Chapter, Guild | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.2">
@@ -29,11 +31,11 @@
           <div class="d-title" style="width: 150px;">Squad Search</div>
           <div class="d-box text-center fw-semibold" style="width: 104px; padding: 6px 0;">FE Dev</div>
           <div class="d-box d-text-info text-center fw-semibold" id="be-1" style="width: 104px; padding: 6px 0; border-color: var(--diagram-color-info-border); background: var(--diagram-color-info-bg);">BE Dev</div>
-          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0;">Tester</div>
+          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0; border-style: dashed;">Tester</div>
         </div>
         <div class="d-box d-row" style="align-items: center; gap: 12px; padding: 10px 14px;">
           <div class="d-title" style="width: 150px;">Squad Player</div>
-          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0;">FE Dev</div>
+          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0; border-style: dashed;">FE Dev</div>
           <div class="d-box d-text-info text-center fw-semibold" id="be-2" style="width: 104px; padding: 6px 0; border-color: var(--diagram-color-info-border); background: var(--diagram-color-info-bg);">BE Dev</div>
           <div class="d-box text-center fw-semibold" style="width: 104px; padding: 6px 0;">Data</div>
         </div>
@@ -41,7 +43,7 @@
           <div class="d-title" style="width: 150px;">Squad Social</div>
           <div class="d-box text-center fw-semibold" style="width: 104px; padding: 6px 0;">FE Dev</div>
           <div class="d-box d-text-info text-center fw-semibold" id="be-3" style="width: 104px; padding: 6px 0; border-color: var(--diagram-color-info-border); background: var(--diagram-color-info-bg);">BE Dev</div>
-          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0;">UX</div>
+          <div class="d-box d-warning text-center fw-semibold" style="width: 104px; padding: 6px 0; border-style: dashed;">UX</div>
         </div>
       </div>
     </div>
@@ -49,7 +51,7 @@
     <div class="d-box d-warning d-col d-center text-center" style="border-style: dashed; width: fit-content; margin: 28px auto 0; padding: 16px 24px;">
       <div class="d-title">Guild — cộng đồng xuyên Tribe</div>
       <div class="d-sub d-mt-1">ví dụ Web Performance Guild: tự nguyện, chia sẻ kiến thức, không quản lý theo dự án</div>
-      <div class="d-sub d-mt-1">thành viên (viền vàng ở trên): Tester · Search, FE Dev · Player, UX · Social</div>
+      <div class="d-sub d-mt-1">thành viên (ô viền nét đứt ở trên): Tester · Search, FE Dev · Player, UX · Social</div>
     </div>
 
     <svg class="d-links">

@@ -8,36 +8,43 @@
     tbl:database-separation-strategies ngay trên hình (View → API → Schema → Duplication → Separate instances) → theo bảng.
     Thanh rủi ro tăng đều cũ cũng sai với bảng (Schema separation rủi ro thấp đứng sau API rủi ro trung bình) → ghi rủi ro /
     nỗ lực và "khi nào" của từng bước. Mũi tên <svg><line> → d-links. Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-12: dưới mỗi tên thêm tên tương ứng ở Chương 7 (Hình 7.5), lấy từ cột ánh xạ của Bảng 10.3, để người
+    đọc nối được hai bộ tên. Tác giả duyệt (báo cáo §13.3).
   -->
   <title>Fig 10.4 — Thứ tự 5 chiến lược tách database | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-10.4" data-ref="CH10-SEC">
     <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 44px; align-items: stretch;">
       <div class="d-box d-success text-center" id="o4-1">
         <div class="d-title"><span class="d-step">1</span> View abstraction</div>
+        <div class="d-sub d-text-info">Ch.7: Database View</div>
         <div class="d-sub d-mt-1">View ẩn cấu trúc bảng thật</div>
         <div class="d-sub d-text-muted d-mt-1">rủi ro thấp · nỗ lực thấp</div>
       </div>
       <div class="d-box d-warning text-center" id="o4-2">
         <div class="d-title"><span class="d-step">2</span> API-based access</div>
+        <div class="d-sub d-text-info">Ch.7: Database Wrapping Service</div>
         <div class="d-sub d-mt-1">gọi API thay vì truy vấn thẳng</div>
         <div class="d-sub d-text-muted d-mt-1">rủi ro TB · nỗ lực TB</div>
       </div>
       <div class="d-box d-success text-center" id="o4-3">
         <div class="d-title"><span class="d-step">3</span> Schema separation</div>
+        <div class="d-sub d-text-info">Ch.7: Separate Schema</div>
         <div class="d-sub d-mt-1">khi không còn truy vấn chéo</div>
         <div class="d-sub d-text-muted d-mt-1">rủi ro thấp · nỗ lực thấp</div>
       </div>
       <div class="d-box d-warning text-center" id="o4-4">
         <div class="d-title"><span class="d-step">4</span> Data duplication</div>
+        <div class="d-sub d-text-info">Ch.7: Data Transfer</div>
         <div class="d-sub d-mt-1">sao chép qua event</div>
         <div class="d-sub d-text-muted d-mt-1">rủi ro TB · nỗ lực cao</div>
       </div>
       <div class="d-box d-danger text-center" id="o4-5">
         <div class="d-title"><span class="d-step">5</span> Separate instances</div>
+        <div class="d-sub d-text-info">Ch.7: Full Database Split</div>
         <div class="d-sub d-mt-1">khi DB cần mở rộng riêng</div>
         <div class="d-sub d-text-muted d-mt-1">rủi ro cao · nỗ lực cao</div>
       </div>

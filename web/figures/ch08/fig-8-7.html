@@ -8,17 +8,19 @@
     Theo đoạn ngay sau hình, KBM có HAI lớp định tuyến: Spring Cloud Gateway cho LMS lõi và Go hostname-based router cho
     DevOps Lab (k3s/Sysbox) — bản cũ thiếu router thứ hai. Thêm Redis (rate limiting, bảng phân tích cấu hình) và Eureka
     lookup; Judge không có route từ Gateway (lst:lms_gateway_route_config), nhận việc qua Kafka (Ch.05). Chữ theo §17.
+    2026-11-12: tên kbm-notification, kbm-judge-sql không còn ngắt ở dấu gạch (đọc như gạch nối từ): cột 140 → 150px,
+    khoảng cách cột 40 → 30px, tên giữ một dòng. Khoảng trống dưới phải là do cây lệch (chỉ core có nhánh Kafka), giữ nguyên.
   -->
   <title>Fig 8.7 — Kiến trúc Gateway của KBM | Ch.8</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-8.7" data-ref="CH08-SEC">
     <div style="display: grid; grid-template-columns: auto 230px; gap: 48px; justify-content: center; align-items: start;">
       <div class="d-cluster">
         <span class="d-label">LMS lõi — định tuyến theo path</span>
-        <div style="display: grid; grid-template-columns: repeat(4, 140px); gap: 60px 40px; margin-top: 16px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 150px); gap: 60px 30px; margin-top: 16px;">
           <div class="d-box d-note text-center" id="k7-stu" style="grid-column: 1 / 3; width: 200px; justify-self: center;">
             <div class="d-title">Student Frontend</div>
             <div class="d-sub">React + Vite</div>
@@ -44,10 +46,10 @@
           <div class="d-box d-service text-center" id="k7-core"><div class="d-title">kbm-core</div></div>
           <div class="d-box d-service text-center" id="k7-acad"><div class="d-title">kbm-academic</div></div>
           <div class="d-box d-service text-center" id="k7-auth"><div class="d-title">kbm-auth</div></div>
-          <div class="d-box d-service text-center" id="k7-noti"><div class="d-title">kbm-notification</div></div>
+          <div class="d-box d-service text-center" id="k7-noti" style="padding: 12px 8px;"><div class="d-title" style="white-space: nowrap;">kbm-notification</div></div>
 
           <div class="d-box d-event text-center" id="k7-judge" style="grid-column: 1;">
-            <div class="d-title">kbm-judge-sql</div>
+            <div class="d-title" style="white-space: nowrap;">kbm-judge-sql</div>
             <div class="d-sub">không có route ngoài</div>
           </div>
         </div>

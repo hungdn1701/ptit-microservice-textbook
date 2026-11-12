@@ -8,10 +8,12 @@
     riêng (Rule 16). Firewall của monolith đặt ở biên, ngoài vùng "mặc nhiên tin cậy" (bản cũ nằm trong). Thêm lời gọi
     service-to-service mà khối ghi chú nhắc tới. Điểm bảo vệ đánh dấu bằng viền đỏ 2px. Ghi chú đổi sang được–mất (Zero
     Trust có giá: mỗi service xác minh token, quản lý khóa). Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-11: nhãn vùng tách hai dòng ("Mạng nội bộ" + mức tin cậy). Nhãn một dòng dài quá nửa bề ngang vùng nên
+    mũi tên từ Firewall đi xuyên qua chữ ở cả hai nửa.
   -->
   <title>Fig 9.1 — Monolith và Microservices: điểm bảo vệ | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-9.1" data-ref="CH09-SEC">
@@ -26,7 +28,10 @@
           <div class="d-sub">điểm bảo vệ duy nhất</div>
         </div>
         <div class="d-cluster d-col" style="align-items: center; gap: 48px; width: 100%;">
-          <span class="d-label" style="align-self: flex-start;">Mạng nội bộ — mặc nhiên tin cậy</span>
+          <div style="align-self: flex-start;">
+            <div class="d-label">Mạng nội bộ</div>
+            <div class="d-sub">mặc nhiên tin cậy</div>
+          </div>
           <div class="d-box d-service text-center" id="m1-app" style="width: 240px;">
             <div class="d-title">Monolith Application</div>
             <div class="d-sub">mọi module gọi nhau trong tiến trình</div>
@@ -48,7 +53,8 @@
           <div class="d-sub">lớp 1</div>
         </div>
         <div class="d-cluster" style="width: 100%;">
-          <span class="d-label">Mạng nội bộ — không mặc nhiên tin</span>
+          <div class="d-label">Mạng nội bộ</div>
+          <div class="d-sub">không mặc nhiên tin</div>
           <div style="display: grid; grid-template-columns: 180px 180px; gap: 48px 96px; justify-content: center; margin-top: 16px;">
             <div class="d-box d-gateway text-center" id="m2-gw" style="grid-column: 1 / 3; width: 260px; justify-self: center; border: 2px solid var(--diagram-color-danger-border);">
               <div class="d-title">API Gateway</div>

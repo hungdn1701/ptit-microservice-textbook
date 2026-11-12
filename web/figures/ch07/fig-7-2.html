@@ -7,28 +7,15 @@
     2026-09-28 (WP-B Ch.07): cột Shared DB không có mũi tên (roadmap), cột trái dùng 3 <line> → d-links cả hai bên;
     thêm đường API giữa các service ở bên database-per-service như chú thích hình. "OK BEST PRACTICE" / "[X] ANTI-PATTERN"
     → nhãn tiếng Việt ("best practice" đã nghỉ hưu → "giải pháp khuyến nghị"). Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-12: đổi chỗ hai nửa, Shared Database bên trái: khớp thứ tự trong chú thích và Hình 10.3 (cùng cặp so sánh).
   -->
-  <title>Fig 7.2 — Database-per-Service và Shared Database | Ch.7</title>
+  <title>Fig 7.2 — Shared Database và Database-per-Service | Ch.7</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-7.2" data-ref="CH07-SEC">
     <div class="d-grid-2 d-gap-2 d-mb-2" style="align-items: stretch;">
-      <div class="d-cluster d-col">
-        <span class="d-label">Database-per-Service</span>
-        <div style="display: grid; grid-template-columns: repeat(3, 120px); gap: 48px 36px; justify-content: center; margin: 24px 0;">
-          <div class="d-box d-service text-center" id="dp-a"><div class="d-title">Service A</div></div>
-          <div class="d-box d-service text-center" id="dp-b"><div class="d-title">Service B</div></div>
-          <div class="d-box d-service text-center" id="dp-c"><div class="d-title">Service C</div></div>
-          <div class="d-box d-storage text-center" id="dp-da"><div class="d-title">DB A</div></div>
-          <div class="d-box d-storage text-center" id="dp-db"><div class="d-title">DB B</div></div>
-          <div class="d-box d-storage text-center" id="dp-dc"><div class="d-title">DB C</div></div>
-        </div>
-        <div class="d-text-muted text-center d-mb-1" style="margin-top: auto;">mỗi service sở hữu DB riêng, cần dữ liệu thì gọi API<br>triển khai độc lập, mở rộng độc lập</div>
-        <div class="d-box d-success text-center" style="padding: 6px 14px;"><div class="d-title">giải pháp khuyến nghị</div></div>
-      </div>
-
       <div class="d-cluster d-col" style="border-color: var(--diagram-color-danger-border); background: var(--diagram-color-danger-bg);">
         <span class="d-label d-text-danger">Shared Database</span>
         <div class="d-col" style="align-items: center; gap: 48px; margin: 24px 0;">
@@ -41,6 +28,20 @@
         </div>
         <div class="d-text-danger text-center d-mb-1" style="margin-top: auto;">schema coupling · deploy coupling<br>scale coupling · nghẽn hiệu năng</div>
         <div class="d-box d-danger text-center" style="padding: 6px 14px;"><div class="d-title">anti-pattern</div></div>
+      </div>
+
+      <div class="d-cluster d-col">
+        <span class="d-label">Database-per-Service</span>
+        <div style="display: grid; grid-template-columns: repeat(3, 120px); gap: 48px 36px; justify-content: center; margin: 24px 0;">
+          <div class="d-box d-service text-center" id="dp-a"><div class="d-title">Service A</div></div>
+          <div class="d-box d-service text-center" id="dp-b"><div class="d-title">Service B</div></div>
+          <div class="d-box d-service text-center" id="dp-c"><div class="d-title">Service C</div></div>
+          <div class="d-box d-storage text-center" id="dp-da"><div class="d-title">DB A</div></div>
+          <div class="d-box d-storage text-center" id="dp-db"><div class="d-title">DB B</div></div>
+          <div class="d-box d-storage text-center" id="dp-dc"><div class="d-title">DB C</div></div>
+        </div>
+        <div class="d-text-muted text-center d-mb-1" style="margin-top: auto;">mỗi service sở hữu DB riêng, cần dữ liệu thì gọi API<br>triển khai độc lập, mở rộng độc lập</div>
+        <div class="d-box d-success text-center" style="padding: 6px 14px;"><div class="d-title">giải pháp khuyến nghị</div></div>
       </div>
     </div>
 

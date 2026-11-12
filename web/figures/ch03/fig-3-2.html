@@ -6,10 +6,12 @@
     Fig 3.2 — Quy tắc schema evolution: thay đổi nào là breaking change
     2026-09-28 (WP-B Ch.03): nhánh cây bằng border + tam giác CSS position:absolute và mũi tên <line> → d-links có nhãn;
     bỏ nền rgba cứng; mã trong hộp không còn tràn. Chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-12: hai bảng giữ chiều cao tự nhiên (bảng Backward Compatible không còn khoảng trống lớn); mỗi gạch đầu dòng
+    một dòng thụt treo (.d-hang), dòng "(consumer ánh xạ enum chặt sẽ lỗi)" thẳng chữ của gạch đầu dòng.
   -->
   <title>Fig 3.2 — Quy tắc schema evolution và versioning | Ch.3</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-3.2">
@@ -19,23 +21,23 @@
         <div class="d-title">Thay đổi API thuộc loại nào?</div>
       </div>
 
-      <div class="d-row" style="gap: 80px; align-items: stretch;">
+      <div class="d-row" style="gap: 80px; align-items: start;">
         <div class="d-box d-success d-col text-center" id="sv-ok" style="width: 330px;">
           <div class="d-title">Backward Compatible</div>
           <div class="d-code d-mt-1 text-left" style="padding: 10px; line-height: 1.6;">
-            • thêm field mới (optional)<br>
-            • thêm endpoint mới
+            <div class="d-hang">• thêm field mới (optional)</div>
+            <div class="d-hang">• thêm endpoint mới</div>
           </div>
-          <div class="d-sub d-mt-1" style="font-style: italic; margin-top: auto;">consumer cũ bỏ qua field lạ</div>
+          <div class="d-sub d-mt-1" style="font-style: italic;">consumer cũ bỏ qua field lạ</div>
         </div>
         <div class="d-box d-danger d-col text-center" id="sv-break" style="width: 330px;">
           <div class="d-title">Breaking Change</div>
           <div class="d-code d-mt-1 text-left" style="padding: 10px; line-height: 1.6;">
-            • xóa field hiện có<br>
-            • đổi tên field<br>
-            • đổi kiểu dữ liệu field<br>
-            • đổi URL endpoint<br>
-            • thêm giá trị enum vào response (consumer ánh xạ enum chặt sẽ lỗi)
+            <div class="d-hang">• xóa field hiện có</div>
+            <div class="d-hang">• đổi tên field</div>
+            <div class="d-hang">• đổi kiểu dữ liệu field</div>
+            <div class="d-hang">• đổi URL endpoint</div>
+            <div class="d-hang">• thêm giá trị enum vào response (consumer ánh xạ enum chặt sẽ lỗi)</div>
           </div>
           <div class="d-sub d-mt-1" style="font-style: italic;">consumer cũ sẽ lỗi</div>
         </div>

@@ -8,10 +8,13 @@
     "Sinh viên nộp bài SQL" như ví dụ trong §2.4; service layers theo ba loại của Erl (Task, Entity, Utility)
     với ví dụ của sách; tên context khớp §2.5 (SQL Practice, Network Practice, Academic Management, DevOps Practice).
     Chữ theo DIAGRAM_DESIGN.md §17. (Tiêu đề cũ "Fig 2.6b" sửa về đúng số hình 2.7.)
+    2026-11-11: bước 1 ghi rõ là một quy trình ví dụ, bước 3 ghi rõ là kết quả cho cả KBM. Trước đó người đọc thấy một
+    quy trình nộp bài SQL ánh xạ ra cả Network Practice và DevOps Practice, hai context không tham gia quy trình đó.
+    Khớp lời văn §2.3.3: quy trình là "Ví dụ KBM", kết quả là "5 nhóm dịch vụ tiêu biểu" khi áp dụng cho KBM.
   -->
   <title>Fig 2.7 — Service-Oriented Analysis của Erl cho KBM | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.7" data-ref="CH02-SEC">
@@ -19,7 +22,7 @@
     <div class="d-row" id="erl-top" style="align-items: stretch; gap: 72px;">
       <div class="d-cluster" id="erl-1" style="flex: 1 1 0; min-width: 0;">
         <span class="d-label"><span class="d-step">1</span> Automation candidates</span>
-        <div class="d-sub d-mt-1">quy trình "sinh viên nộp bài SQL"</div>
+        <div class="d-sub d-mt-1">ví dụ: quy trình "sinh viên nộp bài SQL"</div>
         <div class="d-stack d-mt-1">
           <div class="d-box d-note"><div class="d-title">xác thực người dùng</div></div>
           <div class="d-box d-note"><div class="d-title">nhận câu trả lời</div></div>
@@ -51,6 +54,7 @@
 
     <div class="d-cluster" id="erl-r" style="margin-top: 56px;">
       <span class="d-label"><span class="d-step">3</span> Ánh xạ sang Bounded Context</span>
+      <div class="d-sub d-mt-1">kết quả cho cả KBM, sau khi phân tích tương tự các quy trình còn lại</div>
       <div class="d-col d-mt-2" style="gap: 10px;">
         <div class="d-row d-gap-1" style="align-items: center;">
           <div class="d-box d-infra text-center" style="width: 240px; flex-shrink: 0;"><div class="d-title">Identity &amp; Access</div></div>

@@ -6,15 +6,17 @@
     Fig 2.3 — Các building blocks trong DDD
     2026-09-28 (WP-B Ch.02): 4 <line> (hai đường chéo theo % không chạm hộp) → d-links; ba khối bên ngoài nối vào
     Aggregate Root thay vì một mũi tên chung; chữ theo DIAGRAM_DESIGN.md §17.
+    2026-11-12: ba mũi tên vào Aggregate Root có nhãn (lưu, nạp · thao tác · tạo), gấp khúc gần đích để nhãn nằm trên
+    từng nhánh; khoảng cách cột trái 72 → 150px cho đủ chỗ.
   -->
   <title>Fig 2.3 — Các building blocks trong DDD | Ch.2</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-2.3" data-ref="CH02-SEC">
 
-    <div class="d-row" style="align-items: center; gap: 72px;">
+    <div class="d-row" style="align-items: center; gap: 150px;">
 
       <!-- Ba khối bên ngoài Aggregate -->
       <div class="d-col d-gap-2" style="width: 210px; flex-shrink: 0;">
@@ -70,9 +72,9 @@
     </div>
 
     <svg class="d-links">
-      <path data-from="bb-repo" data-to="bb-root" data-from-side="right" data-to-side="left"></path>
-      <path data-from="bb-svc" data-to="bb-root" data-from-side="right" data-to-side="left"></path>
-      <path data-from="bb-fac" data-to="bb-root" data-from-side="right" data-to-side="left"></path>
+      <path data-from="bb-repo" data-to="bb-root" data-from-side="right" data-to-side="left" data-mid="0.72" data-label="lưu, nạp" data-label-at="0.25" data-label-side="above"></path>
+      <path data-from="bb-svc" data-to="bb-root" data-from-side="right" data-to-side="left" data-mid="0.72" data-label="thao tác" data-label-at="0.25" data-label-side="above"></path>
+      <path data-from="bb-fac" data-to="bb-root" data-from-side="right" data-to-side="left" data-mid="0.72" data-label="tạo" data-label-at="0.25" data-label-side="above"></path>
       <path data-from="bb-root" data-to="bb-ent" data-from-side="right" data-to-side="left"></path>
       <path data-from="bb-root" data-to="bb-vo" data-from-side="right" data-to-side="left"></path>
       <path data-from="bb-ent" data-to="bb-child"></path>

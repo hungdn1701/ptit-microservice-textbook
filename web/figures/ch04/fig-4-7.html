@@ -5,6 +5,8 @@
   <!--
     2026-09-28 (WP-B Ch.04): vạch màu + đường cong SVG theo % (không có đầu mũi tên) → d-links; chữ theo §17; sửa mã
     @Bulkhead (annotation không có thuộc tính maxConcurrentCalls) theo cảnh báo "Cấp Executor" ở §4.4.
+    2026-11-11: mỗi chấm là một luồng, số chấm khớp số ghi trên pool (10, 20, 15; trước là 10, 8, 7), xếp lưới 10 cột.
+    Số chấm tô đậm (luồng đang bận) chỉ để minh họa trạng thái "bình thường", giữ tỉ lệ gần bản cũ.
     Fig 4.7 — Bulkhead Pattern
     =========================================================
     Tier 1 HTML migration từ fig-4-7.svg
@@ -13,7 +15,7 @@
   -->
   <title>Fig 4.7 — Bulkhead: thread pool cô lập theo chức năng | Ch.4</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 
 </head>
 <body class="diagram-mode">
@@ -48,7 +50,7 @@
             <div class="d-sub d-mb-1 d-text-danger fw-bold">10 luồng</div>
             <div class="d-label d-mb-2 d-text-danger fw-semibold" style="background: var(--diagram-color-danger-bg);">đầy</div>
             <!-- Thread dots: all red (full) -->
-            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+            <div style="display: grid; grid-template-columns: repeat(10, 8px); gap: 8px; justify-content: center;">
               <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
               <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
               <div class="d-zone-danger" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-danger-border);"></div>
@@ -74,10 +76,22 @@
             <div class="d-title d-mb-1">Thread pool: Question</div>
             <div class="d-sub d-mb-1 d-text-success fw-bold">20 luồng</div>
             <div class="d-label d-mb-2 d-text-success fw-semibold" style="background: var(--diagram-color-success-bg);">bình thường</div>
-            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+            <div style="display: grid; grid-template-columns: repeat(10, 8px); gap: 8px; justify-content: center;">
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
@@ -98,9 +112,17 @@
             <div class="d-title d-mb-1">Thread pool: Contest</div>
             <div class="d-sub d-mb-1 d-text-success fw-bold">15 luồng</div>
             <div class="d-label d-mb-2 d-text-success fw-semibold" style="background: var(--diagram-color-success-bg);">bình thường</div>
-            <div class="d-row d-gap-1 d-center" style="flex-wrap: wrap;">
+            <div style="display: grid; grid-template-columns: repeat(10, 8px); gap: 8px; justify-content: center;">
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0; background: var(--diagram-color-success-border);"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
+              <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>
               <div class="d-zone-success" style="width: 8px; height: 8px; border-radius: 50%; padding: 0;"></div>

@@ -7,10 +7,13 @@
     2026-09-28 (WP-B Ch.01): bỏ khung lồng nhau làm hộp bên phải lệch cột và 5 <line> toạ độ cứng; dựng lại thành
     lưới 2 cột — bốn cấp của Erl (thụt lề dần = cấp trên chứa cấp dưới) nối sang hiện thân trong thực tiễn bằng d-links.
     Chữ theo DIAGRAM_DESIGN.md §17: tên kiến trúc/pattern tiếng Anh, mô tả tiếng Việt.
+    2026-11-12: vế thực tiễn của Service Inventory Architecture đổi từ "Service Registry & Discovery" sang "Không có
+    inventory chung": inventory là tập dịch vụ được quản trị lúc thiết kế, registry là cơ chế lúc chạy (Chương 4), và
+    lời văn ngay dưới hình nói microservices không theo đuổi một inventory thống nhất. Tác giả duyệt (báo cáo §13.3).
   -->
   <title>Fig 1.2 — Bốn kiểu kiến trúc SOA | Ch.1</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-1.2" data-ref="CH01-SEC">
@@ -43,9 +46,9 @@
           <div class="d-title">Service Inventory Architecture</div>
           <div class="d-sub">tập dịch vụ dùng chung của một tổ chức</div>
         </div>
-        <div class="d-box d-note d-col d-gap-1" id="p-registry">
-          <div class="d-title">Service Registry &amp; Discovery</div>
-          <div class="d-sub">danh mục dịch vụ, định tuyến</div>
+        <div class="d-box d-note d-col d-gap-1" id="p-ownership">
+          <div class="d-title">Không có inventory chung</div>
+          <div class="d-sub">microservices: mỗi nhóm sở hữu service của mình</div>
         </div>
 
         <!-- Cấp 2 -->
@@ -73,7 +76,7 @@
 
     <svg class="d-links">
       <path data-from="erl-enterprise" data-to="p-soa" class="is-dashed"></path>
-      <path data-from="erl-inventory" data-to="p-registry" class="is-dashed"></path>
+      <path data-from="erl-inventory" data-to="p-ownership" class="is-dashed"></path>
       <path data-from="erl-composition" data-to="p-compose" class="is-dashed"></path>
       <path data-from="erl-service" data-to="p-micro" class="is-dashed"></path>
     </svg>

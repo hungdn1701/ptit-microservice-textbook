@@ -11,39 +11,39 @@
   -->
   <title>Fig 10.10 — Lộ trình chuyển đổi 4 giai đoạn | Ch.10</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-10.10" data-ref="CH10-SEC">
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px; align-items: stretch;">
       <div class="d-box d-success" id="rm-1">
         <div class="d-title d-mb-1"><span class="d-step">1</span> Quick Wins</div>
-        <div class="d-sub">· giới hạn CORS origin</div>
-        <div class="d-sub">· thống nhất phiên bản JJWT</div>
-        <div class="d-sub">· JSON logging</div>
-        <div class="d-sub">· chuẩn hóa Correlation ID</div>
-        <div class="d-sub">· secret vào biến môi trường</div>
+        <div class="d-sub d-hang">· giới hạn CORS origin</div>
+        <div class="d-sub d-hang">· thống nhất phiên bản JJWT</div>
+        <div class="d-sub d-hang">· JSON logging</div>
+        <div class="d-sub d-hang">· chuẩn hóa Correlation ID</div>
+        <div class="d-sub d-hang">· secret vào biến môi trường</div>
       </div>
       <div class="d-box d-note" id="rm-2">
         <div class="d-title d-mb-1"><span class="d-step">2</span> Observability</div>
-        <div class="d-sub">· Loki + Grafana</div>
-        <div class="d-sub">· Micrometer Tracing</div>
-        <div class="d-sub">· metric tùy biến: tần suất nộp bài, thời gian chấm</div>
+        <div class="d-sub d-hang">· Loki + Grafana</div>
+        <div class="d-sub d-hang">· Micrometer Tracing</div>
+        <div class="d-sub d-hang">· metric tùy biến: tần suất nộp bài, thời gian chấm</div>
       </div>
       <div class="d-box d-event" id="rm-3">
         <div class="d-title d-mb-1"><span class="d-step">3</span> Resilience &amp; CI/CD</div>
-        <div class="d-sub">· Circuit Breaker cho Feign</div>
-        <div class="d-sub">· Kafka DLT + retry</div>
-        <div class="d-sub">· rate limiting theo route cho kỳ thi</div>
-        <div class="d-sub">· CI/CD tự động (GitLab CI)</div>
-        <div class="d-sub">· timeout + semantic lock cho saga nộp bài</div>
+        <div class="d-sub d-hang">· Circuit Breaker cho Feign</div>
+        <div class="d-sub d-hang">· Kafka DLT + retry</div>
+        <div class="d-sub d-hang">· rate limiting theo route cho kỳ thi</div>
+        <div class="d-sub d-hang">· CI/CD tự động (GitLab CI)</div>
+        <div class="d-sub d-hang">· timeout + semantic lock cho saga nộp bài</div>
       </div>
       <div class="d-box d-highlight" id="rm-4">
         <div class="d-title d-mb-1"><span class="d-step">4</span> Tách database</div>
-        <div class="d-sub">· tách schema, đọc chéo tạm qua view</div>
-        <div class="d-sub">· Academic gọi Core API, rồi thu hồi quyền đọc chéo</div>
-        <div class="d-sub">· gọn thư viện dùng chung</div>
-        <div class="d-sub">· outbox cho luồng bài nộp</div>
+        <div class="d-sub d-hang">· tách schema, đọc chéo tạm qua view</div>
+        <div class="d-sub d-hang">· Academic gọi Core API, rồi thu hồi quyền đọc chéo</div>
+        <div class="d-sub d-hang">· gọn thư viện dùng chung</div>
+        <div class="d-sub d-hang">· outbox cho luồng bài nộp</div>
       </div>
     </div>
     <div class="d-mt-2">

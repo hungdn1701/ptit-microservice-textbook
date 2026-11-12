@@ -11,7 +11,7 @@
   -->
   <title>Fig 9.8 — Kiến trúc bảo mật KBM | Ch.9</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-9.8" data-ref="CH09-SEC">
@@ -33,11 +33,11 @@
 
       <div class="d-box d-danger">
         <div class="d-title d-mb-1">Khoảng trống rủi ro cao (khi khảo sát)</div>
-        <div class="d-sub">· JWT HS256, secret dùng chung</div>
-        <div class="d-sub">· khóa bí mật một phần nằm trong tệp cấu hình</div>
-        <div class="d-sub">· CORS <code>allowedOrigins: "*"</code></div>
-        <div class="d-sub">· lẫn header-trust và tự parse JWT</div>
-        <div class="d-sub">· token ở localStorage</div>
+        <div class="d-sub d-hang">· JWT HS256, secret dùng chung</div>
+        <div class="d-sub d-hang">· khóa bí mật một phần nằm trong tệp cấu hình</div>
+        <div class="d-sub d-hang">· CORS <code>allowedOrigins: "*"</code></div>
+        <div class="d-sub d-hang">· lẫn header-trust và tự parse JWT</div>
+        <div class="d-sub d-hang">· token ở localStorage</div>
         <div class="d-sub d-mt-1 d-text-muted">trung bình: chưa có workload identity cho service-to-service</div>
       </div>
     </div>

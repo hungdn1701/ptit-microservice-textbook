@@ -8,15 +8,17 @@
     Tên theo bảng ánh xạ ngay sau hình (§3.5): Inbound Adapter (@RestController, @KafkaListener) → Inbound Port
     (QuestionService) → business logic → Outbound Port (QuestionRepository do domain định nghĩa) ← Outbound Adapter
     (JPA implementation, Feign client) — mũi tên nét đứt "implements" thể hiện hướng phụ thuộc vào trong.
+    2026-11-12: nhãn "implements" nằm đè viền nhóm Outbound adapter → khoảng cách tới nhóm này 80 → 104px (bên trái
+    80 → 56px để giữ bề rộng), trục gấp khúc dời gần đích, nhãn nằm giữa hai viền.
     Chữ theo DIAGRAM_DESIGN.md §17.
   -->
   <title>Fig 3.5 — Hexagonal Architecture cho Core Service | Ch.3</title>
   <link rel="stylesheet" href="../../styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="../../styles/diagram-style.css?v=a8e20a4e">
+  <link rel="stylesheet" href="../../styles/diagram-style.css?v=f2208dbb">
 </head>
 <body class="diagram-mode">
   <div class="diagram-canvas" data-fig-id="FIG-3.5">
-    <div class="d-row" style="gap: 80px; align-items: stretch; justify-content: center;">
+    <div class="d-row" style="gap: 56px; align-items: stretch; justify-content: center;">
 
       <div class="d-cluster" style="width: 250px; align-self: flex-start;">
         <span class="d-label">Inbound adapter</span>
@@ -42,7 +44,7 @@
         </div>
       </div>
 
-      <div class="d-cluster" style="width: 250px; align-self: flex-end;">
+      <div class="d-cluster" style="width: 250px; align-self: flex-end; margin-left: 48px;">
         <span class="d-label">Outbound adapter</span>
         <div class="d-col d-mt-1" style="gap: 14px;">
           <div class="d-box d-infra text-center" id="hx-jpa"><div class="d-title">JPA implementation</div><div class="d-sub">PostgreSQL</div></div>
@@ -60,8 +62,8 @@
       <path data-from="hx-kafka" data-to="hx-in" data-from-side="right" data-to-side="left"></path>
       <path data-from="hx-in" data-to="hx-logic"></path>
       <path data-from="hx-logic" data-to="hx-out"></path>
-      <path data-from="hx-jpa" data-to="hx-out" data-from-side="left" data-to-side="right" class="is-dashed" data-label="implements" data-label-side="above" data-label-at="0.2"></path>
-      <path data-from="hx-feign" data-to="hx-out" data-from-side="left" data-to-side="right" class="is-dashed"></path>
+      <path data-from="hx-jpa" data-to="hx-out" data-from-side="left" data-to-side="right" class="is-dashed" data-mid="0.75" data-label="implements" data-label-side="above" data-label-at="0.29"></path>
+      <path data-from="hx-feign" data-to="hx-out" data-from-side="left" data-to-side="right" class="is-dashed" data-mid="0.75"></path>
     </svg>
   </div><!-- /.diagram-canvas -->
 
