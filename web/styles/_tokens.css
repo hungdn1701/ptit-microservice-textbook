@@ -84,7 +84,7 @@
   --book-status-bad: #DC2626;
 
   /* Book fonts (HTML book chapters) */
-  --book-font-body: "Source Serif 4", "Libertinus Serif", "Georgia", "Times New Roman";
+  --book-font-body: "Source Serif 4", "Source Sans 3", "Libertinus Serif", "Georgia", "Times New Roman";
   --book-font-sans: "Source Sans 3", "Segoe UI", "Calibri";
   --book-font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", "Courier New";
 }
