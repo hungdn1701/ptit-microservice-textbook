@@ -49,12 +49,12 @@
   --code-inline-bg: var(--book-code-inline-bg);
   --code-inline-ink: var(--book-code-inline-text);
   --figure-bg: #FFFFFF;
-  --c-principle: var(--book-border-principle); --c-principle-bg: var(--book-bg-principle);
-  --c-analysis:  var(--book-border-analysis);  --c-analysis-bg:  var(--book-bg-analysis);
-  --c-warning:   var(--book-border-warning);   --c-warning-bg:   var(--book-bg-warning);
-  --c-tip:       var(--book-border-tip);       --c-tip-bg:       var(--book-bg-tip);
-  --c-note:      var(--book-border-note);      --c-note-bg:      var(--book-bg-note);
-  --c-casestudy: var(--book-border-casestudy); --c-casestudy-bg: var(--book-bg-casestudy);
+  --c-principle: var(--book-border-principle); --c-principle-bg: var(--book-bg-principle); --c-principle-fg: var(--book-text-principle);
+  --c-analysis:  var(--book-border-analysis);  --c-analysis-bg:  var(--book-bg-analysis);  --c-analysis-fg:  var(--book-text-analysis);
+  --c-warning:   var(--book-border-warning);   --c-warning-bg:   var(--book-bg-warning);   --c-warning-fg:   var(--book-text-warning);
+  --c-tip:       var(--book-border-tip);       --c-tip-bg:       var(--book-bg-tip);       --c-tip-fg:       var(--book-text-tip);
+  --c-note:      var(--book-border-note);      --c-note-bg:      var(--book-bg-note);      --c-note-fg:      var(--book-text-note);
+  --c-casestudy: var(--book-border-casestudy); --c-casestudy-bg: var(--book-bg-casestudy); --c-casestudy-fg: var(--book-text-casestudy);
   color-scheme: light;
 }
 
@@ -78,12 +78,12 @@ html:not(.light) {
   --code-rule: #5D8FCF;
   --code-inline-bg: #1C2A3F;
   --code-inline-ink: #F08BA0;
-  --c-principle-bg: rgba(59, 130, 246, 0.10);
-  --c-analysis-bg:  rgba(99, 102, 241, 0.12);
-  --c-warning-bg:   rgba(245, 158, 11, 0.10);
-  --c-tip-bg:       rgba(16, 185, 129, 0.10);
-  --c-note-bg:      rgba(156, 163, 175, 0.10);
-  --c-casestudy-bg: rgba(14, 165, 233, 0.10);
+  --c-principle-bg: rgba(59, 130, 246, 0.10); --c-principle-fg: #93C5FD;
+  --c-analysis-bg:  rgba(99, 102, 241, 0.12); --c-analysis-fg:  #A5B4FC;
+  --c-warning-bg:   rgba(245, 158, 11, 0.10); --c-warning-fg:   #FCD34D;
+  --c-tip-bg:       rgba(16, 185, 129, 0.10); --c-tip-fg:       #6EE7B7;
+  --c-note-bg:      rgba(156, 163, 175, 0.10); --c-note-fg:     #CBD5E1;
+  --c-casestudy-bg: rgba(14, 165, 233, 0.10); --c-casestudy-fg: #7DD3FC;
   color-scheme: dark;
 }
 
@@ -157,6 +157,7 @@ dd::after { content: ""; display: block; margin-bottom: 0.45em; }
 code {
   font-family: var(--book-font-mono), monospace;
   font-size: 0.86em;
+  font-style: normal;
   background: var(--code-inline-bg);
   color: var(--code-inline-ink);
   padding: 0.08em 0.3em;
@@ -207,43 +208,46 @@ figure > div { overflow-x: auto; }   /* bảng rộng cuộn ngang trên màn h�
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.93rem;
-  line-height: 1.5;
+  font-family: var(--book-font-sans), sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.48;
 }
 th {
   font-family: var(--book-font-sans), sans-serif;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 0.88rem;
   text-align: left;
   background: var(--table-head-bg);
   color: var(--table-head-ink);
-  padding: 0.5em 0.7em;
+  padding: 0.55em 0.7em;
   vertical-align: middle;
 }
-td { padding: 0.5em 0.7em; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td { padding: 0.55em 0.7em; border-bottom: 1px solid var(--rule); vertical-align: top; }
 tbody tr:nth-child(even) td { background: var(--table-alt); }
 td p { margin: 0; }
 
 /* ---- Hộp nội dung (callout) ------------------------------------------------- */
 aside.callout {
-  --c: var(--c-note); --c-bg: var(--c-note-bg);
+  --c: var(--c-note); --c-bg: var(--c-note-bg); --c-fg: var(--c-note-fg);
   margin: 1.4rem 0;
-  padding: 0.85rem 1.1rem 0.4rem;
+  padding: 0.85rem 1.1rem 0.5rem;
   background: var(--c-bg);
   border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
   border-left: 4px solid var(--c);
   border-radius: 0 6px 6px 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
 }
-aside.callout-principle { --c: var(--c-principle); --c-bg: var(--c-principle-bg); }
-aside.callout-analysis  { --c: var(--c-analysis);  --c-bg: var(--c-analysis-bg); }
-aside.callout-warning   { --c: var(--c-warning);   --c-bg: var(--c-warning-bg); }
-aside.callout-tip       { --c: var(--c-tip);       --c-bg: var(--c-tip-bg); }
-aside.callout-casestudy { --c: var(--c-casestudy); --c-bg: var(--c-casestudy-bg); }
+aside.callout-principle { --c: var(--c-principle); --c-bg: var(--c-principle-bg); --c-fg: var(--c-principle-fg); }
+aside.callout-analysis  { --c: var(--c-analysis);  --c-bg: var(--c-analysis-bg);  --c-fg: var(--c-analysis-fg); }
+aside.callout-warning   { --c: var(--c-warning);   --c-bg: var(--c-warning-bg);   --c-fg: var(--c-warning-fg); }
+aside.callout-tip       { --c: var(--c-tip);       --c-bg: var(--c-tip-bg);       --c-fg: var(--c-tip-fg); }
+aside.callout-casestudy { --c: var(--c-casestudy); --c-bg: var(--c-casestudy-bg); --c-fg: var(--c-casestudy-fg); }
 .callout-title {
   display: flex; align-items: center; gap: 0.45rem;
   font-family: var(--book-font-sans), sans-serif;
-  font-weight: 700; font-size: 0.95rem;
-  color: var(--c);
+  font-weight: 700; font-size: 0.88rem;
+  color: var(--c-fg);
   margin-bottom: 0.45rem;
 }
 .callout-title img { width: 1.05em; height: 1.05em; flex: none; }
@@ -252,25 +256,29 @@ aside.callout > :last-child { margin-bottom: 0.5rem; }
 
 /* Mẫu nhãn hộp (bảng Quy ước ở Lời nói đầu) */
 .callout-tag {
-  --c: var(--c-note); --c-bg: var(--c-note-bg);
+  --c: var(--c-note); --c-bg: var(--c-note-bg); --c-fg: var(--c-note-fg);
   display: inline-block;
-  font-family: var(--book-font-sans), sans-serif; font-weight: 700; font-size: 0.85rem;
-  color: var(--c); background: var(--c-bg);
-  border: 1px solid var(--c); border-radius: 3px; padding: 0.05em 0.45em;
+  font-family: var(--book-font-sans), sans-serif; font-weight: 700; font-size: 0.84rem;
+  color: var(--c-fg); background: var(--c-bg);
+  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  border-left: 3px solid var(--c);
+  border-radius: 0 3px 3px 0; padding: 0.08em 0.5em;
   white-space: nowrap;
 }
-.callout-tag.callout-principle { --c: var(--c-principle); --c-bg: var(--c-principle-bg); }
-.callout-tag.callout-analysis  { --c: var(--c-analysis);  --c-bg: var(--c-analysis-bg); }
-.callout-tag.callout-warning   { --c: var(--c-warning);   --c-bg: var(--c-warning-bg); }
-.callout-tag.callout-tip       { --c: var(--c-tip);       --c-bg: var(--c-tip-bg); }
+.callout-tag.callout-principle { --c: var(--c-principle); --c-bg: var(--c-principle-bg); --c-fg: var(--c-principle-fg); }
+.callout-tag.callout-analysis  { --c: var(--c-analysis);  --c-bg: var(--c-analysis-bg);  --c-fg: var(--c-analysis-fg); }
+.callout-tag.callout-warning   { --c: var(--c-warning);   --c-bg: var(--c-warning-bg);   --c-fg: var(--c-warning-fg); }
+.callout-tag.callout-tip       { --c: var(--c-tip);       --c-bg: var(--c-tip-bg);       --c-fg: var(--c-tip-fg); }
 
 /* ---- Mục tiêu học tập, epigraph ------------------------------------------- */
 aside.objectives {
   margin: 1.4rem 0 2rem;
-  padding: 1rem 1.3rem 0.6rem;
+  padding: 0.95rem 1.2rem 0.6rem;
   background: var(--surface);
   border-left: 4px solid var(--accent);
   border-radius: 0 6px 6px 0;
+  font-size: 0.92rem;
+  line-height: 1.65;
 }
 .objectives-title {
   font-family: var(--book-font-sans), sans-serif;

@@ -63,7 +63,7 @@
   --book-bg-principle: #EFF6FF;
   --book-bg-warning: #FFFBEB;
   --book-bg-tip: #F0FDF4;
-  --book-bg-analysis: #EFF6FF;
+  --book-bg-analysis: #EEF2FF;
   --book-bg-note: #F9FAFB;
   --book-bg-casestudy: #F0F9FF;
   --book-border-principle: #3B82F6;
@@ -72,6 +72,12 @@
   --book-border-analysis: #6366F1;
   --book-border-note: #9CA3AF;
   --book-border-casestudy: #0EA5E9;
+  --book-text-principle: #1D4ED8;
+  --book-text-warning: #744210;
+  --book-text-tip: #276749;
+  --book-text-analysis: #3730A3;
+  --book-text-note: #374151;
+  --book-text-casestudy: #0369A1;
   --book-code-block-bg: #F7F8FA;
   --book-code-block-text: #1F2933;
   --book-code-block-border: #D8DEE6;
