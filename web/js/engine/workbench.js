@@ -95,6 +95,10 @@
     if (topbar) {
       document.documentElement.style.setProperty('--wb-topbar-h', `${topbar.offsetHeight}px`);
     }
+    const readerBar = document.getElementById('wb-reader-bar');
+    if (readerBar && readerBar.offsetHeight > 0) {
+      document.documentElement.style.setProperty('--wb-reader-bar-h', `${readerBar.offsetHeight}px`);
+    }
   }
 
   function setMobileDrawer(open) {
@@ -116,10 +120,19 @@
 
     if (!isMobileViewport()) {
       frame.style.height = '';
+      delete frame.dataset.lastH;
       try {
         const doc = frame.contentDocument;
         if (doc && doc.documentElement) {
           doc.documentElement.style.overflowY = '';
+          doc.documentElement.style.minHeight = '';
+          doc.documentElement.style.height = '';
+        }
+        if (doc && doc.body) {
+          doc.body.style.minHeight = '';
+          doc.body.style.height = '';
+          const mainEl = doc.querySelector('main.book, .author-card');
+          if (mainEl) mainEl.style.minHeight = '';
         }
       } catch (e) { /* cross-origin / file:// */ }
       return;
@@ -131,21 +144,41 @@
         if (!doc || !doc.body) return;
         const mainEl = doc.querySelector('main.book, .author-card');
         if (!mainEl && doc.body.children.length === 0) return;
+
+        // Break min-height: 100vh feedback loop inside iframe (100vh === iframe height!)
         doc.documentElement.style.overflowY = 'hidden';
-        const contentH = mainEl
-          ? Math.ceil(mainEl.getBoundingClientRect().height + 56)
-          : Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
-        const h = Math.max(520, contentH);
-        frame.style.height = `${h}px`;
+        doc.documentElement.style.minHeight = '0';
+        doc.documentElement.style.height = 'auto';
+        doc.body.style.minHeight = '0';
+        doc.body.style.height = 'auto';
+        if (mainEl) mainEl.style.minHeight = '0';
+
+        // Measure exact natural content height with zero recursive inflation
+        let contentH = 0;
+        if (mainEl) {
+          const bodyStyle = doc.defaultView ? doc.defaultView.getComputedStyle(doc.body) : null;
+          const padTop = bodyStyle ? parseFloat(bodyStyle.paddingTop) || 0 : 0;
+          const padBot = bodyStyle ? parseFloat(bodyStyle.paddingBottom) || 0 : 0;
+          contentH = Math.ceil(mainEl.offsetHeight + padTop + padBot);
+        } else {
+          contentH = Math.ceil(doc.body.offsetHeight);
+        }
+        const h = Math.max(460, contentH);
+        const prevH = Number(frame.dataset.lastH || 0);
+        if (Math.abs(h - prevH) >= 2) {
+          frame.dataset.lastH = String(h);
+          frame.style.height = `${h}px`;
+        }
       } catch (e) { /* cross-origin / file:// fallback uses CSS min-height */ }
     };
 
     measure();
     try {
       const doc = frame.contentDocument;
-      if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+      const target = doc ? (doc.querySelector('main.book, .author-card') || doc.body) : null;
+      if (target && typeof ResizeObserver !== 'undefined') {
         const ro = new ResizeObserver(() => measure());
-        ro.observe(doc.body);
+        ro.observe(target);
         frameObservers.set(frame, ro);
       }
     } catch (e) { /* ignore */ }
@@ -1049,6 +1082,8 @@
     frame.setAttribute('src', `../release/${fileName}`);
     if (isMobileViewport()) {
       frame.style.height = '';
+      delete frame.dataset.lastH;
+      syncTopbarHeight();
       setTimeout(() => syncFrameLayout(frame), 180);
       setTimeout(() => syncFrameLayout(frame), 550);
       setTimeout(() => syncFrameLayout(frame), 1100);
