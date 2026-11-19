@@ -5,7 +5,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-1-1",
-    "path": "./ch01/fig-1-1.html"
+    "path": "./ch01/fig-1-1.html",
+    "title": "Tiến hóa kiến trúc phần mềm doanh nghiệp"
   },
   {
     "ch": "01",
@@ -13,7 +14,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-1-2",
-    "path": "./ch01/fig-1-2.html"
+    "path": "./ch01/fig-1-2.html",
+    "title": "Bốn kiểu kiến trúc SOA"
   },
   {
     "ch": "01",
@@ -21,7 +23,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-1-3",
-    "path": "./ch01/fig-1-3.html"
+    "path": "./ch01/fig-1-3.html",
+    "title": "Scale Cube: ba chiều mở rộng"
   },
   {
     "ch": "01",
@@ -29,7 +32,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-1-4",
-    "path": "./ch01/fig-1-4.html"
+    "path": "./ch01/fig-1-4.html",
+    "title": "Cây quyết định chuyển đổi kiến trúc"
   },
   {
     "ch": "01",
@@ -37,7 +41,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-1-5",
-    "path": "./ch01/fig-1-5.html"
+    "path": "./ch01/fig-1-5.html",
+    "title": "Fast Flow Success Triangle"
   },
   {
     "ch": "01",
@@ -45,7 +50,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-1-6",
-    "path": "./ch01/fig-1-6.html"
+    "path": "./ch01/fig-1-6.html",
+    "title": "Con đường từ Patchwork Monolith đến Microservices"
   },
   {
     "ch": "01",
@@ -53,7 +59,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-1-7",
-    "path": "./ch01/fig-1-7.html"
+    "path": "./ch01/fig-1-7.html",
+    "title": "Khung ra quyết định: ba câu hỏi"
   },
   {
     "ch": "01",
@@ -61,7 +68,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-1-8",
-    "path": "./ch01/fig-1-8.html"
+    "path": "./ch01/fig-1-8.html",
+    "title": "Kiến trúc tổng quan KBM LMS"
   },
   {
     "ch": "02",
@@ -69,7 +77,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-2-1",
-    "path": "./ch02/fig-2-1.html"
+    "path": "./ch02/fig-2-1.html",
+    "title": "Conway's Law và Inverse Conway Maneuver"
   },
   {
     "ch": "02",
@@ -77,7 +86,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-2-2",
-    "path": "./ch02/fig-2-2.html"
+    "path": "./ch02/fig-2-2.html",
+    "title": "Mô hình Spotify: Tribe, Squad, Chapter, Guild"
   },
   {
     "ch": "02",
@@ -85,7 +95,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-2-3",
-    "path": "./ch02/fig-2-3.html"
+    "path": "./ch02/fig-2-3.html",
+    "title": "Các building blocks trong DDD"
   },
   {
     "ch": "02",
@@ -93,7 +104,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-2-4",
-    "path": "./ch02/fig-2-4.html"
+    "path": "./ch02/fig-2-4.html",
+    "title": "Ubiquitous Language: Submission trong 3 Bounded Context"
   },
   {
     "ch": "02",
@@ -101,7 +113,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-2-5",
-    "path": "./ch02/fig-2-5.html"
+    "path": "./ch02/fig-2-5.html",
+    "title": "Context Map của KBM"
   },
   {
     "ch": "02",
@@ -109,7 +122,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-2-6",
-    "path": "./ch02/fig-2-6.html"
+    "path": "./ch02/fig-2-6.html",
+    "title": "Event Storming: từ Command đến Domain Event"
   },
   {
     "ch": "02",
@@ -117,7 +131,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-2-7",
-    "path": "./ch02/fig-2-7.html"
+    "path": "./ch02/fig-2-7.html",
+    "title": "Service-Oriented Analysis của Erl cho KBM"
   },
   {
     "ch": "02",
@@ -125,7 +140,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-2-8",
-    "path": "./ch02/fig-2-8.html"
+    "path": "./ch02/fig-2-8.html",
+    "title": "Các Bounded Context của KBM"
   },
   {
     "ch": "02",
@@ -133,7 +149,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-2-9",
-    "path": "./ch02/fig-2-9.html"
+    "path": "./ch02/fig-2-9.html",
+    "title": "Hướng tách shared library"
   },
   {
     "ch": "03",
@@ -141,7 +158,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-3-1",
-    "path": "./ch03/fig-3-1.html"
+    "path": "./ch03/fig-3-1.html",
+    "title": "Richardson Maturity Model"
   },
   {
     "ch": "03",
@@ -149,7 +167,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-3-2",
-    "path": "./ch03/fig-3-2.html"
+    "path": "./ch03/fig-3-2.html",
+    "title": "Quy tắc schema evolution và versioning"
   },
   {
     "ch": "03",
@@ -157,7 +176,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-3-3",
-    "path": "./ch03/fig-3-3.html"
+    "path": "./ch03/fig-3-3.html",
+    "title": "Pipeline OpenAPI: từ annotation đến Swagger UI"
   },
   {
     "ch": "03",
@@ -165,7 +185,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-3-4",
-    "path": "./ch03/fig-3-4.html"
+    "path": "./ch03/fig-3-4.html",
+    "title": "DTO pattern"
   },
   {
     "ch": "03",
@@ -173,7 +194,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-3-5",
-    "path": "./ch03/fig-3-5.html"
+    "path": "./ch03/fig-3-5.html",
+    "title": "Hexagonal Architecture cho Core Service"
   },
   {
     "ch": "04",
@@ -181,7 +203,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-4-1",
-    "path": "./ch04/fig-4-1.html"
+    "path": "./ch04/fig-4-1.html",
+    "title": "Giao tiếp đồng bộ — blocking"
   },
   {
     "ch": "04",
@@ -189,7 +212,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-4-2",
-    "path": "./ch04/fig-4-2.html"
+    "path": "./ch04/fig-4-2.html",
+    "title": "Feign proxy tự động hóa HTTP request"
   },
   {
     "ch": "04",
@@ -197,7 +221,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-4-3",
-    "path": "./ch04/fig-4-3.html"
+    "path": "./ch04/fig-4-3.html",
+    "title": "Client-side Discovery"
   },
   {
     "ch": "04",
@@ -205,7 +230,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-4-4",
-    "path": "./ch04/fig-4-4.html"
+    "path": "./ch04/fig-4-4.html",
+    "title": "Server-side Discovery"
   },
   {
     "ch": "04",
@@ -213,7 +239,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-4-5",
-    "path": "./ch04/fig-4-5.html"
+    "path": "./ch04/fig-4-5.html",
+    "title": "Cascading failure"
   },
   {
     "ch": "04",
@@ -221,7 +248,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-4-6",
-    "path": "./ch04/fig-4-6.html"
+    "path": "./ch04/fig-4-6.html",
+    "title": "Circuit Breaker state machine"
   },
   {
     "ch": "04",
@@ -229,7 +257,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-4-7",
-    "path": "./ch04/fig-4-7.html"
+    "path": "./ch04/fig-4-7.html",
+    "title": "Bulkhead: thread pool cô lập theo chức năng"
   },
   {
     "ch": "04",
@@ -237,7 +266,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-4-8",
-    "path": "./ch04/fig-4-8.html"
+    "path": "./ch04/fig-4-8.html",
+    "title": "SQL Judge: dispatch tới các worker theo DBMS"
   },
   {
     "ch": "04",
@@ -245,7 +275,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-4-9",
-    "path": "./ch04/fig-4-9.html"
+    "path": "./ch04/fig-4-9.html",
+    "title": "Lộ trình chuyển đổi cho SQL Judge"
   },
   {
     "ch": "05",
@@ -253,7 +284,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-5-1",
-    "path": "./ch05/fig-5-1.html"
+    "path": "./ch05/fig-5-1.html",
+    "title": "Giao tiếp đồng bộ và bất đồng bộ"
   },
   {
     "ch": "05",
@@ -261,7 +293,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-5-2",
-    "path": "./ch05/fig-5-2.html"
+    "path": "./ch05/fig-5-2.html",
+    "title": "Point-to-Point và Publish/Subscribe"
   },
   {
     "ch": "05",
@@ -269,7 +302,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-5-3",
-    "path": "./ch05/fig-5-3.html"
+    "path": "./ch05/fig-5-3.html",
+    "title": "Durable broker và ephemeral broker"
   },
   {
     "ch": "05",
@@ -277,7 +311,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-5-4",
-    "path": "./ch05/fig-5-4.html"
+    "path": "./ch05/fig-5-4.html",
+    "title": "Kiến trúc RabbitMQ: exchange và queue"
   },
   {
     "ch": "05",
@@ -285,7 +320,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-5-5",
-    "path": "./ch05/fig-5-5.html"
+    "path": "./ch05/fig-5-5.html",
+    "title": "Kafka: topic, partition và consumer group"
   },
   {
     "ch": "05",
@@ -293,7 +329,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-5-6",
-    "path": "./ch05/fig-5-6.html"
+    "path": "./ch05/fig-5-6.html",
+    "title": "Async Submission Flow"
   },
   {
     "ch": "05",
@@ -301,7 +338,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-5-7",
-    "path": "./ch05/fig-5-7.html"
+    "path": "./ch05/fig-5-7.html",
+    "title": "Pipeline 2 Kafka topic trong chế độ thi"
   },
   {
     "ch": "06",
@@ -309,7 +347,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-6-1",
-    "path": "./ch06/fig-6-1.html"
+    "path": "./ch06/fig-6-1.html",
+    "title": "Two-Phase Commit (2PC)"
   },
   {
     "ch": "06",
@@ -317,7 +356,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-6-2",
-    "path": "./ch06/fig-6-2.html"
+    "path": "./ch06/fig-6-2.html",
+    "title": "KBM Submit Saga"
   },
   {
     "ch": "06",
@@ -325,7 +365,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-6-3",
-    "path": "./ch06/fig-6-3.html"
+    "path": "./ch06/fig-6-3.html",
+    "title": "Choreography Saga Sequence Diagram"
   },
   {
     "ch": "06",
@@ -333,7 +374,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-6-4",
-    "path": "./ch06/fig-6-4.html"
+    "path": "./ch06/fig-6-4.html",
+    "title": "Orchestration Saga Sequence Diagram"
   },
   {
     "ch": "06",
@@ -341,7 +383,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-6-5",
-    "path": "./ch06/fig-6-5.html"
+    "path": "./ch06/fig-6-5.html",
+    "title": "Lost updates: hai saga ghi đè nhau"
   },
   {
     "ch": "06",
@@ -349,7 +392,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-6-6",
-    "path": "./ch06/fig-6-6.html"
+    "path": "./ch06/fig-6-6.html",
+    "title": "Implicit Saga trong KBM"
   },
   {
     "ch": "07",
@@ -357,7 +401,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-7-1",
-    "path": "./ch07/fig-7-1.html"
+    "path": "./ch07/fig-7-1.html",
+    "title": "Hệ quả của shared database"
   },
   {
     "ch": "07",
@@ -365,7 +410,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-7-2",
-    "path": "./ch07/fig-7-2.html"
+    "path": "./ch07/fig-7-2.html",
+    "title": "Shared Database và Database-per-Service"
   },
   {
     "ch": "07",
@@ -373,7 +419,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-7-3",
-    "path": "./ch07/fig-7-3.html"
+    "path": "./ch07/fig-7-3.html",
+    "title": "CAP Theorem: CP hay AP khi partition"
   },
   {
     "ch": "07",
@@ -381,7 +428,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-7-4",
-    "path": "./ch07/fig-7-4.html"
+    "path": "./ch07/fig-7-4.html",
+    "title": "Các chiến lược Cache"
   },
   {
     "ch": "07",
@@ -389,7 +437,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-7-5",
-    "path": "./ch07/fig-7-5.html"
+    "path": "./ch07/fig-7-5.html",
+    "title": "Năm chiến lược tách database"
   },
   {
     "ch": "07",
@@ -397,7 +446,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-7-6",
-    "path": "./ch07/fig-7-6.html"
+    "path": "./ch07/fig-7-6.html",
+    "title": "Truy cập dữ liệu bằng API Call"
   },
   {
     "ch": "07",
@@ -405,7 +455,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-7-7",
-    "path": "./ch07/fig-7-7.html"
+    "path": "./ch07/fig-7-7.html",
+    "title": "Data Duplication qua event pipeline"
   },
   {
     "ch": "07",
@@ -413,7 +464,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-7-8",
-    "path": "./ch07/fig-7-8.html"
+    "path": "./ch07/fig-7-8.html",
+    "title": "API Composition"
   },
   {
     "ch": "07",
@@ -421,7 +473,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-7-9",
-    "path": "./ch07/fig-7-9.html"
+    "path": "./ch07/fig-7-9.html",
+    "title": "CQRS pattern"
   },
   {
     "ch": "07",
@@ -429,7 +482,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 10,
     "suffix": "",
     "file": "fig-7-10",
-    "path": "./ch07/fig-7-10.html"
+    "path": "./ch07/fig-7-10.html",
+    "title": "CQRS qua Kafka cho Leaderboard"
   },
   {
     "ch": "07",
@@ -437,7 +491,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 11,
     "suffix": "",
     "file": "fig-7-11",
-    "path": "./ch07/fig-7-11.html"
+    "path": "./ch07/fig-7-11.html",
+    "title": "Event Sourcing và lưu state"
   },
   {
     "ch": "07",
@@ -445,7 +500,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 12,
     "suffix": "",
     "file": "fig-7-12",
-    "path": "./ch07/fig-7-12.html"
+    "path": "./ch07/fig-7-12.html",
+    "title": "Snapshot pattern"
   },
   {
     "ch": "07",
@@ -453,7 +509,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 13,
     "suffix": "",
     "file": "fig-7-13",
-    "path": "./ch07/fig-7-13.html"
+    "path": "./ch07/fig-7-13.html",
+    "title": "Projection rebuilds"
   },
   {
     "ch": "07",
@@ -461,7 +518,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 14,
     "suffix": "",
     "file": "fig-7-14",
-    "path": "./ch07/fig-7-14.html"
+    "path": "./ch07/fig-7-14.html",
+    "title": "Kiến trúc dữ liệu hiện tại của KBM"
   },
   {
     "ch": "08",
@@ -469,7 +527,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-8-1",
-    "path": "./ch08/fig-8-1.html"
+    "path": "./ch08/fig-8-1.html",
+    "title": "Không có Gateway"
   },
   {
     "ch": "08",
@@ -477,7 +536,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-8-2",
-    "path": "./ch08/fig-8-2.html"
+    "path": "./ch08/fig-8-2.html",
+    "title": "API Gateway"
   },
   {
     "ch": "08",
@@ -485,7 +545,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-8-3",
-    "path": "./ch08/fig-8-3.html"
+    "path": "./ch08/fig-8-3.html",
+    "title": "API Gateway và BFF"
   },
   {
     "ch": "08",
@@ -493,7 +554,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-8-4",
-    "path": "./ch08/fig-8-4.html"
+    "path": "./ch08/fig-8-4.html",
+    "title": "Kiến trúc Spring Cloud Gateway"
   },
   {
     "ch": "08",
@@ -501,7 +563,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-8-5",
-    "path": "./ch08/fig-8-5.html"
+    "path": "./ch08/fig-8-5.html",
+    "title": "Luồng lb:// qua Eureka"
   },
   {
     "ch": "08",
@@ -509,7 +572,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-8-6",
-    "path": "./ch08/fig-8-6.html"
+    "path": "./ch08/fig-8-6.html",
+    "title": "Luồng JWT tại Gateway"
   },
   {
     "ch": "08",
@@ -517,7 +581,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-8-7",
-    "path": "./ch08/fig-8-7.html"
+    "path": "./ch08/fig-8-7.html",
+    "title": "Kiến trúc Gateway của KBM"
   },
   {
     "ch": "09",
@@ -525,7 +590,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-9-1",
-    "path": "./ch09/fig-9-1.html"
+    "path": "./ch09/fig-9-1.html",
+    "title": "Monolith và Microservices: điểm bảo vệ"
   },
   {
     "ch": "09",
@@ -533,7 +599,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-9-2",
-    "path": "./ch09/fig-9-2.html"
+    "path": "./ch09/fig-9-2.html",
+    "title": "Phòng thủ chiều sâu"
   },
   {
     "ch": "09",
@@ -541,7 +608,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-9-3",
-    "path": "./ch09/fig-9-3.html"
+    "path": "./ch09/fig-9-3.html",
+    "title": "Cấu trúc JWT"
   },
   {
     "ch": "09",
@@ -549,7 +617,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-9-4",
-    "path": "./ch09/fig-9-4.html"
+    "path": "./ch09/fig-9-4.html",
+    "title": "Luồng JWT mục tiêu"
   },
   {
     "ch": "09",
@@ -557,7 +626,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-9-5",
-    "path": "./ch09/fig-9-5.html"
+    "path": "./ch09/fig-9-5.html",
+    "title": "Làm mới và luân phiên token"
   },
   {
     "ch": "09",
@@ -565,7 +635,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-9-6",
-    "path": "./ch09/fig-9-6.html"
+    "path": "./ch09/fig-9-6.html",
+    "title": "Định danh KBM: khi khảo sát và mục tiêu"
   },
   {
     "ch": "09",
@@ -573,7 +644,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-9-7",
-    "path": "./ch09/fig-9-7.html"
+    "path": "./ch09/fig-9-7.html",
+    "title": "Phân cấp vai trò"
   },
   {
     "ch": "09",
@@ -581,7 +653,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-9-8",
-    "path": "./ch09/fig-9-8.html"
+    "path": "./ch09/fig-9-8.html",
+    "title": "Kiến trúc bảo mật KBM"
   },
   {
     "ch": "09",
@@ -589,7 +662,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-9-9",
-    "path": "./ch09/fig-9-9.html"
+    "path": "./ch09/fig-9-9.html",
+    "title": "Vault Dynamic Secrets"
   },
   {
     "ch": "10",
@@ -597,7 +671,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-10-1",
-    "path": "./ch10/fig-10-1.html"
+    "path": "./ch10/fig-10-1.html",
+    "title": "Strangler Fig Pattern"
   },
   {
     "ch": "10",
@@ -605,7 +680,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-10-2",
-    "path": "./ch10/fig-10-2.html"
+    "path": "./ch10/fig-10-2.html",
+    "title": "Strangler Fig — Gateway-based Routing"
   },
   {
     "ch": "10",
@@ -613,7 +689,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-10-3",
-    "path": "./ch10/fig-10-3.html"
+    "path": "./ch10/fig-10-3.html",
+    "title": "Shared Database và Database-per-Service"
   },
   {
     "ch": "10",
@@ -621,7 +698,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-10-4",
-    "path": "./ch10/fig-10-4.html"
+    "path": "./ch10/fig-10-4.html",
+    "title": "Thứ tự 5 chiến lược tách database"
   },
   {
     "ch": "10",
@@ -629,7 +707,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-10-5",
-    "path": "./ch10/fig-10-5.html"
+    "path": "./ch10/fig-10-5.html",
+    "title": "Vấn đề: DB update mà không gửi event"
   },
   {
     "ch": "10",
@@ -637,7 +716,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-10-6",
-    "path": "./ch10/fig-10-6.html"
+    "path": "./ch10/fig-10-6.html",
+    "title": "Outbox Pattern"
   },
   {
     "ch": "10",
@@ -645,7 +725,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-10-7",
-    "path": "./ch10/fig-10-7.html"
+    "path": "./ch10/fig-10-7.html",
+    "title": "Anti-Corruption Layer"
   },
   {
     "ch": "10",
@@ -653,7 +734,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-10-8",
-    "path": "./ch10/fig-10-8.html"
+    "path": "./ch10/fig-10-8.html",
+    "title": "Branch by Abstraction"
   },
   {
     "ch": "10",
@@ -661,7 +743,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-10-9",
-    "path": "./ch10/fig-10-9.html"
+    "path": "./ch10/fig-10-9.html",
+    "title": "Parallel Run Pattern"
   },
   {
     "ch": "10",
@@ -669,7 +752,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 10,
     "suffix": "",
     "file": "fig-10-10",
-    "path": "./ch10/fig-10-10.html"
+    "path": "./ch10/fig-10-10.html",
+    "title": "Lộ trình chuyển đổi 4 giai đoạn"
   },
   {
     "ch": "10",
@@ -677,7 +761,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 11,
     "suffix": "",
     "file": "fig-10-11",
-    "path": "./ch10/fig-10-11.html"
+    "path": "./ch10/fig-10-11.html",
+    "title": "Ma trận tác động × nỗ lực"
   },
   {
     "ch": "11",
@@ -685,7 +770,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-11-1",
-    "path": "./ch11/fig-11-1.html"
+    "path": "./ch11/fig-11-1.html",
+    "title": "Luồng request qua nhiều service"
   },
   {
     "ch": "11",
@@ -693,7 +779,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-11-2",
-    "path": "./ch11/fig-11-2.html"
+    "path": "./ch11/fig-11-2.html",
+    "title": "Ba trụ cột Observability"
   },
   {
     "ch": "11",
@@ -701,7 +788,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-11-3",
-    "path": "./ch11/fig-11-3.html"
+    "path": "./ch11/fig-11-3.html",
+    "title": "Logs phân tán và logs tập trung"
   },
   {
     "ch": "11",
@@ -709,7 +797,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-11-4",
-    "path": "./ch11/fig-11-4.html"
+    "path": "./ch11/fig-11-4.html",
+    "title": "Pipeline gom logs tập trung"
   },
   {
     "ch": "11",
@@ -717,7 +806,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-11-5",
-    "path": "./ch11/fig-11-5.html"
+    "path": "./ch11/fig-11-5.html",
+    "title": "Truyền Correlation ID qua Kafka"
   },
   {
     "ch": "11",
@@ -725,7 +815,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-11-6",
-    "path": "./ch11/fig-11-6.html"
+    "path": "./ch11/fig-11-6.html",
+    "title": "Gantt của một trace"
   },
   {
     "ch": "11",
@@ -733,7 +824,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-11-7",
-    "path": "./ch11/fig-11-7.html"
+    "path": "./ch11/fig-11-7.html",
+    "title": "SLI, SLO và SLA"
   },
   {
     "ch": "11",
@@ -741,7 +833,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-11-8",
-    "path": "./ch11/fig-11-8.html"
+    "path": "./ch11/fig-11-8.html",
+    "title": "User Activity Tracking qua Kafka"
   },
   {
     "ch": "11",
@@ -749,7 +842,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 9,
     "suffix": "",
     "file": "fig-11-9",
-    "path": "./ch11/fig-11-9.html"
+    "path": "./ch11/fig-11-9.html",
+    "title": "Hiện trạng Observability của KBM"
   },
   {
     "ch": "12",
@@ -757,7 +851,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 1,
     "suffix": "",
     "file": "fig-12-1",
-    "path": "./ch12/fig-12-1.html"
+    "path": "./ch12/fig-12-1.html",
+    "title": "Triển khai thủ công và tự động"
   },
   {
     "ch": "12",
@@ -765,7 +860,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 2,
     "suffix": "",
     "file": "fig-12-2",
-    "path": "./ch12/fig-12-2.html"
+    "path": "./ch12/fig-12-2.html",
+    "title": "Máy ảo và container"
   },
   {
     "ch": "12",
@@ -773,7 +869,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 3,
     "suffix": "",
     "file": "fig-12-3",
-    "path": "./ch12/fig-12-3.html"
+    "path": "./ch12/fig-12-3.html",
+    "title": "CI/CD Pipeline cho Microservices"
   },
   {
     "ch": "12",
@@ -781,7 +878,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 4,
     "suffix": "",
     "file": "fig-12-4",
-    "path": "./ch12/fig-12-4.html"
+    "path": "./ch12/fig-12-4.html",
+    "title": "Rolling Update"
   },
   {
     "ch": "12",
@@ -789,7 +887,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 5,
     "suffix": "",
     "file": "fig-12-5",
-    "path": "./ch12/fig-12-5.html"
+    "path": "./ch12/fig-12-5.html",
+    "title": "Blue-Green Deployment"
   },
   {
     "ch": "12",
@@ -797,7 +896,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 6,
     "suffix": "",
     "file": "fig-12-6",
-    "path": "./ch12/fig-12-6.html"
+    "path": "./ch12/fig-12-6.html",
+    "title": "Kiến trúc Kubernetes"
   },
   {
     "ch": "12",
@@ -805,7 +905,8 @@ window.DIAGRAM_MANIFEST = [
     "number": 7,
     "suffix": "",
     "file": "fig-12-7",
-    "path": "./ch12/fig-12-7.html"
+    "path": "./ch12/fig-12-7.html",
+    "title": "Sidecar Pattern"
   },
   {
     "ch": "12",
@@ -813,6 +914,7 @@ window.DIAGRAM_MANIFEST = [
     "number": 8,
     "suffix": "",
     "file": "fig-12-8",
-    "path": "./ch12/fig-12-8.html"
+    "path": "./ch12/fig-12-8.html",
+    "title": "Kiến trúc triển khai KBM"
   }
 ];
