@@ -32,9 +32,9 @@
       legend: ['req', 'msg', 'res', 'heavy'],
       goals: [
         { text: 'Vì sao không thể dùng câu lệnh SQL JOIN trực tiếp khi đã tách Database-per-Service', step: 0 },
-        { text: 'Giới hạn của mẫu API Composition (gộp dữ liệu trong bộ nhớ) khi tính bảng xếp hạng toàn khóa', step: 1 },
-        { text: 'Mẫu CQRS: tách biệt Mô hình Ghi (Command) và Mô hình Đọc (Materialized View / Redis Sorted Set)', step: 2 },
-        { text: 'Event Sourcing, Snapshot (>100K sự kiện) và Upcasting trong kiểm toán lịch sử chấm bài (§7.5)', step: 3 }
+        { text: 'Giới hạn của mẫu API Composition (gộp dữ liệu trong bộ nhớ) khi tính bảng xếp hạng toàn khóa', step: 0 },
+        { text: 'Mẫu CQRS: tách biệt Mô hình Ghi (Command) và Mô hình Đọc (Materialized View / Redis Sorted Set)', step: 1 },
+        { text: 'Event Sourcing, Snapshot (> 100 000 sự kiện) và Upcasting trong kiểm toán lịch sử chấm bài (§7.5)', step: 2 }
       ],
       steps: [
         {
@@ -132,7 +132,7 @@
             text: 'Cảnh báo sản xuất (§7.5.3): Khi một thực thể tích lũy <b>&gt; 100 000 sự kiện</b> hoặc chuỗi dài, cơ chế <b>Snapshot</b> là bắt buộc để giữ thời gian khôi phục trạng thái dưới vài mili-giây.'
           },
           changes: [
-            '+ Lưu nhật ký sự kiện chỉ-ghi-thêm (Append-only Event Log)',
+            '+ Lưu nhật ký sự kiện chỉ ghi thêm (Append-only Event Log)',
             '+ Chụp Snapshot định kỳ và chuyển đổi phiên bản sự kiện bằng Upcaster'
           ],
           metrics: {
@@ -170,7 +170,7 @@
       ch: 7,
       cat: 'data',
       title: 'Event-Carried State Transfer (ECST)',
-      summary: 'Loại bỏ lời gọi RPC đồng bộ ngược về dịch vụ gốc bằng cách đính kèm dữ liệu cần thiết vào sự kiện để dựng bản sao chỉ-đọc cục bộ.',
+      summary: 'Loại bỏ lời gọi RPC đồng bộ ngược về dịch vụ gốc bằng cách đính kèm dữ liệu cần thiết vào sự kiện để dựng bản sao chỉ đọc cục bộ.',
       minutes: 8,
       level: 'Trung bình',
       bookRef: 'Chương 7 · §7.4',
@@ -225,10 +225,10 @@
         {
           short: 'Bản sao cục bộ ECST',
           chapter: 'solution',
-          title: 'Event-Carried State Transfer: Dựng bảng bản sao chỉ-đọc ngay tại dịch vụ đích',
+          title: 'Event-Carried State Transfer: Dựng bảng bản sao chỉ đọc ngay tại dịch vụ đích',
           body: [
             'Với <b>Event-Carried State Transfer (ECST — §7.4)</b>: mỗi khi thông tin sinh viên thay đổi ở <code>kbm-academic</code>, nó phát sự kiện <code>StudentUpdated { studentId, code, fullName, email, version }</code>.',
-            '<code>kbm-notification</code> và <code>kbm-exam</code> lắng nghe sự kiện này để duy trì một bảng <b><code>student_replica</code> chỉ-đọc (3–4 cột cần thiết)</b> ngay trong CSDL cục bộ của mình. Khi cần gửi thông báo, nó tra cứu ngay trên đĩa cục bộ trong <b>0.5 ms</b> mà không cần một cuộc gọi mạng nào!'
+            '<code>kbm-notification</code> và <code>kbm-exam</code> lắng nghe sự kiện này để duy trì một bảng <b><code>student_replica</code> chỉ đọc (3–4 cột cần thiết)</b> ngay trong CSDL cục bộ của mình. Khi cần gửi thông báo, nó tra cứu ngay trên đĩa cục bộ trong <b>0.5 ms</b> mà không cần một cuộc gọi mạng nào!'
           ],
           callout: {
             kind: 'insight',
@@ -236,7 +236,7 @@
           },
           changes: [
             '+ Phát sự kiện StudentUpdated mang theo các thuộc tính danh tính cốt lõi',
-            '+ Duy trì bảng student_replica chỉ-đọc cục bộ; xóa bỏ hoàn toàn lệnh gọi REST ngược'
+            '+ Duy trì bảng student_replica chỉ đọc cục bộ; xóa bỏ hoàn toàn lệnh gọi REST ngược'
           ],
           metrics: {
             rpc: { val: '0 cuộc gọi mạng!', level: 'good' },
@@ -331,7 +331,7 @@
         { text: 'Rủi ro bảo mật và ghép nối chặt khi để Client gọi trực tiếp tới từng Microservice nội bộ', step: 0 },
         { text: 'Vai trò của API Gateway: Định tuyến, kết thúc TLS, xác thực JWT, Rate Limiting và gắn X-Request-ID', step: 1 },
         { text: 'Mẫu BFF (Backend for Frontend) tách bề mặt API riêng cho Web, Mobile và CLI/IDE', step: 2 },
-        { text: 'Phản mẫu "Smart Gateway / Over-ambitious Gateway": cấm đưa logic nghiệp vụ vào Gateway (§8.5)', step: 3 }
+        { text: 'Anti-pattern "Smart Gateway / Over-ambitious Gateway": cấm đưa logic nghiệp vụ vào Gateway (§8.5)', step: 2 }
       ],
       steps: [
         {
@@ -339,7 +339,7 @@
           chapter: 'problem',
           title: 'Khi trình duyệt phải nhớ địa chỉ của 7 dịch vụ nội bộ',
           body: [
-            'Nếu không có cổng vào thống nhất, ứng dụng Web và Mobile phải tự biết địa chỉ và cổng của từng microservice (<code>auth:8081</code>, <code>core:8082</code>, <code>exam:8083</code>, <code>judge:8084</code>...).',
+            'Nếu không có cổng vào thống nhất, ứng dụng Web và Mobile phải tự biết địa chỉ và cổng của từng microservice (<code>kbm-auth:9005</code>, <code>kbm-core:8080</code>, <code>kbm-academic:8088</code>, <code>kbm-judge-sql:8082</code>...).',
             'Mỗi dịch vụ nội bộ đều phải phơi bày ra Internet công cộng, tự cấu hình CORS, tự giải mã TLS và tự kiểm tra Rate Limit — chỉ cần một dịch vụ quên cấu hình là lộ lỗ hổng bảo mật!'
           ],
           callout: {
@@ -356,9 +356,9 @@
             entities: {
               web: D.dev(-9, 3, 'Web Browser'),
               mob: D.dev(-9, -3, 'Mobile App'),
-              s1: D.srv(4, 5.5, ['kbm-auth:8081'], { color: 'green' }),
-              s2: D.srv(4, 0, ['kbm-core:8082'], { color: 'blue' }),
-              s3: D.srv(4, -5.5, ['kbm-judge:8084'], { color: 'orange', tags: [{ text: 'Phơi trực tiếp ra Internet!', tone: 'red' }] })
+              s1: D.srv(4, 5.5, ['kbm-auth:9005'], { color: 'green' }),
+              s2: D.srv(4, 0, ['kbm-core:8080'], { color: 'blue' }),
+              s3: D.srv(4, -5.5, ['kbm-judge-sql:8082'], { color: 'orange', tags: [{ text: 'Phơi trực tiếp ra Internet!', tone: 'red' }] })
             },
             links: {
               w1: D.link('web', 's1'),
@@ -487,8 +487,8 @@
       goals: [
         { text: 'Vì sao một sinh viên chạy vòng lặp while(true) nộp bài có thể làm tê liệt hàng đợi chấm của cả khoa', step: 0 },
         { text: 'Thuật toán Token Bucket: cho phép bùng nổ ngắn (burst) hợp lệ nhưng khóa chặt tốc độ trung bình', step: 1 },
-        { text: 'Thực thi Token Bucket phân tán nguyên tử bằng Redis Lua Script trên nhiều instance Gateway', step: 2 },
-        { text: 'Đánh đổi Fail-Open vs Fail-Closed khi Redis gặp sự cố và phân tầng hạn mức theo loại endpoint (§8.3)', step: 3 }
+        { text: 'Thực thi Token Bucket phân tán nguyên tử bằng Redis Lua Script trên nhiều instance Gateway', step: 1 },
+        { text: 'Đánh đổi Fail-Open vs Fail-Closed khi Redis gặp sự cố và phân tầng hạn mức theo loại endpoint (§8.3)', step: 2 }
       ],
       steps: [
         {
@@ -558,7 +558,7 @@
               judge: D.srv(7.5, 0, ['kbm-judge-sql'], { color: 'green', glyph: 'code', cpu: 0.45, tags: [{ text: 'Hoạt động ổn định ✓', tone: 'green' }] })
             },
             links: {
-              s_g: D.link('spammer', 'gw', { label: '429 + Retry-After: 10s', tone: 'red', fail: 0.9 }),
+              s_g: D.link('spammer', 'gw', { label: '429 + Retry-After: 10', tone: 'red', fail: 0.9 }),
               n_g: D.link('normal', 'gw', { label: 'Còn token → Cho qua', tone: 'green' }),
               g_r: D.link('gw', 'redis', { style: 'dashed', label: 'EVAL Lua (1 ms)', both: true }),
               g_j: D.link('gw', 'judge', { label: 'Lưu lượng sạch', tone: 'green' })
@@ -624,7 +624,7 @@
       ch: 9,
       cat: 'security',
       title: 'OAuth2, JWT (RS256/JWKS) & Tiered Trust',
-      summary: 'Xác thực phi trạng thái bằng chữ ký bất đối xứng RS256/JWKS, xoay vòng Refresh Token và mô hình tin cậy phân tầng (Tiered Trust).',
+      summary: 'Xác thực phi trạng thái bằng chữ ký bất đối xứng RS256/JWKS, luân phiên Refresh Token và mô hình tin cậy phân tầng (Tiered Trust).',
       minutes: 10,
       level: 'Trọng tâm',
       bookRef: 'Chương 9 · §9.1–9.4',
@@ -634,14 +634,14 @@
         { id: 'authlat', label: 'ĐỘ TRỄ XÁC THỰC' },
         { id: 'crypto', label: 'THUẬT TOÁN KÝ' },
         { id: 'trust', label: 'MÔ HÌNH TIN CẬY' },
-        { id: 'revoke', label: 'THU HỒI / XOAY VÒNG' }
+        { id: 'revoke', label: 'THU HỒI / LUÂN PHIÊN' }
       ],
       legend: ['req', 'res', 'ping', 'fail'],
       goals: [
         { text: 'Vì sao kiểm tra Session tập trung ở mọi request biến Auth DB thành nút cổ chai toàn hệ thống', step: 0 },
         { text: 'Tại sao ưu tiên chữ ký bất đối xứng RS256 + JWKS thay vì chia sẻ khóa đối xứng HS256 cho chục service', step: 1 },
-        { text: 'Mô hình Tiered Trust của KBM (ADR-001): xác thực biên tại Gateway + tái xác minh tại các dịch vụ nhạy cảm', step: 2 },
-        { text: 'Access Token ngắn hạn (15 phút) kết hợp Refresh Token Rotation chống đánh cắp phiên (§9.3)', step: 3 }
+        { text: 'Mô hình Tiered Trust của KBM (§9.4): xác thực biên tại Gateway + tái xác minh tại các dịch vụ nhạy cảm', step: 2 },
+        { text: 'Access Token ngắn hạn (15 phút) kết hợp Refresh Token Rotation chống đánh cắp phiên (§9.3)', step: 2 }
       ],
       steps: [
         {
@@ -691,7 +691,7 @@
           ],
           callout: {
             kind: 'insight',
-            text: 'Trường <code>kid (Key ID)</code> trong JWT Header cho phép <code>kbm-auth</code> xoay vòng cặp khóa mới trên JWKS một cách êm thấm mà không làm văng phiên người dùng đang đăng nhập.'
+            text: 'Trường <code>kid (Key ID)</code> trong JWT Header cho phép <code>kbm-auth</code> luân phiên cặp khóa mới trên JWKS một cách êm thấm mà không làm văng phiên người dùng đang đăng nhập.'
           },
           changes: [
             '+ kbm-auth ký JWT bằng RSA Private Key (RS256) kèm kid',
@@ -727,7 +727,7 @@
           chapter: 'kbm',
           title: 'Mô hình Tiered Trust (Phòng thủ chiều sâu) & Refresh Token Rotation trong KBM',
           body: [
-            'Theo hợp đồng bảo mật của sách (ADR-001 & §9.4), KBM áp dụng <b>Mô hình tin cậy phân tầng (Tiered Trust / Phòng thủ chiều sâu)</b>:',
+            'Theo kiến trúc bảo mật nhiều tầng của sách (§9.4), KBM áp dụng <b>Mô hình tin cậy phân tầng (Tiered Trust / Phòng thủ chiều sâu)</b>:',
             '• <b>Tầng 1 (Biên mạng)</b>: <code>kbm-gateway</code> bắt buộc xác thực JWT cho mọi luồng từ ngoài vào.<br>• <b>Tầng 2 (Dịch vụ lõi &amp; nhạy cảm)</b>: Các thao tác quan trọng (như chốt điểm thi ở <code>kbm-exam</code>, cấp quyền ở <code>kbm-academic</code>) <b>tự xác minh lại chữ ký JWT và quyền hạn (Claims/Roles)</b> thay vì tin mù quáng vào header.<br>• <b>Refresh Token Rotation (§9.3)</b>: Access Token sống ngắn (15 phút); mỗi lần dùng Refresh Token sẽ cấp cặp mới và hủy ngay Refresh Token cũ (phát hiện tức thì nếu token bị đánh cắp dùng lại).'
           ],
           callout: {
@@ -746,8 +746,8 @@
           },
           scene: {
             entities: {
-              z: D.zone(1, 12, -6.5, 6.5, 'VÙNG MẠNG CÁCH LY (K8S NETWORK POLICY)', { tone: 'green' }),
-              client: D.dev(-10, 0, 'Sinh viên (AT 15m + RT)'),
+              z: D.zone(1, 12, -6.5, 7.8, 'VÙNG MẠNG CÁCH LY (K8S NETWORK POLICY)', { tone: 'green' }),
+              client: D.dev(-10, 0, 'Sinh viên (AT 15 phút + RT)'),
               gw: D.gw(-2.5, 0, 'Tầng 1: kbm-gateway', { sub: 'Verify JWT ở lớp biên' }),
               exam: D.srv(6.5, 3, ['Tầng 2: kbm-exam'], { color: 'green', glyph: 'shield', sub: 'Verify JWT & Claims lần 2', tags: [{ text: 'Phòng thủ chiều sâu', tone: 'green' }] }),
               judge: D.srv(6.5, -3.5, ['kbm-judge-sql'], { color: 'orange', glyph: 'code', sub: 'Chỉ nhận kết nối nội bộ' })
@@ -835,7 +835,7 @@
           ],
           callout: {
             kind: 'insight',
-            text: 'Đưa luôn điều kiện <code>student_id = :currentUserId</code> từ JWT `sub` xuống câu truy vấn Repository hoặc `@PostAuthorize` là cách chống BOLA chắc chắn nhất.'
+            text: 'Đưa luôn điều kiện <code>student_id = :currentUserId</code> từ JWT <code>sub</code> xuống câu truy vấn Repository hoặc <code>@PostAuthorize</code> là cách chống BOLA chắc chắn nhất.'
           },
           changes: [
             '+ Ràng buộc chủ sở hữu: sub.studentId == jwt.sub (với Sinh viên)',
@@ -1010,7 +1010,7 @@
           chapter: 'technique',
           title: 'Bước 2: Tách dịch vụ gây đau nhất (kbm-judge-sql) kèm Anti-Corruption Layer',
           body: [
-            'Chúng ta chọn mô-đun có nhu cầu mở rộng và cách ly cấp bách nhất để tách trước: <b>Dịch vụ chấm bài SQL (<code>kbm-judge-sql</code>)</b> và <b>Thông báo (<code>kbm-notification</code>)</b>.',
+            'Chúng ta chọn module có nhu cầu mở rộng và cách ly cấp bách nhất để tách trước: <b>Dịch vụ chấm bài SQL (<code>kbm-judge-sql</code>)</b> và <b>Thông báo (<code>kbm-notification</code>)</b>.',
             'Gateway bẻ lái nhánh <code>/api/judge/**</code> sang dịch vụ mới (có thể đẩy dần 10% → 50% → 100% lưu lượng qua Canary). Nếu dịch vụ mới có bất kỳ lỗi gì, chỉ mất 1 giây để trả route trên Gateway về lại Monolith!'
           ],
           callout: {
@@ -1025,7 +1025,7 @@
             risk: { val: 'Rất thấp (Canary 10→100%)', level: 'good' },
             downtime: { val: '0 giây', level: 'good' },
             traffic: { val: 'Judge & Notif đã tách 100%', level: 'good' },
-            rollback: { val: 'Đổi route Gateway 1s', level: 'good' }
+            rollback: { val: 'Đổi route Gateway 1 s', level: 'good' }
           },
           scene: {
             entities: {
@@ -1060,7 +1060,7 @@
           },
           changes: [
             '+ Hoàn tất 4 giai đoạn chuyển đổi KBM không gián đoạn học kỳ',
-            '- Thu hồi mã chết (Dead Code) của mô-đun chấm cũ trong Monolith'
+            '- Thu hồi mã chết (Dead Code) của module chấm cũ trong Monolith'
           ],
           metrics: {
             risk: { val: 'Kiểm soát từng bước', level: 'good' },
@@ -1317,15 +1317,15 @@
           },
           scene: {
             entities: {
-              core: D.srv(-9, 0, ['kbm-core'], { color: 'blue' }),
-              db: D.db(-1.5, 0, 'core_db (WAL Stream)', { color: 'purple', cpu: 0.25, tags: [{ text: 'Logical Replication Stream', tone: 'violet' }] }),
-              deb: D.srv(5.5, 0, ['Debezium CDC'], { color: 'green', glyph: 'gear', sub: 'Kafka Connect + Outbox SMT', tags: [{ text: 'Độ trễ < 15 ms', tone: 'green' }] }),
-              kafka: D.queue(12, 0, 'Kafka: submission.events', { n: 3, slots: 6, color: 'orange' })
+              core: D.srv(-9.5, 0, ['kbm-core'], { color: 'blue' }),
+              db: D.db(-2, 0, 'core_db (WAL Stream)', { color: 'purple', cpu: 0.25, tags: [{ text: 'Logical Replication Stream', tone: 'violet' }] }),
+              deb: D.srv(6, 0, ['Debezium CDC'], { color: 'green', glyph: 'gear', sub: 'Kafka Connect + Outbox SMT', tags: [{ text: 'Độ trễ < 15 ms', tone: 'green' }] }),
+              kafka: D.queue(13, 0, 'Kafka: submission.events', { n: 3, slots: 6, color: 'orange' })
             },
             links: {
               c_d: D.link('core', 'db', { label: 'Commit Tx' }),
-              d_deb: D.link('db', 'deb', { label: 'Đọc luồng WAL tuần tự', tone: 'green' }),
-              deb_k: D.link('deb', 'kafka', { label: 'Route sang Topic đích', tone: 'green' })
+              d_deb: D.link('db', 'deb', { label: 'Đọc WAL tuần tự', tone: 'green' }),
+              deb_k: D.link('deb', 'kafka', { label: 'Route sang Topic', tone: 'green' })
             },
             flows: [
               D.flow(['c_d', 'd_deb', 'deb_k'], { rate: 2.2, kind: 'msg' })
@@ -1398,7 +1398,7 @@
         { text: 'Vì sao ssh vào từng container để grep tệp log trở nên vô vọng khi một bài nộp đi qua 5 dịch vụ', step: 0 },
         { text: 'Phân biệt chính xác 3 định danh ngữ cảnh: Request ID ≠ Trace ID (W3C traceparent) ≠ Correlation ID (§11.3)', step: 1 },
         { text: 'Ba trụ cột bổ trợ nhau: Prometheus Metrics (biết có bệnh) → Jaeger Traces (khoanh vùng chỗ nghẽn) → Loki Logs (xem nguyên nhân)', step: 2 },
-        { text: 'Thiết lập 5 chỉ tiêu SLO và Ngân sách lỗi (Error Budget) cho KBM LMS (§11.8–11.9)', step: 3 }
+        { text: 'Thiết lập 5 chỉ tiêu SLO và Ngân sách lỗi (Error Budget) cho KBM LMS (§11.8–11.9)', step: 2 }
       ],
       steps: [
         {
@@ -1423,7 +1423,7 @@
             entities: {
               gw: D.gw(-8.5, 0, 'kbm-gateway', { tags: [{ text: 'Log A: 200 OK', tone: 'gray' }] }),
               core: D.srv(-1, 3.5, ['kbm-core'], { color: 'blue', tags: [{ text: 'Log B: Không rõ của ai?', tone: 'amber' }] }),
-              judge: D.srv(7, 0, ['kbm-judge-sql'], { color: 'red', glyph: 'code', heat: 0.7, tags: [{ text: 'Chậm 11.5s ở đây nhưng bị ẩn!', tone: 'red' }] })
+              judge: D.srv(7, 0, ['kbm-judge-sql'], { color: 'red', glyph: 'code', heat: 0.7, tags: [{ text: 'Chậm 11.5 s ở đây nhưng bị ẩn!', tone: 'red' }] })
             },
             links: {
               g_c: D.link('gw', 'core', { label: 'Không truyền Trace Context' }),
@@ -1439,7 +1439,7 @@
           chapter: 'solution',
           title: 'Chuẩn hóa ngữ cảnh truy vết: Phân biệt Request ID, Trace ID và Correlation ID (§11.3)',
           body: [
-            'Theo hợp đồng biên tập Chương 11 (§11.3 & Listing 11.3), hệ thống phân biệt rõ 3 định danh:',
+            'Trong Chương 11 (§11.3 & Listing 11.3), hệ thống phân biệt rõ 3 định danh:',
             '• <b><code>Request ID (X-Request-ID)</code></b>: Định danh của <b>một lượt gọi HTTP đơn lẻ</b> (Gateway kiểm tra regex an toàn <code>SAFE_ID</code> chống Log Injection; nếu không hợp lệ thì tự sinh mới với tiền tố <code>"req-"</code>).<br>• <b><code>Trace ID (W3C traceparent)</code></b> &amp; <b><code>Span ID</code></b>: Định danh cây gọi phân tán OpenTelemetry xuyên qua HTTP và Kafka Headers.<br>• <b><code>Correlation ID</code></b>: Định danh gắn kết <b>cả quy trình nghiệp vụ dài hạn</b> (ví dụ mã phiên nộp bài xuyên qua nhiều lượt gọi và sự kiện).'
           ],
           callout: {
@@ -1479,11 +1479,11 @@
           title: 'Hợp nhất 3 Trụ cột (Metrics → Traces → Logs) và 5 cam kết SLO của KBM (§11.8–11.9)',
           body: [
             'Trong KBM LMS, ba trụ cột phối hợp thành một quy trình chẩn đoán khép kín (Bảng 11.1):',
-            '1. <b>Metrics (Prometheus/Grafana)</b> phát hiện triệu chứng: <code>judge_execution_time_p99 = 4.2s</code> hoặc ngân sách lỗi giảm.<br>2. <b>Distributed Tracing (OpenTelemetry → Jaeger/Tempo)</b> mở biểu đồ thác nước (Flamegraph) chỉ ra chính xác Span nào đang tốn 90% thời gian.<br>3. <b>Structured Logs (JSON → Promtail/Alloy → Loki)</b> lọc đúng <code>traceId</code> đó để đọc stack trace chi tiết, đối chiếu với <b>5 chỉ tiêu SLO của KBM</b> (Bảng 11.16: Độ sẵn sàng ≥ 99.5%, Nhận bài P99 &lt; 500 ms, Chấm bài P99 &lt; 45 s...).'
+            '1. <b>Metrics (Prometheus/Grafana)</b> phát hiện triệu chứng: <code>judge_execution_time_p99 = 4.2 s</code> hoặc ngân sách lỗi giảm.<br>2. <b>Distributed Tracing (OpenTelemetry → Jaeger/Tempo)</b> mở biểu đồ thác nước (Flamegraph) chỉ ra chính xác Span nào đang tốn 90% thời gian.<br>3. <b>Structured Logs (JSON → Promtail/Alloy → Loki)</b> lọc đúng <code>traceId</code> đó để đọc stack trace chi tiết, đối chiếu với <b>5 chỉ tiêu SLO của KBM</b> (Bảng 11.16: Độ sẵn sàng ≥ 99.5%, Nhận bài P99 &lt; 500 ms, Chấm bài P99 &lt; 45 s...).'
           ],
           callout: {
             kind: 'tip',
-            text: 'Đồng bộ với sách (`chapter-11.typ:499` & `@tbl:kbm_slo_proposals`): KBM vận hành dựa trên <b>5 SLO cốt lõi</b> đi kèm <b>Ngân sách lỗi (Error Budget)</b> để quyết định khi nào ưu tiên ra tính năng mới, khi nào phải dừng lại gia cố độ ổn định.'
+            text: 'Theo Chương 11 (§11.8–11.9, Bảng 11.16): KBM vận hành dựa trên <b>5 SLO cốt lõi</b> đi kèm <b>Ngân sách lỗi (Error Budget)</b> để quyết định khi nào ưu tiên ra tính năng mới, khi nào phải dừng lại gia cố độ ổn định.'
           },
           changes: [
             '+ Kết nối Prometheus (Metrics) + Jaeger/Tempo (Traces) + Alloy/Loki (Structured JSON Logs)',
@@ -1498,7 +1498,7 @@
           scene: {
             entities: {
               svc: D.srv(-8, 0, ['KBM Services'], { s: 4.4, h: 48, color: 'blue', sub: 'OpenTelemetry SDK / Micrometer' }),
-              prom: D.srv(2, 5, ['1. Prometheus'], { color: 'orange', glyph: 'search', sub: 'Metrics & 5 SLO Alerts', tags: [{ text: 'judge_p99 = 4.2s', tone: 'amber' }] }),
+              prom: D.srv(2, 5, ['1. Prometheus'], { color: 'orange', glyph: 'search', sub: 'Metrics & 5 SLO Alerts', tags: [{ text: 'judge_p99 = 4.2 s', tone: 'amber' }] }),
               jaeger: D.srv(2, 0, ['2. Jaeger / Tempo'], { color: 'teal', glyph: 'search', sub: 'Distributed Traces', tags: [{ text: 'Flamegraph từng Span', tone: 'blue' }] }),
               loki: D.srv(2, -5, ['3. Loki (JSON Logs)'], { color: 'purple', glyph: 'code', sub: 'Promtail / Alloy', tags: [{ text: 'Truy vấn theo traceId', tone: 'violet' }] }),
               graf: D.srv(10.5, 0, ['Grafana Unified UI'], { s: 4.4, h: 48, color: 'green', glyph: 'check', sub: 'Metric → Trace → Log' })
@@ -1545,7 +1545,7 @@
       goals: [
         { text: 'Vì sao đóng gói cứng cấu hình và mật khẩu CSDL vào trong tệp JAR / Docker Image là thảm họa bảo mật', step: 0 },
         { text: 'Nguyên tắc Build Once, Deploy Anywhere: tách cấu hình ra Config Server / Kubernetes ConfigMap', step: 1 },
-        { text: 'Quản lý bí mật 3 cấp độ (Secret Management §9.5): Tuyệt đối không lưu mật khẩu dạng rõ trong Git!', step: 2 }
+        { text: 'Quản lý bí mật 3 cấp độ (Secret Management §9.5): Tuyệt đối không lưu mật khẩu dạng rõ trong Git!', step: 1 }
       ],
       steps: [
         {
@@ -1587,7 +1587,7 @@
           title: 'Build Once, Deploy Anywhere: Kết hợp Config Server / ConfigMap và Quản lý Bí mật 3 cấp (§9.5)',
           body: [
             'Trong KBM LMS (§12.2 & §9.5), một Docker Image bất biến duy nhất (định danh bằng SHA digest) được đẩy qua Dev → Staging → Production; sự khác biệt chỉ nằm ở cấu hình tiêm vào lúc chạy:',
-            '• <b>Cấu hình phi nhạy cảm</b> (URL, ngưỡng Timeout, kích thước Pool): quản lý có kiểm soát phiên bản qua <b>Spring Cloud Config / Kubernetes ConfigMap</b>.<br>• <b>Bí mật (Secrets)</b>: Quản lý theo 3 cấp độ (§9.5): Cấp 1 (Biến môi trường / Docker Secrets cho Lab), Cấp 2 (K8s Secrets mã hóa etcd / SealedSecrets cho GitOps), Cấp 3 (<b>HashiCorp Vault / Cloud KMS</b> với chứng chỉ ngắn hạn và xoay vòng tự động).'
+            '• <b>Cấu hình phi nhạy cảm</b> (URL, ngưỡng Timeout, kích thước Pool): quản lý có kiểm soát phiên bản qua <b>Spring Cloud Config / Kubernetes ConfigMap</b>.<br>• <b>Bí mật (Secrets)</b>: Quản lý theo 3 cấp độ (§9.5): Cấp 1 (Biến môi trường / Docker Secrets cho Lab), Cấp 2 (K8s Secrets mã hóa etcd / SealedSecrets cho GitOps), Cấp 3 (<b>HashiCorp Vault / Cloud KMS</b> với chứng chỉ ngắn hạn và luân phiên tự động).'
           ],
           callout: {
             kind: 'insight',
@@ -1649,9 +1649,9 @@
       legend: ['req', 'res', 'fail'],
       goals: [
         { text: 'Vì sao cập nhật ứng dụng đi kèm lệnh ALTER TABLE đổi tên cột trực tiếp làm sập cả bản cũ lẫn bản mới', step: 0 },
-        { text: 'So sánh Rolling Update, Blue/Green Deployment (chuyển mạch tức thời) và Canary Release (phát hành thăm dò)', step: 1 },
-        { text: 'Mẫu Expand/Contract (Parallel Change) 3 pha với Flyway để nâng cấp CSDL không downtime (§12.5.3)', step: 2 },
-        { text: 'Quy trình CI/CD và chiến lược phát hành ngoài cửa sổ đóng băng kỳ thi của KBM LMS (§12.4–12.6)', step: 3 }
+        { text: 'Mẫu Expand/Contract (Parallel Change) 3 pha với Flyway để nâng cấp CSDL không downtime (§12.5.3)', step: 1 },
+        { text: 'So sánh Rolling Update, Blue/Green Deployment (chuyển mạch tức thời) và Canary Release (phát hành thăm dò)', step: 2 },
+        { text: 'Quy trình CI/CD và chiến lược phát hành ngoài cửa sổ đóng băng kỳ thi của KBM LMS (§12.4–12.6)', step: 2 }
       ],
       steps: [
         {

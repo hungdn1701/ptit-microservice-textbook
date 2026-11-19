@@ -1025,8 +1025,8 @@
         { text: 'Cơ chế lan truyền lỗi dây chuyền (Cascading Failure) khi một worker phía sau bị treo', step: 1 },
         { text: 'Vì sao Retry mù quáng khi downstream đang quá tải lại tạo ra bão Retry (Retry Storm)', step: 2 },
         { text: 'Máy trạng thái 3 bước của Circuit Breaker: CLOSED → OPEN → HALF-OPEN', step: 3 },
-        { text: 'Thiết kế Fallback kết hợp hàng đợi bền vững để không mất bài nộp của sinh viên', step: 4 },
-        { text: 'Thứ tự bọc 4 lớp Decorator của Resilience4j trong KBM SQL Judge (Listing 4.3)', step: 5 }
+        { text: 'Thiết kế Fallback kết hợp hàng đợi bền vững để không mất bài nộp của sinh viên', step: 3 },
+        { text: 'Thứ tự bọc 4 lớp Decorator của Resilience4j trong KBM SQL Judge (Listing 4.3)', step: 4 }
       ],
       steps: [
         {
@@ -1642,10 +1642,10 @@
       legend: ['req', 'msg', 'res', 'fail'],
       goals: [
         { text: 'Làm phẳng đỉnh tải (Peak-Load Shaving) bằng giao tiếp bất đồng bộ qua Message Broker', step: 0 },
-        { text: 'Cấu trúc Topic, Partition và Consumer Group trong Apache Kafka', step: 1 },
-        { text: 'Sai lầm kinh điển: đặt Partition Key theo examId khiến cả phòng thi dồn vào 1 Partition duy nhất!', step: 2 },
-        { text: 'Chọn Partition Key theo studentId / submissionId để chia tải đều và giữ đúng thứ tự cần thiết', step: 3 },
-        { text: 'Cơ chế Manual Offset Commit (At-least-once) chống mất bài nộp khi worker crash', step: 4 }
+        { text: 'Cấu trúc Topic, Partition và Consumer Group trong Apache Kafka', step: 0 },
+        { text: 'Sai lầm kinh điển: đặt Partition Key theo examId khiến cả phòng thi dồn vào 1 Partition duy nhất!', step: 1 },
+        { text: 'Chọn Partition Key theo studentId / submissionId để chia tải đều và giữ đúng thứ tự cần thiết', step: 2 },
+        { text: 'Cơ chế Manual Offset Commit (At-least-once) chống mất bài nộp khi worker crash', step: 3 }
       ],
       steps: [
         {
@@ -2024,9 +2024,9 @@
       goals: [
         { text: 'Vì sao Two-Phase Commit (2PC/XA) gây nghẽn toàn cục và không phù hợp với Microservices', step: 0 },
         { text: 'Nguyên lý Saga Pattern: chuỗi giao dịch cục bộ (T1, T2, T3) đi kèm giao dịch bù trừ (C1, C2)', step: 1 },
-        { text: 'Phân loại 3 bước trong Saga: Compensatable, Pivot (Điểm quyết định) và Retriable (§6.2)', step: 2 },
-        { text: 'Luồng bù trừ ngược (Backward Recovery) và khóa ngữ nghĩa (Semantic Lock) trong KBM', step: 3 },
-        { text: 'So sánh Saga Choreography (vũ đạo sự kiện) và Saga Orchestration (nhạc trưởng điều phối — §6.3)', step: 4 }
+        { text: 'Phân loại 3 bước trong Saga: Compensatable, Pivot (Điểm quyết định) và Retriable (§6.2)', step: 1 },
+        { text: 'Luồng bù trừ ngược (Backward Recovery) và khóa ngữ nghĩa (Semantic Lock) trong KBM', step: 2 },
+        { text: 'So sánh Saga Choreography (vũ đạo sự kiện) và Saga Orchestration (nhạc trưởng điều phối — §6.3)', step: 3 }
       ],
       steps: [
         {
