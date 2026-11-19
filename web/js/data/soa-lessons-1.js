@@ -33,7 +33,7 @@
       legend: ['req', 'res', 'heavy', 'fail'],
       goals: [
         { text: 'Vì sao Monolith là điểm khởi đầu hợp lý (Monolith First)', step: 0 },
-        { text: 'Nhận diện triệu chứng "Monolith Hell" khi một mô-đun ngốn sạch CPU', step: 1 },
+        { text: 'Nhận diện triệu chứng "Monolith Hell" khi một module ngốn sạch CPU', step: 1 },
         { text: 'Ba trục mở rộng của Scale Cube (X: nhân bản, Y: phân rã, Z: phân mảnh)', step: 2 },
         { text: 'Tách dịch vụ theo trục Y và cô lập CSDL riêng cho từng service', step: 3 },
         { text: 'Cái giá phải trả của Microservices và bài học thực tế từ KBM LMS', step: 5 }
@@ -45,7 +45,7 @@
           title: 'Khởi đầu gọn nhẹ với một Monolith duy nhất',
           body: [
             'Mọi hệ thống thành công đều bắt đầu đơn giản. Toàn bộ nghiệp vụ — <b>Xác thực</b>, <b>Quản lý khóa học</b> và <b>Chấm bài SQL</b> — nằm chung trong một tiến trình và đọc ghi chung một cơ sở dữ liệu.',
-            'Ở quy mô 100 sinh viên làm bài tập thường ngày, các lời gọi giữa các mô-đun chỉ là lời gọi hàm trong bộ nhớ (in-process), độ trễ cực thấp và triển khai chỉ cần một tệp duy nhất.'
+            'Ở quy mô 100 sinh viên làm bài tập thường ngày, các lời gọi giữa các module chỉ là lời gọi hàm trong bộ nhớ (in-process), độ trễ cực thấp và triển khai chỉ cần một tệp duy nhất.'
           ],
           callout: {
             kind: 'insight',
@@ -77,12 +77,12 @@
           chapter: 'problem',
           title: 'Sát giờ đóng đề: Chấm bài làm sập cả trang đăng nhập',
           body: [
-            'Vào 10 phút cuối kỳ thi thực hành, <b>600 sinh viên</b> đồng loạt bấm nộp bài SQL. Mô-đun chấm bài biên dịch và chạy truy vấn nặng khiến CPU của tiến trình Monolith chạm đỉnh <b>100%</b>.',
+            'Vào 10 phút cuối kỳ thi thực hành, <b>600 sinh viên</b> đồng loạt bấm nộp bài SQL. Module chấm bài biên dịch và chạy truy vấn nặng khiến CPU của tiến trình Monolith chạm đỉnh <b>100%</b>.',
             'Vì chia sẻ chung thread pool và bộ nhớ, sinh viên khác chỉ muốn <b>đăng nhập</b> hoặc <b>xem đề bài</b> cũng bị treo theo — lỗi của một tính năng kéo sập toàn bộ hệ thống.'
           ],
           callout: {
             kind: 'warn',
-            text: 'Trong kiến trúc nguyên khối, không có vách ngăn tài nguyên vật lý: một truy vấn nặng hay rò rỉ bộ nhớ ở mô-đun chấm bài sẽ làm tê liệt cả mô-đun điểm danh và học vụ.'
+            text: 'Trong kiến trúc nguyên khối, không có vách ngăn tài nguyên vật lý: một truy vấn nặng hay rò rỉ bộ nhớ ở module chấm bài sẽ làm tê liệt cả module điểm danh và học vụ.'
           },
           changes: [
             '~ Sinh viên đồng thời: 100 → 600 (chế độ thi)',
@@ -116,7 +116,7 @@
           title: 'Mở rộng theo Trục X (Scale Cube): Nhân bản cả khối',
           body: [
             'Giải pháp nhanh nhất là đặt một <b>Load Balancer</b> phía trước và chạy 3 bản sao (instance) giống hệt nhau của Monolith.',
-            'Tải ứng dụng được chia đều, nhưng cả 3 bản sao lớn vẫn phải nhân bản toàn bộ mô-đun không cần thiết, và điểm nghẽn lập tức dồn xuống <b>cơ sở dữ liệu dùng chung</b>.'
+            'Tải ứng dụng được chia đều, nhưng cả 3 bản sao lớn vẫn phải nhân bản toàn bộ module không cần thiết, và điểm nghẽn lập tức dồn xuống <b>cơ sở dữ liệu dùng chung</b>.'
           ],
           callout: {
             kind: 'tip',
@@ -187,7 +187,7 @@
               gw: D.gw(-4, 0, 'API Gateway', { s: 3.8, h: 44, sub: 'kbm-gateway' }),
               auth: D.srv(3.5, 6, ['kbm-auth'], { s: 3.6, h: 38, color: 'green', glyph: 'shield', cpu: 0.18 }),
               core: D.srv(3.5, 0, ['kbm-core'], { s: 3.8, h: 42, color: 'blue', cpu: 0.32 }),
-              judge: D.srv(3.5, -6, ['kbm-judge-sql'], { s: 4.0, h: 46, color: 'orange', glyph: 'code', cpu: 0.72, tags: [{ text: 'Scale riêng 4 workers', tone: 'green' }] }),
+              judge: D.srv(3.5, -6, ['kbm-judge-sql'], { s: 4.0, h: 46, color: 'orange', glyph: 'code', cpu: 0.72, tags: [{ text: 'Mở rộng riêng 4 worker', tone: 'green' }] }),
               dbAuth: D.db(10.5, 6, 'auth_db', { r: 1.4, h: 32, cpu: 0.12 }),
               dbCore: D.db(10.5, 0, 'core_db', { r: 1.5, h: 36, cpu: 0.28 }),
               dbJudge: D.db(10.5, -6, 'judge_db', { r: 1.5, h: 36, cpu: 0.55 })
@@ -263,7 +263,7 @@
           chapter: 'kbm',
           title: 'Hành trình thực tế của KBM LMS qua các thế hệ kiến trúc',
           body: [
-            'Trong sách (§1.7 & Phụ lục E), hệ thống <b>KBM LMS</b> không nhảy vọt từ con số không lên Microservices hoàn chỉnh. Nó đi từ các ứng dụng đơn lẻ (Era 1), gom về lõi quản lý học tập, rồi tách dần các <b>worker chấm thực hành SQL / Mạng / DevOps</b> đòi hỏi cách ly môi trường lab và tải tính toán đột biến.',
+            'Trong sách (§1.7 & Phụ lục E), hệ thống <b>KBM LMS</b> không nhảy vọt từ con số không lên Microservices hoàn chỉnh. Nó đi từ các ứng dụng đơn lẻ (Giai đoạn 1), gom về lõi quản lý học tập, rồi tách dần các <b>worker chấm thực hành SQL / Mạng / DevOps</b> đòi hỏi cách ly môi trường lab và tải tính toán đột biến.',
             'Mục tiêu xuyên suốt theo kịch bản chất lượng §1.5.3: <b>tiếp nhận bài nộp P99 &lt; 500 ms</b> và <b>trả kết quả chấm P99 &lt; 45 giây</b> ngay cả ở cao điểm cuối giờ thi.'
           ],
           callout: {
@@ -278,7 +278,7 @@
             users: { val: 'Hàng trăm lượt/phút', level: 'good' },
             rps: { val: 'P99 nhận < 500 ms', level: 'good' },
             p99: { val: 'Chấm < 45 s', level: 'good' },
-            deploy: { val: '7 Core + 2 Support BC', level: 'good' }
+            deploy: { val: '7 Core + 2 Supporting BC', level: 'good' }
           },
           scene: {
             entities: {
@@ -286,11 +286,11 @@
               zLab: D.zone(5, 13, -7, 7, 'MIỀN CHẤM LAB CÁCH LY (SANDBOX)', { tone: 'green' }),
               gw: D.gw(-10.5, 0, 'kbm-gateway', { s: 3.6, h: 40 }),
               core: D.srv(-1.5, 2.5, ['kbm-core'], { s: 3.8, h: 42, color: 'blue', cpu: 0.28, tags: [{ text: 'P99 < 500 ms', tone: 'green' }] }),
-              exam: D.srv(-1.5, -2.8, ['kbm-exam'], { s: 3.8, h: 42, color: 'teal', cpu: 0.31 }),
+              exam: D.srv(-1.5, -2.8, ['kbm-academic'], { s: 3.8, h: 42, color: 'teal', cpu: 0.31 }),
               kafka: D.queue(3.8, 0, 'Kafka Broker', { n: 3, slots: 6 }),
-              sqlJ: D.srv(9, 4, ['kbm-judge-sql'], { s: 3.6, h: 40, color: 'orange', glyph: 'code', sub: 'MySQL/PG/MSSQL' }),
-              netJ: D.srv(9, 0, ['kbm-judge-net'], { s: 3.6, h: 40, color: 'purple', glyph: 'code', sub: 'TCP/UDP/HTTP' }),
-              devJ: D.srv(9, -4, ['kbm-devops-lab'], { s: 3.6, h: 40, color: 'green', glyph: 'gear', sub: 'Pod/Container' })
+              sqlJ: D.srv(9, 4, ['kbm-judge-sql'], { s: 3.6, h: 40, color: 'orange', glyph: 'code', sub: 'MySQL/PG/SQL Server' }),
+              netJ: D.srv(9, 0, ['kbm-judge-network'], { s: 3.6, h: 40, color: 'purple', glyph: 'code', sub: 'TCP/UDP/HTTP' }),
+              devJ: D.srv(9, -4, ['kbm-devops-api'], { s: 3.6, h: 40, color: 'green', glyph: 'gear', sub: 'Pod/Container (k3s)' })
             },
             links: {
               g_c: D.link('gw', 'core'),
@@ -337,7 +337,7 @@
         { text: 'Khái niệm Ubiquitous Language và Bounded Context trong không gian giải pháp', step: 1 },
         { text: 'Quy tắc Aggregate chỉ tham chiếu Aggregate khác qua ID định danh (§2.2)', step: 2 },
         { text: 'Các mẫu quan hệ trên Context Map: OHS/PL, Customer-Supplier và ACL', step: 3 },
-        { text: 'Áp dụng Context Map 7 Core + 2 Supporting Contexts cho KBM LMS', step: 4 }
+        { text: 'Áp dụng Context Map 7 Core + 2 Supporting Bounded Context cho KBM LMS', step: 4 }
       ],
       steps: [
         {
@@ -356,7 +356,7 @@
             coupling: { val: 'Rất cao (Chặt)', level: 'bad' },
             models: { val: '1 God Model (60+ cột)', level: 'bad' },
             blast: { val: '100% toàn hệ thống', level: 'bad' },
-            contexts: { val: 'Chưa phân rách', level: 'warn' }
+            contexts: { val: 'Chưa phân tách', level: 'warn' }
           },
           scene: {
             entities: {
@@ -504,9 +504,9 @@
         {
           short: 'Context Map KBM',
           chapter: 'kbm',
-          title: 'Toàn cảnh Context Map của KBM LMS (7 Core + 2 Supporting)',
+          title: 'Toàn cảnh Context Map của KBM LMS (9 Bounded Context = 7 Core + 2 Supporting)',
           body: [
-            'Áp dụng Strategic DDD và quy trình phân tích hướng dịch vụ của Thomas Erl (§2.4), KBM LMS được chia thành <b>7 Core/Application Bounded Contexts</b> (Academic, Practice/Course, Exam, SQL Judge, Network Judge, DevOps Lab, Analytics) và <b>2 Supporting Contexts</b> (Identity/Auth, Notification).',
+            'Áp dụng Strategic DDD và quy trình phân tích hướng dịch vụ của Thomas Erl (§2.4), KBM LMS được chia thành <b>7 Core Bounded Context</b> (Identity & Access, SQL Practice, Network Practice, Code Practice, Academic Management, Examination & Proctoring, DevOps Practice) và <b>2 Supporting Bounded Context</b> (Communication, Platform / Infrastructure).',
             'Nhờ bản đồ này, mỗi nhóm phát triển nắm rõ mình là Upstream hay Downstream và giao tiếp qua hợp đồng sự kiện / API tường minh.'
           ],
           callout: {
@@ -514,22 +514,22 @@
             text: 'Đối chiếu Hình 2.5 & Hình 2.8 trong sách: Context Map không chỉ là sơ đồ kỹ thuật mà là bản đồ phân công tổ chức theo Định luật Conway.'
           },
           changes: [
-            '+ Khóa 7 Core Bounded Contexts + 2 Supporting Contexts',
+            '+ Khóa 9 Bounded Context = 7 Core + 2 Supporting đúng chuẩn KBM',
             '+ Kết nối qua Customer-Supplier, OHS/PL và ACL'
           ],
           metrics: {
             coupling: { val: 'Hợp đồng rõ ràng', level: 'good' },
-            models: { val: '9 Ubiquitous Languages', level: 'good' },
+            models: { val: '9 Ubiquitous Language', level: 'good' },
             blast: { val: 'Cô lập hoàn toàn', level: 'good' },
             contexts: { val: '7 Core + 2 Supporting', level: 'good' }
           },
           scene: {
             entities: {
-              auth: D.srv(-8, 5, ['Identity (Auth)'], { s: 3.6, h: 38, color: 'green', glyph: 'shield', tags: [{ text: 'Supporting · OHS/PL', tone: 'green' }] }),
-              core: D.srv(0, 4, ['Practice & Course'], { s: 4.0, h: 44, color: 'blue' }),
-              exam: D.srv(0, -3.5, ['Exam Context'], { s: 4.0, h: 44, color: 'teal' }),
-              judge: D.srv(8.5, 0, ['SQL & Net Judge'], { s: 4.2, h: 46, color: 'orange', glyph: 'code', tags: [{ text: 'Core Domain · Sandbox', tone: 'amber' }] }),
-              notif: D.srv(-8, -4.5, ['Notification'], { s: 3.6, h: 38, color: 'purple', tags: [{ text: 'Supporting · Conformist', tone: 'violet' }] })
+              auth: D.srv(-8, 5, ['Identity & Access'], { s: 3.6, h: 38, color: 'green', glyph: 'shield', tags: [{ text: 'Core · OHS/PL (JWT)', tone: 'green' }] }),
+              core: D.srv(0, 4, ['Academic & Core'], { s: 4.0, h: 44, color: 'blue' }),
+              exam: D.srv(0, -3.5, ['Examination Context'], { s: 4.0, h: 44, color: 'teal' }),
+              judge: D.srv(8.5, 0, ['SQL & Net Practice'], { s: 4.2, h: 46, color: 'orange', glyph: 'code', tags: [{ text: 'Core Domain · Sandbox', tone: 'amber' }] }),
+              notif: D.srv(-8, -4.5, ['Communication'], { s: 3.6, h: 38, color: 'purple', tags: [{ text: 'Supporting · Conformist', tone: 'violet' }] })
             },
             links: {
               a_c: D.link('auth', 'core', { label: 'OHS / JWT', style: 'dashed' }),
@@ -569,15 +569,15 @@
       ],
       legend: ['req', 'res', 'fail'],
       goals: [
-        { text: 'Vì sao trả "HTTP 200 OK kèm { error: true }" là phản mẫu nguy hiểm', step: 0 },
-        { text: 'Ngữ nghĩa tài nguyên REST, phương thức HTTP và tính lũy đẳng (idempotency)', step: 1 },
+        { text: 'Vì sao trả "HTTP 200 OK kèm { error: true }" là anti-pattern nguy hiểm', step: 0 },
+        { text: 'Ngữ nghĩa tài nguyên REST, phương thức HTTP và tính idempotency', step: 1 },
         { text: 'Chuẩn hóa phản hồi lỗi bằng Problem Details (RFC 9457) kèm traceId', step: 2 },
         { text: 'Tách DTO khỏi Entity nội bộ và quy tắc tiến hóa API tương thích ngược', step: 3 },
         { text: 'Xác thực hợp đồng tự động với Consumer-Driven Contract Testing (CDCT)', step: 4 }
       ],
       steps: [
         {
-          short: 'Phản mẫu 200 OK',
+          short: 'Anti-pattern 200 OK',
           chapter: 'problem',
           title: 'Bẫy thiết kế: Mọi phản hồi đều trả HTTP 200 OK, mỗi nơi một kiểu JSON lỗi',
           body: [
@@ -1052,7 +1052,7 @@
               core: D.srv(-9, 0, ['kbm-core'], { color: 'blue', sub: 'Nộp bài SQL' }),
               judge: D.srv(-0.5, 0, ['kbm-judge-sql'], { s: 4.6, h: 48, color: 'green', glyph: 'code', sub: 'Coordinator', cpu: 0.22, tags: [{ text: 'CB: CLOSED', tone: 'green' }] }),
               mysql: D.srv(8.5, 4.5, ['kbm-sandbox-mysql'], { color: 'blue', cpu: 0.35, tags: [{ text: '120 ms', tone: 'green' }] }),
-              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-mssql'], { color: 'teal', cpu: 0.30, tags: [{ text: '140 ms', tone: 'green' }] })
+              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-sqlserver'], { color: 'teal', cpu: 0.30, tags: [{ text: '140 ms', tone: 'green' }] })
             },
             links: {
               c_j: D.link('core', 'judge', { label: 'POST /api/judge/sql' }),
@@ -1093,7 +1093,7 @@
               core: D.srv(-9, 0, ['kbm-core'], { color: 'red', cpu: 0.88, heat: 0.7 }),
               judge: D.srv(-0.5, 0, ['kbm-judge-sql'], { s: 4.6, h: 48, color: 'red', glyph: 'code', cpu: 1.0, heat: 0.95, tags: [{ text: '200/200 Threads Blocked!', tone: 'red' }] }),
               mysql: D.srv(8.5, 4.5, ['kbm-sandbox-mysql'], { color: 'red', cpu: 1.0, heat: 1.0, dead: 0.85, tags: [{ text: 'Treo I/O (Unresponsive)', tone: 'red' }] }),
-              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-mssql'], { color: 'teal', cpu: 0.05, tags: [{ text: 'Rảnh nhưng không ai gọi được!', tone: 'amber' }] })
+              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-sqlserver'], { color: 'teal', cpu: 0.05, tags: [{ text: 'Rảnh nhưng không ai gọi được!', tone: 'amber' }] })
             },
             links: {
               c_j: D.link('core', 'judge', { label: 'Tắc nghẽn dây chuyền', tone: 'red', fail: 0.5 }),
@@ -1111,7 +1111,7 @@
           title: 'Thêm Retry đơn thuần: Đổ dầu vào lửa với Retry Storm',
           body: [
             'Giả sử kỹ sư đặt Timeout 5 giây kèm <b>Retry 3 lần</b>. Khi MySQL Sandbox đang quá tải nặng, mỗi request thất bại lại tự động nhân lên thành 3 request bồi thêm đúng lúc nó đang cố gượng dậy.',
-            'Lưu lượng dội vào MySQL tăng gấp 3 lần (bão Retry), còn luồng ở <code>kbm-judge-sql</code> bị giam suốt <code>5s × 3 = 15s</code> cho mỗi bài nộp!'
+            'Lưu lượng dội vào MySQL tăng gấp 3 lần (bão Retry), còn luồng ở <code>kbm-judge-sql</code> bị giam suốt <code>5 s × 3 = 15 s</code> cho mỗi bài nộp!'
           ],
           callout: {
             kind: 'warn',
@@ -1123,7 +1123,7 @@
           ],
           metrics: {
             state: { val: 'Bão Retry 3×', level: 'bad' },
-            threads: { val: '200 / 200 (Giam 15s)', level: 'bad' },
+            threads: { val: '200 / 200 (Giam 15 s)', level: 'bad' },
             mssql: { val: 'Vẫn bị nghẽn lây', level: 'bad' },
             p99: { val: '15 000 ms', level: 'bad' }
           },
@@ -1132,7 +1132,7 @@
               core: D.srv(-9, 0, ['kbm-core'], { color: 'orange', cpu: 0.85 }),
               judge: D.srv(-0.5, 0, ['kbm-judge-sql'], { s: 4.6, h: 48, color: 'red', glyph: 'code', cpu: 0.98, heat: 0.9, tags: [{ text: 'Retry ×3 làm ngập luồng', tone: 'red' }] }),
               mysql: D.srv(8.5, 4.5, ['kbm-sandbox-mysql'], { color: 'red', cpu: 1.0, heat: 1.0, tags: [{ text: 'Bị dội 300% tải Retry!', tone: 'red' }] }),
-              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-mssql'], { color: 'teal', cpu: 0.1 })
+              mssql: D.srv(8.5, -4.5, ['kbm-sandbox-sqlserver'], { color: 'teal', cpu: 0.1 })
             },
             links: {
               c_j: D.link('core', 'judge'),
@@ -1171,9 +1171,9 @@
             entities: {
               core: D.srv(-9.5, 0, ['kbm-core'], { color: 'blue', cpu: 0.28 }),
               judge: D.srv(-1, 0, ['kbm-judge-sql'], { s: 4.6, h: 48, color: 'green', glyph: 'code', cpu: 0.25, tags: [{ text: 'CB MySQL: OPEN (Fail-fast)', tone: 'amber' }] }),
-              mysql: D.srv(8.5, 5.5, ['kbm-sandbox-mysql'], { color: 'gray', dead: 0.7, tags: [{ text: 'Được nghỉ 30s để hồi phục', tone: 'gray' }] }),
+              mysql: D.srv(8.5, 5.5, ['kbm-sandbox-mysql'], { color: 'gray', dead: 0.7, tags: [{ text: 'Được nghỉ 30 s để hồi phục', tone: 'gray' }] }),
               q: D.queue(8.5, 0, 'Hàng đợi chấm bù (Fallback)', { n: 4, slots: 6, tags: [{ text: 'Không mất bài nộp!', tone: 'green' }] }),
-              mssql: D.srv(8.5, -5.5, ['kbm-sandbox-mssql'], { color: 'green', cpu: 0.35, tags: [{ text: 'SQL Server chạy mượt 100%', tone: 'green' }] })
+              mssql: D.srv(8.5, -5.5, ['kbm-sandbox-sqlserver'], { color: 'green', cpu: 0.35, tags: [{ text: 'SQL Server chạy mượt 100%', tone: 'green' }] })
             },
             links: {
               c_j: D.link('core', 'judge'),
@@ -1200,7 +1200,7 @@
             text: 'Trong Resilience4j (Listing 4.3), thứ tự lồng 4 lớp decorator từ ngoài vào trong là: <code>Retry( CircuitBreaker( TimeLimiter( Bulkhead( call ) ) ) )</code>.'
           },
           changes: [
-            '+ Hết 30s: OPEN → HALF-OPEN (cho 3 request thăm dò)',
+            '+ Hết 30 s: OPEN → HALF-OPEN (cho 3 request thăm dò)',
             '+ 3 request thành công → Khôi phục CLOSED & xả hàng đợi chấm bù'
           ],
           metrics: {
@@ -1215,7 +1215,7 @@
               judge: D.srv(-1, 0, ['kbm-judge-sql'], { s: 4.6, h: 48, color: 'green', glyph: 'code', cpu: 0.30, tags: [{ text: 'HALF-OPEN: 3 probe calls OK → CLOSED', tone: 'green' }] }),
               mysql: D.srv(8.5, 5, ['kbm-sandbox-mysql'], { color: 'green', cpu: 0.42, tags: [{ text: 'Đã hồi phục!', tone: 'green' }] }),
               q: D.queue(8.5, 0, 'Hàng đợi chấm bù', { n: 1, slots: 6, tags: [{ text: 'Đang xả bài tồn', tone: 'blue' }] }),
-              mssql: D.srv(8.5, -5, ['kbm-sandbox-mssql'], { color: 'teal', cpu: 0.32 })
+              mssql: D.srv(8.5, -5, ['kbm-sandbox-sqlserver'], { color: 'teal', cpu: 0.32 })
             },
             links: {
               c_j: D.link('core', 'judge'),
@@ -1307,7 +1307,7 @@
           ],
           callout: {
             kind: 'insight',
-            text: 'Lưu ý quy ước thuật ngữ sách (`Q-L2-1`): dùng <b>"cô lập tài nguyên / cô lập lỗi"</b> cho Bulkhead & Fault Isolation; dùng <b>"cách ly"</b> cho môi trường vật lý/sandbox/mạng.'
+            text: 'Lưu ý quy ước thuật ngữ trong sách (Chương 4 & Chương 9): dùng <b>"cô lập tài nguyên / cô lập lỗi"</b> cho Bulkhead & Fault Isolation; dùng <b>"cách ly"</b> cho môi trường vật lý, sandbox và mạng.'
           },
           changes: [
             '+ Tách 3 Bulkhead Pool độc lập: Exam (70%), Practice (20%), Report (10%)',
@@ -1408,7 +1408,7 @@
               coord: D.srv(-7, 0, ['kbm-judge-sql'], { s: 4.4, h: 48, color: 'blue', glyph: 'balancer', sub: 'Per-DBMS Bulkheads' }),
               b1: D.srv(3, 5.5, ['kbm-sandbox-mysql'], { color: 'green', cpu: 0.45, tags: [{ text: 'Pool: max 10 concurrent', tone: 'green' }] }),
               b2: D.srv(3, 0, ['kbm-sandbox-postgres'], { color: 'blue', cpu: 0.35, tags: [{ text: 'Pool: max 10 concurrent', tone: 'blue' }] }),
-              b3: D.srv(3, -5.5, ['kbm-sandbox-mssql'], { color: 'teal', cpu: 0.40, tags: [{ text: 'Pool: max 8 concurrent', tone: 'paper' }] })
+              b3: D.srv(3, -5.5, ['kbm-sandbox-sqlserver'], { color: 'teal', cpu: 0.40, tags: [{ text: 'Pool: max 8 concurrent', tone: 'paper' }] })
             },
             links: {
               c_1: D.link('coord', 'b1', { label: 'Bulkhead MySQL' }),
@@ -1536,7 +1536,7 @@
           title: 'So sánh Client-Side Discovery (Eureka) và Server-Side Discovery (Kubernetes)',
           body: [
             'Có hai mô hình khám phá dịch vụ phổ biến (§4.3.2 & Hình 4.3–4.4):',
-            '• <b>Client-Side Discovery</b>: <code>kbm-core</code> tự giữ bản sao danh bạ trong RAM và tự chọn instance bằng thuật toán Round-Robin / Least-Loaded. Ưu điểm: không tốn thêm chặng proxy; kể cả khi Eureka tạm sập, client vẫn gọi được nhờ cache cục bộ.<br>• <b>Server-Side Discovery (Kubernetes-native)</b>: <code>kbm-core</code> chỉ gọi tên DNS <code>http://kbm-judge-sql:8080</code>; tầng hạ tầng K8s Service (<code>kube-proxy</code> /Cilium eBPF) tự cân bằng tải tới các Pod khỏe mạnh.'
+            '• <b>Client-Side Discovery</b>: <code>kbm-core</code> tự giữ bản sao danh bạ trong RAM và tự chọn instance bằng thuật toán Round-Robin / Least-Loaded. Ưu điểm: không tốn thêm chặng proxy; kể cả khi Eureka tạm sập, client vẫn gọi được nhờ cache cục bộ.<br>• <b>Server-Side Discovery (Kubernetes-native)</b>: <code>kbm-core</code> chỉ gọi tên DNS <code>http://kbm-judge-sql:8082</code>; tầng hạ tầng K8s Service (<code>kube-proxy</code> / Cilium eBPF) tự cân bằng tải tới các Pod khỏe mạnh.'
           ],
           callout: {
             kind: 'tip',
@@ -1556,13 +1556,13 @@
             entities: {
               z: D.zone(-2, 12, -6.5, 6.5, 'KUBERNETES CLUSTER (SERVER-SIDE DISCOVERY)', { tone: 'blue' }),
               core: D.srv(-8.5, 0, ['kbm-core Pod'], { color: 'blue', tags: [{ text: 'Không cần thư viện Eureka', tone: 'blue' }] }),
-              svc: D.lb(-0.5, 0, 'K8s Service VIP', { s: 3.8, h: 42, sub: 'kbm-judge-sql:8080', tags: [{ text: 'CoreDNS + kube-proxy', tone: 'green' }] }),
+              svc: D.lb(-0.5, 0, 'K8s Service VIP', { s: 3.8, h: 42, sub: 'kbm-judge-sql:8082', tags: [{ text: 'CoreDNS + kube-proxy', tone: 'green' }] }),
               p1: D.srv(7.5, 4, ['judge-pod-1'], { s: 3.5, h: 38, color: 'green', cpu: 0.35 }),
               p2: D.srv(7.5, 0, ['judge-pod-2'], { s: 3.5, h: 38, color: 'green', cpu: 0.32 }),
               p3: D.srv(7.5, -4, ['judge-pod-3'], { s: 3.5, h: 38, color: 'green', cpu: 0.36 })
             },
             links: {
-              c_s: D.link('core', 'svc', { label: 'http://kbm-judge-sql:8080' }),
+              c_s: D.link('core', 'svc', { label: 'http://kbm-judge-sql:8082' }),
               s_1: D.link('svc', 'p1'),
               s_2: D.link('svc', 'p2'),
               s_3: D.link('svc', 'p3')
@@ -1694,7 +1694,7 @@
           ],
           callout: {
             kind: 'warn',
-            text: 'Cảnh báo trực tiếp trong sách (`chapter-05.typ:214`): <b>Tuyệt đối không chọn Partition Key là trường có độ phân tán thấp (low cardinality) trong giờ cao điểm như <code>examId</code> hay <code>courseId</code>!</b>'
+            text: 'Cảnh báo quan trọng ở Chương 5 (§5.3): <b>Tuyệt đối không chọn Partition Key là trường có độ phân tán thấp (low cardinality) trong giờ cao điểm như <code>examId</code> hay <code>courseId</code>!</b>'
           },
           changes: [
             '! Đặt key = examId → 100% bài của kỳ thi dồn vào Partition 0',
@@ -1739,7 +1739,7 @@
           ],
           callout: {
             kind: 'insight',
-            text: 'Quy tắc vàng khi chọn Kafka Partition Key: <b>Xác định tập thực thể nhỏ nhất thực sự cần bảo toàn thứ因果 (causal ordering)</b> — không bao giờ khóa thứ tự rộng hơn mức cần thiết.'
+            text: 'Quy tắc vàng khi chọn Kafka Partition Key: <b>Xác định tập thực thể nhỏ nhất thực sự cần bảo toàn thứ tự nhân quả (causal ordering)</b> — không bao giờ khóa thứ tự rộng hơn mức cần thiết.'
           },
           changes: [
             '+ Đổi Partition Key từ examId sang studentId',
@@ -1748,7 +1748,7 @@
           metrics: {
             ack: { val: '35 ms', level: 'good' },
             skew: { val: 'Cân bằng 33% / Partition', level: 'good' },
-            lag: { val: '< 12 bài (Xử lý < 4s)', level: 'good' },
+            lag: { val: '< 12 bài (Xử lý < 4 s)', level: 'good' },
             workers: { val: '3 / 3 chạy song song', level: 'good' }
           },
           scene: {
@@ -1922,11 +1922,11 @@
           title: 'ErrorHandlingDeserializer, Exponential Backoff và Dead Letter Topic (DLT)',
           body: [
             'Để giải quyết Poison Pill (§5.4.2):',
-            '1. Bọc bộ giải mã trong <code>ErrorHandlingDeserializer</code> để lỗi hỏng JSON ở tầng framework vẫn được bắt gọn.<br>2. Với <b>lỗi không thể tự khỏi</b> (sai schema, thiếu trường bắt buộc): không retry vô ích, đẩy thẳng sang <b>Dead Letter Topic (<code>submission.events.DLT</code>)</b>.<br>3. Với <b>lỗi tạm thời</b> (sandbox đang bận): thử lại tối đa 3 lần với <b>Exponential Backoff + Jitter</b> (1s → 2s → 4s); nếu vẫn lỗi mới chuyển sang DLT và tiến lên xử lý bài kế tiếp!'
+            '1. Bọc bộ giải mã trong <code>ErrorHandlingDeserializer</code> để lỗi hỏng JSON ở tầng framework vẫn được bắt gọn.<br>2. Với <b>lỗi không thể tự khỏi</b> (sai schema, thiếu trường bắt buộc): không retry vô ích, đẩy thẳng sang <b>Dead Letter Topic (<code>submission.events.DLT</code>)</b>.<br>3. Với <b>lỗi tạm thời</b> (sandbox đang bận): thử lại tối đa 3 lần với <b>Exponential Backoff + Jitter</b> (1 s → 2 s → 4 s); nếu vẫn lỗi mới chuyển sang DLT và tiến lên xử lý bài kế tiếp!'
           ],
           callout: {
             kind: 'tip',
-            text: 'Quy ước thuật ngữ sách (`terminology-registry.md` §2): Với Apache Kafka, dùng chuẩn tên <b>Dead Letter Topic (DLT)</b>; chỉ dùng <b>Dead Letter Queue (DLQ)</b> cho hàng đợi kiểu RabbitMQ/SQS.'
+            text: 'Quy ước thuật ngữ (Phụ lục A): Với Apache Kafka, dùng chuẩn tên <b>Dead Letter Topic (DLT)</b>; dùng <b>Dead Letter Queue (DLQ)</b> cho hàng đợi kiểu RabbitMQ/SQS.'
           },
           changes: [
             '+ Bọc ErrorHandlingDeserializer bắt lỗi JSON hỏng ngay từ đầu',

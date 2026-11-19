@@ -12,43 +12,33 @@
 (function (global) {
   'use strict';
 
-  const COURSE = global.SOA_COURSE;
-  if (!COURSE) {
+  const BASE_COURSE = global.SOA_COURSE;
+  if (!BASE_COURSE) {
     console.error('[Workbench] Missing SOA_COURSE dataset.');
     return;
   }
 
+  const I18N = global.WB_I18N;
+  const COURSES = { vi: BASE_COURSE };
+
+  function buildEnCourse() {
+    if (!global.CourseI18n) return BASE_COURSE;
+    const lessonsById = {
+      ...(global.SOA_I18N_EN_PART1 || {}),
+      ...(global.SOA_I18N_EN_PART2 || {})
+    };
+    return global.CourseI18n.applyOverlay(BASE_COURSE, {
+      modules: global.SOA_MODULES_EN || BASE_COURSE.modules,
+      bookSections: global.SOA_BOOK_SECTIONS_EN || BASE_COURSE.bookSections,
+      lessonsById
+    });
+  }
+  COURSES.en = buildEnCourse();
+
   const STORAGE_THEME = 'ide-theme';
-  const STORAGE_DONE = `wb:done:${COURSE.courseId}`;
-  const STORAGE_LAST = `wb:last:${COURSE.courseId}`;
-
-  const PHASE_META = {
-    setup:     { label: 'Thiết lập',      cls: 'wb-phase--setup' },
-    problem:   { label: 'Vấn đề',         cls: 'wb-phase--problem' },
-    solution:  { label: 'Giải pháp',      cls: 'wb-phase--solution' },
-    technique: { label: 'Kỹ thuật',       cls: 'wb-phase--technique' },
-    tradeoff:  { label: 'Đánh đổi',       cls: 'wb-phase--tradeoff' },
-    kbm:       { label: 'Case Study KBM', cls: 'wb-phase--kbm' },
-    recap:     { label: 'Tổng kết',       cls: 'wb-phase--recap' }
-  };
-
-  const CALLOUT_META = {
-    insight: { title: 'Ý chính',        cls: 'wb-callout--insight', icon: '💡' },
-    tip:     { title: 'Nên biết',       cls: 'wb-callout--tip',     icon: '✓' },
-    warn:    { title: 'Cảnh báo / Bẫy', cls: 'wb-callout--warn',    icon: '!' }
-  };
-
-  const LEGEND_META = {
-    req:    { label: 'yêu cầu',           cls: '' },
-    res:    { label: 'phản hồi',          cls: 'wb-lg--res' },
-    msg:    { label: 'sự kiện',           cls: 'wb-lg--msg' },
-    heavy:  { label: 'tải nặng',          cls: 'wb-lg--heavy' },
-    slow:   { label: 'chậm / chờ',        cls: 'wb-lg--slow' },
-    write:  { label: 'ghi CSDL',          cls: 'wb-lg--write' },
-    ping:   { label: 'heartbeat',         cls: 'wb-lg--ping' },
-    poison: { label: 'poison msg',        cls: 'wb-lg--poison' },
-    fail:   { label: 'từ chối / lỗi',     cls: 'wb-lg--fail', sym: '×' }
-  };
+  const STORAGE_LANG = 'wb:lang';
+  const STORAGE_DONE = `wb:done:${BASE_COURSE.courseId}`;
+  const STORAGE_LAST = `wb:last:${BASE_COURSE.courseId}`;
 
   const esc = (s) =>
     String(s ?? '')
@@ -68,9 +58,10 @@
   const state = {
     mode: 'patterns', // 'patterns' | 'diagrams' | 'book' | 'author'
     theme: 'light',
+    lang: 'vi', // 'vi' | 'en'
     catFilter: 'all',
     openChs: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
-    lessonId: COURSE.lessons[0].id,
+    lessonId: BASE_COURSE.lessons[0].id,
     stepIdx: 0,
     prevMetrics: {},
     doneLessons: new Set(),
@@ -91,9 +82,37 @@
 
   let stage = null;
 
+  function getCourse() {
+    return COURSES[state.lang] || COURSES.vi;
+  }
+
+  function t(key, vars) {
+    return I18N ? I18N.t(state.lang, key, vars) : key;
+  }
+
+  function getPack() {
+    return I18N ? I18N.getPack(state.lang) : null;
+  }
+
+  function getFigTitle(fig) {
+    if (!fig) return '';
+    if (state.lang === 'en' && global.DIAGRAM_TITLES_EN && global.DIAGRAM_TITLES_EN[fig.id]) {
+      return global.DIAGRAM_TITLES_EN[fig.id];
+    }
+    return fig.titleVi || fig.title || '';
+  }
+
   /* ── Persistence ── */
   function loadState() {
     try {
+      const params = new URLSearchParams(global.location.search || '');
+      const urlLang = params.get('lang');
+      const savedLang = localStorage.getItem(STORAGE_LANG);
+      if (urlLang === 'en' || urlLang === 'vi') {
+        state.lang = urlLang;
+      } else if (savedLang === 'en' || savedLang === 'vi') {
+        state.lang = savedLang;
+      }
       const savedTheme = localStorage.getItem(STORAGE_THEME);
       if (savedTheme === 'dark' || savedTheme === 'light') {
         state.theme = savedTheme;
@@ -103,7 +122,7 @@
         state.doneLessons = new Set(savedDone);
       }
       const savedLast = JSON.parse(localStorage.getItem(STORAGE_LAST) || 'null');
-      if (savedLast && COURSE.lessons.some((l) => l.id === savedLast.lessonId)) {
+      if (savedLast && BASE_COURSE.lessons.some((l) => l.id === savedLast.lessonId)) {
         state.lessonId = savedLast.lessonId;
         const lesson = getLesson(state.lessonId);
         state.stepIdx = Math.max(0, Math.min((lesson?.steps.length || 1) - 1, savedLast.stepIdx || 0));
@@ -119,12 +138,14 @@
   }
 
   function getLesson(id) {
-    return COURSE.lessons.find((l) => l.id === id) || COURSE.lessons[0];
+    const c = getCourse();
+    return c.lessons.find((l) => l.id === id) || c.lessons[0];
   }
 
   function getModuleForChapter(chNum) {
+    const c = getCourse();
     const key = String(chNum).padStart(2, '0');
-    return COURSE.modules.find((m) => m.num === key) || COURSE.modules[0];
+    return c.modules.find((m) => m.num === key) || c.modules[0];
   }
 
   /* ── Parse 102 Book Diagrams from window.DIAGRAM_MANIFEST ── */
@@ -132,7 +153,7 @@
     const raw = Array.isArray(global.DIAGRAM_MANIFEST) ? global.DIAGRAM_MANIFEST : [];
     const byCh = {};
     const list = [];
-    COURSE.modules.forEach((m) => { byCh[m.num] = []; });
+    BASE_COURSE.modules.forEach((m) => { byCh[m.num] = []; });
 
     raw.forEach((item) => {
       const rel = String(item.path || item.file || '').replace(/^\.\//, '');
@@ -142,12 +163,16 @@
       const numPart = item.number ? `${item.number}${item.suffix || ''}` : (m ? m[3] : '1');
       const figNum = `${chInt}.${numPart}`;
       const htmlRel = m ? `ch${chNum}/fig-${chInt}-${numPart}.html` : rel;
+      const cleanVi = String(item.title || `Hình ${figNum}`).replace(/^Fig\s*[\d.a-z]+\s*[—-]\s*/i, '');
+      const id = item.file || `fig-${chInt}-${numPart}`;
       const entry = {
-        id: item.file || `fig-${chInt}-${numPart}`,
+        id,
         chNum,
         chInt,
         figNum,
-        title: item.title || `Hình ${figNum}`,
+        title: cleanVi,
+        titleVi: cleanVi,
+        titleEn: (global.DIAGRAM_TITLES_EN && global.DIAGRAM_TITLES_EN[id]) || cleanVi,
         htmlPath: `figures/${htmlRel}`,
         pngPath: `figures/${htmlRel.replace(/\.html$/i, '.png')}`
       };
@@ -164,6 +189,78 @@
     if (list.length > 0) state.currentFigId = list[0].id;
   }
 
+  /* ── Language Management (VI / EN) ── */
+  function applyLang(lang, rerender = true) {
+    state.lang = lang === 'en' ? 'en' : 'vi';
+    state.prevMetrics = {};
+    stopSpeech();
+
+    document.documentElement.lang = state.lang;
+    document.title = t('pageTitle');
+    try {
+      localStorage.setItem(STORAGE_LANG, state.lang);
+    } catch (e) { /* ignore */ }
+
+    document.querySelectorAll('[data-lang-opt]').forEach((el) => {
+      el.classList.toggle('is-on', el.dataset.langOpt === state.lang);
+    });
+    const langBtn = document.getElementById('wb-lang-btn');
+    if (langBtn) {
+      langBtn.title = t('langSwitchTitle');
+      langBtn.setAttribute('aria-label', t('langSwitchTitle'));
+    }
+
+    // Update static data-i18n labels
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+
+    const setAttr = (id, attr, val) => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute(attr, val);
+    };
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+
+    setAttr('wb-search-btn', 'aria-label', t('searchAria'));
+    setAttr('wb-feedback-link', 'title', t('feedbackTitle'));
+    setAttr('wb-github-link', 'title', t('githubTitle'));
+    setAttr('wb-search-figs', 'placeholder', t('sidebarDiagramsPlaceholder'));
+    setAttr('wb-search-book', 'placeholder', t('sidebarBookPlaceholder'));
+    setAttr('wb-sx-input', 'placeholder', t('searchPlaceholder'));
+    setText('wb-sidebar-lessons-meta', t('sidebarLessonsCount', { n: getCourse().lessons.length }));
+    setText('wb-sidebar-figs-meta', t('sidebarDiagramsCount', { n: state.allDiagrams.length || 102 }));
+    setText('wb-tool-fit', t('toolFit'));
+    setText('wb-tool-replay', t('toolReplay'));
+    setText('wb-tool-pause', stage && stage.paused ? t('toolResume') : t('toolPause'));
+    setText('wb-tool-deepdive', t('toolDeepDive'));
+    setAttr('wb-tool-deepdive', 'title', t('toolDeepDiveTitle'));
+    setText('wb-speak-btn', state.speaking ? t('speakStop') : t('speakBtn'));
+    setAttr('wb-speak-btn', 'title', t('speakTitle'));
+
+    const themeBtn = document.getElementById('wb-theme-btn');
+    if (themeBtn) {
+      themeBtn.title = state.theme === 'dark' ? t('themeToLight') : t('themeToDark');
+    }
+
+    if (rerender) {
+      if (state.mode === 'patterns') {
+        renderPatternsSidebar();
+        renderCurrentLesson();
+      } else if (state.mode === 'diagrams') {
+        renderDiagramsSidebar(document.getElementById('wb-search-figs')?.value || '');
+        renderCurrentDiagram();
+      } else if (state.mode === 'book') {
+        renderBookSidebar(document.getElementById('wb-search-book')?.value || '');
+      }
+      if (state.searchOpen) {
+        runSearch(document.getElementById('wb-sx-input')?.value || '');
+      }
+    }
+  }
+
   /* ── Theme Management ── */
   function applyTheme(theme) {
     state.theme = theme === 'dark' ? 'dark' : 'light';
@@ -176,7 +273,7 @@
 
     const btn = document.getElementById('wb-theme-btn');
     if (btn) {
-      btn.title = state.theme === 'dark' ? 'Chuyển sang giao diện Sáng (Warm Paper)' : 'Chuyển sang giao diện Tối (Charcoal)';
+      btn.title = state.theme === 'dark' ? t('themeToLight') : t('themeToDark');
       btn.innerHTML = state.theme === 'dark'
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-14.93 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
         : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
@@ -248,12 +345,13 @@
     const container = document.getElementById('wb-tree-patterns');
     if (!container) return;
 
+    const course = getCourse();
     const filter = state.catFilter;
     let html = '';
 
-    COURSE.modules.forEach((mod) => {
+    course.modules.forEach((mod) => {
       const chInt = parseInt(mod.num, 10);
-      const lessons = COURSE.lessons.filter(
+      const lessons = course.lessons.filter(
         (l) => l.ch === chInt && (filter === 'all' || l.cat === filter)
       );
       if (!lessons.length) return;
@@ -293,7 +391,7 @@
     container.innerHTML = html;
 
     // Update overall progress bar
-    const total = COURSE.lessons.length;
+    const total = course.lessons.length;
     const done = state.doneLessons.size;
     const pct = total > 0 ? Math.round((done / total) * 100) : 0;
     const progCount = document.getElementById('wb-prog-count');
@@ -327,16 +425,20 @@
   }
 
   function renderCurrentLesson() {
+    const course = getCourse();
+    const pack = getPack();
     const lesson = getLesson(state.lessonId);
     const step = lesson.steps[state.stepIdx] || lesson.steps[0];
     const mod = getModuleForChapter(lesson.ch);
-    const chLessons = COURSE.lessons.filter((l) => l.ch === lesson.ch);
+    const chLessons = course.lessons.filter((l) => l.ch === lesson.ch);
     const lessonPos = chLessons.findIndex((l) => l.id === lesson.id) + 1;
 
     // 1. Header Breadcrumb, Title, Subtitle, Pill Tags
     const crumbEl = document.getElementById('wb-crumb');
     if (crumbEl) {
-      crumbEl.innerHTML = `<span>Chương ${esc(mod.num)} · ${esc(mod.title)}</span><span class="wb-crumb__sep">/</span><span>Bài ${lessonPos} / ${chLessons.length}</span>`;
+      const chText = t('crumbChapter', { num: mod.num, title: mod.title });
+      const posText = t('crumbLessonPos', { pos: lessonPos, total: chLessons.length });
+      crumbEl.innerHTML = `<span>${esc(chText)}</span><span class="wb-crumb__sep">/</span><span>${esc(posText)}</span>`;
     }
     const titleEl = document.getElementById('wb-lesson-title');
     if (titleEl) titleEl.textContent = lesson.title;
@@ -346,10 +448,10 @@
     const tagsEl = document.getElementById('wb-lesson-tags');
     if (tagsEl) {
       tagsEl.innerHTML = `
-        <span class="wb-tag wb-tag--sand">⏱ ${lesson.minutes || 10} phút</span>
-        <span class="wb-tag wb-tag--mint">📊 ${esc(lesson.level || 'Trọng tâm')}</span>
-        <span class="wb-tag wb-tag--violet">📑 ${lesson.steps.length} bước</span>
-        <button class="wb-tag wb-tag--blue" type="button" id="wb-tag-book" title="Mở chương sách tương ứng">📖 ${esc(lesson.bookRef)}</button>`;
+        <span class="wb-tag wb-tag--sand">⏱ ${esc(t('tagMinutes', { n: lesson.minutes || 10 }))}</span>
+        <span class="wb-tag wb-tag--mint">📊 ${esc(lesson.level || (state.lang === 'en' ? 'Core' : 'Trọng tâm'))}</span>
+        <span class="wb-tag wb-tag--violet">📑 ${esc(t('tagSteps', { n: lesson.steps.length }))}</span>
+        <button class="wb-tag wb-tag--blue" type="button" id="wb-tag-book" title="${esc(t('tagBookTitle'))}">📖 ${esc(lesson.bookRef)}</button>`;
       const tagBookBtn = document.getElementById('wb-tag-book');
       if (tagBookBtn) {
         tagBookBtn.addEventListener('click', () => {
@@ -382,10 +484,10 @@
 
     // 3. Stage Legend
     const legEl = document.getElementById('wb-stage-legend');
-    if (legEl) {
+    if (legEl && pack && pack.legends) {
       legEl.innerHTML = (lesson.legend || ['req', 'res'])
         .map((k) => {
-          const meta = LEGEND_META[k] || LEGEND_META.req;
+          const meta = pack.legends[k] || pack.legends.req;
           return `<span><i class="wb-lg ${meta.cls}">${meta.sym || ''}</i>${esc(meta.label)}</span>`;
         })
         .join('');
@@ -402,10 +504,10 @@
     }
     stage.renderScene(step.scene);
 
-    // 5. Bottom Stepper Timeline ("TRONG BÀI NÀY")
+    // 5. Bottom Stepper Timeline ("TRONG BÀI NÀY" / "IN THIS LESSON")
     const nSteps = lesson.steps.length;
     const tlCount = document.getElementById('wb-timeline-count');
-    if (tlCount) tlCount.textContent = `Bước ${state.stepIdx + 1} / ${nSteps}`;
+    if (tlCount) tlCount.textContent = t('timelineCount', { cur: state.stepIdx + 1, total: nSteps });
 
     const tlTrack = document.getElementById('wb-timeline-track');
     if (tlTrack) {
@@ -434,10 +536,18 @@
     }
 
     // 6. Right Rail: Step Guide
-    const stepPosEl = document.getElementById('wb-guide-step');
-    if (stepPosEl) stepPosEl.textContent = `BƯỚC ${state.stepIdx + 1} / ${nSteps}`;
+    const langNotice = document.getElementById('wb-lang-notice');
+    if (langNotice) {
+      const showFallback = state.lang === 'en' && lesson._localized === false;
+      langNotice.hidden = !showFallback;
+      if (showFallback) langNotice.textContent = t('enFallbackBanner');
+    }
 
-    const phaseMeta = PHASE_META[step.chapter] || PHASE_META.setup;
+    const stepPosEl = document.getElementById('wb-guide-step');
+    if (stepPosEl) stepPosEl.textContent = t('guideStep', { cur: state.stepIdx + 1, total: nSteps });
+
+    const phases = pack?.phases || {};
+    const phaseMeta = phases[step.chapter] || phases.setup || { label: '', cls: 'wb-phase--setup' };
     const phaseEl = document.getElementById('wb-guide-phase');
     if (phaseEl) {
       phaseEl.className = `wb-phase ${phaseMeta.cls}`;
@@ -454,8 +564,8 @@
 
     const gCallout = document.getElementById('wb-guide-callout');
     if (gCallout) {
-      if (step.callout) {
-        const cm = CALLOUT_META[step.callout.kind] || CALLOUT_META.insight;
+      if (step.callout && pack?.callouts) {
+        const cm = pack.callouts[step.callout.kind] || pack.callouts.insight;
         gCallout.hidden = false;
         gCallout.className = `wb-callout ${cm.cls}`;
         gCallout.innerHTML = `
@@ -474,7 +584,7 @@
       if (step.changes && step.changes.length) {
         gChanges.hidden = false;
         gChanges.innerHTML = `
-          <div class="wb-eyebrow">ĐIỀU ĐÃ THAY ĐỔI</div>
+          <div class="wb-eyebrow">${esc(t('changesHeading'))}</div>
           <ul>
             ${step.changes
               .map((raw) => {
@@ -497,15 +607,15 @@
     const nextLabelEl = document.getElementById('wb-btn-next-label');
     if (nextLabelEl) {
       if (state.stepIdx + 1 < nSteps) {
-        nextLabelEl.textContent = `Tiếp: ${lesson.steps[state.stepIdx + 1].short}`;
+        nextLabelEl.textContent = t('btnNextStep', { short: lesson.steps[state.stepIdx + 1].short });
       } else {
-        const curIdx = COURSE.lessons.findIndex((l) => l.id === lesson.id);
-        const nextLesson = COURSE.lessons[(curIdx + 1) % COURSE.lessons.length];
-        nextLabelEl.textContent = `Bài kế: ${nextLesson.title}`;
+        const curIdx = course.lessons.findIndex((l) => l.id === lesson.id);
+        const nextLesson = course.lessons[(curIdx + 1) % course.lessons.length];
+        nextLabelEl.textContent = t('btnNextLesson', { title: nextLesson.title });
       }
     }
 
-    // 8. Learning Goals Checklist ("BẠN SẼ HỌC")
+    // 8. Learning Goals Checklist
     const goalsListEl = document.getElementById('wb-goals-list');
     if (goalsListEl) {
       goalsListEl.innerHTML = (lesson.goals || [])
@@ -531,18 +641,19 @@
   }
 
   function stepNext() {
+    const course = getCourse();
     const lesson = getLesson(state.lessonId);
     if (state.stepIdx + 1 < lesson.steps.length) {
       selectLesson(state.lessonId, state.stepIdx + 1);
     } else {
       state.doneLessons.add(lesson.id);
-      const curIdx = COURSE.lessons.findIndex((l) => l.id === lesson.id);
-      const nextLesson = COURSE.lessons[(curIdx + 1) % COURSE.lessons.length];
+      const curIdx = course.lessons.findIndex((l) => l.id === lesson.id);
+      const nextLesson = course.lessons[(curIdx + 1) % course.lessons.length];
       selectLesson(nextLesson.id, 0);
     }
   }
 
-  /* ── Vietnamese Web Speech TTS Reader ── */
+  /* ── Bilingual Web Speech TTS Reader (vi-VN / en-US) ── */
   function stopSpeech() {
     state.speaking = false;
     try {
@@ -551,7 +662,7 @@
     const btn = document.getElementById('wb-speak-btn');
     if (btn) {
       btn.classList.remove('is-on');
-      btn.innerHTML = '🔊 Đọc';
+      btn.textContent = t('speakBtn');
     }
   }
 
@@ -572,7 +683,8 @@
     try {
       global.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(parts.join('. '));
-      utter.lang = 'vi-VN';
+      const useViFallback = state.lang === 'en' && lesson._localized === false;
+      utter.lang = useViFallback ? 'vi-VN' : (getPack()?.ttsLang || 'vi-VN');
       utter.rate = 1.02;
       utter.onend = () => stopSpeech();
       utter.onerror = () => stopSpeech();
@@ -580,7 +692,7 @@
       const btn = document.getElementById('wb-speak-btn');
       if (btn) {
         btn.classList.add('is-on');
-        btn.innerHTML = '⏹ Dừng';
+        btn.textContent = t('speakStop');
       }
       global.speechSynthesis.speak(utter);
     } catch (e) {
@@ -597,7 +709,7 @@
     const title = document.getElementById('wb-drawer-title');
     if (!drawer || !frame) return;
 
-    if (title) title.textContent = `${lesson.title} — Bản chi tiết 4-Act & Simulator chuyên sâu (${lesson.bookRef})`;
+    if (title) title.textContent = t('drawerTitle', { title: lesson.title, bookRef: lesson.bookRef });
     frame.setAttribute('src', lesson.patternFile);
     drawer.hidden = false;
   }
@@ -613,12 +725,17 @@
   function renderDiagramsSidebar(searchTerm = '') {
     const container = document.getElementById('wb-tree-diagrams');
     if (!container) return;
+    const course = getCourse();
     const q = searchTerm.trim().toLowerCase();
     let html = '';
 
-    COURSE.modules.forEach((mod) => {
+    course.modules.forEach((mod) => {
       const figs = (state.diagramsByCh[mod.num] || []).filter(
-        (f) => !q || f.title.toLowerCase().includes(q) || f.figNum.includes(q)
+        (f) =>
+          !q ||
+          (f.titleVi || '').toLowerCase().includes(q) ||
+          (f.titleEn || '').toLowerCase().includes(q) ||
+          f.figNum.includes(q)
       );
       if (!figs.length) return;
       const isOpen = q ? true : state.openFigChs.has(mod.num);
@@ -628,18 +745,19 @@
           <button class="wb-mod__head" type="button" data-toggle-fig-ch="${mod.num}">
             <svg class="wb-mod__chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             ${folderSvg(mod.color)}
-            <span class="wb-mod__title">Ch.${esc(mod.num)} — ${esc(mod.title)}</span>
+            <span class="wb-mod__title">${esc(t('chPrefix', { num: mod.num }))} — ${esc(mod.title)}</span>
             <span class="wb-mod__count">${figs.length}</span>
           </button>
           <ul class="wb-mod__lessons">
             ${figs
               .map((f) => {
                 const isCur = f.id === state.currentFigId;
+                const displayTitle = getFigTitle(f);
                 return `
                   <li class="wb-lesson-item ${isCur ? 'is-current' : ''}">
                     <button class="wb-lesson-btn" type="button" data-select-fig="${esc(f.id)}">
                       <span class="wb-lesson-mark">📐</span>
-                      <span class="wb-mod__title"><b>Hình ${esc(f.figNum)}</b>: ${esc(f.title.replace(/^Fig\s*[\d.a-z]+\s*[—-]\s*/i, ''))}</span>
+                      <span class="wb-mod__title"><b>${esc(t('figTreePrefix', { num: f.figNum }))}</b>: ${esc(displayTitle)}</span>
                     </button>
                   </li>`;
               })
@@ -648,28 +766,30 @@
         </div>`;
     });
 
-    container.innerHTML = html || '<p style="padding:12px;color:var(--wb-muted);">Không tìm thấy sơ đồ phù hợp.</p>';
+    container.innerHTML = html || `<p style="padding:12px;color:var(--wb-muted);">${esc(t('figNoMatch'))}</p>`;
   }
 
   function renderCurrentDiagram() {
+    const course = getCourse();
     const fig = state.allDiagrams.find((f) => f.id === state.currentFigId) || state.allDiagrams[0];
     if (!fig) return;
     const mod = getModuleForChapter(fig.chInt);
+    const displayTitle = getFigTitle(fig);
 
     const crumb = document.getElementById('wb-fig-crumb');
-    if (crumb) crumb.textContent = `Chương ${mod.num} · ${mod.title} / Hình ${fig.figNum}`;
+    if (crumb) crumb.textContent = t('crumbFigure', { num: mod.num, title: mod.title, figNum: fig.figNum });
 
     const title = document.getElementById('wb-fig-title');
-    if (title) title.textContent = `Hình ${fig.figNum} — ${fig.title.replace(/^Fig\s*[\d.a-z]+\s*[—-]\s*/i, '')}`;
+    if (title) title.textContent = `${t('figTreePrefix', { num: fig.figNum })} — ${displayTitle}`;
 
     const stageBox = document.getElementById('wb-fig-stage');
     if (stageBox) {
       if (state.figViewMode === 'png') {
-        stageBox.innerHTML = `<img src="${esc(fig.pngPath)}" alt="${esc(fig.title)}">`;
+        stageBox.innerHTML = `<img src="${esc(fig.pngPath)}" alt="${esc(displayTitle)}">`;
       } else {
         stageBox.innerHTML = `
           <div class="wb-fig-html-scaler" id="wb-fig-scaler">
-            <iframe class="wb-fig-iframe" id="wb-fig-iframe" src="${esc(fig.htmlPath)}" title="${esc(fig.title)}"></iframe>
+            <iframe class="wb-fig-iframe" id="wb-fig-iframe" src="${esc(fig.htmlPath)}" title="${esc(displayTitle)}"></iframe>
           </div>`;
         const iframe = document.getElementById('wb-fig-iframe');
         if (iframe) {
@@ -688,26 +808,26 @@
     // Right rail info & related interactive lessons in the same chapter
     const metaBox = document.getElementById('wb-fig-meta');
     if (metaBox) {
-      const chLessons = COURSE.lessons.filter((l) => l.ch === fig.chInt);
+      const chLessons = course.lessons.filter((l) => l.ch === fig.chInt);
       metaBox.innerHTML = `
-        <p><b>Mã hình trong sách:</b> <code>Hình ${esc(fig.figNum)}</code></p>
-        <p><b>Thuộc chương:</b> Chương ${esc(mod.num)} — ${esc(mod.title)}</p>
-        <p><b>Nguồn HTML:</b> <code>web/${esc(fig.htmlPath)}</code></p>
-        <p><b>Bản in PDF (300+ DPI):</b> <code>web/${esc(fig.pngPath)}</code></p>
+        <p><b>${esc(t('figLabelCode'))}</b> <code>${esc(t('figCodeVal', { num: fig.figNum }))}</code></p>
+        <p><b>${esc(t('figLabelChapter'))}</b> ${esc(t('figChapterVal', { num: mod.num, title: mod.title }))}</p>
+        <p><b>${esc(t('figLabelHtml'))}</b> <code>web/${esc(fig.htmlPath)}</code></p>
+        <p><b>${esc(t('figLabelPng'))}</b> <code>web/${esc(fig.pngPath)}</code></p>
         <div class="wb-changes" style="margin-top:14px;">
-          <div class="wb-eyebrow">BÀI MÔ PHỎNG 2.5D CÙNG CHƯƠNG</div>
+          <div class="wb-eyebrow">${esc(t('figRelatedHeading'))}</div>
           <div style="display:flex;flex-direction:column;gap:7px;margin-top:8px;">
             ${chLessons
               .map(
                 (l) => `
                 <button class="wb-btn-ghost" type="button" data-jump-lesson="${esc(l.id)}" style="justify-content:space-between;height:auto;padding:8px 11px;text-align:left;">
                   <span>▶ ${esc(l.title)}</span>
-                  <span style="font-size:11px;color:var(--wb-muted);">${l.steps.length} bước</span>
+                  <span style="font-size:11px;color:var(--wb-muted);">${esc(t('tagSteps', { n: l.steps.length }))}</span>
                 </button>`
               )
               .join('')}
             <button class="wb-btn-pop" type="button" data-jump-book="chapter-${esc(mod.num)}.html" style="height:36px;padding:0 12px;margin-top:4px;">
-              📖 Đọc Chương ${esc(mod.num)} trong sách →
+              ${esc(t('figReadChapter', { num: mod.num }))}
             </button>
           </div>
         </div>`;
@@ -761,8 +881,14 @@
   function renderBookSidebar(searchTerm = '') {
     const container = document.getElementById('wb-tree-book');
     if (!container) return;
+    const course = getCourse();
+    const otherCourse = state.lang === 'en' ? COURSES.vi : COURSES.en;
     const q = searchTerm.trim().toLowerCase();
-    const items = COURSE.bookSections.filter((s) => !q || s.title.toLowerCase().includes(q));
+    const items = course.bookSections.filter((s, idx) => {
+      if (!q) return true;
+      const otherTitle = otherCourse?.bookSections?.[idx]?.title || '';
+      return s.title.toLowerCase().includes(q) || otherTitle.toLowerCase().includes(q);
+    });
 
     container.innerHTML = `
       <ul style="display:flex;flex-direction:column;gap:3px;padding:4px 0;">
@@ -790,7 +916,7 @@
     frame.setAttribute('src', `../release/${fileName}`);
   }
 
-  /* ── Command Palette Search (Ctrl+K) ── */
+  /* ── Command Palette Search (Ctrl+K, Bilingual VI + EN) ── */
   function openSearch() {
     const modal = document.getElementById('wb-sx');
     const input = document.getElementById('wb-sx-input');
@@ -809,15 +935,19 @@
   }
 
   function runSearch(query) {
+    const course = getCourse();
+    const otherCourse = state.lang === 'en' ? COURSES.vi : COURSES.en;
     const q = query.trim().toLowerCase();
     const results = [];
 
-    // 1. Match interactive lessons
-    COURSE.lessons.forEach((l) => {
-      if (!q || l.title.toLowerCase().includes(q) || l.summary.toLowerCase().includes(q) || l.bookRef.toLowerCase().includes(q)) {
+    // 1. Match interactive lessons (bilingual match across VI & EN)
+    course.lessons.forEach((l, li) => {
+      const altL = otherCourse?.lessons?.[li];
+      const lessonBlob = `${l.title} ${l.summary} ${l.bookRef} ${altL ? `${altL.title} ${altL.summary}` : ''}`.toLowerCase();
+      if (!q || lessonBlob.includes(q)) {
         results.push({
-          group: 'Bài học mô phỏng 2.5D',
-          icon: `Ch.${l.ch}`,
+          group: t('searchGroupLessons'),
+          icon: t('chPrefix', { num: l.ch }),
           title: l.title,
           sub: `${l.bookRef} — ${l.summary}`,
           action: () => selectLesson(l.id, 0)
@@ -826,12 +956,15 @@
       // 2. Match individual steps when query is non-empty
       if (q.length >= 2) {
         l.steps.forEach((s, idx) => {
-          const bodyText = (s.body || []).join(' ').toLowerCase();
-          if (s.title.toLowerCase().includes(q) || s.short.toLowerCase().includes(q) || bodyText.includes(q)) {
+          const altS = altL?.steps?.[idx];
+          const bodyText = (s.body || []).join(' ');
+          const altText = altS ? `${altS.title} ${altS.short} ${(altS.body || []).join(' ')}` : '';
+          const stepBlob = `${s.title} ${s.short} ${bodyText} ${altText}`.toLowerCase();
+          if (stepBlob.includes(q)) {
             results.push({
-              group: 'Bước mô phỏng chi tiết',
+              group: t('searchGroupSteps'),
               icon: `#${idx + 1}`,
-              title: `${l.title} → Bước ${idx + 1}: ${s.title}`,
+              title: t('searchStepFmt', { lesson: l.title, idx: idx + 1, title: s.title }),
               sub: s.short,
               action: () => selectLesson(l.id, idx)
             });
@@ -840,14 +973,16 @@
       }
     });
 
-    // 3. Match book diagrams (102 figures)
+    // 3. Match book diagrams (102 figures, bilingual VI + EN)
     state.allDiagrams.forEach((f) => {
-      if (!q ? results.length < 28 : (f.title.toLowerCase().includes(q) || f.figNum.includes(q))) {
+      const figBlob = `${f.titleVi || ''} ${f.titleEn || ''} ${f.figNum}`.toLowerCase();
+      if (!q ? results.length < 28 : figBlob.includes(q)) {
+        const displayTitle = getFigTitle(f);
         results.push({
-          group: 'Sơ đồ trong sách (102 hình)',
+          group: t('searchGroupFigs'),
           icon: f.figNum,
-          title: `Hình ${f.figNum}: ${f.title.replace(/^Fig\s*[\d.a-z]+\s*[—-]\s*/i, '')}`,
-          sub: `Chương ${f.chNum}`,
+          title: `${t('figTreePrefix', { num: f.figNum })}: ${displayTitle}`,
+          sub: t('chPrefix', { num: f.chNum }),
           action: () => {
             state.currentFigId = f.id;
             state.openFigChs.add(f.chNum);
@@ -857,11 +992,13 @@
       }
     });
 
-    // 4. Match book chapters
-    COURSE.bookSections.forEach((b) => {
-      if (!q || b.title.toLowerCase().includes(q)) {
+    // 4. Match book chapters (bilingual VI + EN)
+    course.bookSections.forEach((b, bi) => {
+      const altB = otherCourse?.bookSections?.[bi];
+      const bookBlob = `${b.title} ${altB ? altB.title : ''}`.toLowerCase();
+      if (!q || bookBlob.includes(q)) {
         results.push({
-          group: 'Chương sách & Phụ lục',
+          group: t('searchGroupBook'),
           icon: '📖',
           title: b.title,
           sub: b.file,
@@ -883,9 +1020,9 @@
     const countEl = document.getElementById('wb-sx-count');
     if (!listEl) return;
 
-    if (countEl) countEl.textContent = `${state.searchResults.length} kết quả`;
+    if (countEl) countEl.textContent = t('searchCount', { n: state.searchResults.length });
     if (!state.searchResults.length) {
-      listEl.innerHTML = '<div style="padding:32px;text-align:center;color:var(--wb-muted);">Không tìm thấy kết quả nào khớp từ khóa.</div>';
+      listEl.innerHTML = `<div style="padding:32px;text-align:center;color:var(--wb-muted);">${esc(t('searchEmpty'))}</div>`;
       return;
     }
 
@@ -915,6 +1052,12 @@
     document.querySelectorAll('.wb-nav__item[data-mode]').forEach((btn) => {
       btn.addEventListener('click', () => switchMode(btn.dataset.mode));
     });
+
+    // Language toggle (VI / EN)
+    const langBtn = document.getElementById('wb-lang-btn');
+    if (langBtn) {
+      langBtn.addEventListener('click', () => applyLang(state.lang === 'en' ? 'vi' : 'en', true));
+    }
 
     // Theme toggle
     const themeBtn = document.getElementById('wb-theme-btn');
@@ -1016,7 +1159,7 @@
         if (!stage) return;
         const paused = stage.setPaused(!stage.paused);
         pauseBtn.classList.toggle('is-on', paused);
-        pauseBtn.innerHTML = paused ? '▶ Tiếp tục' : '⏸ Tạm dừng';
+        pauseBtn.textContent = paused ? t('toolResume') : t('toolPause');
       });
     }
 
@@ -1175,6 +1318,7 @@
     loadState();
     initDiagramsManifest();
     applyTheme(state.theme);
+    applyLang(state.lang, false);
     bindEvents();
 
     const hash = (global.location.hash || '').replace(/^#/, '');
