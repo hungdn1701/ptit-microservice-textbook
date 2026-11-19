@@ -83,6 +83,7 @@
         'Đội phát triển hơn 10 kỹ sư?': 'Engineering team > 10 devs?',
         'thường bắt đầu theo hướng hybrid': 'often starts as a hybrid',
         'Quá nhiều service, độ phức tạp tăng?': 'Too many services, complexity rising?',
+        'gom service theo domain': 'group services by domain',
         'Tiếp tục tiến hóa kiến trúc': 'Continue evolving architecture'
       },
       'fig-1-5': {
@@ -172,6 +173,7 @@
         'tạo Aggregate hợp lệ': 'constructs valid Aggregate',
         'entity chính —': 'root entity —',
         'điểm vào duy nhất': 'sole entry point',
+        'Entity con': 'Child Entity',
         'có identity': 'has identity',
         'thuộc Entity': 'part of Entity',
         'không có identity, so sánh theo giá trị': 'no identity, compared by value',
@@ -185,6 +187,7 @@
         'Context: Bài tập': 'Context: Assignment',
         'nội dung nộp bài,': 'submitted artifact,',
         'chấm theo rubric': 'rubric evaluation',
+        'Context: Thi': 'Context: Exam',
         'bài thi có hạn giờ,': 'timed exam attempt,',
         'kiểm tra gian lận': 'anti-cheat checks'
       },
@@ -215,6 +218,7 @@
         'Quy trình Event Storming': 'Event Storming Flow',
         'chuyện gì đã xảy ra?': 'what happened?',
         'điều gì kích hoạt nó?': 'what triggered it?',
+        'gom event theo aggregate': 'group events by aggregate',
         'Ranh giới': 'Boundaries',
         'vẽ Bounded Context': 'draw Bounded Contexts'
       },
@@ -235,7 +239,8 @@
         'Ánh xạ sang Bounded Context': 'Mapping to Bounded Contexts',
         'kết quả cho cả KBM, sau khi phân tích tương tự các quy trình còn lại':
           'full KBM result after repeating this analysis for remaining workflows',
-        '← Task + hạ tầng lab': '← Task + lab infra'
+        '← Task + hạ tầng lab': '← Task + lab infra',
+        '← subsystem theo protocol': '← protocol-specific subsystem'
       },
       'fig-2-8': {
         'Bảy Bounded Context core (chưa kể hai context supporting)':
@@ -288,6 +293,7 @@
         'dễ thử trên trình duyệt': 'easy to test in browser'
       },
       'fig-3-3': {
+        'sinh': 'generates',
         'tài liệu tương tác, thử API trực tiếp': 'interactive docs, live API testing',
         'sinh tự động (Java, TS, Python)': 'auto-generated (Java, TS, Python)',
         'kiểm tra implementation theo spec': 'verify implementation against spec',
