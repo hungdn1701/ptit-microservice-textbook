@@ -941,15 +941,19 @@
       if (state.figViewMode === 'png') {
         stageBox.innerHTML = `<img src="${esc(fig.pngPath)}" alt="${esc(displayTitle)}">`;
       } else {
+        const htmlSrc = state.lang === 'en' ? `${fig.htmlPath}?lang=en` : fig.htmlPath;
         stageBox.innerHTML = `
           <div class="wb-fig-html-scaler" id="wb-fig-scaler">
-            <iframe class="wb-fig-iframe" id="wb-fig-iframe" src="${esc(fig.htmlPath)}" title="${esc(displayTitle)}"></iframe>
+            <iframe class="wb-fig-iframe" id="wb-fig-iframe" src="${esc(htmlSrc)}" title="${esc(displayTitle)}"></iframe>
           </div>`;
         const iframe = document.getElementById('wb-fig-iframe');
         if (iframe) {
           iframe.addEventListener('load', () => {
+            try {
+              iframe.contentWindow.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
+            } catch (e) { /* ignore */ }
             fitDiagramIframe();
-            setTimeout(fitDiagramIframe, 120);
+            setTimeout(fitDiagramIframe, 140);
           });
         }
       }
@@ -1552,6 +1556,9 @@
         e.source?.postMessage({ type: 'SET_THEME', isLight, theme: state.theme }, '*');
       } else if (e.data.type === 'GET_LANG') {
         e.source?.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
+      } else if (e.data.type === 'FIGURE_I18N_DONE') {
+        fitDiagramIframe();
+        setTimeout(fitDiagramIframe, 90);
       } else if (e.data.type === 'SET_THEME_FROM_TERMINAL') {
         applyTheme(e.data.theme === 'light' ? 'light' : 'dark');
       } else if (e.data.type === 'OPEN_FILE') {
