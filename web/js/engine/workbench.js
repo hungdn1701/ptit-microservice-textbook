@@ -202,6 +202,9 @@
     const body = document.getElementById('wb-body');
     if (body) body.dataset.mode = mode;
 
+    const sidebar = document.getElementById('wb-sidebar');
+    if (sidebar) sidebar.hidden = mode === 'author';
+
     document.querySelectorAll('.wb-nav__item[data-mode]').forEach((btn) => {
       btn.classList.toggle('is-active', btn.dataset.mode === mode);
     });
@@ -223,8 +226,19 @@
       loadBookSection(state.currentBookFile);
     } else if (mode === 'author') {
       const authorFrame = document.getElementById('wb-author-frame');
-      if (authorFrame && (!authorFrame.getAttribute('src') || authorFrame.getAttribute('src') === 'about:blank')) {
-        authorFrame.setAttribute('src', 'author.html');
+      if (authorFrame) {
+        if (!authorFrame.getAttribute('src') || authorFrame.getAttribute('src') === 'about:blank') {
+          authorFrame.addEventListener('load', () => {
+            try {
+              authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+            } catch (e) { /* ignore */ }
+          });
+          authorFrame.setAttribute('src', 'author.html');
+        } else {
+          try {
+            authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+          } catch (e) { /* ignore */ }
+        }
       }
     }
   }
@@ -652,7 +666,17 @@
       if (state.figViewMode === 'png') {
         stageBox.innerHTML = `<img src="${esc(fig.pngPath)}" alt="${esc(fig.title)}">`;
       } else {
-        stageBox.innerHTML = `<iframe class="wb-frame-view" src="${esc(fig.htmlPath)}" title="${esc(fig.title)}"></iframe>`;
+        stageBox.innerHTML = `
+          <div class="wb-fig-html-scaler" id="wb-fig-scaler">
+            <iframe class="wb-fig-iframe" id="wb-fig-iframe" src="${esc(fig.htmlPath)}" title="${esc(fig.title)}"></iframe>
+          </div>`;
+        const iframe = document.getElementById('wb-fig-iframe');
+        if (iframe) {
+          iframe.addEventListener('load', () => {
+            fitDiagramIframe();
+            setTimeout(fitDiagramIframe, 120);
+          });
+        }
       }
     }
 
@@ -687,6 +711,49 @@
           </div>
         </div>`;
     }
+  }
+
+  function fitDiagramIframe() {
+    const stageBox = document.getElementById('wb-fig-stage');
+    const scaler = document.getElementById('wb-fig-scaler');
+    const iframe = document.getElementById('wb-fig-iframe');
+    if (!stageBox || !scaler || !iframe) return;
+
+    const naturalW = 1140;
+    let naturalH = 580;
+
+    try {
+      const doc = iframe.contentDocument;
+      const win = iframe.contentWindow;
+      if (doc && doc.body) {
+        doc.body.style.setProperty('padding', '14px', 'important');
+        doc.body.style.setProperty('margin', '0', 'important');
+        doc.body.style.overflow = 'hidden';
+        const canvas = doc.querySelector('.diagram-canvas');
+        if (canvas) {
+          canvas.style.minHeight = '0px';
+          canvas.style.height = 'auto';
+          if (win && typeof win.redrawDiagramLinks === 'function') {
+            win.redrawDiagramLinks();
+          }
+          const rect = canvas.getBoundingClientRect();
+          naturalH = Math.max(220, Math.ceil(rect.bottom + (win ? win.scrollY : 0)) + 16);
+        } else {
+          naturalH = Math.max(260, doc.documentElement.scrollHeight + 16);
+        }
+      }
+    } catch (e) { /* cross-origin or file:// fallback */ }
+
+    iframe.style.width = `${naturalW}px`;
+    iframe.style.height = `${naturalH}px`;
+
+    const availW = Math.max(320, stageBox.clientWidth - 20);
+    const availH = Math.max(220, stageBox.clientHeight - 20);
+    const scale = Math.min(1, availW / naturalW, availH / naturalH);
+
+    scaler.style.width = `${Math.round(naturalW * scale)}px`;
+    scaler.style.height = `${Math.round(naturalH * scale)}px`;
+    iframe.style.transform = `scale(${scale.toFixed(4)})`;
   }
 
   /* ── Mode 3: Book Reader (25 Chapters & Appendices) ── */
@@ -1093,6 +1160,12 @@
         const chId = String(e.data.id || 'chapter-01').replace(/\.html$/i, '') + '.html';
         state.currentBookFile = chId;
         switchMode('book');
+      }
+    });
+
+    global.addEventListener('resize', () => {
+      if (state.mode === 'diagrams' && state.figViewMode === 'html') {
+        fitDiagramIframe();
       }
     });
   }
