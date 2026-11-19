@@ -1827,7 +1827,7 @@
     courseId: 'INT1448',
     title: 'Kiến trúc SOA & Microservices',
     shortTitle: 'SOA & Microservices',
-    version: '1.3.0',
+    version: '1.3.1',
     author: 'TS. Đặng Ngọc Hùng',
     repoUrl: 'https://github.com/hungdn1701/ptit-microservice-textbook',
     modules: CHAPTER_MODULES,
