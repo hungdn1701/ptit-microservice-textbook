@@ -104,7 +104,7 @@
     [/^Mức (\d+)$/, 'Level $1']
   ];
 
-  const PREFIX_RE = /^([+−\-•·▶↺✓✗✔✘⚠⏳]\s+)/;
+  const PREFIX_RE = /^([+−\-•·▶↺↻✓✗✔✘⚠⏳]\s+)/;
   const RICH_TAGS = new Set(['P', 'LI', 'TD', 'TH', 'H1', 'H2', 'H3', 'H4', 'DIV', 'SPAN', 'BLOCKQUOTE', 'LABEL', 'CAPTION']);
   const INTERACTIVE_SELECTOR = 'button, input, select, textarea, svg, table, ul, ol, .sim-node, .sim-panel, .problem-card, .anatomy-card, .timeline-item, .decision-card, .act-label, .chapter-bar';
 
