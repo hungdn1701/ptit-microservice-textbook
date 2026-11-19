@@ -43,11 +43,13 @@
   --diagram-space-5: 40px;
   --diagram-space-6: 48px;
 
-  --diagram-radius-card: 14px;
+  --diagram-radius-card: 10px;
   --diagram-radius-pill: 999px;
-  --diagram-border-default: 1px;
+  --diagram-border-default: 1.5px;
   --diagram-border-emphasis: 2px;
 
+  --diagram-shadow-tactile: 2.5px 3px 0 0 var(--diagram-color-cluster-border);
+  --diagram-shadow-tactile-sm: 2px 2px 0 0 var(--diagram-color-cluster-border);
   --diagram-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
   --diagram-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
   --diagram-shadow-elevation-1: 0 10px 26px rgba(0, 0, 0, 0.45);
@@ -83,7 +85,7 @@
 .diagram-mode .svg-title {
   font-family: var(--diagram-font-mono) !important;
   font-size: var(--diagram-size-node-title) !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   color: var(--diagram-color-text) !important;
 }
 
@@ -133,8 +135,29 @@
 .diagram-mode .badge {
   border-radius: var(--diagram-radius-card) !important;
   border-width: var(--diagram-border-default) !important;
-  box-shadow: none !important;
+  box-shadow: var(--diagram-shadow-tactile) !important;
   transition: transform var(--diagram-motion-fast) var(--diagram-motion-ease);
+}
+
+.diagram-mode .d-box.d-note,
+.diagram-mode .d-box.d-box-ghost,
+.diagram-mode .d-box[style*="dashed"],
+.diagram-mode .d-box-ghost,
+.diagram-mode .badge {
+  box-shadow: none !important;
+}
+
+.diagram-mode .d-seq-actor-box {
+  border-radius: 8px !important;
+  border-width: var(--diagram-border-default) !important;
+  box-shadow: var(--diagram-shadow-tactile-sm) !important;
+  font-weight: 700 !important;
+}
+
+.diagram-mode .d-zone {
+  border-radius: 7px !important;
+  border-width: var(--diagram-border-default) !important;
+  font-weight: 700 !important;
 }
 
 .diagram-mode .d-box:not(.d-box-ghost),
@@ -240,7 +263,7 @@
 .diagram-mode .connector-layer .arrow {
   color: var(--diagram-color-line) !important;
   stroke: var(--diagram-color-line) !important;
-  stroke-width: var(--diagram-border-default) !important;
+  stroke-width: 1.75px !important;
 }
 
 .diagram-mode .d-arrow-h-dashed,
@@ -249,7 +272,7 @@
 .diagram-mode .connector-layer .arrow-dashed {
   color: var(--diagram-color-line-muted) !important;
   stroke: var(--diagram-color-line-muted) !important;
-  stroke-width: var(--diagram-border-default) !important;
+  stroke-width: 1.6px !important;
   stroke-dasharray: 6 3 !important;
 }
 
@@ -270,6 +293,7 @@
 .diagram-mode .d-seq-msg-text {
   background: var(--diagram-color-surface) !important;
   border: none !important;
+  font-weight: 600 !important;
 }
 
 .diagram-mode .d-seq-participants {
@@ -278,6 +302,7 @@
 
 .diagram-mode .d-seq-msg-line {
   background: var(--diagram-color-line) !important;
+  height: 1.75px !important;
 }
 
 .diagram-mode .d-seq-msg-line::after {
