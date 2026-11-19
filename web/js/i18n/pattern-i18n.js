@@ -41,6 +41,9 @@
     'Trước': 'Before',
     'Chuyển đổi tăng dần': 'Incremental Migration',
     'Hiện tại': 'Current',
+    'Hiện trạng KBM': 'Current KBM',
+    'KBM khi khảo sát': 'KBM Baseline',
+    'Khía cạnh': 'Aspect',
     'Mục tiêu': 'Target',
     'Tương lai': 'Future',
     'Quyết định': 'Decision',
@@ -122,6 +125,7 @@
   const translatedTextNodes = new Set();
 
   const viAttrMap = new WeakMap();
+  const enAttrValMap = new WeakMap();
   const translatedAttrEls = new Set();
 
   function norm(s) {
@@ -191,16 +195,23 @@
 
   function translateAttr(el, attr, pack) {
     const val = el.getAttribute(attr);
-    if (!val) return;
+    if (!val) return false;
+    const prevEn = enAttrValMap.get(el);
+    if (prevEn && prevEn[attr] === val) return false;
     const n = norm(val);
     const en = lookupText(n, pack);
     if (en && en !== n) {
       let saved = viAttrMap.get(el);
       if (!saved) { saved = {}; viAttrMap.set(el, saved); }
-      if (!(attr in saved)) saved[attr] = val;
+      saved[attr] = val;
       el.setAttribute(attr, en);
+      let enSaved = enAttrValMap.get(el);
+      if (!enSaved) { enSaved = {}; enAttrValMap.set(el, enSaved); }
+      enSaved[attr] = en;
       translatedAttrEls.add(el);
+      return true;
     }
+    return false;
   }
 
   function translateSubtree(root, pack) {
@@ -219,6 +230,7 @@
     translateAttr(root, 'placeholder', pack);
     translateAttr(root, 'title', pack);
     translateAttr(root, 'aria-label', pack);
+    translateAttr(root, 'data-label', pack);
 
     // Rich HTML leaf check (handles elements containing inline <code>, <strong>, <em>)
     if (enHtmlSet.get(root) !== root.innerHTML) {
@@ -250,6 +262,37 @@
     if (!raw) return;
     if (enTextValMap.get(node) === raw) return; // Already translated to EN
 
+    // Preserve formatting inside <pre> blocks: try exact text match on single-line nodes,
+    // otherwise apply prePatterns directly in-place preserving newlines and indentation.
+    if (node.parentElement && node.parentElement.closest('pre')) {
+      if (!raw.includes('\n')) {
+        const nSingle = norm(raw);
+        const enSingle = nSingle ? lookupText(nSingle, pack) : null;
+        if (enSingle != null && enSingle !== nSingle) {
+          viTextMap.set(node, raw);
+          const lead = /^\s/.test(raw) ? ' ' : '';
+          const trail = /\s$/.test(raw) ? ' ' : '';
+          const nextVal = lead + enSingle + trail;
+          node.nodeValue = nextVal;
+          enTextValMap.set(node, nextVal);
+          translatedTextNodes.add(node);
+          return;
+        }
+      }
+      const list = (pack && (pack.prePatterns || pack.patterns)) || [];
+      let out = raw;
+      for (const [re, rep] of list) {
+        out = out.replace(re, rep);
+      }
+      if (out !== raw) {
+        viTextMap.set(node, raw);
+        node.nodeValue = out;
+        enTextValMap.set(node, out);
+        translatedTextNodes.add(node);
+      }
+      return;
+    }
+
     const n = norm(raw);
     if (!n) return;
     const en = lookupText(n, pack);
@@ -264,6 +307,8 @@
     translatedTextNodes.add(node);
   }
 
+  const OBS_OPTS = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-label'] };
+
   function startObserver(pack) {
     stopObserver();
     observer = new MutationObserver((mutations) => {
@@ -275,6 +320,8 @@
           if (m.type === 'characterData') {
             translateTextNode(m.target, pack);
             changed = true;
+          } else if (m.type === 'attributes' && m.attributeName === 'data-label') {
+            if (translateAttr(m.target, 'data-label', pack)) changed = true;
           } else if (m.type === 'childList') {
             if (m.addedNodes && m.addedNodes.length) {
               for (const n of m.addedNodes) {
@@ -285,11 +332,11 @@
           }
         }
       } finally {
-        observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+        observer.observe(document.body, OBS_OPTS);
       }
       if (changed) scheduleRedraw();
     });
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    observer.observe(document.body, OBS_OPTS);
   }
 
   function stopObserver() {
@@ -325,6 +372,7 @@
       if (saved) {
         Object.entries(saved).forEach(([k, v]) => el.setAttribute(k, v));
         viAttrMap.delete(el);
+        enAttrValMap.delete(el);
       }
     });
     translatedAttrEls.clear();
