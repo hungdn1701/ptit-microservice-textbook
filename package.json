@@ -9,6 +9,7 @@
     "audit:patterns": "node scripts/audit-pattern-pages.js --verbose",
     "audit:diagrams": "node scripts/audit-diagram-geometry.js",
     "audit:i18n": "node scripts/audit-workbench-i18n.js --batch=all",
+    "audit:pattern-i18n": "node scripts/audit-pattern-i18n.js --batch=all",
     "audit:tokens": "node scripts/py.js scripts/gen-tokens.py --check",
     "audit:terms": "node scripts/py.js scripts/check-retired-forms.py",
     "audit:regressions": "node scripts/py.js scripts/audit-regressions.py --range origin/master..HEAD",
