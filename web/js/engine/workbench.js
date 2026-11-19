@@ -421,9 +421,10 @@
       tlSteps.innerHTML = lesson.steps
         .map((s, idx) => {
           const cls = idx === state.stepIdx ? 'is-current' : idx < state.stepIdx ? 'is-done' : '';
+          const tip = `${idx + 1}. ${s.short}`;
           return `
             <li class="wb-timeline__step ${cls}">
-              <button class="wb-timeline__step-btn" type="button" data-goto-step="${idx}">
+              <button class="wb-timeline__step-btn" type="button" data-goto-step="${idx}" data-tip="${esc(tip)}" title="${esc(tip)}" aria-label="${esc(tip)}">
                 <span class="wb-timeline__dot">${idx + 1}</span>
                 <span class="wb-timeline__label">${esc(s.short)}</span>
               </button>

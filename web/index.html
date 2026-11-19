@@ -20,7 +20,7 @@
   </script>
   <link rel="stylesheet" href="styles/fonts.css?v=e7c2cf96">
   <link rel="stylesheet" href="styles/base-style.css?v=9aa28647">
-  <link rel="stylesheet" href="styles/workbench.css?v=fd398345">
+  <link rel="stylesheet" href="styles/workbench.css?v=4d8e2156">
 </head>
 <body class="wb-app">
   <div class="wb-window">
@@ -152,19 +152,6 @@
           <div class="wb-stage__canvas" id="wb-stage-canvas"></div>
           <div class="wb-stage__legend" id="wb-stage-legend"></div>
         </div>
-
-        <div class="wb-timeline">
-          <div class="wb-timeline__head">
-            <span class="wb-eyebrow">TRONG BÀI NÀY</span>
-            <span class="wb-timeline__count" id="wb-timeline-count"></span>
-          </div>
-          <div class="wb-timeline__track" id="wb-timeline-track">
-            <div class="wb-timeline__rail">
-              <span class="wb-timeline__rail-fill" id="wb-timeline-fill"></span>
-            </div>
-            <ol class="wb-timeline__steps" id="wb-timeline-steps"></ol>
-          </div>
-        </div>
       </main>
 
       <!-- ==================== RIGHT RAIL (Mode 1: Patterns) ==================== -->
@@ -175,6 +162,15 @@
             <div class="wb-guide__meta-end">
               <button class="wb-speak-btn" id="wb-speak-btn" type="button" title="Đọc thuyết minh tiếng Việt">🔊 Đọc</button>
               <span class="wb-phase wb-phase--setup" id="wb-guide-phase">Thiết lập</span>
+            </div>
+          </div>
+
+          <div class="wb-timeline wb-timeline--compact">
+            <div class="wb-timeline__track" id="wb-timeline-track">
+              <div class="wb-timeline__rail">
+                <span class="wb-timeline__rail-fill" id="wb-timeline-fill"></span>
+              </div>
+              <ol class="wb-timeline__steps" id="wb-timeline-steps"></ol>
             </div>
           </div>
 
@@ -288,6 +284,6 @@
   <script src="js/engine/iso-stage.js?v=965b5d55"></script>
   <script src="js/data/soa-lessons-1.js?v=01a780cb"></script>
   <script src="js/data/soa-lessons-2.js?v=c9d6272e"></script>
-  <script src="js/engine/workbench.js?v=f6f958a6"></script>
+  <script src="js/engine/workbench.js?v=b712705c"></script>
 </body>
 </html>
