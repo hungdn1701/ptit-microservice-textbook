@@ -96,7 +96,97 @@
     window.parent.postMessage({ type: 'GET_THEME' }, '*');
   }
 
-  /* ── 5. Chapter bridge ── */
+  /* ── 5. Language sync (VI / EN) với companion portal & standalone ── */
+  function getPageSlug() {
+    const m = window.location.pathname.match(/([^/\\]+)\.html$/i);
+    return m ? m[1] : '';
+  }
+
+  let _langLoaderPromise = null;
+  function ensurePatternI18n() {
+    if (window.PatternI18n) return Promise.resolve(window.PatternI18n);
+    if (_langLoaderPromise) return _langLoaderPromise;
+    _langLoaderPromise = new Promise((resolve) => {
+      const s = document.createElement('script');
+      s.src = '../../js/i18n/pattern-i18n.js';
+      s.onload = () => resolve(window.PatternI18n || null);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+    return _langLoaderPromise;
+  }
+
+  let _currentLang = 'vi';
+  let _standaloneLangBtn = null;
+
+  function updateStandaloneLangBtn() {
+    if (!_standaloneLangBtn) return;
+    _standaloneLangBtn.textContent = _currentLang === 'en' ? 'EN · VI' : 'VI · EN';
+    _standaloneLangBtn.title = _currentLang === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang tiếng Anh (English)';
+  }
+
+  function applyLang(lang) {
+    const next = lang === 'en' ? 'en' : 'vi';
+    _currentLang = next;
+    updateStandaloneLangBtn();
+    if (next === 'vi') {
+      if (window.PatternI18n) window.PatternI18n.apply('vi', getPageSlug());
+      return;
+    }
+    ensurePatternI18n().then((i18n) => {
+      if (i18n && _currentLang === 'en') {
+        i18n.apply('en', getPageSlug());
+      }
+    });
+  }
+
+  function initLangSync() {
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'SET_LANG') {
+        applyLang(e.data.lang);
+      }
+    });
+
+    // Determine initial language: URL ?lang=en|vi > localStorage 'wb:lang' > 'vi'
+    let initial = 'vi';
+    try {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      if (urlLang === 'en' || urlLang === 'vi') {
+        initial = urlLang;
+      } else if (window.localStorage.getItem('wb:lang') === 'en') {
+        initial = 'en';
+      }
+    } catch (err) { /* ignore */ }
+
+    if (window.parent === window) {
+      // Standalone mode: add a lightweight floating VI / EN switcher at top-right
+      if (!document.querySelector('.lang-toggle-btn')) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'lang-toggle-btn';
+        btn.addEventListener('click', () => {
+          const next = _currentLang === 'en' ? 'vi' : 'en';
+          try { window.localStorage.setItem('wb:lang', next); } catch (e) { /* ignore */ }
+          applyLang(next);
+        });
+        document.body.appendChild(btn);
+        _standaloneLangBtn = btn;
+        updateStandaloneLangBtn();
+      }
+      if (initial === 'en') {
+        // Defer slightly so page-specific Act 3 inline script runs its initial render() first
+        window.addEventListener('load', () => applyLang('en'), { once: true });
+      }
+      return;
+    }
+
+    if (initial === 'en') {
+      window.addEventListener('load', () => applyLang('en'), { once: true });
+    }
+    window.parent.postMessage({ type: 'GET_LANG' }, '*');
+  }
+
+  /* ── 6. Chapter bridge ── */
   // Cho phép chapter-bar CTA gọi: onclick="return openChapter('chapter-05')"
   // thay vì lặp lại window.parent.postMessage({...}) trong từng file.
   function openChapter(id) {
@@ -117,6 +207,7 @@
   initScrollProgress();
   initCollapsible();
   initThemeSync();
+  initLangSync();
   // Dòng thời gian Act 4 hiện sẵn. Trước 2026-09-26 nó ẩn (opacity 0) tới khi bấm "Play Timeline"
   // → khoảng trống ~500px giữa trang, và bản in/ảnh chụp không có nội dung. Nút Play vẫn phát lại hiệu ứng.
   document.querySelectorAll('.timeline-item').forEach(el => el.classList.add('visible'));

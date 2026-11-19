@@ -353,6 +353,25 @@
       themeBtn.title = state.theme === 'dark' ? t('themeToLight') : t('themeToDark');
     }
 
+    // Broadcast language to open iframes (4-Act Pattern Story drawer, Author profile, HTML Diagrams)
+    document.querySelectorAll('iframe').forEach((frame) => {
+      try {
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
+        }
+      } catch (e) { /* ignore */ }
+    });
+
+    // Update open 4-Act drawer title if visible
+    const drawer = document.getElementById('wb-drawer');
+    const drawerTitle = document.getElementById('wb-drawer-title');
+    if (drawer && !drawer.hidden && drawerTitle) {
+      const lesson = getLesson(state.lessonId);
+      if (lesson) {
+        drawerTitle.textContent = t('drawerTitle', { title: lesson.title, bookRef: lesson.bookRef });
+      }
+    }
+
     if (rerender) {
       if (state.mode === 'patterns') {
         renderPatternsSidebar();
@@ -444,6 +463,7 @@
           authorFrame.addEventListener('load', () => {
             try {
               authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+              authorFrame.contentWindow.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
             } catch (e) { /* ignore */ }
             syncFrameLayout(authorFrame);
             setTimeout(() => syncFrameLayout(authorFrame), 180);
@@ -454,6 +474,7 @@
         } else {
           try {
             authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+            authorFrame.contentWindow.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
           } catch (e) { /* ignore */ }
           syncFrameLayout(authorFrame);
         }
@@ -829,6 +850,18 @@
     const frame = document.getElementById('wb-drawer-frame');
     const title = document.getElementById('wb-drawer-title');
     if (!drawer || !frame) return;
+
+    if (!frame.dataset.langBound) {
+      frame.dataset.langBound = '1';
+      frame.addEventListener('load', () => {
+        try {
+          if (frame.contentWindow) {
+            frame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+            frame.contentWindow.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
+          }
+        } catch (e) { /* ignore */ }
+      });
+    }
 
     if (title) title.textContent = t('drawerTitle', { title: lesson.title, bookRef: lesson.bookRef });
     frame.setAttribute('src', lesson.patternFile);
@@ -1511,17 +1544,41 @@
       }
     });
 
-    // Listen to postMessage from 4-Act Pattern Story pages (GET_THEME, OPEN_FILE)
+    // Listen to postMessage from 4-Act Pattern Story pages & Author profile (GET_THEME, GET_LANG, OPEN_FILE)
     global.addEventListener('message', (e) => {
       if (!e.data) return;
       if (e.data.type === 'GET_THEME') {
         const isLight = state.theme === 'light';
         e.source?.postMessage({ type: 'SET_THEME', isLight, theme: state.theme }, '*');
-      } else if (e.data.type === 'OPEN_FILE' && e.data.itemType === 'chapter') {
-        closeDeepDiveDrawer();
-        const chId = String(e.data.id || 'chapter-01').replace(/\.html$/i, '') + '.html';
-        state.currentBookFile = chId;
-        switchMode('book');
+      } else if (e.data.type === 'GET_LANG') {
+        e.source?.postMessage({ type: 'SET_LANG', lang: state.lang }, '*');
+      } else if (e.data.type === 'SET_THEME_FROM_TERMINAL') {
+        applyTheme(e.data.theme === 'light' ? 'light' : 'dark');
+      } else if (e.data.type === 'OPEN_FILE') {
+        if (e.data.itemType === 'chapter') {
+          closeDeepDiveDrawer();
+          const raw = String(e.data.id || 'chapter-01').replace(/\.html$/i, '');
+          const chId = (/^\d+$/.test(raw) ? 'chapter-' + raw.padStart(2, '0') : raw) + '.html';
+          state.currentBookFile = chId;
+          switchMode('book');
+        } else if (e.data.itemType === 'pattern') {
+          const q = String(e.data.id || '').toLowerCase();
+          const hit = getCourse().lessons.find((l) => l.id.includes(q) || l.title.toLowerCase().includes(q));
+          if (hit) {
+            state.lessonId = hit.id;
+            state.stepIdx = 0;
+            switchMode('patterns');
+          }
+        } else if (e.data.itemType === 'diagram') {
+          const q = String(e.data.id || '').toLowerCase();
+          const hit = state.allDiagrams.find(
+            (f) => f.id.toLowerCase().includes(q) || (f.titleVi || '').toLowerCase().includes(q) || (f.titleEn || '').toLowerCase().includes(q)
+          );
+          if (hit) {
+            state.currentDiagramId = hit.id;
+            switchMode('diagrams');
+          }
+        }
       }
     });
 

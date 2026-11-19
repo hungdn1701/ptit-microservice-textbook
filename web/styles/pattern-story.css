@@ -209,6 +209,36 @@ html { scroll-behavior: smooth; }
   color: var(--primary);
 }
 
+/* Standalone VI / EN switcher (injected by pattern-story.js only when window.parent === window) */
+.lang-toggle-btn {
+  position: fixed;
+  top: 18px;
+  right: 24px;
+  z-index: 1002;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.lang-toggle-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-dim);
+  color: var(--primary-fg);
+}
+@media print {
+  .lang-toggle-btn { display: none; }
+}
+
 /* Mobile Fallback: Horizontal floating pill */
 @media (max-width: 768px) {
   .act-nav {

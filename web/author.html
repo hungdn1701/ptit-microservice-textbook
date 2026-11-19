@@ -322,13 +322,13 @@
             <div class="terminal-title">hungdn@ptit: ~</div>
           </div>
           <div class="terminal-body" id="terminal-body">
-            <div class="terminal-output" id="terminal-output">Welcome to PTIT Microservices Terminal v1.1.2
+            <div class="terminal-output" id="terminal-output">Welcome to PTIT Microservices Terminal v1.3.0
 Type <span class="cmd-highlight">help</span> to see a list of available commands.
 
 </div>
             <div class="terminal-input-line">
               <span class="terminal-prompt">hungdn@ptit:~$</span>
-              <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+              <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
             </div>
           </div>
         </div>
@@ -361,19 +361,69 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
     }
     applyTheme(savedTheme);
 
-    window.addEventListener('message', (e) => {
-      if (e.data.type === 'SET_THEME') {
-        let theme = e.data.theme || (e.data.isLight ? 'light' : 'dark');
-        applyTheme(theme);
-      }
-    });
-    window.parent.postMessage({ type: 'GET_THEME' }, '*');
-
-    // Terminal Simulator
+    // Terminal DOM refs (declared before applyLang to avoid TDZ)
     const terminalBody = document.getElementById('terminal-body');
     const terminalOutput = document.getElementById('terminal-output');
     const terminalInput = document.getElementById('terminal-input');
-    
+
+    let currentLang = 'vi';
+    const AUTHOR_I18N = {
+      vi: {
+        pageTitle: 'Tác giả — Kiến trúc SOA & Microservices',
+        srTitle: 'Tác giả: Đặng Ngọc Hùng',
+        about: 'Tác giả cuốn sách "Kiến trúc SOA & Microservices".\n\nVới nhiều năm kinh nghiệm thiết kế các hệ thống phân tán, cloud-native và các giải pháp hướng dịch vụ. Tập trung nghiên cứu ứng dụng Domain-Driven Design và Observability vào thực tiễn, nhằm mang lại các bài giảng trực quan nhất cho cộng đồng kỹ sư.',
+        books: '[PDF] Kiến trúc SOA & Microservices — Từ lý thuyết đến thực tiễn với case study KBM.',
+        welcome: 'Welcome to PTIT Microservices Terminal v1.3.0\nGõ <span class="cmd-highlight">help</span> để xem danh sách lệnh hỗ trợ.\n\n',
+        whoami: 'Name:        Đặng Ngọc Hùng (hungdn1701)\nRole:        Giảng viên & Nghiên cứu viên\nAffiliation: Học viện Công nghệ Bưu chính Viễn thông (PTIT)\nInterests:   SOA, Microservices, DDD, System Architecture, Observability\n'
+      },
+      en: {
+        pageTitle: 'Author — SOA & Microservices Architecture',
+        srTitle: 'Author: Hung N. Dang',
+        about: 'Author of "SOA & Microservices Architecture — From Theory to Practice".\n\nLecturer & Researcher at PTIT with years of experience designing distributed, cloud-native, and service-oriented systems. Focused on applying Domain-Driven Design and Observability in practice through interactive engineering education.',
+        books: '[PDF] SOA & Microservices Architecture — From Theory to Practice with the KBM Case Study.',
+        welcome: 'Welcome to PTIT Microservices Terminal v1.3.0\nType <span class="cmd-highlight">help</span> to see a list of available commands.\n\n',
+        whoami: 'Name:        Hung N. Dang (Đặng Ngọc Hùng · hungdn1701)\nRole:        Lecturer & Researcher\nAffiliation: Posts and Telecommunications Institute of Technology (PTIT)\nInterests:   SOA, Microservices, DDD, System Architecture, Observability\n'
+      }
+    };
+
+    const VIRTUAL_FILES = {
+      'about.txt': AUTHOR_I18N.vi.about,
+      'contact.txt': `Email: hungdn@ptit.edu.vn\nGitHub: https://github.com/hungdn1701\nPortfolio: https://hungdn1701.github.io`,
+      'books.pdf': AUTHOR_I18N.vi.books
+    };
+
+    function applyLang(lang) {
+      currentLang = lang === 'en' ? 'en' : 'vi';
+      const pack = AUTHOR_I18N[currentLang];
+      document.documentElement.lang = currentLang;
+      document.title = pack.pageTitle;
+      const sr = document.querySelector('h1.sr-only');
+      if (sr) sr.textContent = pack.srTitle;
+      VIRTUAL_FILES['about.txt'] = pack.about;
+      VIRTUAL_FILES['books.pdf'] = pack.books;
+      if (terminalOutput && !terminalOutput.dataset.userTyped) {
+        terminalOutput.innerHTML = pack.welcome;
+      }
+    }
+
+    try {
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      const savedLang = localStorage.getItem('wb:lang');
+      applyLang(urlLang === 'en' || urlLang === 'vi' ? urlLang : (savedLang === 'en' ? 'en' : 'vi'));
+    } catch (e) { /* ignore */ }
+
+    window.addEventListener('message', (e) => {
+      if (!e.data) return;
+      if (e.data.type === 'SET_THEME') {
+        let theme = e.data.theme || (e.data.isLight ? 'light' : 'dark');
+        applyTheme(theme);
+      } else if (e.data.type === 'SET_LANG') {
+        applyLang(e.data.lang);
+      }
+    });
+    window.parent.postMessage({ type: 'GET_THEME' }, '*');
+    window.parent.postMessage({ type: 'GET_LANG' }, '*');
+
     // Focus input helper (avoid triggering involuntary virtual keyboard on touch/mobile)
     function focusTerminal(force = false) {
       if (terminalInput && (force || window.innerWidth > 980)) {
@@ -400,12 +450,7 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
       focusTerminal();
     }, 100);
     
-    const VIRTUAL_FILES = {
-      'about.txt': `Tác giả cuốn sách "Kiến trúc SOA & Microservices".\n\nVới nhiều năm kinh nghiệm thiết kế các hệ thống phân tán, cloud-native và các giải pháp hướng dịch vụ. Anh tập trung nghiên cứu ứng dụng Domain-Driven Design và Observability vào thực tiễn, nhằm mang lại các bài giảng trực quan nhất cho cộng đồng kỹ sư.`,
-      'contact.txt': `Email: hungdn@ptit.edu.vn\nGitHub: https://github.com/hungdn1701\nPortfolio: https://hungdn1701.github.io`,
-      'books.pdf': `[PDF] Kiến trúc SOA & Microservices - Từ lý thuyết đến thực tiễn với case study KBM.`
-    };
-    
+    // Terminal Simulator — VIRTUAL_FILES initialized above in applyLang()
     terminalInput.addEventListener('keydown', (e) => {
       // Prevent keydown events from bubbling up to parent window (avoids shortcut interference)
       e.stopPropagation();
@@ -417,6 +462,7 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
         const arg = parts[1];
         
         // Append input line to output
+        terminalOutput.dataset.userTyped = '1';
         terminalOutput.innerHTML += `hungdn@ptit:~$ ${fullCmd}\n`;
         
         if (fullCmd) {
@@ -452,10 +498,7 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
           break;
           
         case 'whoami':
-          output = `Name:       Đặng Ngọc Hùng (hungdn1701)\n` +
-                   `Role:       Lecturer & Researcher\n` +
-                   `Affiliation:PTIT (Post and Telecommunications Institute of Technology)\n` +
-                   `Interests:  SOA, Microservices, DDD, System Architecture, Observability\n`;
+          output = AUTHOR_I18N[currentLang].whoami;
           break;
           
         case 'about':
