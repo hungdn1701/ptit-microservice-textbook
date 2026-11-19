@@ -437,12 +437,28 @@ body.wb-app::after {
   grid-template-columns: 280px minmax(0, 1fr);
 }
 
+.wb-body[data-mode="book"].is-book-focus {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.wb-body[data-mode="book"].is-book-focus .wb-sidebar {
+  display: none;
+}
+
 .wb-body[data-mode="author"] {
   grid-template-columns: minmax(0, 1fr);
 }
 
 .wb-body[data-mode="author"] .wb-sidebar {
   display: none !important;
+}
+
+/* Mobile-only Drawer Controls (Hidden on Desktop) */
+.wb-mobile-menu-btn,
+.wb-sidebar-backdrop,
+.wb-sidebar__mobile-bar,
+.wb-sidebar__mobile-links {
+  display: none;
 }
 
 /* ── Left Sidebar (Course Tree & Progress) ── */
@@ -1709,13 +1725,82 @@ body.wb-app::after {
   background: var(--wb-sheet);
 }
 
-/* Diagram Library & Book Reader Embedded Frame Views */
+/* Diagram Library, Book Reader & Author Embedded Frame Views */
+.wb-sheet--book {
+  padding: 0;
+  margin: 10px 14px 12px 2px;
+  overflow: hidden;
+}
+
+.wb-body[data-mode="book"].is-book-focus .wb-sheet--book {
+  margin-left: 14px;
+}
+
+.wb-sheet--author {
+  padding: 8px;
+  margin: 10px 14px 12px;
+  grid-column: 1 / -1;
+  overflow: hidden;
+}
+
+.wb-reader-bar {
+  min-height: 44px;
+  border-bottom: 1.2px solid var(--wb-line-strong);
+  background: var(--wb-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  flex-shrink: 0;
+}
+
+.wb-reader-bar__title {
+  font-family: var(--wb-font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wb-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.wb-reader-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.wb-reader-bar a.wb-tool {
+  text-decoration: none;
+  color: var(--wb-ink);
+}
+
+.wb-reader-bar .wb-tool:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.wb-reader-foot {
+  display: none;
+}
+
 .wb-frame-view {
   width: 100%;
   height: 100%;
+  flex: 1;
+  min-height: 0;
   border: 0;
   border-radius: 10px;
   background: var(--wb-surface);
+  display: block;
+}
+
+.wb-frame-view--book {
+  border-radius: 0;
+  background: var(--wb-paper);
 }
 
 .wb-fig-stage {
@@ -1755,46 +1840,454 @@ body.wb-app::after {
   transform-origin: 0 0;
 }
 
-/* Responsive Breakpoints */
+/* ── Responsive Breakpoints ── */
 @media (max-width: 1240px) {
   .wb-body {
-    grid-template-columns: 260px minmax(0, 1fr) 340px;
+    grid-template-columns: 252px minmax(0, 1fr) 330px;
+  }
+  .wb-brand__ver {
+    display: none;
   }
   .wb-search-btn {
-    width: 200px;
+    width: clamp(135px, 14vw, 195px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .wb-topbar {
+    gap: 7px;
+    padding: 0 10px;
+  }
+  .wb-nav__count {
+    display: none;
+  }
+  .wb-nav__item {
+    padding: 0 9px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 980px) {
   html, body.wb-app {
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
   }
   .wb-window {
     height: auto;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
     display: block;
     overflow: visible;
   }
+
+  /* 2-Row Sticky Mobile/Tablet Topbar */
   .wb-topbar {
     position: sticky;
     top: 0;
+    z-index: 35;
     background: var(--wb-paper);
-    height: 54px;
-    padding: 0 12px;
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 0;
+    column-gap: 6px;
+    padding: 7px 10px 0;
+    box-shadow: 0 2px 12px -8px rgba(40, 30, 16, 0.35);
   }
+  .wb-mobile-menu-btn {
+    display: inline-grid;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+  .wb-mobile-menu-btn[hidden] {
+    display: none !important;
+  }
+  .wb-brand {
+    gap: 7px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  .wb-brand__logo {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+  }
+  .wb-brand__name {
+    font-size: 14.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .wb-brand__ver {
+    display: none;
+  }
+  .wb-search-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .wb-search-btn__hint,
+  .wb-search-btn .wb-kbd {
+    display: none;
+  }
+  .wb-top-actions {
+    gap: 5px;
+  }
+  .wb-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .wb-lang-btn {
+    height: 32px;
+    padding: 0 7px;
+    font-size: 10.5px;
+  }
+
+  /* Row 2: Mode Navigation Strip */
+  .wb-nav {
+    order: 3;
+    flex: 0 0 calc(100% + 20px);
+    width: calc(100% + 20px);
+    margin: 7px -10px 0;
+    padding: 5px 8px;
+    gap: 5px;
+    border-top: 1px solid var(--wb-line);
+    background: var(--wb-card-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .wb-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .wb-nav__item {
+    flex: 1 0 auto;
+    justify-content: center;
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    gap: 5px;
+  }
+  .wb-nav__count {
+    display: none;
+  }
+
+  /* Body & Off-Canvas Slide-Over Sidebar Drawer */
   .wb-body {
     display: flex;
     flex-direction: column;
+    min-height: calc(100dvh - 88px);
+  }
+  .wb-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(25, 20, 14, 0.45);
+    backdrop-filter: blur(2px);
+  }
+  .wb-sidebar-backdrop[hidden] {
+    display: none !important;
   }
   .wb-sidebar {
-    max-height: 260px;
-    border-bottom: 1.3px solid var(--wb-line-strong);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 86vw);
+    max-height: none;
+    z-index: 50;
+    background: var(--wb-paper);
+    border-right: 1.5px solid var(--wb-ink);
+    box-shadow: 4px 0 28px rgba(0, 0, 0, 0.28);
+    padding: 12px 12px 14px;
+    transform: translateX(-105%);
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
+  .wb-sidebar.is-drawer-open {
+    transform: translateX(0);
+  }
+  .wb-sidebar__mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--wb-line-strong);
+    flex-shrink: 0;
+  }
+  .wb-sidebar__close {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .wb-sidebar__mobile-links {
+    display: flex;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid var(--wb-line-strong);
+    flex-shrink: 0;
+  }
+  .wb-sidebar__mobile-links a {
+    flex: 1;
+    text-align: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--wb-ink-2);
+    text-decoration: none;
+    border: 1.2px solid var(--wb-line-strong);
+    background: var(--wb-surface);
+    border-radius: 8px;
+    padding: 6px 8px;
+  }
+
+  /* Patterns & Diagrams Sheets on Mobile */
   .wb-sheet {
-    margin: 10px;
+    margin: 8px;
+    padding: 0 10px 12px;
+  }
+  .wb-lesson-head {
+    padding: 10px 4px 0;
+  }
+  .wb-lesson-head__row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .wb-tags {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    width: 100%;
+    max-width: 100%;
+    gap: 5px;
+  }
+  .wb-title {
+    font-size: 18px;
+    white-space: normal;
+  }
+  .wb-subtitle {
+    white-space: normal;
   }
   .wb-stage {
-    height: 430px;
+    height: 390px;
     flex: none;
+  }
+  .wb-fig-stage {
+    min-height: 340px;
+    height: 56vh;
+    flex: none;
+  }
+  .wb-timeline__steps {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .wb-rail {
+    padding: 0 8px 18px;
+    overflow: visible;
+  }
+  .wb-guide__content {
+    overflow: visible;
+  }
+
+  /* Seamless Natural-Height Book Reader on Mobile (Zero Boxed-Height Iframe) */
+  .wb-sheet--book {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    background: var(--wb-paper);
+  }
+  .wb-reader-bar {
+    position: sticky;
+    top: var(--wb-topbar-h, 88px);
+    z-index: 25;
+    flex-wrap: wrap;
+    padding: 7px 10px;
+    gap: 6px;
+    box-shadow: 0 4px 12px -10px rgba(30, 22, 12, 0.35);
+  }
+  .wb-reader-bar__title {
+    font-size: 12.2px;
+    order: 3;
+    flex: 1 0 100%;
+  }
+  .wb-reader-bar__actions {
+    margin-left: auto;
+  }
+  .wb-frame-view--book {
+    width: 100%;
+    height: auto;
+    min-height: calc(100dvh - 150px);
+    flex: none;
+    border-radius: 0;
+  }
+  .wb-reader-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px 22px;
+    border-top: 1.2px solid var(--wb-line-strong);
+    background: var(--wb-surface);
+  }
+
+  /* Seamless Natural-Height Author Page on Mobile */
+  .wb-sheet--author {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    background: transparent;
+  }
+  .wb-frame-view--author {
+    width: 100%;
+    height: auto;
+    min-height: calc(100dvh - 96px);
+    flex: none;
+    border-radius: 0;
+    background: transparent;
+  }
+}
+
+@media (max-width: 640px) {
+  .wb-topbar {
+    column-gap: 4px;
+    padding: 6px 8px 0;
+  }
+  .wb-mobile-menu-btn,
+  .wb-search-btn,
+  .wb-icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+  .wb-brand {
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .wb-brand__logo {
+    width: 24px;
+    height: 24px;
+  }
+  .wb-brand__name {
+    font-size: 12.2px;
+    letter-spacing: -0.04em;
+  }
+  .wb-search-btn {
+    margin-left: 0;
+  }
+  .wb-top-actions {
+    gap: 4px;
+  }
+  .wb-top-actions a.wb-icon-btn {
+    display: none;
+  }
+  .wb-lang-btn {
+    height: 30px;
+    padding: 0 5px;
+    font-size: 10px;
+    gap: 2px;
+    border-radius: 8px;
+  }
+  .wb-lang-opt {
+    padding: 1.5px 3px;
+  }
+  .wb-nav {
+    flex: 0 0 calc(100% + 16px);
+    width: calc(100% + 16px);
+    margin: 6px -8px 0;
+    padding: 4px 6px;
+  }
+  .wb-nav__item svg {
+    display: none;
+  }
+  .wb-nav__item {
+    font-size: 11.8px;
+    padding: 0 8px;
+    height: 30px;
+  }
+
+  /* Clean vertical flow for Stage HUD + Canvas + Legend + Tools on Phones */
+  .wb-stage {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .wb-stage__hud {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 7px 7px 0;
+    pointer-events: auto;
+  }
+  .wb-chip {
+    min-width: 0;
+    padding: 4px 7px;
+  }
+  .wb-chip__label {
+    font-size: 8px;
+  }
+  .wb-chip__value {
+    font-size: 11px;
+  }
+  .wb-stage__canvas {
+    position: relative;
+    inset: auto;
+    height: 255px;
+    width: 100%;
+  }
+  .wb-stage__legend {
+    position: static;
+    flex-wrap: wrap;
+    padding: 2px 8px 4px;
+    gap: 6px 10px;
+    font-size: 10px;
+  }
+  .wb-stage__tools {
+    position: static;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 4px 7px 7px;
+  }
+  .wb-tool {
+    height: 27px;
+    padding: 0 8px;
+    font-size: 10.8px;
+  }
+
+  /* Single-row slim sticky Book Reader toolbar on phones */
+  .wb-reader-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 6px 8px;
+    gap: 5px;
+  }
+  .wb-reader-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .wb-reader-bar__title {
+    display: none;
+  }
+  .wb-reader-bar__actions {
+    gap: 4px;
+  }
+  .wb-reader-bar .wb-tool {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+    white-space: nowrap;
   }
 }

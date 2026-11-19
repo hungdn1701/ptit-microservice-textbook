@@ -74,6 +74,9 @@
     openFigChs: new Set(['01', '02', '04', '06']),
     // Book tab state
     currentBookFile: 'chapter-01.html',
+    bookFocus: false,
+    // Mobile drawer state
+    drawerOpen: false,
     // Search modal state
     searchOpen: false,
     searchResults: [],
@@ -81,6 +84,72 @@
   };
 
   let stage = null;
+  const frameObservers = new WeakMap();
+
+  function isMobileViewport() {
+    return global.innerWidth <= 980;
+  }
+
+  function syncTopbarHeight() {
+    const topbar = document.querySelector('.wb-topbar');
+    if (topbar) {
+      document.documentElement.style.setProperty('--wb-topbar-h', `${topbar.offsetHeight}px`);
+    }
+  }
+
+  function setMobileDrawer(open) {
+    state.drawerOpen = Boolean(open && isMobileViewport() && state.mode !== 'author');
+    const sidebar = document.getElementById('wb-sidebar');
+    const backdrop = document.getElementById('wb-sidebar-backdrop');
+    if (sidebar) sidebar.classList.toggle('is-drawer-open', state.drawerOpen);
+    if (backdrop) backdrop.hidden = !state.drawerOpen;
+    document.body.style.overflow = state.drawerOpen ? 'hidden' : '';
+  }
+
+  function syncFrameLayout(frame) {
+    if (!frame) return;
+    const prevObs = frameObservers.get(frame);
+    if (prevObs) {
+      prevObs.disconnect();
+      frameObservers.delete(frame);
+    }
+
+    if (!isMobileViewport()) {
+      frame.style.height = '';
+      try {
+        const doc = frame.contentDocument;
+        if (doc && doc.documentElement) {
+          doc.documentElement.style.overflowY = '';
+        }
+      } catch (e) { /* cross-origin / file:// */ }
+      return;
+    }
+
+    const measure = () => {
+      try {
+        const doc = frame.contentDocument;
+        if (!doc || !doc.body) return;
+        const mainEl = doc.querySelector('main.book, .author-card');
+        if (!mainEl && doc.body.children.length === 0) return;
+        doc.documentElement.style.overflowY = 'hidden';
+        const contentH = mainEl
+          ? Math.ceil(mainEl.getBoundingClientRect().height + 56)
+          : Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+        const h = Math.max(520, contentH);
+        frame.style.height = `${h}px`;
+      } catch (e) { /* cross-origin / file:// fallback uses CSS min-height */ }
+    };
+
+    measure();
+    try {
+      const doc = frame.contentDocument;
+      if (doc && doc.body && typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => measure());
+        ro.observe(doc.body);
+        frameObservers.set(frame, ro);
+      }
+    } catch (e) { /* ignore */ }
+  }
 
   function getCourse() {
     return COURSES[state.lang] || COURSES.vi;
@@ -227,6 +296,12 @@
     setAttr('wb-search-btn', 'aria-label', t('searchAria'));
     setAttr('wb-feedback-link', 'title', t('feedbackTitle'));
     setAttr('wb-github-link', 'title', t('githubTitle'));
+    setAttr('wb-mobile-menu-btn', 'aria-label', t('navMenuLabel'));
+    setAttr('wb-mobile-menu-btn', 'title', t('navMenuLabel'));
+    setAttr('wb-sidebar-close', 'aria-label', t('navMenuClose'));
+    setAttr('wb-book-toc-btn', 'title', t('bookTocTitle'));
+    setAttr('wb-book-open-full', 'title', t('bookOpenFullTitle'));
+    setAttr('wb-book-pdf', 'title', t('bookPdfTitle'));
     setAttr('wb-search-figs', 'placeholder', t('sidebarDiagramsPlaceholder'));
     setAttr('wb-search-book', 'placeholder', t('sidebarBookPlaceholder'));
     setAttr('wb-sx-input', 'placeholder', t('searchPlaceholder'));
@@ -254,6 +329,7 @@
         renderCurrentDiagram();
       } else if (state.mode === 'book') {
         renderBookSidebar(document.getElementById('wb-search-book')?.value || '');
+        updateBookToolbar();
       }
       if (state.searchOpen) {
         runSearch(document.getElementById('wb-sx-input')?.value || '');
@@ -295,12 +371,16 @@
     if (!['patterns', 'diagrams', 'book', 'author'].includes(mode)) mode = 'patterns';
     state.mode = mode;
     stopSpeech();
+    setMobileDrawer(false);
 
     const body = document.getElementById('wb-body');
     if (body) body.dataset.mode = mode;
 
     const sidebar = document.getElementById('wb-sidebar');
     if (sidebar) sidebar.hidden = mode === 'author';
+
+    const menuBtn = document.getElementById('wb-mobile-menu-btn');
+    if (menuBtn) menuBtn.hidden = mode === 'author';
 
     document.querySelectorAll('.wb-nav__item[data-mode]').forEach((btn) => {
       btn.classList.toggle('is-active', btn.dataset.mode === mode);
@@ -310,6 +390,8 @@
     document.querySelectorAll('[data-view-mode]').forEach((el) => {
       el.hidden = el.dataset.viewMode !== mode;
     });
+
+    syncTopbarHeight();
 
     if (mode === 'patterns') {
       renderPatternsSidebar();
@@ -324,17 +406,23 @@
     } else if (mode === 'author') {
       const authorFrame = document.getElementById('wb-author-frame');
       if (authorFrame) {
-        if (!authorFrame.getAttribute('src') || authorFrame.getAttribute('src') === 'about:blank') {
+        if (!authorFrame.dataset.bound) {
+          authorFrame.dataset.bound = '1';
           authorFrame.addEventListener('load', () => {
             try {
               authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
             } catch (e) { /* ignore */ }
+            syncFrameLayout(authorFrame);
+            setTimeout(() => syncFrameLayout(authorFrame), 180);
           });
+        }
+        if (!authorFrame.getAttribute('src') || authorFrame.getAttribute('src') === 'about:blank') {
           authorFrame.setAttribute('src', 'author.html');
         } else {
           try {
             authorFrame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
           } catch (e) { /* ignore */ }
+          syncFrameLayout(authorFrame);
         }
       }
     }
@@ -907,13 +995,65 @@
       </ul>`;
   }
 
+  function updateBookToolbar() {
+    const sections = getCourse().bookSections || [];
+    const idx = Math.max(0, sections.findIndex((s) => s.file === state.currentBookFile));
+    const cur = sections[idx];
+    const prevSec = idx > 0 ? sections[idx - 1] : null;
+    const nextSec = idx + 1 < sections.length ? sections[idx + 1] : null;
+
+    const titleEl = document.getElementById('wb-book-title');
+    if (titleEl && cur) titleEl.textContent = cur.title;
+
+    const fullLink = document.getElementById('wb-book-open-full');
+    if (fullLink) fullLink.setAttribute('href', `../release/${state.currentBookFile}`);
+
+    ['wb-book-prev', 'wb-book-foot-prev'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = !prevSec;
+    });
+    ['wb-book-next', 'wb-book-foot-next'].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = !nextSec;
+    });
+    const footNextLabel = document.getElementById('wb-book-foot-next-label');
+    if (footNextLabel) {
+      footNextLabel.textContent = nextSec ? nextSec.title : t('bookNext');
+    }
+  }
+
+  function stepBookSection(delta) {
+    const sections = getCourse().bookSections || [];
+    const idx = sections.findIndex((s) => s.file === state.currentBookFile);
+    const target = sections[idx + delta];
+    if (target) loadBookSection(target.file);
+  }
+
   function loadBookSection(fileName) {
     state.currentBookFile = fileName;
+    setMobileDrawer(false);
     renderBookSidebar();
+    updateBookToolbar();
     const frame = document.getElementById('wb-book-frame');
     if (!frame) return;
-    // Try release/<file> first (public repo & standard build), fallback to ../output/<file>
+    if (!frame.dataset.bound) {
+      frame.dataset.bound = '1';
+      frame.addEventListener('load', () => {
+        try {
+          frame.contentWindow.postMessage({ type: 'SET_THEME', isLight: state.theme === 'light', theme: state.theme }, '*');
+        } catch (e) { /* ignore */ }
+        syncFrameLayout(frame);
+        setTimeout(() => syncFrameLayout(frame), 220);
+      });
+    }
     frame.setAttribute('src', `../release/${fileName}`);
+    if (isMobileViewport()) {
+      frame.style.height = '';
+      setTimeout(() => syncFrameLayout(frame), 180);
+      setTimeout(() => syncFrameLayout(frame), 550);
+      setTimeout(() => syncFrameLayout(frame), 1100);
+      try { global.scrollTo({ top: 0, behavior: 'instant' }); } catch (e) { global.scrollTo(0, 0); }
+    }
   }
 
   /* ── Command Palette Search (Ctrl+K, Bilingual VI + EN) ── */
@@ -1048,6 +1188,43 @@
 
   /* ── Event Listeners & Initialization ── */
   function bindEvents() {
+    // Mobile Sidebar Drawer toggle
+    const mobileMenuBtn = document.getElementById('wb-mobile-menu-btn');
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', () => setMobileDrawer(!state.drawerOpen));
+    }
+    const sidebarClose = document.getElementById('wb-sidebar-close');
+    if (sidebarClose) {
+      sidebarClose.addEventListener('click', () => setMobileDrawer(false));
+    }
+    const sidebarBackdrop = document.getElementById('wb-sidebar-backdrop');
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', () => setMobileDrawer(false));
+    }
+
+    // Book Reader Toolbar (Focus Mode on Desktop / TOC Drawer on Mobile + Prev/Next)
+    const bookTocBtn = document.getElementById('wb-book-toc-btn');
+    if (bookTocBtn) {
+      bookTocBtn.addEventListener('click', () => {
+        if (isMobileViewport()) {
+          setMobileDrawer(!state.drawerOpen);
+        } else {
+          state.bookFocus = !state.bookFocus;
+          const body = document.getElementById('wb-body');
+          if (body) body.classList.toggle('is-book-focus', state.bookFocus);
+          bookTocBtn.classList.toggle('is-on', state.bookFocus);
+        }
+      });
+    }
+    const bookPrev = document.getElementById('wb-book-prev');
+    if (bookPrev) bookPrev.addEventListener('click', () => stepBookSection(-1));
+    const bookNext = document.getElementById('wb-book-next');
+    if (bookNext) bookNext.addEventListener('click', () => stepBookSection(1));
+    const bookFootPrev = document.getElementById('wb-book-foot-prev');
+    if (bookFootPrev) bookFootPrev.addEventListener('click', () => stepBookSection(-1));
+    const bookFootNext = document.getElementById('wb-book-foot-next');
+    if (bookFootNext) bookFootNext.addEventListener('click', () => stepBookSection(1));
+
     // Topbar Mode Tabs
     document.querySelectorAll('.wb-nav__item[data-mode]').forEach((btn) => {
       btn.addEventListener('click', () => switchMode(btn.dataset.mode));
@@ -1112,6 +1289,7 @@
         }
         const lessonBtn = e.target.closest('[data-select-lesson]');
         if (lessonBtn) {
+          setMobileDrawer(false);
           selectLesson(lessonBtn.dataset.selectLesson, 0);
           return;
         }
@@ -1126,6 +1304,7 @@
         const figBtn = e.target.closest('[data-select-fig]');
         if (figBtn) {
           state.currentFigId = figBtn.dataset.selectFig;
+          setMobileDrawer(false);
           renderDiagramsSidebar(document.getElementById('wb-search-figs')?.value || '');
           renderCurrentDiagram();
           return;
@@ -1269,6 +1448,10 @@
         }
         return;
       }
+      if (state.drawerOpen && e.key === 'Escape') {
+        setMobileDrawer(false);
+        return;
+      }
       const drawer = document.getElementById('wb-drawer');
       if (drawer && !drawer.hidden && e.key === 'Escape') {
         closeDeepDiveDrawer();
@@ -1308,8 +1491,16 @@
     });
 
     global.addEventListener('resize', () => {
+      syncTopbarHeight();
+      if (!isMobileViewport() && state.drawerOpen) {
+        setMobileDrawer(false);
+      }
       if (state.mode === 'diagrams' && state.figViewMode === 'html') {
         fitDiagramIframe();
+      } else if (state.mode === 'book') {
+        syncFrameLayout(document.getElementById('wb-book-frame'));
+      } else if (state.mode === 'author') {
+        syncFrameLayout(document.getElementById('wb-author-frame'));
       }
     });
   }

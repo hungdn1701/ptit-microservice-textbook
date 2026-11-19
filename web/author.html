@@ -281,10 +281,11 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
     @media (max-width: 768px) {
-      body { padding: 20px; }
-      .card-body { flex-direction: column; align-items: center; padding: 0; gap: 32px; }
-      .photo-col { width: 180px; }
-      .sys-line { flex-direction: column; line-height: 1.6; margin-bottom: 8px; }
+      body { min-height: auto; align-items: flex-start; padding: 18px 14px 28px; }
+      .card-body { flex-direction: column; align-items: center; padding: 0; gap: 22px; }
+      .photo-col { width: 140px; }
+      .info-col { width: 100%; }
+      .sys-line { flex-direction: column; line-height: 1.55; margin-bottom: 8px; }
       .sys-key { width: auto; margin-bottom: 2px; }
     }
   </style>
@@ -373,16 +374,16 @@ Type <span class="cmd-highlight">help</span> to see a list of available commands
     const terminalOutput = document.getElementById('terminal-output');
     const terminalInput = document.getElementById('terminal-input');
     
-    // Focus input helper
-    function focusTerminal() {
-      if (terminalInput) {
+    // Focus input helper (avoid triggering involuntary virtual keyboard on touch/mobile)
+    function focusTerminal(force = false) {
+      if (terminalInput && (force || window.innerWidth > 980)) {
         terminalInput.focus();
       }
     }
 
     // Focus input when terminal body or document is clicked
     terminalBody.addEventListener('click', (e) => {
-      focusTerminal();
+      focusTerminal(true);
     });
     
     window.addEventListener('focus', () => {
