@@ -327,6 +327,8 @@
     };
 
     setAttr('wb-search-btn', 'aria-label', t('searchAria'));
+    setAttr('wb-hub-link', 'title', t('hubTeachingTitle'));
+    setAttr('wb-hub-link', 'aria-label', t('hubTeachingTitle'));
     setAttr('wb-feedback-link', 'title', t('feedbackTitle'));
     setAttr('wb-github-link', 'title', t('githubTitle'));
     setAttr('wb-mobile-menu-btn', 'aria-label', t('navMenuLabel'));
