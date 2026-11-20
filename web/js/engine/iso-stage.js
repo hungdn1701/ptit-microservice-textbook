@@ -397,33 +397,42 @@
     block(e, pal, placedPills = []) {
       const labels = Array.isArray(e.label) ? e.label : (e.label ? [String(e.label)] : []);
       const maxLabelLen = Math.max(0, ...labels.map((l) => String(l).length), String(e.sub || '').length);
-      const effS = Math.max(e.s || 4.2, 2.55 + maxLabelLen * 0.145);
+      const mainFs = maxLabelLen > 18 ? 10.6 : maxLabelLen > 14 ? 11.4 : 12.4;
+      const subFs = String(e.sub || '').length > 22 ? 9.2 : 10.0;
+      const maxTextW = Math.max(
+        0,
+        ...labels.map((l) => measureText(String(l), mainFs)),
+        e.sub ? measureText(String(e.sub), subFs) : 0
+      );
+      const h = e.h || 46;
+      const minSForText = maxTextW > 0 ? (maxTextW + 30) / (2 * TILE) : 0;
+      const effS = Math.max(e.s || 4.2, minSForText);
       const half = effS / 2;
       const prism = buildPrism({
         x0: e.x - half, x1: e.x + half,
         y0: e.y - half, y1: e.y + half,
-        h: e.h || 46, radius: e.radius ?? 9
+        h, radius: e.radius ?? 9
       });
       const lift = e.lift || 0;
       const cx = prism.T[0];
       const cy = prism.ty;
-      const frontY = cy + (effS * TILE * 0.5 + (e.h || 46)) * 0.42;
-      const mainFs = maxLabelLen > 15 ? 11.4 : 12.6;
+      // Full-width vertical wall of isometric prism spans strictly [cy, cy + h].
+      const wallMidY = cy + h * 0.50;
 
       let labelSvg = '';
       if (labels.length === 1 && !e.sub) {
-        labelSvg = `<text x="${A(cx)}" y="${A(frontY + 4)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>`;
+        labelSvg = `<text x="${A(cx)}" y="${A(wallMidY + 4)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>`;
       } else if (labels.length === 1 && e.sub) {
         labelSvg = `
-          <text x="${A(cx)}" y="${A(frontY - 1)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>
-          <text x="${A(cx)}" y="${A(frontY + 12.5)}" text-anchor="middle" font-size="10.2" font-weight="600" fill="${pal.ink2}">${esc(e.sub)}</text>`;
+          <text x="${A(cx)}" y="${A(wallMidY - 3)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>
+          <text x="${A(cx)}" y="${A(wallMidY + 11)}" text-anchor="middle" font-size="${subFs}" font-weight="600" fill="${pal.ink2}">${esc(e.sub)}</text>`;
       } else if (labels.length >= 2) {
         labelSvg = `
-          <text x="${A(cx)}" y="${A(frontY - 5)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>
-          <text x="${A(cx)}" y="${A(frontY + 9)}" text-anchor="middle" font-size="11.2" font-weight="700" fill="${pal.ink2}">${esc(labels[1])}</text>`;
+          <text x="${A(cx)}" y="${A(wallMidY - 4)}" text-anchor="middle" font-size="${mainFs}" font-weight="800" fill="${pal.ink}">${esc(labels[0])}</text>
+          <text x="${A(cx)}" y="${A(wallMidY + 10.5)}" text-anchor="middle" font-size="11.0" font-weight="700" fill="${pal.ink2}">${esc(labels[1])}</text>`;
       }
 
-      const iconSvg = e.glyph ? drawIconAt(e.glyph, cx, labels.length ? cy - 2 : cy + 2, effS >= 5.5 ? 25 : 21, pal.ink, 1.9) : '';
+      const iconSvg = e.glyph ? drawIconAt(e.glyph, cx, labels.length ? cy - 5 : cy + 2, effS >= 5.5 ? 24 : 20, pal.ink, 1.9) : '';
       const deadSvg = e.dead > 0.05
         ? `<g opacity="${A(e.dead)}" stroke="#c0392b" stroke-width="3.2" stroke-linecap="round">
              <path d="M${A(cx - 10)},${A(cy - 10)} L${A(cx + 10)},${A(cy + 10)} M${A(cx + 10)},${A(cy - 10)} L${A(cx - 10)},${A(cy + 10)}"/>
@@ -479,11 +488,14 @@
       const poly = prism.outline.map(([px, py0]) => [px, py0 - lift]);
       const padTop = below ? 16 : 16 + pillSpecs.length * 26;
       const padBot = below ? 18 + pillSpecs.length * 26 : 18;
+      const maxPillHalf = pillSpecs.reduce((m, ps) => Math.max(m, ps.w / 2 + 8), 0);
+      const polyHalfW = (prism.R[0] - prism.L[0]) / 2;
+      const padSide = Math.max(24, maxPillHalf - polyHalfW + 10);
       return {
         body,
         over,
         poly,
-        bounds: boundsOfPoints(poly, [36, padTop, 36, padBot])
+        bounds: boundsOfPoints(poly, [padSide, padTop, padSide, padBot])
       };
     },
 
@@ -522,22 +534,28 @@
         </g>`;
 
       let over = '';
+      let maxPillW = 0;
       if (e.label) {
         const lblText = e.sub ? `${e.label} · ${e.sub}` : String(e.label);
         const ly = botY + ry + 16;
+        const lw = Math.max(60, measureText(lblText, 10.5) + 34);
+        maxPillW = Math.max(maxPillW, lw);
         over += renderPill(cx, ly, lblText, { icon: 'database', tone: 'paper' }, pal);
-        placedPills.push({ x: cx, y: ly, w: Math.max(60, measureText(lblText, 10.5) + 34) });
+        placedPills.push({ x: cx, y: ly, w: lw });
       }
       let py = topY - ry - 15;
       if (e.cpu >= 0) {
+        maxPillW = Math.max(maxPillW, 92);
         over += `<g transform="translate(0 ${A(py)})">${renderCpuPill(cx, 0, e.cpu, pal)}</g>`;
         placedPills.push({ x: cx, y: py, w: 92 });
         py -= 25;
       }
       for (const t of e.tags || []) {
         const tagObj = typeof t === 'string' ? { text: t } : t;
+        const tw = Math.max(48, measureText(tagObj.text, 10.5) + 24);
+        maxPillW = Math.max(maxPillW, tw);
         over += `<g transform="translate(0 ${A(py)})">${renderPill(cx, 0, tagObj.text, tagObj, pal)}</g>`;
-        placedPills.push({ x: cx, y: py, w: Math.max(48, measureText(tagObj.text, 10.5) + 24) });
+        placedPills.push({ x: cx, y: py, w: tw });
         py -= 25;
       }
       if (over) over = `<g opacity="${A(e.opacity)}">${over}</g>`;
@@ -546,11 +564,12 @@
       for (let i = 0; i <= 8; i++) poly.push([cx - rx * Math.cos((Math.PI * i) / 8), topY - ry * Math.sin((Math.PI * i) / 8)]);
       for (let i = 0; i <= 8; i++) poly.push([cx + rx * Math.cos((Math.PI * i) / 8), botY + ry * Math.sin((Math.PI * i) / 8)]);
 
+      const padSide = Math.max(36, maxPillW / 2 - rx + 14);
       return {
         body,
         over,
         poly,
-        bounds: boundsOfPoints(poly, [36, 20 + ((e.tags || []).length + (e.cpu >= 0 ? 1 : 0)) * 25, 36, e.label ? 34 : 14])
+        bounds: boundsOfPoints(poly, [padSide, 20 + ((e.tags || []).length + (e.cpu >= 0 ? 1 : 0)) * 25, padSide, e.label ? 36 : 14])
       };
     },
 
@@ -596,25 +615,32 @@
       const [cx, topY] = prism.T;
       const [, botY] = prism.Bd;
       let over = '';
+      let maxPillW = 0;
       if (e.label) {
         const ly = botY - lift + 18;
+        const lw = Math.max(60, measureText(e.label, 10.5) + 34);
+        maxPillW = Math.max(maxPillW, lw);
         over += renderPill(cx, ly, e.label, { icon: 'queue', tone: 'paper' }, pal);
-        placedPills.push({ x: cx, y: ly, w: Math.max(60, measureText(e.label, 10.5) + 34) });
+        placedPills.push({ x: cx, y: ly, w: lw });
       }
       let py = topY - lift - 16;
       for (const t of e.tags || []) {
         const tagObj = typeof t === 'string' ? { text: t } : t;
+        const tw = Math.max(48, measureText(tagObj.text, 10.5) + 24);
+        maxPillW = Math.max(maxPillW, tw);
         over += `<g transform="translate(0 ${A(py)})">${renderPill(cx, 0, tagObj.text, tagObj, pal)}</g>`;
-        placedPills.push({ x: cx, y: py, w: Math.max(48, measureText(tagObj.text, 10.5) + 24) });
+        placedPills.push({ x: cx, y: py, w: tw });
         py -= 25;
       }
       if (over) over = `<g opacity="${A(e.opacity)}">${over}</g>`;
       const poly = prism.outline.map(([px, py0]) => [px, py0 - lift]);
+      const polyHalfW = (prism.R[0] - prism.L[0]) / 2;
+      const padSide = Math.max(36, maxPillW / 2 - polyHalfW + 14);
       return {
         body,
         over,
         poly,
-        bounds: boundsOfPoints(poly, [36, 20 + (e.tags || []).length * 25, 36, e.label ? 32 : 14])
+        bounds: boundsOfPoints(poly, [padSide, 20 + (e.tags || []).length * 25, padSide, e.label ? 36 : 14])
       };
     },
 
@@ -802,11 +828,11 @@
       const lines = e.lines || [];
       const bars = e.bars || [];
       const maxLineW = Math.max(
-        measureText(e.title || '', 11.5) + 28,
-        ...lines.map((l) => measureText(l, 11) + 22),
+        measureText(e.title || '', 11.5) + 34,
+        ...lines.map((l) => measureText(l, 11.2) + 26),
         bars.length ? 210 : 150
       );
-      const w = e.w || Math.min(310, Math.max(175, maxLineW + 24));
+      const w = e.w || Math.min(460, Math.max(180, maxLineW + 24));
       const h = 36 + lines.length * 18 + bars.length * 22 + 10;
 
       let contentSvg = '';
@@ -1069,13 +1095,30 @@
       this.linkPolys.clear();
       let linksHtml = '';
       let linkLabelsHtml = '';
-      // Register entity body obstacles so link labels never cover entity titles
+      // Register exact entity/panel/zone-title obstacle boxes so link pills never cover bodies, cards, or titles
+      const bodyObstacles = [];
       for (const id of sortedIds) {
         const e = ents[id];
-        if (e.type === 'zone' || e.type === 'ring' || e.type === 'panel') continue;
-        const [ecx, ecy] = entityCenter(e);
-        placedLabels.push({ x: ecx, y: ecy + 10, w: 112 });
-        placedLabels.push({ x: ecx, y: ecy - 10, w: 112 });
+        if (e.type === 'zone') {
+          if (e.label) {
+            const [lx, ly] = iso(e.x0, e.y1, 0);
+            const zw = measureText(String(e.label).toUpperCase(), 10.2) + 22;
+            bodyObstacles.push({ x1: lx + 8, y1: ly + 4, x2: lx + 14 + zw, y2: ly + 25 });
+          }
+          continue;
+        }
+        if (e.type === 'ring' || e.type === 'ghost') continue;
+        const poly = polys[id];
+        if (poly && poly.length >= 3) {
+          const xs = poly.map((p) => p[0]);
+          const ys = poly.map((p) => p[1]);
+          bodyObstacles.push({
+            x1: Math.min(...xs) - 5,
+            y1: Math.min(...ys) - 5,
+            x2: Math.max(...xs) + 5,
+            y2: Math.max(...ys) + 5
+          });
+        }
       }
       const rawLinks = this.scene.links || {};
 
@@ -1121,16 +1164,20 @@
           const baseAt = lspec.labelAt ?? 0.48;
           const p0 = pts[0], pLast = pts[pts.length - 1];
           const ang = Math.atan2(pLast[1] - p0[1], pLast[0] - p0[0]);
-          const perpY = lspec.labelOffset ?? (Math.cos(ang) >= 0 ? -16 : 16);
-          const lw = Math.max(54, measureText(lspec.label, 10) + 22);
+          const perpY = lspec.labelOffset ?? (Math.cos(ang) >= 0 ? -18 : 18);
+          const lw = Math.max(54, measureText(lspec.label, 10) + 24);
+          const lh = 22;
 
-          // Multi-candidate collision solver along the link and perpendicular to it
+          // Multi-candidate collision solver along the link & perpendicular offsets
           const candidates = [];
-          for (const atTry of [baseAt, 0.5, 0.38, 0.62, 0.3, 0.7]) {
-            const pt = this._pointAlongLink(lid, atTry);
-            if (!pt) continue;
-            for (const dyTry of [perpY, -perpY, perpY * 1.85, -perpY * 1.85, perpY * 2.7, -perpY * 2.7]) {
-              candidates.push([pt[0], pt[1] + dyTry]);
+          const tList = [baseAt, 0.5, 0.42, 0.58, 0.34, 0.66, 0.25, 0.75];
+          const mults = [1, -1, 1.8, -1.8, 2.7, -2.7, 3.6, -3.6, 4.6, -4.6];
+          for (const mult of mults) {
+            for (const atTry of tList) {
+              const pt = this._pointAlongLink(lid, atTry);
+              if (!pt) continue;
+              const dyTry = perpY * mult;
+              candidates.push([pt[0], pt[1] + dyTry, Math.abs(mult - 1) * 2 + Math.abs(atTry - baseAt) * 10]);
             }
           }
 
@@ -1138,28 +1185,30 @@
           let bestY = candidates.length ? candidates[0][1] : p0[1];
           let bestPenalty = Infinity;
 
-          for (const [cx, cy] of candidates) {
-            let penalty = 0;
+          for (const [cx, cy, distBias] of candidates) {
+            let penalty = distBias * 0.01;
+            const px1 = cx - lw / 2, px2 = cx + lw / 2;
+            const py1 = cy - lh / 2, py2 = cy + lh / 2;
             for (const prev of placedLabels) {
-              const ox = Math.max(0, (lw + prev.w) * 0.55 - Math.abs(cx - prev.x));
-              const oy = Math.max(0, 25 - Math.abs(cy - prev.y));
-              if (ox > 0 && oy > 0) {
-                penalty += ox * oy;
-              }
+              const ox = Math.max(0, (lw + prev.w) * 0.54 - Math.abs(cx - prev.x));
+              const oy = Math.max(0, 26 - Math.abs(cy - prev.y));
+              if (ox > 0 && oy > 0) penalty += 2000 + ox * oy * 2;
             }
-            if (penalty === 0) {
-              bestX = cx;
-              bestY = cy;
-              break;
+            for (const ob of bodyObstacles) {
+              const ox = Math.min(px2, ob.x2) - Math.max(px1, ob.x1);
+              const oy = Math.min(py2, ob.y2) - Math.max(py1, ob.y1);
+              if (ox > 0 && oy > 0) penalty += 1500 + ox * oy * 2;
             }
             if (penalty < bestPenalty) {
               bestPenalty = penalty;
               bestX = cx;
               bestY = cy;
+              if (penalty < 0.2) break;
             }
           }
 
           placedLabels.push({ x: bestX, y: bestY, w: lw });
+          expandBounds([bestX - lw / 2 - 10, bestY - lh / 2 - 8, bestX + lw / 2 + 10, bestY + lh / 2 + 8]);
           linkLabelsHtml += `<g class="link-label">${renderPill(bestX, bestY, lspec.label, { tone: lspec.tone || 'paper', size: 10 }, pal)}</g>`;
         }
       }

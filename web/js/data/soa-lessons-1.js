@@ -233,13 +233,13 @@
           },
           scene: {
             entities: {
-              z: D.zone(-2, 12.5, -8.5, 8.5, 'HỆ SINH THÁI PHÂN TÁN (ĐÒI HỎI DEVOPS & OBSERVABILITY)', { tone: 'amber' }),
+              z: D.zone(-2, 14.8, -8.5, 8.5, 'HỆ SINH THÁI PHÂN TÁN (ĐÒI HỎI DEVOPS & OBSERVABILITY)', { tone: 'amber' }),
               gw: D.gw(-4.5, 0, 'kbm-gateway', { s: 3.8, h: 42 }),
-              core: D.srv(2, 3.5, ['kbm-core'], { s: 3.8, h: 42, color: 'blue', cpu: 0.35 }),
-              exam: D.srv(2, -3.5, ['kbm-exam'], { s: 3.8, h: 42, color: 'teal', cpu: 0.4 }),
+              core: D.srv(1.8, 3.5, ['kbm-core'], { s: 3.8, h: 42, color: 'blue', cpu: 0.35 }),
+              exam: D.srv(1.8, -3.5, ['kbm-exam'], { s: 3.8, h: 42, color: 'teal', cpu: 0.4 }),
               kafka: D.queue(6.8, 0, 'Kafka Event Bus', { n: 4, slots: 6 }),
-              judge: D.srv(10.5, -3.5, ['kbm-judge-sql'], { s: 3.8, h: 42, color: 'orange', glyph: 'code', cpu: 0.65 }),
-              obs: D.srv(10.5, 4, ['Observability'], { s: 3.6, h: 38, color: 'purple', glyph: 'search', sub: 'Trace · Metric · Log' })
+              judge: D.srv(12.2, -3.8, ['kbm-judge-sql'], { s: 3.8, h: 42, color: 'orange', glyph: 'code', cpu: 0.65 }),
+              obs: D.srv(12.2, 4.0, ['Observability'], { s: 3.6, h: 38, color: 'purple', glyph: 'search', sub: 'Trace · Metric · Log' })
             },
             links: {
               gw_c: D.link('gw', 'core'),
@@ -282,7 +282,7 @@
           },
           scene: {
             entities: {
-              zCore: D.zone(-6, 3.5, -6, 6, 'MIỀN HỌC VỤ & ĐỀ THI', { tone: 'blue' }),
+              zCore: D.zone(-6, 3.5, -6, 8.2, 'MIỀN HỌC VỤ & ĐỀ THI', { tone: 'blue' }),
               zLab: D.zone(5, 13, -7, 7, 'MIỀN CHẤM LAB CÁCH LY (SANDBOX)', { tone: 'green' }),
               gw: D.gw(-10.5, 0, 'kbm-gateway', { s: 3.6, h: 40 }),
               core: D.srv(-1.5, 2.5, ['kbm-core'], { s: 3.8, h: 42, color: 'blue', cpu: 0.28, tags: [{ text: 'P99 < 500 ms', tone: 'green' }] }),
@@ -536,7 +536,7 @@
               a_e: D.link('auth', 'exam', { label: 'OHS / JWT', style: 'dashed' }),
               c_j: D.link('core', 'judge', { label: 'Customer–Supplier' }),
               e_j: D.link('exam', 'judge', { label: 'Customer–Supplier' }),
-              j_n: D.link('judge', 'notif', { label: 'Domain Events' })
+              j_n: D.link('judge', 'notif', { label: 'Domain Events', via: [[0, -8.2]] })
             },
             flows: [
               D.flow(['c_j', 'j_n'], { rate: 1.5, kind: 'msg' }),
@@ -1554,7 +1554,7 @@
           },
           scene: {
             entities: {
-              z: D.zone(-2, 12, -6.5, 6.5, 'KUBERNETES CLUSTER (SERVER-SIDE DISCOVERY)', { tone: 'blue' }),
+              z: D.zone(-2, 12, -6.5, 8.5, 'KUBERNETES CLUSTER (SERVER-SIDE DISCOVERY)', { tone: 'blue' }),
               core: D.srv(-8.5, 0, ['kbm-core Pod'], { color: 'blue', tags: [{ text: 'Không cần thư viện Eureka', tone: 'blue' }] }),
               svc: D.lb(-0.5, 0, 'K8s Service VIP', { s: 3.8, h: 42, sub: 'kbm-judge-sql:8082', tags: [{ text: 'CoreDNS + kube-proxy', tone: 'green' }] }),
               p1: D.srv(7.5, 4, ['judge-pod-1'], { s: 3.5, h: 38, color: 'green', cpu: 0.35 }),

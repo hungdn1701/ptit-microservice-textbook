@@ -820,7 +820,7 @@ body.wb-app::after {
 
 .wb-stage__canvas {
   position: absolute;
-  inset: 58px 12px 34px;
+  inset: 66px 12px 34px;
   user-select: none;
 }
 
@@ -856,15 +856,16 @@ body.wb-app::after {
 .wb-chip {
   border: 1.2px solid var(--wb-line-strong);
   background: var(--wb-surface);
-  min-width: 110px;
-  flex: 0 1 auto;
+  min-width: 0;
+  flex: 1 1 0;
   overflow: hidden;
   box-shadow: 0 1.5px 0 rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 1px;
-  padding: 4px 10px 5px 12px;
+  padding: 4px 8px 4px 11px;
   position: relative;
 }
 
@@ -896,12 +897,12 @@ body.wb-app::after {
 
 .wb-chip__value {
   font-variant-numeric: tabular-nums;
-  font-size: 12.2px;
+  font-size: 11.1px;
+  line-height: 1.18;
   font-weight: 800;
   color: var(--wb-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .wb-chip[data-level="warn"] .wb-chip__value { color: #b86e00; }

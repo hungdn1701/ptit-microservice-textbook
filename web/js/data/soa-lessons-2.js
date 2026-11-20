@@ -1176,8 +1176,8 @@
           },
           scene: {
             entities: {
-              core: D.srv(-7, 0, ['kbm-core'], { color: 'green', tags: [{ text: 'BEGIN → Insert cả 2 → COMMIT', tone: 'green' }] }),
-              db: D.db(3.5, 0, 'core_db (submissions + outbox_events)', { r: 2.2, h: 48, color: 'purple', tags: [{ text: 'Cùng 1 ACID Transaction nguyên tử!', tone: 'violet' }] })
+              core: D.srv(-8.5, 0, ['kbm-core'], { color: 'green', tags: [{ text: 'BEGIN → Insert cả 2 → COMMIT', tone: 'green' }] }),
+              db: D.db(6.5, 0, 'core_db (submissions + outbox_events)', { r: 2.2, h: 48, color: 'purple', tags: [{ text: 'Cùng 1 ACID Transaction nguyên tử!', tone: 'violet' }] })
             },
             links: {
               c_d: D.link('core', 'db', { label: 'INSERT submissions + INSERT outbox_events', tone: 'green' })
