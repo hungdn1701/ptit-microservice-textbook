@@ -15,7 +15,7 @@
     "audit:tokens": "node scripts/py.js scripts/gen-tokens.py --check",
     "audit:terms": "node scripts/py.js scripts/check-retired-forms.py",
     "audit:regressions": "node scripts/py.js scripts/audit-regressions.py --range origin/master..HEAD",
-    "gates": "node scripts/check-editions.js && node scripts/py.js scripts/gen-tokens.py --check && node scripts/audit-workbench-i18n.js --batch=all && node scripts/audit-workbench-geometry.js && node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && node scripts/audit-chapter-styles.js && node scripts/py.js scripts/check-retired-forms.py && node scripts/py.js scripts/sync-agent-config.py --check",
+    "gates": "node scripts/check-editions.js && node scripts/py.js scripts/gen-tokens.py --check && node scripts/audit-workbench-i18n.js --batch=all && node scripts/audit-workbench-geometry.js && node scripts/audit-pattern-pages.js && node scripts/audit-diagram-geometry.js && node scripts/audit-chapter-styles.js && node scripts/py.js scripts/check-retired-forms.py && node scripts/py.js scripts/sync-agent-config.py --check && node scripts/test-pattern-pages.js && node scripts/audit-pattern-i18n.js --batch=all && node scripts/audit-figure-i18n.js --batch=all && node scripts/py.js scripts/audit-regressions.py --range origin/master..HEAD",
     "audit:agents": "node scripts/py.js scripts/sync-agent-config.py --check",
     "shots": "node scripts/review-shots.js"
   },
